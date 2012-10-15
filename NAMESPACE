@@ -1,0 +1,35 @@
+useDynLib(pbdBASE)
+import(methods, rlecuyer, pbdMPI, pbdSLAP, Rcpp)
+
+# All internal functions
+exportPattern("^base\\.[[:alpha:]]+")
+
+exportMethods(
+  "as.matrix", "as.vector", "as.ddmatrix",
+  "submatrix", "submatrix<-",
+  "[", "[<-", "na.exclude",
+  "ldim", "bldim", "ctxt",
+  "summary"
+)
+
+export(
+  ### blacs
+  init.grid, blacs, gridexit, pnum, pcoord, blacsexit,
+  minctxt,
+  
+  ### utility
+  numroc, ownany,
+  is.ddmatrix, is.na, is.nan, is.infinite, is.numeric,
+  print,
+  nrow, ncol, dim, ldim, bldim, ctxt, submatrix,
+  head.ddmatrix, tail.ddmatrix,
+  "[", "[<-",
+  
+  ### distribution
+  distribute, redistribute,
+
+  ### comparator
+  any, all,
+  
+  summary
+)

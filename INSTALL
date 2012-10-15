@@ -1,0 +1,30 @@
+### This file is a quick installation for Solaris, Linux, and Mac OS X.
+### See `INSTALL.win.src' for a source installation for Windows system.
+### See `INSTALL.win.bin' for a binary installation for Windows system.
+
+--- 'pbdMPI' Installation:
+   See 'pbdMPI/INSTALL' for the details.
+
+
+--- 'pbdSLAP' Installation:
+   See 'pbdSLAP/INSTALL' for the details.
+
+
+--- 'pbdBASE' Installation:
+0. Download and extract 'pbdBASE'
+
+     > tar zxvf pbdBASE.1-0.tar.gz
+
+1. Default Installation:
+   This should work with most platforms with 'OpenMPI' installed. The
+   configuration is based on Rmpi but detect the flags and libraries from
+   'mpicc --showme:*' which is more portable.
+
+     > R CMD INSTALL pbdBASE
+
+
+--- Testing:
+   Suppose 'pbdMPI' and 'pbdSLAP' are all installed correctly.
+   I can run
+
+     > mpiexec -np 2 Rscript -e "demo(example1,'pbdBASE',ask=F,echo=F)"

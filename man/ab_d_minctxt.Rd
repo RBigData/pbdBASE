@@ -1,0 +1,34 @@
+\name{MinCTXT}
+\alias{minctxt}
+\title{ Get BLACS Context Grid Information }
+\description{
+  Finds the smallest integers for creating a new BLACS context.
+}
+\usage{
+  minctxt(after = 0)
+}
+\arguments{
+  \item{after}{ignores all values below this integer as possibilities}
+}
+\details{
+  For advanced users only.
+  
+  Returns the smallest integer which could become a new BLACS context 
+  value. 
+  
+  For example, if contexts 0, 1, and 2 are taken, and \code{after=0},
+  then the function returns 3. If 0, 1, 2, and 5 are taken, the 
+  function returns 3 if \code{after=0}, but returns 6 if \code{after=4}.
+  
+  The function is useful when a transitory grid is needed, such 
+  as for reading in data onto a subset of processors before 
+  distributing out to the full grid.
+}
+\value{
+  Returns the minimum value.
+}
+\seealso{
+  \code{\link{InitGrid}}
+}
+\keyword{BLACS}
+\keyword{Global Variables}

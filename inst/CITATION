@@ -1,0 +1,30 @@
+citHeader("To cite pbdBASE in a publication use:")
+
+citEntry(
+  entry = "Misc",
+  title = "pbdBASE: Programming with Big Data -- Core pbd Classes and Methods",
+  author = personList(as.person("Drew Schmidt"),
+                      as.person("Wei-Chen Chen"),
+                      as.person("George Ostrouchov"),
+                      as.person("Pragneshkumar Patel")),
+  year = "2012",
+  note = "R Package",
+  url = "http://cran.r-project.org/package=pbdBASE",
+  textVersion = "Schmidt, D., Chen, W.-C., Ostrouchov, G., and Patel, P. (2012) pbdBASE: Programming with Big Data -- Core pbd Classes and Methods. R Package, URL http://cran.r-project.org/package=pbdBASE",
+  key = "Schmidt2012pbdBASEpackage"
+)
+
+citEntry(
+  entry = "Manual",
+  title = "A Quick Guide for the pbdBASE Package",
+  author = personList(as.person("Drew Schmidt"),
+                      as.person("Wei-Chen Chen"),
+                      as.person("George Ostrouchov"),
+                      as.person("Pragneshkumar Patel")),
+  year = "2012",
+  note = "R Vignette",
+  url = "http://cran.r-project.org/package=pbdBASE",
+  textVersion = "Schmidt, D., Chen, W.-C., Ostrouchov, G., and Patel, P. (2012) A Quick Guide for the pbdBASE Package. R Vignette, URL http://cran.r-project.org/package=pbdBASE",
+  key = "Schmidt2012pbdBASEvignette"
+)
+

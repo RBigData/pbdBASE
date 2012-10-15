@@ -1,0 +1,60 @@
+### Configurations.
+RCPP_CXXFLAGS = @RCPP_CXXFLAGS@
+RCPP_LDFLAGS = @RCPP_LDFLAGS@
+SLAP_LDFLAGS = @SLAP_LDFLAGS@
+SPMD_CPPFLAGS = @SPMD_CPPFLAGS@
+SPMD_LDFLAGS = @SPMD_LDFLAGS@
+
+### Setup R package flags and substitute by configure for ${MPI_...}.
+PKG_CPPFLAGS = $(SPMD_CPPFLAGS)
+PKG_CXXFLAGS = $(RCPP_CXXFLAGS)
+PKG_CFLAGS = -w
+PKG_FFLAGS = $(SAFE_FFLAGS) -w
+### Order is matter.
+PKG_LIBS = $(RCPP_LDFLAGS) $(SLAP_LDFLAGS) $(FLIBS) $(SPMD_LDFLAGS)
+
+### Setup R source code and objects.
+#R_OBJS = \
+#  base_mpi_blac.o                bprnt.o          scalapack.o \
+#  base_pblas_level3.o            lm.o             scalapack_utility_cpp.o \
+#  base_scalapack.o               mpi_blacs.o      scalapack_utility_fort.o \
+#  base_scalapack_utility_fort.o  par_selection.o  selection.o \
+#  bprnt_c.o                      pblas_level3.o
+R_OBJS = \
+  bprnt.o \
+  lm.o \
+  mpi_blacs.o \
+  par_selection.o \
+  pblas_level3.o \
+  scalapack.o \
+  scalapack_utility_cpp.o \
+  scalapack_utility_fort.o \
+  selection.o \
+  base_mpi_blac.o \
+  base_pblas_level3.o \
+  base_scalapack.o \
+  base_scalapack_utility_fort.o \
+  bprnt_c.o
+OBJECTS = $(R_OBJS)
+
+### For user configuration.
+USER_ETC = ../inst/etc${R_ARCH}
+USER_CONF = $(USER_ETC)/Makeconf
+ 
+### Start making here.
+all: $(SHLIB)
+	@if test ! -e $(USER_ETC); then mkdir -p $(USER_ETC); fi
+	@echo "SLAP_LDFLAGS = $(SLAP_LDFLAGS)" >> $(USER_CONF)
+	@echo "SPMD_CPPFLAGS = $(SPMD_CPPFLAGS)" >> $(USER_CONF)
+	@echo "SPMD_LDFLAGS = $(SPMD_LDFLAGS)" >> $(USER_CONF)
+	@echo "PKG_CPPFLAGS = $(PKG_CPPFLAGS)" >> $(USER_CONF)
+	@echo "PKG_CFLAGS = $(PKG_CFLAGS)" >> $(USER_CONF)
+	@echo "PKG_FFLAGS = $(PKG_FFLAGS)" >> $(USER_CONF)
+	@echo "PKG_LIBS = $(PKG_LIBS)" >> $(USER_CONF)
+
+$(SHLIB): $(OBJECTS)
+
+clean:
+	@rm -rf *.o *.d *.rc *.so *.dylib *.dll *.a *.lib \
+                Makedeps Makevars $(SHLIB) $(OBJECTS)
+	@rm -rf $(USER_ETC)
