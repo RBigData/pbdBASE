@@ -1,0 +1,7 @@
+SLAP_LDFLAGS = /home/mschmid3/R/x86_64-pc-linux-gnu-library/2.15/pbdSLAP/lib/libslap.a -llapack -lblas
+SPMD_CPPFLAGS = -I/usr/lib/openmpi/include  -DMPI2 -DOPENMPI
+SPMD_LDFLAGS = -L/usr/lib/openmpi/lib -lmpi  -lutil -lpthread
+PKG_CPPFLAGS = -I/usr/lib/openmpi/include  -DMPI2 -DOPENMPI
+PKG_CFLAGS = -w
+PKG_FFLAGS = -O3 -pipe  -g -ffloat-store -w
+PKG_LIBS = -L/home/mschmid3/R/x86_64-pc-linux-gnu-library/2.15/Rcpp/lib -lRcpp -Wl,-rpath,/home/mschmid3/R/x86_64-pc-linux-gnu-library/2.15/Rcpp/lib /home/mschmid3/R/x86_64-pc-linux-gnu-library/2.15/pbdSLAP/lib/libslap.a -llapack -lblas -lgfortran -lm -lquadmath -L/usr/lib/openmpi/lib -lmpi  -lutil -lpthread

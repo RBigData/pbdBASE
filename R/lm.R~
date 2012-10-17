@@ -60,47 +60,6 @@ base.rpdgels <- function(a, b, tol=1e-7)
 
 
 
-# For n>=p case only.  In n<p case, have to do LQ
-
-base.rpdgeqrf <- function(x, tol=1e-7)
-{
-  # Matrix descriptors
-  desca <- base.descinit(x@dim, x@bldim, x@ldim, ICTXT=x@CTXT)
-
-  m <- desca[3]
-  n <- desca[4]
-  
-  # Determine size of work array 
-  lwork <- .Fortran("RPDGEQPF",
-            TOL=as.double(tol), M=as.integer(m), N=as.integer(n), 
-            A=double(1), as.integer(1), as.integer(1), DESCA=as.integer(desca), 
-            IPIV=as.integer(1), TAU=double(1), 
-            WORK=double(1), LWORK=as.integer(-1), 
-            RANK=as.integer(n), INFO=integer(1),
-            package="pbdBASE")$WORK[1]
-
-  # perform QR
-  out <- .Fortran("RPDGEQPF",
-            TOL=as.double(tol), M=as.integer(m), N=as.integer(n), 
-            A=x@Data, as.integer(1), as.integer(1), DESCA=as.integer(desca), 
-            IPIV=integer(x@ldim[2]), TAU=double(min(m, n)), 
-            WORK=double(lwork), LWORK=as.integer(lwork), 
-            RANK=as.integer(n), INFO=integer(1),
-            package="pbdBASE")
-
-  if (out$INFO!=0)
-    warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
-
-  x@Data <- out$A
-  
-  comm.print(out$TAU)
-
-  ret <- list(qr=x, rank=out$RANK, tau=out$TAU, pivot=out$IPIV)
-  
-  attr(ret, "class") <- "qr"
-
-  return( ret )
-}
 
 
 
