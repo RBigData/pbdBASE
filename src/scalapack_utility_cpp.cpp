@@ -166,7 +166,15 @@ RcppExport SEXP fill_lower_zero(SEXP subA_,
   int i, j;
   std::vector<int> ret(6);
   
-  for (j=0; j<dim[1]-1; j++){
+  int top;
+  
+  if (dim[1] >= dim[0]){
+    top = dim[1] - 1;
+  } else {
+    top = dim[1];
+  }
+  
+  for (j=0; j<top; j++){
     for (i=j+1; i<dim[0]; i++){
       g2l_coord(ret, i, j, dim, bldim, procs, src);
       if (myproc[0]==ret[2] && myproc[1]==ret[3]){ // fill subA

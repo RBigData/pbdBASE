@@ -1,5 +1,6 @@
 # Work in progress --- not ready for the big time
 
+# lm.fit()
 # Wrapper for custom PDGELS function, which solves linear least
 # squares problems.
 base.rpdgels <- function(a, b, tol=1e-7)
@@ -61,7 +62,7 @@ base.rpdgels <- function(a, b, tol=1e-7)
 
 
 # For n>=p case only.  In n<p case, have to do LQ
-
+# qr()
 base.rpdgeqrf <- function(x, tol=1e-7)
 {
   # Matrix descriptors
@@ -109,7 +110,7 @@ base.rpdgeqrf <- function(x, tol=1e-7)
 
 
 
-
+# qr.Q()
 # recover Q from base.rpdgeqrf
 base.pdorgqr <- function(qr)
 {
@@ -146,3 +147,22 @@ base.pdorgqr <- function(qr)
   
   return( x )
 }
+
+
+
+
+
+# qr.R
+base.qr.R <- function(qr, complete=FALSE)
+{
+  ret <- qr$qr
+
+  ret@Data <- base.low2zero(ret@Data, dim=ret@dim, bldim=ret@bldim)
+  if (!complete)
+    ret <- ret[1:min(ret@dim), ]
+  
+  return(ret)
+}
+
+
+
