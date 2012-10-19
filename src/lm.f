@@ -671,7 +671,7 @@
      $                   DGESD2D, DLARFG, DSWAP, IGERV2D,
      $                   IGESD2D, INFOG1L, INFOG2L, PCHK1MAT, PDAMAX,
      $                   PDELSET, PDLARF, PDLARFG, PDNRM2,
-     $                   PXERBLA, PDELGET
+     $                   PXERBLA, PDELGET, DGSUM2D, PIELGET
 *     ..
 *     .. External Functions ..
       INTEGER            ICEIL, INDXG2P, NUMROC
@@ -813,7 +813,7 @@
 *
 *     Compute factorization
 *
-      TEMP3 = 0
+!      TEMP3 = 0
       DO 120 J = JA, JA+MN-1
          I = IA + J - JA
 *
@@ -827,21 +827,18 @@
               CALL PDELGET( 'A', 'T', TEMP, WORK(IPN), 1, IJ, DESCN )
               IF( TEMP.GT.TOL ) THEN
                 PVT = IJ
-                TEMP3 = IJ - J ! for tracking "N - RANK"
+!                TEMP3 = MAX0(TEMP3, IJ - J) ! for tracking "N - RANK"
                 EXIT
               END IF
    11 CONTINUE
          ELSE
+!            TEMP3 = TEMP3 + N-J
             PVT = J
 !            CALL PDELGET( 'A', 'T', TEMP, WORK(IPN), 1, J, DESCN )
-!            IF( TEMP.GT.TOL ) THEN
-!              TEMP3 = TEMP3+1
-!            END IF
-!            IF( J.EQ.N .AND. TEMP.LT.TOL ) THEN
-!              TEMP3 = TEMP3 + 1
+!            IF( TEMP.LT.TOL .AND. TEMP3.EQ.0  ) THEN
+!              TEMP3 = 1
 !            END IF
          END IF
-               WRITE (*,*) "TEMP3=",TEMP3
          IF( J.NE.PVT ) THEN
             CALL INFOG1L( PVT, DESCA( NB_ ), NPCOL, MYCOL,
      $                    DESCA( CSRC_ ), JJPVT, IPCOL )
@@ -1022,7 +1019,28 @@
 *
   120 CONTINUE
   
-      RANK = N - TEMP3
+!      RANK = N - TEMP3
+        CALL DESCSET( DESCN, 1, DESCA( N_ ), 1, DESCA( NB_ ), 
+     $              DESCA( RSRC_ ), DESCA( CSRC_ ), ICTXT, 1 )
+        RANK = 0
+        TEMP3 = 0
+        DO 12 IJ = 1, N-1, 1
+        CALL PIELGET( 'A', 'T', TEMP3, IPIV, 1, IJ, DESCN )
+          IF ( IJ.LE.TEMP3 ) THEN
+            RANK = RANK + 1
+          END IF
+   12 CONTINUE
+      IF ( RANK.EQ.N ) THEN
+        CALL PDELGET( 'A', 'T', TEMP, WORK(IPN), 1, N, DESCN )
+          IF( TEMP.LT.TOL  ) THEN
+            TEMP3 = 0
+          ELSE
+            TEMP3 = 1
+          END IF
+      ELSE
+        TEMP3 = 0
+      END IF
+      RANK = RANK + TEMP3
 *
       WORK( 1 ) = DBLE( LWMIN )
 *
@@ -1510,11 +1528,9 @@
 !
 !
 !
-         IF (RANK<N) THEN
-           N = RANK
-           DESCA(4) = N
-         END IF
-!
+         ! Adjust number of columns to fit numerical rank
+         N = RANK
+         DESCA(4) = N
 !
 !
 !
