@@ -16,7 +16,6 @@ base.rpdgels <- function(a, b, tol=1e-7)
   n <- desca[4]
   nrhs <- descb[4]
   
-  # Leave this alone!!!
   # Determine size of work array 
   lwork <- .Fortran("RPDGELS", 
                     as.double(tol), as.character("N"), 

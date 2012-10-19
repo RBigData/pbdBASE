@@ -3,14 +3,11 @@
 # lm.fit()
 # Wrapper for custom PDGELS function, which solves linear least
 # squares problems.
-base.rpdgels <- function(a, b, tol=1e-7)
+my.rpdgels <- function(a, b, tol=1e-7)
 {
-  # BLACS stuff
-  ICTXT <- a@CTXT
-
   # Matrix descriptors
-  desca <- base.descinit(a@dim, a@bldim, a@ldim, ICTXT=ICTXT)
-  descb <- base.descinit(b@dim, b@bldim, b@ldim, ICTXT=ICTXT)
+  desca <- base.descinit(a@dim, a@bldim, a@ldim, ICTXT=a@CTXT)
+  descb <- base.descinit(b@dim, b@bldim, b@ldim, ICTXT=a@CTXT)
 
   m <- desca[3]
   n <- desca[4]
@@ -49,9 +46,40 @@ base.rpdgels <- function(a, b, tol=1e-7)
   if (out$INFO!=0)
     warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
 
-  return( list(QR=out$A, X=out$B, IPIV=out$IPIV) )
+  a@Data <- out$A
+  b@Data <- out$B
+  
+  # rearranging solution in the overdetermined and/or rank deficient case
+  temp <- 1:n # indexing of coefficients
+  b <- b[temp, ]
+  
+  # convert IPIV to global vector if it isn't already
+  if (base.blacs(ICTXT=a@CTXT)$NPCOL > 1){
+    c <- new("ddmatrix", Data=matrix(out$IPIV, nrow=1),
+              dim=c(1, b@dim[1]), ldim=c(1, b@ldim[1]), 
+              bldim=b@bldim, CTXT=b@CTXT)
+    out$IPIV <- as.vector(c)
+  }
+  
+  if (out$RANK < n){
+    vec <- as.ddmatrix(matrix(NA, nrow=1, ncol=nrhs), bldim=b@bldim)
+    b[(out$RANK+1):n, ] <- NA
+    if (any(out$IPIV - temp != 0)){
+      perm <- sapply(temp, function(i) temp[which(i==out$IPIV)])
+      b <- b[perm, ]
+    }
+  }
+  
+  # rownames
+#  if (base.ownany(dim=b@dim, bldim=b@bldim, CTXT=b@CTXT)){
+#    coords <- sapply(temp, function(i) base.g2l_coord(ind=i, dim=b@dim, bldim=b@bldim, ICTXT=b@CTXT)[5])
+#    mycoords <- coords[which(!is.na(coords))]
+#    
+#    rownames(b@Data) <- paste("x", mycoords, sep="")
+#  }
+  
+  return( list(QR=a, X=b, IPIV=out$IPIV, rank=out$RANK) )
 }
-
 
 
 
