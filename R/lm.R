@@ -13,33 +13,37 @@ my.rpdgels <- function(a, b, tol=1e-7)
   n <- desca[4]
   nrhs <- descb[4]
   
+  IJ <- 1 # IA, JA, IB, JB
+  
   # Determine size of work array 
   lwork <- .Fortran("RPDGELS", 
                     as.double(tol), as.character("N"), 
                     as.integer(m), as.integer(n), as.integer(nrhs),
                     double(1), as.integer(1), as.integer(1), as.integer(desca),
                     double(1), as.integer(1), as.integer(1), as.integer(descb),
+                    double(1), double(1),
                     WORK=double(1), as.integer(-1), as.integer(1), 
                     integer(1), INFO=as.integer(0)
                     )$WORK[1]
 
   # Convert to .Call()
-
-  # RPDGELS( TOL, TRANS, M, N, NRHS, A, IA, JA, DESCA, 
-  #          B, IB, JB, DESCB, WORK, LWORK, IPIV, RANK, INFO )
-  
   # in: tol, trans, m, n, nrhs, IA, JA, desca, IB, JB, descb, lwork
   # in/out: A, B, 
-  # out: IPIV, RANK
+  # out: FT, RSD, IPIV, RANK
   # local (just allocate in C, not a SEXP): work
+  
+  # IMPORTANT VVVVV
+  # NOTE that FT must be initialized to zero
+  # IMPORTANT ^^^^^
 
   # Fit the model
   out <- .Fortran("RPDGELS", 
-                  as.double(tol), as.character("N"),
-                  as.integer(m), as.integer(n), as.integer(nrhs),
-                  A=a@Data, as.integer(1), as.integer(1), as.integer(desca), 
-                  B=b@Data, as.integer(1), as.integer(1), as.integer(descb),
-                  double(lwork), as.integer(lwork), IPIV=integer(a@ldim[2]),
+                  TOL=as.double(tol), TRANS=as.character("N"),
+                  M=as.integer(m), N=as.integer(n), NRHS=as.integer(nrhs),
+                  A=a@Data, IA=as.integer(IJ), JA=as.integer(IJ), DESCA=as.integer(desca), 
+                  B=b@Data, IB=as.integer(IJ), JB=as.integer(IJ), DESCB=as.integer(descb),
+                  FT=matrix(double(prod(b@ldim)), b@ldim[1]), RSD=matrix(double(prod(b@ldim)), b@ldim[1]),
+                  WORK=double(lwork), LWORK=as.integer(lwork), IPIV=integer(a@ldim[2]),
                   RANK=integer(1), INFO=as.integer(0),
                   PACKAGE="pbdBASE")
 
@@ -49,9 +53,15 @@ my.rpdgels <- function(a, b, tol=1e-7)
   a@Data <- out$A
   b@Data <- out$B
   
+  fitted.values <- new("ddmatrix", Data=out$FT, dim=b@dim,
+                       ldim=b@ldim, bldim=b@bldim, CTXT=b@CTXT)
+  residuals <- new("ddmatrix", Data=out$RSD, dim=b@dim,
+                       ldim=b@ldim, bldim=b@bldim, CTXT=b@CTXT)
+  
   # rearranging solution in the overdetermined and/or rank deficient case
   temp <- 1:n # indexing of coefficients
   b <- b[temp, ]
+  
   
   # convert IPIV to global vector if it isn't already
   if (base.blacs(ICTXT=a@CTXT)$NPCOL > 1){
@@ -78,7 +88,13 @@ my.rpdgels <- function(a, b, tol=1e-7)
 #    rownames(b@Data) <- paste("x", mycoords, sep="")
 #  }
   
-  return( list(QR=a, X=b, IPIV=out$IPIV, rank=out$RANK) )
+  qr <- list(qr=a, qraux=NULL, pivot=out$IPIV, tol=tol, rank=out$RANK)
+  
+  ret <- list(coefficients=b, residuals=residuals, effects=NULL, 
+              rank=out$RANK, fitted.values=fitted.values, assign=NULL,
+              qr=qr, df.residual=(a@dim[1] - out$RANK))
+  
+  return( ret )
 }
 
 
