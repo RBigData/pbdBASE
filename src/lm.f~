@@ -1038,7 +1038,7 @@
             TEMP3 = 1
           END IF
       ELSE
-        TEMP3 = 0
+        TEMP3 = 1
       END IF
       RANK = RANK + TEMP3
 *
@@ -1059,7 +1059,7 @@
      $                    A, IA, JA, DESCA, 
      $                    B, IB, JB, DESCB, 
      $                    FT, RSD,
-     $                    WORK, LWORK, IPIV,
+     $                    TAU, WORK, LWORK, IPIV,
      $                    RANK, INFO )
 *
 *     Originally:
@@ -1078,7 +1078,7 @@
 *     .. Array Arguments ..
       INTEGER            DESCA( 9 ), DESCB( 9 ), IPIV( * )
       DOUBLE PRECISION   A( * ), B( * ), WORK( * ),
-     $                   FT ( * ), RSD( * )
+     $                   FT ( * ), RSD( * ), TAU( * )
 !
 !     Removed the massive explanation because I got tired of looking
 !     at it.
@@ -1329,6 +1329,7 @@
 !
 !
 !
+         WRITE (*,*) N
          ITMP = N
          ! Adjust number of columns to fit numerical rank
          N = RANK
@@ -1355,6 +1356,7 @@
 *
 *           B(IB:IB+M-1,JB:JB+NRHS-1) := Q' * B(IB:IB+M-1,JB:JB+NRHS-1)
 *
+!!!!!!!! DGEMM error ?!?!
             CALL PDORMQR( 'Left', 'Transpose', M, NRHS, N, A, IA, JA,
      $                    DESCA, WORK, B, IB, JB, DESCB, WORK( IPW ),
      $                    LWORK-LTAU, INFO )
@@ -1381,7 +1383,7 @@
      $                     DESCA, WORK, FT, IB, JB, DESCB, WORK( IPW ),
      $                     LWORK-LTAU, INFO )
             ! Compute residual FT-b
-            CALL PDGEADD( 'N', M, N, -1.0D+0,
+            CALL PDGEADD( 'N', M, NRHS, -1.0D+0,
      $                     FT, IB, JB, DESCB, 1.0D+0, 
      $                     RSD, IB, JB, DESCB)
 !(trans, m, n, alpha, a, ia, ja, desca, beta, c, ic, jc, descc)
@@ -1494,6 +1496,8 @@
 *
    10 CONTINUE
       
+      ! pass back TAU
+      TAU(1:IPW-1) = WORK(1:IPW-1)
       WORK( 1 ) = DBLE( LWMIN )
 *
       RETURN

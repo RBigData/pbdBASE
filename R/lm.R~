@@ -3,22 +3,15 @@
 # lm.fit()
 # Wrapper for custom PDGELS function, which solves linear least
 # squares problems.
-base.rpdgels <- function(a, b, tol=1e-7)
+my.rpdgels <- function(a, b, tol=1e-7)
 {
   # Matrix descriptors
-  desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=a@CTXT)
-  descb <- base.descinit(dim=b@dim, bldim=b@bldim, ldim=b@ldim, ICTXT=b@CTXT)
+  desca <- base.descinit(a@dim, a@bldim, a@ldim, ICTXT=a@CTXT)
+  descb <- base.descinit(b@dim, b@bldim, b@ldim, ICTXT=a@CTXT)
 
   m <- desca[3]
   n <- desca[4]
   nrhs <- descb[4]
-  
-  # FIXME adjustment for weird lda issue
-  mxlda <- pbdMPI::allreduce(desca[9], op='max')
-  mxldb <- pbdMPI::allreduce(descb[9], op='max')
-  
-  desca[9] <- mxlda
-  descb[9] <- mxldb
   
   IJ <- 1 # IA, JA, IB, JB
   
@@ -29,14 +22,14 @@ base.rpdgels <- function(a, b, tol=1e-7)
                     double(1), as.integer(1), as.integer(1), as.integer(desca),
                     double(1), as.integer(1), as.integer(1), as.integer(descb),
                     double(1), double(1),
-                    TAU=double(1), WORK=double(1), as.integer(-1), as.integer(1), 
+                    WORK=double(1), as.integer(-1), as.integer(1), 
                     integer(1), INFO=as.integer(0)
                     )$WORK[1]
 
   # Convert to .Call()
   # in: tol, trans, m, n, nrhs, IA, JA, desca, IB, JB, descb, lwork
   # in/out: A, B, 
-  # out: FT, RSD, TAU, IPIV, RANK
+  # out: FT, RSD, IPIV, RANK
   # local (just allocate in C, not a SEXP): work
   
   # IMPORTANT VVVVV
@@ -50,7 +43,7 @@ base.rpdgels <- function(a, b, tol=1e-7)
                   A=a@Data, IA=as.integer(IJ), JA=as.integer(IJ), DESCA=as.integer(desca), 
                   B=b@Data, IB=as.integer(IJ), JB=as.integer(IJ), DESCB=as.integer(descb),
                   FT=matrix(double(prod(b@ldim)), b@ldim[1]), RSD=matrix(double(prod(b@ldim)), b@ldim[1]),
-                  TAU=double(min(m, n)), WORK=double(lwork), LWORK=as.integer(lwork), IPIV=integer(a@ldim[2]),
+                  WORK=double(lwork), LWORK=as.integer(lwork), IPIV=integer(a@ldim[2]),
                   RANK=integer(1), INFO=as.integer(0),
                   PACKAGE="pbdBASE")
 
@@ -95,7 +88,7 @@ base.rpdgels <- function(a, b, tol=1e-7)
 #    rownames(b@Data) <- paste("x", mycoords, sep="")
 #  }
   
-  qr <- list(qr=a, tau=out$TAU, pivot=out$IPIV, tol=tol, rank=out$RANK)
+  qr <- list(qr=a, qraux=NULL, pivot=out$IPIV, tol=tol, rank=out$RANK)
   
   ret <- list(coefficients=b, residuals=residuals, effects=NULL, 
               rank=out$RANK, fitted.values=fitted.values, assign=NULL,

@@ -40,6 +40,11 @@ extern void F77_NAME(pdtran)(int m, int n, double one,
 extern void F77_NAME(rpdgesv)(double *a, double *b, int *ictxt, int *myrow,
 				int *mycol, int *desca, int *descb, int *n,
 				int *nrhs, int *mxldims, int *info);
+//extern void F77_NAME(pdgesvd)(char *jobu, char *jobvt,
+//        int *m, int *n, double *a, int *ia, int *ja, int *desca,
+//        double *d, double *u, int *iu, int *ju, int *descu,
+//        double *vt, int *ivt, int *jvt, int *descvt, double *work, int *lwork,
+//        int *info);
 extern void F77_NAME(rpdgetrisz)(int *ictxt, int *myrow, int *mycol, int *desca,
 				int *n, int *info, double *temp, int *itemp);
 extern void F77_NAME(rpdgetri)(double *a, int *ictxt, int *myrow, int *mycol,

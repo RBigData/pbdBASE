@@ -155,6 +155,8 @@ base.rpdgesvd <- function(A, nu, nv)
             PACKAGE="pbdBASE"
           )
 
+comm.print(t1)
+
   if (nu==0)
     u <- NULL
   else 
