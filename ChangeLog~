@@ -2,8 +2,7 @@
   * Cleaned up wrappers for singular value decomposition.
   
 2012-10-22:
-  * Distributed QR added.
-  * Distributed linear least squares solver added for n>p case.
+  * 
 
 ======================= Log Before Release =====================================
 2012-10-02:

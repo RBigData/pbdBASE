@@ -1,5 +1,3 @@
-# Work in progress --- not ready for the big time
-
 # lm.fit()
 # Wrapper for custom PDGELS function, which solves linear least
 # squares problems.
@@ -17,8 +15,10 @@ base.rpdgels <- function(a, b, tol=1e-7)
   mxlda <- pbdMPI::allreduce(desca[9], op='max')
   mxldb <- pbdMPI::allreduce(descb[9], op='max')
   
-  desca[9] <- mxlda
-  descb[9] <- mxldb
+  if (desca[9]==1)
+    desca[9] <- mxlda
+  if (descb[9]==1)
+    descb[9] <- mxldb
   
   IJ <- 1 # IA, JA, IB, JB
   
@@ -96,6 +96,7 @@ base.rpdgels <- function(a, b, tol=1e-7)
 #  }
   
   qr <- list(qr=a, tau=out$TAU, pivot=out$IPIV, tol=tol, rank=out$RANK)
+  attr(qr, "class") <- "qr"
   
   ret <- list(coefficients=b, residuals=residuals, effects=NULL, 
               rank=out$RANK, fitted.values=fitted.values, assign=NULL,
@@ -105,12 +106,6 @@ base.rpdgels <- function(a, b, tol=1e-7)
 }
 
 
-
-
-
-
-
-# For n>=p case only.  In n<p case, have to do LQ
 # qr()
 base.rpdgeqrf <- function(x, tol=1e-7)
 {
@@ -153,12 +148,6 @@ base.rpdgeqrf <- function(x, tol=1e-7)
 }
 
 
-
-
-
-
-
-
 # qr.Q()
 # recover Q from base.rpdgeqrf
 base.pdorgqr <- function(qr)
@@ -198,20 +187,140 @@ base.pdorgqr <- function(qr)
 }
 
 
-
-
-
 # qr.R
 base.qr.R <- function(qr, complete=FALSE)
 {
   ret <- qr$qr
-
-  ret@Data <- base.low2zero(ret@Data, dim=ret@dim, bldim=ret@bldim)
+  
   if (!complete)
-    ret <- ret[1:min(ret@dim), ]
+    if (min(ret@dim)!=ret@dim[1])
+      ret <- ret[1:min(ret@dim), ]
+  
+  ret@Data <- base.low2zero(A=ret@Data, dim=ret@dim, ldim=ret@ldim, bldim=ret@bldim, CTXT=ret@CTXT)
+  
+  # not particularly efficient, but no one should really be calling this...
+  rank <- qr$rank
+  p <- ret@dim[2]
+  if (rank < p){
+    for (i in (rank+1):p)
+      ret[i,i] <- 0
+  }
   
   return(ret)
 }
 
 
+# multiply Q/Q^T against y
+base.pdormqr <- function(qr, y, side='L', trans='T')
+{
+#  x <- base.pdorgqr(qr)
+  x <- qr$qr
+
+  # Matrix descriptors
+  desca <- base.descinit(x@dim, x@bldim, x@ldim, ICTXT=x@CTXT)
+  descc <- base.descinit(y@dim, y@bldim, y@ldim, ICTXT=y@CTXT)
+
+  m <- desca[3]
+  n <- y@dim[2]
+  
+  k <- qr$rank
+  
+  IJ <- 1 # IA, JA, IC, JC
+  
+  # Determine size of work array 
+  lwork <- .Fortran("PDORMQR",
+            SIDE=as.character(side), TRANS=as.character(trans),
+            M=as.integer(m), N=as.integer(n), K=as.integer(k),
+            A=double(1), as.integer(IJ), as.integer(IJ), DESCA=as.integer(desca), 
+            TAU=double(1), 
+            C=double(1), as.integer(IJ), as.integer(IJ), DESCC=as.integer(descc), 
+            WORK=double(1), LWORK=as.integer(-1), INFO=integer(1),
+            package="pbdBASE")$WORK[1]
+
+  # perform QR
+  out <- .Fortran("PDORMQR",
+            SIDE=as.character(side), TRANS=as.character(trans),
+            M=as.integer(m), N=as.integer(n), K=as.integer(k),
+            A=x@Data, as.integer(IJ), as.integer(IJ), DESCA=as.integer(desca), 
+            TAU=as.double(qr$tau), 
+            C=y@Data, as.integer(IJ), as.integer(IJ), DESCC=as.integer(descc),
+            WORK=double(lwork), LWORK=as.integer(lwork), INFO=integer(1),
+            package="pbdBASE")
+
+  if (out$INFO!=0)
+    warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
+
+  y@Data <- out$C
+  
+  return( y )
+}
+
+
+
+# reduces upper trapezoidal to traingular form
+base.pdtzrzf <- function(x)
+{
+  # Matrix descriptors
+  desca <- base.descinit(x@dim, x@bldim, x@ldim, ICTXT=x@CTXT)
+
+  m <- desca[3]
+  n <- desca[4]
+  
+  k <- qr$rank
+  
+  # Determine size of work array 
+  lwork <- .Fortran("PDTZRZF",
+            M=as.integer(m), N=as.integer(n), 
+            A=double(1), as.integer(1), as.integer(1), DESCA=as.integer(desca), 
+            TAU=double(1), 
+            WORK=double(1), LWORK=as.integer(-1), INFO=integer(1),
+            package="pbdBASE")$WORK[1]
+
+  # reduce
+  out <- .Fortran("PDTZRZF",
+            M=as.integer(m), N=as.integer(n), 
+            A=x@Data, as.integer(1), as.integer(1), DESCA=as.integer(desca), 
+            TAU=as.double(qr$tau), 
+            WORK=double(lwork), LWORK=as.integer(lwork), INFO=integer(1),
+            package="pbdBASE")
+
+  if (out$INFO!=0)
+    warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
+
+  x@Data <- out$A
+  
+  return( x )
+}
+
+
+# triangle system solve --- probably not needed
+base.pdtrsv <- function(x, y, uplo='U', trans='T')
+{
+  # Matrix descriptors
+  desca <- base.descinit(x@dim, x@bldim, x@ldim, ICTXT=x@CTXT)
+  descc <- base.descinit(y@dim, y@bldim, y@ldim, ICTXT=y@CTXT)
+
+  n <- desca[4]
+  
+  k <- qr$rank
+  
+
+#pdtrsv(uplo, trans, diag, n, a, ia, ja, desca, x, ix, jx, descx, incx)
+
+  # perform QR
+  out <- .C("pdtrsv_",
+            UPLO=as.character(uplo), TRANS=as.character(trans),
+            DIAG=as.character('N'), N=as.integer(n),
+            A=x@Data, as.integer(1), as.integer(1), DESCA=as.integer(desca), 
+            X=y@Data, as.integer(1), as.integer(1), DESCC=as.integer(descc),
+            INCX=as.integer(1),
+            package="pbdBASE")
+
+  if (out$INFO!=0)
+    warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
+
+  y@Data <- out$C
+  
+  return( y )
+}
 

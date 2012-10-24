@@ -1020,6 +1020,7 @@
   120 CONTINUE
   
 !      RANK = N - TEMP3
+        ! Calculate numerical rank
         CALL DESCSET( DESCN, 1, DESCA( N_ ), 1, DESCA( NB_ ), 
      $              DESCA( RSRC_ ), DESCA( CSRC_ ), ICTXT, 1 )
         RANK = 0
@@ -1030,17 +1031,18 @@
             RANK = RANK + 1
           END IF
    12 CONTINUE
-      IF ( RANK.EQ.N ) THEN
+!        CALL PIELGET( 'A', 'T', TEMP3, IPIV, 1, N, DESCN )
         CALL PDELGET( 'A', 'T', TEMP, WORK(IPN), 1, N, DESCN )
-          IF( TEMP.LT.TOL  ) THEN
+          IF( TEMP.LT.TOL ) THEN
             TEMP3 = 0
           ELSE
             TEMP3 = 1
           END IF
-      ELSE
-        TEMP3 = 1
-      END IF
       RANK = RANK + TEMP3
+      IF ( RANK.EQ.0 ) THEN
+        RANK = 1
+      END IF
+      ! End of numerical rank calculation
 *
       WORK( 1 ) = DBLE( LWMIN )
 *
