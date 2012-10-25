@@ -596,3 +596,39 @@ base.insert <- function(dx, vec, i, j)
   return(out)
 }
 
+
+#---------------------------------------------
+# *bind functions
+#---------------------------------------------
+
+# no checks yet; too lazy
+
+base.rbind <- function(..., ICTXT=0)
+{
+  args <- list(...)
+  
+  oldctxt <- args[[1]]@CTXT
+  
+  args <- lapply(args, 
+    FUN=function(dx) base.redistribute(dx=dx, bldim=dx@bldim, ICTXT=1)
+  )
+  
+  dim <- c(sum(sapply(args, function(x) dim(x)[1])), args[[1]]@dim[2])
+  bldim <- args[[1]]@bldim
+  ldim <- base.numroc(dim=dim, bldim=bldim, ICTXT=1, fixme=TRUE)
+  
+  Data <- lapply(args, submatrix)
+  
+  ret <- new("ddmatrix", Data=Reduce(rbind, Data), dim=dim, ldim=ldim, bldim=bldim, CTXT=1)
+  
+  if (ICTXT!=1)
+    base.redistribute(dx=ret, bldim=ret@bldim, ICTXT=ICTXT)
+  
+  return( ret )
+}
+
+
+
+
+
+

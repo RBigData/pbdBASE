@@ -3,10 +3,12 @@
 # squares problems.
 base.rpdgels <- function(a, b, tol=1e-7)
 {
+  oldctxt <- b@CTXT
+  
   # Matrix descriptors
-  desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=a@CTXT)
-  descb <- base.descinit(dim=b@dim, bldim=b@bldim, ldim=b@ldim, ICTXT=b@CTXT)
-
+  desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=oldctxt)
+  descb <- base.descinit(dim=b@dim, bldim=b@bldim, ldim=b@ldim, ICTXT=oldctxt)
+  
   m <- desca[3]
   n <- desca[4]
   nrhs <- descb[4]
@@ -26,8 +28,8 @@ base.rpdgels <- function(a, b, tol=1e-7)
   lwork <- .Fortran("RPDGELS", 
                     as.double(tol), as.character("N"), 
                     as.integer(m), as.integer(n), as.integer(nrhs),
-                    double(1), as.integer(1), as.integer(1), as.integer(desca),
-                    double(1), as.integer(1), as.integer(1), as.integer(descb),
+                    double(1), as.integer(IJ), as.integer(IJ), as.integer(desca),
+                    double(1), as.integer(IJ), as.integer(IJ), as.integer(descb),
                     double(1), double(1),
                     TAU=double(1), WORK=double(1), as.integer(-1), as.integer(1), 
                     integer(1), INFO=as.integer(0)
@@ -67,8 +69,14 @@ base.rpdgels <- function(a, b, tol=1e-7)
   
   # rearranging solution in the overdetermined and/or rank deficient case
   temp <- 1:n # indexing of coefficients
-  b <- b[temp, ]
-  
+  if (m >= n){
+    b <- b[temp, , ICTXT=1]
+  } else {
+    cdim <- c(n-b@dim[1], b@dim[2])
+    cldim <- base.numroc(dim=cdim, bldim=b@bldim, ICTXT=b@CTXT, fixme=TRUE)
+    c <- new("ddmatrix", Data=matrix(as.double(NA), nrow=cldim[1], ncol=cldim[2]), dim=cdim, ldim=cldim, bldim=b@bldim, CTXT=b@CTXT)
+    b <- base.rbind(b, c, ICTXT=1)
+  }
   
   # convert IPIV to global vector if it isn't already
   if (base.blacs(ICTXT=a@CTXT)$NPCOL > 1){
@@ -79,12 +87,22 @@ base.rpdgels <- function(a, b, tol=1e-7)
   }
   
   if (out$RANK < n){
-    vec <- as.ddmatrix(matrix(NA, nrow=1, ncol=nrhs), bldim=b@bldim)
-    b[(out$RANK+1):n, ] <- NA
+#    vec <- as.ddmatrix(matrix(NA, nrow=1, ncol=nrhs), bldim=b@bldim)
+    if (m >= n)
+      b[(out$RANK+1):n, , ICTXT=b@CTXT] <- as.double(NA)
+    else {
+      if (out$RANK < m)
+        b[(out$RANK+1):m, , ICTXT=b@CTXT] <- as.double(NA)
+    }
     if (any(out$IPIV - temp != 0)){
       perm <- sapply(temp, function(i) temp[which(i==out$IPIV)])
-      b <- b[perm, ]
+      b <- base.redistribute(dx=b, bldim=b@bldim, ICTXT=2)
+      b <- b[perm, , ICTXT=oldctxt]
+    } else {
+      b <- base.redistribute(dx=b, bldim=b@bldim, ICTXT=oldctxt)
     }
+  } else {
+    b <- base.redistribute(dx=b, bldim=b@bldim, ICTXT=oldctxt)
   }
   
   # rownames
@@ -96,7 +114,6 @@ base.rpdgels <- function(a, b, tol=1e-7)
 #  }
   
   qr <- list(qr=a, tau=out$TAU, pivot=out$IPIV, tol=tol, rank=out$RANK)
-  attr(qr, "class") <- "qr"
   
   ret <- list(coefficients=b, residuals=residuals, effects=NULL, 
               rank=out$RANK, fitted.values=fitted.values, assign=NULL,
@@ -138,8 +155,6 @@ base.rpdgeqrf <- function(x, tol=1e-7)
 
   x@Data <- out$A
   
-  comm.print(out$TAU)
-
   ret <- list(qr=x, rank=out$RANK, tau=out$TAU, pivot=out$IPIV)
   
   attr(ret, "class") <- "qr"
@@ -153,7 +168,10 @@ base.rpdgeqrf <- function(x, tol=1e-7)
 base.pdorgqr <- function(qr)
 {
   x <- qr$qr
-
+  
+  if (x@dim[1] < x@dim[2])
+    x <- x[, 1:qr$rank]
+  
   # Matrix descriptors
   desca <- base.descinit(x@dim, x@bldim, x@ldim, ICTXT=x@CTXT)
 
@@ -200,10 +218,13 @@ base.qr.R <- function(qr, complete=FALSE)
   
   # not particularly efficient, but no one should really be calling this...
   rank <- qr$rank
+  n <- ret@dim[1]
   p <- ret@dim[2]
+  mn <- min(ret@dim)
   if (rank < p){
-    for (i in (rank+1):p)
-      ret[i,i] <- 0
+    if (n>p)
+      for (i in (rank+1):mn)
+        ret[i,i] <- 0
   }
   
   return(ret)

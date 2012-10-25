@@ -22,208 +22,10 @@
 *     .. Array Arguments ..
       INTEGER            DESCA( * ), DESCC( * )
       DOUBLE PRECISION   A( * ), C( * ), TAU( * ), WORK( * )
-*     ..
-*
-*  Purpose
-*  =======
-*
-*  PDORMQR overwrites the general real M-by-N distributed matrix
-*  sub( C ) = C(IC:IC+M-1,JC:JC+N-1) with
-*
-*                      SIDE = 'L'            SIDE = 'R'
-*  TRANS = 'N':      Q * sub( C )          sub( C ) * Q
-*  TRANS = 'T':      Q**T * sub( C )       sub( C ) * Q**T
-*
-*  where Q is a real orthogonal distributed matrix defined as the
-*  product of k elementary reflectors
-*
-*        Q = H(1) H(2) . . . H(k)
-*
-*  as returned by PDGEQRF. Q is of order M if SIDE = 'L' and of order N
-*  if SIDE = 'R'.
-*
-*  Notes
-*  =====
-*
-*  Each global data object is described by an associated description
-*  vector.  This vector stores the information required to establish
-*  the mapping between an object element and its corresponding process
-*  and memory location.
-*
-*  Let A be a generic term for any 2D block cyclicly distributed array.
-*  Such a global array has an associated description vector DESCA.
-*  In the following comments, the character _ should be read as
-*  "of the global array".
-*
-*  NOTATION        STORED IN      EXPLANATION
-*  --------------- -------------- --------------------------------------
-*  DTYPE_A(global) DESCA( DTYPE_ )The descriptor type.  In this case,
-*                                 DTYPE_A = 1.
-*  CTXT_A (global) DESCA( CTXT_ ) The BLACS context handle, indicating
-*                                 the BLACS process grid A is distribu-
-*                                 ted over. The context itself is glo-
-*                                 bal, but the handle (the integer
-*                                 value) may vary.
-*  M_A    (global) DESCA( M_ )    The number of rows in the global
-*                                 array A.
-*  N_A    (global) DESCA( N_ )    The number of columns in the global
-*                                 array A.
-*  MB_A   (global) DESCA( MB_ )   The blocking factor used to distribute
-*                                 the rows of the array.
-*  NB_A   (global) DESCA( NB_ )   The blocking factor used to distribute
-*                                 the columns of the array.
-*  RSRC_A (global) DESCA( RSRC_ ) The process row over which the first
-*                                 row of the array A is distributed.
-*  CSRC_A (global) DESCA( CSRC_ ) The process column over which the
-*                                 first column of the array A is
-*                                 distributed.
-*  LLD_A  (local)  DESCA( LLD_ )  The leading dimension of the local
-*                                 array.  LLD_A >= MAX(1,LOCr(M_A)).
-*
-*  Let K be the number of rows or columns of a distributed matrix,
-*  and assume that its process grid has dimension p x q.
-*  LOCr( K ) denotes the number of elements of K that a process
-*  would receive if K were distributed over the p processes of its
-*  process column.
-*  Similarly, LOCc( K ) denotes the number of elements of K that a
-*  process would receive if K were distributed over the q processes of
-*  its process row.
-*  The values of LOCr() and LOCc() may be determined via a call to the
-*  ScaLAPACK tool function, NUMROC:
-*          LOCr( M ) = NUMROC( M, MB_A, MYROW, RSRC_A, NPROW ),
-*          LOCc( N ) = NUMROC( N, NB_A, MYCOL, CSRC_A, NPCOL ).
-*  An upper bound for these quantities may be computed by:
-*          LOCr( M ) <= ceil( ceil(M/MB_A)/NPROW )*MB_A
-*          LOCc( N ) <= ceil( ceil(N/NB_A)/NPCOL )*NB_A
-*
-*  Arguments
-*  =========
-*
-*  SIDE    (global input) CHARACTER
-*          = 'L': apply Q or Q**T from the Left;
-*          = 'R': apply Q or Q**T from the Right.
-*
-*  TRANS   (global input) CHARACTER
-*          = 'N':  No transpose, apply Q;
-*          = 'T':  Transpose, apply Q**T.
-*
-*  M       (global input) INTEGER
-*          The number of rows to be operated on i.e the number of rows
-*          of the distributed submatrix sub( C ). M >= 0.
-*
-*  N       (global input) INTEGER
-*          The number of columns to be operated on i.e the number of
-*          columns of the distributed submatrix sub( C ). N >= 0.
-*
-*  K       (global input) INTEGER
-*          The number of elementary reflectors whose product defines the
-*          matrix Q.  If SIDE = 'L', M >= K >= 0, if SIDE = 'R',
-*          N >= K >= 0.
-*
-*  A       (local input) DOUBLE PRECISION pointer into the local memory
-*          to an array of dimension (LLD_A,LOCc(JA+K-1)). On entry, the
-*          j-th column must contain the vector which defines the elemen-
-*          tary reflector H(j), JA <= j <= JA+K-1, as returned by
-*          PDGEQRF in the K columns of its distributed matrix
-*          argument A(IA:*,JA:JA+K-1). A(IA:*,JA:JA+K-1) is modified by
-*          the routine but restored on exit.
-*          If SIDE = 'L', LLD_A >= MAX( 1, LOCr(IA+M-1) );
-*          if SIDE = 'R', LLD_A >= MAX( 1, LOCr(IA+N-1) ).
-*
-*  IA      (global input) INTEGER
-*          The row index in the global array A indicating the first
-*          row of sub( A ).
-*
-*  JA      (global input) INTEGER
-*          The column index in the global array A indicating the
-*          first column of sub( A ).
-*
-*  DESCA   (global and local input) INTEGER array of dimension DLEN_.
-*          The array descriptor for the distributed matrix A.
-*
-*  TAU     (local input) DOUBLE PRECISION array, dimension LOCc(JA+K-1).
-*          This array contains the scalar factors TAU(j) of the
-*          elementary reflectors H(j) as returned by PDGEQRF.
-*          TAU is tied to the distributed matrix A.
-*
-*  C       (local input/local output) DOUBLE PRECISION pointer into the
-*          local memory to an array of dimension (LLD_C,LOCc(JC+N-1)).
-*          On entry, the local pieces of the distributed matrix sub(C).
-*          On exit, sub( C ) is overwritten by Q*sub( C ) or Q'*sub( C )
-*          or sub( C )*Q' or sub( C )*Q.
-*
-*  IC      (global input) INTEGER
-*          The row index in the global array C indicating the first
-*          row of sub( C ).
-*
-*  JC      (global input) INTEGER
-*          The column index in the global array C indicating the
-*          first column of sub( C ).
-*
-*  DESCC   (global and local input) INTEGER array of dimension DLEN_.
-*          The array descriptor for the distributed matrix C.
-*
-*  WORK    (local workspace/local output) DOUBLE PRECISION array,
-*                                                     dimension (LWORK)
-*          On exit, WORK(1) returns the minimal and optimal LWORK.
-*
-*  LWORK   (local or global input) INTEGER
-*          The dimension of the array WORK.
-*          LWORK is local input and must be at least
-*          If SIDE = 'L',
-*            LWORK >= MAX( (NB_A*(NB_A-1))/2, (NqC0 + MpC0)*NB_A ) +
-*                     NB_A * NB_A
-*          else if SIDE = 'R',
-*            LWORK >= MAX( (NB_A*(NB_A-1))/2, ( NqC0 + MAX( NpA0 +
-*                     NUMROC( NUMROC( N+ICOFFC, NB_A, 0, 0, NPCOL ),
-*                             NB_A, 0, 0, LCMQ ), MpC0 ) )*NB_A ) +
-*                     NB_A * NB_A
-*          end if
-*
-*          where LCMQ = LCM / NPCOL with LCM = ICLM( NPROW, NPCOL ),
-*
-*          IROFFA = MOD( IA-1, MB_A ), ICOFFA = MOD( JA-1, NB_A ),
-*          IAROW = INDXG2P( IA, MB_A, MYROW, RSRC_A, NPROW ),
-*          NpA0 = NUMROC( N+IROFFA, MB_A, MYROW, IAROW, NPROW ),
-*
-*          IROFFC = MOD( IC-1, MB_C ), ICOFFC = MOD( JC-1, NB_C ),
-*          ICROW = INDXG2P( IC, MB_C, MYROW, RSRC_C, NPROW ),
-*          ICCOL = INDXG2P( JC, NB_C, MYCOL, CSRC_C, NPCOL ),
-*          MpC0 = NUMROC( M+IROFFC, MB_C, MYROW, ICROW, NPROW ),
-*          NqC0 = NUMROC( N+ICOFFC, NB_C, MYCOL, ICCOL, NPCOL ),
-*
-*          ILCM, INDXG2P and NUMROC are ScaLAPACK tool functions;
-*          MYROW, MYCOL, NPROW and NPCOL can be determined by calling
-*          the subroutine BLACS_GRIDINFO.
-*
-*          If LWORK = -1, then LWORK is global input and a workspace
-*          query is assumed; the routine only calculates the minimum
-*          and optimal size for all work arrays. Each of these
-*          values is returned in the first entry of the corresponding
-*          work array, and no error message is issued by PXERBLA.
-*
-*
-*  INFO    (global output) INTEGER
-*          = 0:  successful exit
-*          < 0:  If the i-th argument is an array and the j-entry had
-*                an illegal value, then INFO = -(i*100+j), if the i-th
-*                argument is a scalar and had an illegal value, then
-*                INFO = -i.
-*
-*  Alignment requirements
-*  ======================
-*
-*  The distributed submatrices A(IA:*, JA:*) and C(IC:IC+M-1,JC:JC+N-1)
-*  must verify some alignment properties, namely the following
-*  expressions should be true:
-*
-*  If SIDE = 'L',
-*    ( MB_A.EQ.MB_C .AND. IROFFA.EQ.IROFFC .AND. IAROW.EQ.ICROW )
-*  If SIDE = 'R',
-*    ( MB_A.EQ.NB_C .AND. IROFFA.EQ.ICOFFC )
-*
-*  =====================================================================
-*
+!
+!     Removed the massive explanation because I got tired of looking
+!     at it.
+!
 *     .. Parameters ..
       INTEGER            BLOCK_CYCLIC_2D, CSRC_, CTXT_, DLEN_, DTYPE_,
      $                   LLD_, MB_, M_, NB_, N_, RSRC_
@@ -484,165 +286,10 @@
       INTEGER            DESCA( * ), IPIV( * )
       DOUBLE PRECISION   A( * ), TAU( * ), WORK( * )
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  PDGEQPF computes a QR factorization with column pivoting of a
-*  M-by-N distributed matrix sub( A ) = A(IA:IA+M-1,JA:JA+N-1):
-*
-*                         sub( A ) * P = Q * R.
-*
-*  Notes
-*  =====
-*
-*  Each global data object is described by an associated description
-*  vector.  This vector stores the information required to establish
-*  the mapping between an object element and its corresponding process
-*  and memory location.
-*
-*  Let A be a generic term for any 2D block cyclicly distributed array.
-*  Such a global array has an associated description vector DESCA.
-*  In the following comments, the character _ should be read as
-*  "of the global array".
-*
-*  NOTATION        STORED IN      EXPLANATION
-*  --------------- -------------- --------------------------------------
-*  DTYPE_A(global) DESCA( DTYPE_ )The descriptor type.  In this case,
-*                                 DTYPE_A = 1.
-*  CTXT_A (global) DESCA( CTXT_ ) The BLACS context handle, indicating
-*                                 the BLACS process grid A is distribu-
-*                                 ted over. The context itself is glo-
-*                                 bal, but the handle (the integer
-*                                 value) may vary.
-*  M_A    (global) DESCA( M_ )    The number of rows in the global
-*                                 array A.
-*  N_A    (global) DESCA( N_ )    The number of columns in the global
-*                                 array A.
-*  MB_A   (global) DESCA( MB_ )   The blocking factor used to distribute
-*                                 the rows of the array.
-*  NB_A   (global) DESCA( NB_ )   The blocking factor used to distribute
-*                                 the columns of the array.
-*  RSRC_A (global) DESCA( RSRC_ ) The process row over which the first
-*                                 row of the array A is distributed.
-*  CSRC_A (global) DESCA( CSRC_ ) The process column over which the
-*                                 first column of the array A is
-*                                 distributed.
-*  LLD_A  (local)  DESCA( LLD_ )  The leading dimension of the local
-*                                 array.  LLD_A >= MAX(1,LOCr(M_A)).
-*
-*  Let K be the number of rows or columns of a distributed matrix,
-*  and assume that its process grid has dimension p x q.
-*  LOCr( K ) denotes the number of elements of K that a process
-*  would receive if K were distributed over the p processes of its
-*  process column.
-*  Similarly, LOCc( K ) denotes the number of elements of K that a
-*  process would receive if K were distributed over the q processes of
-*  its process row.
-*  The values of LOCr() and LOCc() may be determined via a call to the
-*  ScaLAPACK tool function, NUMROC:
-*          LOCr( M ) = NUMROC( M, MB_A, MYROW, RSRC_A, NPROW ),
-*          LOCc( N ) = NUMROC( N, NB_A, MYCOL, CSRC_A, NPCOL ).
-*  An upper bound for these quantities may be computed by:
-*          LOCr( M ) <= ceil( ceil(M/MB_A)/NPROW )*MB_A
-*          LOCc( N ) <= ceil( ceil(N/NB_A)/NPCOL )*NB_A
-*
-*  Arguments
-*  =========
-*
-*  M       (global input) INTEGER
-*          The number of rows to be operated on, i.e. the number of rows
-*          of the distributed submatrix sub( A ). M >= 0.
-*
-*  N       (global input) INTEGER
-*          The number of columns to be operated on, i.e. the number of
-*          columns of the distributed submatrix sub( A ). N >= 0.
-*
-*  A       (local input/local output) DOUBLE PRECISION pointer into the
-*          local memory to an array of dimension (LLD_A, LOCc(JA+N-1)).
-*          On entry, the local pieces of the M-by-N distributed matrix
-*          sub( A ) which is to be factored. On exit, the elements on
-*          and above the diagonal of sub( A ) contain the min(M,N) by N
-*          upper trapezoidal matrix R (R is upper triangular if M >= N);
-*          the elements below the diagonal, with the array TAU, repre-
-*          sent the orthogonal matrix Q as a product of elementary
-*          reflectors (see Further Details).
-*
-*  IA      (global input) INTEGER
-*          The row index in the global array A indicating the first
-*          row of sub( A ).
-*
-*  JA      (global input) INTEGER
-*          The column index in the global array A indicating the
-*          first column of sub( A ).
-*
-*  DESCA   (global and local input) INTEGER array of dimension DLEN_.
-*          The array descriptor for the distributed matrix A.
-*
-*  IPIV    (local output) INTEGER array, dimension LOCc(JA+N-1).
-*          On exit, if IPIV(I) = K, the local i-th column of sub( A )*P
-*          was the global K-th column of sub( A ). IPIV is tied to the
-*          distributed matrix A.
-*
-*  TAU     (local output) DOUBLE PRECISION array, dimension
-*          LOCc(JA+MIN(M,N)-1). This array contains the scalar factors
-*          TAU of the elementary reflectors. TAU is tied to the
-*          distributed matrix A.
-*
-*  WORK    (local workspace/local output) DOUBLE PRECISION array,
-*                                                   dimension (LWORK)
-*          On exit, WORK(1) returns the minimal and optimal LWORK.
-*
-*  LWORK   (local or global input) INTEGER
-*          The dimension of the array WORK.
-*          LWORK is local input and must be at least
-*          LWORK >= MAX(3,Mp0 + Nq0) + LOCc(JA+N-1)+Nq0.
-*
-*          IROFF = MOD( IA-1, MB_A ), ICOFF = MOD( JA-1, NB_A ),
-*          IAROW = INDXG2P( IA, MB_A, MYROW, RSRC_A, NPROW ),
-*          IACOL = INDXG2P( JA, NB_A, MYCOL, CSRC_A, NPCOL ),
-*          Mp0   = NUMROC( M+IROFF, MB_A, MYROW, IAROW, NPROW ),
-*          Nq0   = NUMROC( N+ICOFF, NB_A, MYCOL, IACOL, NPCOL ),
-*          LOCc(JA+N-1) = NUMROC( JA+N-1, NB_A, MYCOL, CSRC_A, NPCOL )
-*
-*          and NUMROC, INDXG2P are ScaLAPACK tool functions;
-*          MYROW, MYCOL, NPROW and NPCOL can be determined by calling
-*          the subroutine BLACS_GRIDINFO.
-*
-*          If LWORK = -1, then LWORK is global input and a workspace
-*          query is assumed; the routine only calculates the minimum
-*          and optimal size for all work arrays. Each of these
-*          values is returned in the first entry of the corresponding
-*          work array, and no error message is issued by PXERBLA.
-*
-*
-*  INFO    (global output) INTEGER
-*          = 0:  successful exit
-*          < 0:  If the i-th argument is an array and the j-entry had
-*                an illegal value, then INFO = -(i*100+j), if the i-th
-*                argument is a scalar and had an illegal value, then
-*                INFO = -i.
-*
-*  Further Details
-*  ===============
-*
-*  The matrix Q is represented as a product of elementary reflectors
-*
-*     Q = H(1) H(2) . . . H(n)
-*
-*  Each H(i) has the form
-*
-*     H = I - tau * v * v'
-*
-*  where tau is a real scalar, and v is a real vector with v(1:i-1) = 0
-*  and v(i) = 1; v(i+1:m) is stored on exit in A(ia+i-1:ia+m-1,ja+i-1).
-*
-*  The matrix P is represented in jpvt as follows: If
-*     jpvt(j) = i
-*  then the jth column of P is the ith canonical unit vector.
-*
-*  =====================================================================
-*
+!
+!     Removed the massive explanation because I got tired of looking
+!     at it.
+!
 *     .. Parameters ..
       INTEGER            BLOCK_CYCLIC_2D, CSRC_, CTXT_, DLEN_, DTYPE_,
      $                   LLD_, MB_, M_, NB_, N_, RSRC_
@@ -813,7 +460,6 @@
 *
 *     Compute factorization
 *
-!      TEMP3 = 0
       DO 120 J = JA, JA+MN-1
          I = IA + J - JA
 *
@@ -827,17 +473,11 @@
               CALL PDELGET( 'A', 'T', TEMP, WORK(IPN), 1, IJ, DESCN )
               IF( TEMP.GT.TOL ) THEN
                 PVT = IJ
-!                TEMP3 = MAX0(TEMP3, IJ - J) ! for tracking "N - RANK"
                 EXIT
               END IF
    11 CONTINUE
          ELSE
-!            TEMP3 = TEMP3 + N-J
             PVT = J
-!            CALL PDELGET( 'A', 'T', TEMP, WORK(IPN), 1, J, DESCN )
-!            IF( TEMP.LT.TOL .AND. TEMP3.EQ.0  ) THEN
-!              TEMP3 = 1
-!            END IF
          END IF
          IF( J.NE.PVT ) THEN
             CALL INFOG1L( PVT, DESCA( NB_ ), NPCOL, MYCOL,
@@ -1021,26 +661,34 @@
   
 !      RANK = N - TEMP3
         ! Calculate numerical rank
-        CALL DESCSET( DESCN, 1, DESCA( N_ ), 1, DESCA( NB_ ), 
+      IF ( M.LT.N ) THEN
+        ISZ = M
+      ELSE
+        ISZ = N-1
+      END IF
+      CALL DESCSET( DESCN, 1, DESCA( N_ ), 1, DESCA( NB_ ), 
      $              DESCA( RSRC_ ), DESCA( CSRC_ ), ICTXT, 1 )
-        RANK = 0
-        TEMP3 = 0
-        DO 12 IJ = 1, N-1, 1
-        CALL PIELGET( 'A', 'T', TEMP3, IPIV, 1, IJ, DESCN )
-          IF ( IJ.LE.TEMP3 ) THEN
-            RANK = RANK + 1
-          END IF
+      RANK = 0
+      TEMP3 = 0
+      DO 12 IJ = 1, ISZ, 1
+      CALL PIELGET( 'A', 'T', TEMP3, IPIV, 1, IJ, DESCN )
+        IF ( IJ.LE.TEMP3 ) THEN
+          RANK = RANK + 1
+        END IF
    12 CONTINUE
+   
+      IF ( M.GT.N ) THEN
 !        CALL PIELGET( 'A', 'T', TEMP3, IPIV, 1, N, DESCN )
-        CALL PDELGET( 'A', 'T', TEMP, WORK(IPN), 1, N, DESCN )
+        CALL PDELGET( 'A', 'T', TEMP, WORK(IPN), 1, M, DESCN )
           IF( TEMP.LT.TOL ) THEN
             TEMP3 = 0
           ELSE
             TEMP3 = 1
           END IF
-      RANK = RANK + TEMP3
-      IF ( RANK.EQ.0 ) THEN
-        RANK = 1
+        RANK = RANK + TEMP3
+        IF ( RANK.EQ.0 ) THEN
+          RANK = 1
+        END IF
       END IF
       ! End of numerical rank calculation
 *
@@ -1053,8 +701,9 @@
       END
 !
 !     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!     RPDGELS:  Modified PDGELS to use custom RPDGEQPF
-!     as well as many other modifications...
+!     RPDGELS:  Modified PDGELS to use custom RPDGEQPF which 
+!     uses R's 'limited pivoting strategy', as well as to 
+!     return the things R wants in the return
 !     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
       SUBROUTINE RPDGELS( TOL, TRANS, M, N, NRHS, 
@@ -1141,8 +790,8 @@
          CALL CHK1MAT( M, 2, N, 3, IA, JA, DESCA, 8, INFO )
          IF ( M .GE. N ) THEN
             CALL CHK1MAT( M, 2, NRHS, 4, IB, JB, DESCB, 12, INFO )
-         ELSE
-            CALL CHK1MAT( N, 3, NRHS, 4, IB, JB, DESCB, 12, INFO )
+!         ELSE
+!            CALL CHK1MAT( N, 3, NRHS, 4, IB, JB, DESCB, 12, INFO )
          ENDIF
          IF( INFO.EQ.0 ) THEN
             IROFFA = MOD( IA-1, DESCA( MB_ ) )
@@ -1309,7 +958,7 @@
 *
       IPW = LTAU + 1
 *
-      IF( M.GE.N ) THEN
+!      IF( M.GE.N ) THEN
 *
 *        compute QR factorization of A
 *
@@ -1323,30 +972,15 @@
 !         CALL PDGEQRF( M, N, A, IA, JA, DESCA, WORK, WORK( IPW ),
 !     $                 LWORK-LTAU, INFO )
          CALL RPDGEQPF( TOL, M, N, A, IA, JA, DESCA, IPIV, 
-     $                  WORK, WORK( IPW ), LWORK-LTAU, RANK, INFO)
-!         CALL PDTZRZF( M, N, A, IA, JA, DESCA, TAU, WORK, LWORK, 
-!     $                 INFO )
-!
-!
-!
-!
-!
-         ITMP = N
+     $                  TAU, WORK( IPW ), LWORK-LTAU, RANK, INFO)
          ! Adjust number of columns to fit numerical rank
+         ITMP = N ! original N
          N = RANK
          DESCA(4) = N
-
-    !      CALL PDLACPY('All', M, NRHS, B, IB, JB, DESCB,
-    !     $              RSD, IB, JB, DESCB)
-      
-!          CALL RPDFTTD( M, N, NRHS, 
-!     $              A, IA, JA, DESCA,
-!     $              FT, RSD, IB, JB, DESCB,
-!     $              WORK, WORK( IPW ), LWORK-LTAU, 
-!     $              INFO )
-!
-!
-!
+!         IF ( M.LT.ITMP ) THEN
+!           CALL PDTZRZF( M, ITMP, A, IA, JA, DESCA, TAU, WORK, LWORK, 
+!     $                   INFO )
+!         END IF
 !
 *
 *        workspace at least N, optimally N*NB
@@ -1357,9 +991,8 @@
 *
 *           B(IB:IB+M-1,JB:JB+NRHS-1) := Q' * B(IB:IB+M-1,JB:JB+NRHS-1)
 *
-!!!!!!!! DGEMM error ?!?!
             CALL PDORMQR( 'Left', 'Transpose', M, NRHS, N, A, IA, JA,
-     $                    DESCA, WORK, B, IB, JB, DESCB, WORK( IPW ),
+     $                    DESCA, TAU, B, IB, JB, DESCB, WORK( IPW ),
      $                    LWORK-LTAU, INFO )
 *
 *           workspace at least NRHS, optimally NRHS*NB
@@ -1374,20 +1007,19 @@
             ! Copy over the first RANK elements of numerical soln X
             CALL PDLACPY('All', N, NRHS, B, IB, JB, DESCB,
      $                    FT, IB, JB, DESCB)
-            ! Pretend A="QR" is the upper triangular R and compute R*FT
+            ! Pretend A="QR" is the upper triangular R and compute R*x
             CALL PDTRMM('L', 'U', 'N', 'N',
      $                   N, NRHS, 1.0D+0, 
      $                   A, IA, JA, DESCA, 
      $                   FT, IB, JB, DESCB )
-            ! Compute Q*(R*FT)
+            ! Compute fitted FT = Q*(R*x)
             CALL PDORMQR( 'L', 'N', M, NRHS, N, A, IA, JA,
-     $                     DESCA, WORK, FT, IB, JB, DESCB, WORK( IPW ),
+     $                     DESCA, TAU, FT, IB, JB, DESCB, WORK( IPW ),
      $                     LWORK-LTAU, INFO )
-            ! Compute residual FT-b
+            ! Compute residual RSD = FT-b
             CALL PDGEADD( 'N', M, NRHS, -1.0D+0,
      $                     FT, IB, JB, DESCB, 1.0D+0, 
      $                     RSD, IB, JB, DESCB)
-!(trans, m, n, alpha, a, ia, ja, desca, beta, c, ic, jc, descc)
 !!!!!!!!!!!!!!!!!!!!!!!!!!
 *
             SCLLEN = N
@@ -1419,64 +1051,64 @@
 *
          END IF
 *
-      ELSE
-*
-*        Compute LQ factorization of sub( A )
-*
-         CALL PDGELQF( M, N, A, IA, JA, DESCA, WORK, WORK( IPW ),
-     $                 LWORK-LTAU, INFO )
-*
-*        workspace at least M, optimally M*NB.
-*
-         IF( .NOT.TPSD ) THEN
-*
-*           underdetermined system of equations sub( A ) * X = sub( B )
-*
-*           B(IB:IB+M-1,JB:JB+NRHS-1) := inv(L) *
-*                                        B(IB:IB+M-1,JB:JB+NRHS-1)
-*
-            CALL PDTRSM( 'Left', 'Lower', 'No transpose', 'Non-unit', M,
-     $                   NRHS, ONE, A, IA, JA, DESCA, B, IB, JB, DESCB )
-*
-*           B(IB+M:IB+N-1,JB:JB+NRHS-1) = 0
-*
-            CALL PDLASET( 'All', N-M, NRHS, ZERO, ZERO, B, IB+M, JB,
-     $                    DESCB )
-*
-*           B(IB:IB+N-1,JB:JB+NRHS-1) := Q(1:N,:)' *
-*                                        B(IB:IB+M-1,JB:JB+NRHS-1)
-*
-            CALL PDORMLQ( 'Left', 'Transpose', N, NRHS, M, A, IA, JA,
-     $                    DESCA, WORK, B, IB, JB, DESCB, WORK( IPW ),
-     $                    LWORK-LTAU, INFO )
-*
-*           workspace at least NRHS, optimally NRHS*NB
-*
-            SCLLEN = N
-*
-         ELSE
-*
-*           overdetermined system min || A' * X - B ||
-*
-*           B(IB:IB+N-1,JB:JB+NRHS-1) := Q * B(IB:IB+N-1,JB:JB+NRHS-1)
-*
-            CALL PDORMLQ( 'Left', 'No transpose', N, NRHS, M, A, IA, JA,
-     $                    DESCA, WORK, B, IB, JB, DESCB, WORK( IPW ),
-     $                    LWORK-LTAU, INFO )
-*
-*           workspace at least NRHS, optimally NRHS*NB
-*
-*           B(IB:IB+M-1,JB:JB+NRHS-1) := inv(L') *
-*                                        B(IB:IB+M-1,JB:JB+NRHS-1)
-*
-            CALL PDTRSM( 'Left', 'Lower', 'Transpose', 'Non-unit', M,
-     $                   NRHS, ONE, A, IA, JA, DESCA, B, IB, JB, DESCB )
-*
-            SCLLEN = M
-*
-         END IF
-*
-      END IF
+!!!!!      ELSE
+!!!!!*
+!!!!!*        Compute LQ factorization of sub( A )
+!!!!!*
+!!!!!         CALL PDGELQF( M, N, A, IA, JA, DESCA, WORK, WORK( IPW ),
+!!!!!     $                 LWORK-LTAU, INFO )
+!!!!!*
+!!!!!*        workspace at least M, optimally M*NB.
+!!!!!*
+!!!!!         IF( .NOT.TPSD ) THEN
+!!!!!*
+!!!!!*           underdetermined system of equations sub( A ) * X = sub( B )
+!!!!!*
+!!!!!*           B(IB:IB+M-1,JB:JB+NRHS-1) := inv(L) *
+!!!!!*                                        B(IB:IB+M-1,JB:JB+NRHS-1)
+!!!!!*
+!!!!!            CALL PDTRSM( 'Left', 'Lower', 'No transpose', 'Non-unit', M,
+!!!!!     $                   NRHS, ONE, A, IA, JA, DESCA, B, IB, JB, DESCB )
+!!!!!*
+!!!!!*           B(IB+M:IB+N-1,JB:JB+NRHS-1) = 0
+!!!!!*
+!!!!!            CALL PDLASET( 'All', N-M, NRHS, ZERO, ZERO, B, IB+M, JB,
+!!!!!     $                    DESCB )
+!!!!!*
+!!!!!*           B(IB:IB+N-1,JB:JB+NRHS-1) := Q(1:N,:)' *
+!!!!!*                                        B(IB:IB+M-1,JB:JB+NRHS-1)
+!!!!!*
+!!!!!            CALL PDORMLQ( 'Left', 'Transpose', N, NRHS, M, A, IA, JA,
+!!!!!     $                    DESCA, WORK, B, IB, JB, DESCB, WORK( IPW ),
+!!!!!     $                    LWORK-LTAU, INFO )
+!!!!!*
+!!!!!*           workspace at least NRHS, optimally NRHS*NB
+!!!!!*
+!!!!!            SCLLEN = N
+!!!!!*
+!!!!!         ELSE
+!!!!!*
+!!!!!*           overdetermined system min || A' * X - B ||
+!!!!!*
+!!!!!*           B(IB:IB+N-1,JB:JB+NRHS-1) := Q * B(IB:IB+N-1,JB:JB+NRHS-1)
+!!!!!*
+!!!!!            CALL PDORMLQ( 'Left', 'No transpose', N, NRHS, M, A, IA, JA,
+!!!!!     $                    DESCA, WORK, B, IB, JB, DESCB, WORK( IPW ),
+!!!!!     $                    LWORK-LTAU, INFO )
+!!!!!*
+!!!!!*           workspace at least NRHS, optimally NRHS*NB
+!!!!!*
+!!!!!*           B(IB:IB+M-1,JB:JB+NRHS-1) := inv(L') *
+!!!!!*                                        B(IB:IB+M-1,JB:JB+NRHS-1)
+!!!!!*
+!!!!!            CALL PDTRSM( 'Left', 'Lower', 'Transpose', 'Non-unit', M,
+!!!!!     $                   NRHS, ONE, A, IA, JA, DESCA, B, IB, JB, DESCB )
+!!!!!*
+!!!!!            SCLLEN = M
+!!!!!*
+!!!!!         END IF
+!!!!!*
+!!!!!      END IF
 *
 *     Undo scaling
 *
@@ -1496,15 +1128,12 @@
       END IF
 *
    10 CONTINUE
-      
+
       ! pass back TAU
-      TAU(1:IPW-1) = WORK(1:IPW-1)
+!      TAU(1:LTAU) = WORK(1:LTAU)
       WORK( 1 ) = DBLE( LWMIN )
 *
       RETURN
-*
-*     End of PDGELS
-*
       END
 
 
