@@ -6,34 +6,28 @@
 
 base.rpdgesv <- function(a, b)
 {
-  # BLACS stuff
   ICTXT <- a@CTXT
-  blacs_ <- base.blacs(ICTXT=ICTXT)
-  MYROW <- blacs_$MYROW
-  MYCOL <- blacs_$MYCOL
-
+  
   # Matrix descriptors
   desca <- base.descinit(a@dim, a@bldim, a@ldim, ICTXT=ICTXT)
   descb <- base.descinit(b@dim, b@bldim, b@ldim, ICTXT=ICTXT)
-
+  
   n <- desca[4L]
   nrhs <- descb[4L]
+  # max of the local dimensions
   mxldims <- c(base.maxdim(a@ldim), base.maxdim(b@ldim))
-
+  
   # Call ScaLAPACK
   out <- .Call("R_PDGESV",
-               a@Data, as.integer(dim(a@Data)),
-               b@Data, as.integer(dim(b@Data)),
-               as.integer(ICTXT), as.integer(MYROW), as.integer(MYCOL),
-               as.integer(desca), as.integer(descb),
-               as.integer(n), as.integer(nrhs),
-               as.integer(mxldims),
+               as.integer(n), as.integer(nrhs), as.integer(mxldims),
+               a@Data, as.integer(a@ldim), as.integer(desca),
+               b@Data, as.integer(b@ldim), as.integer(descb),
                PACKAGE="pbdBASE"
               )
   
   if (out$info!=0)
     warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
-
+  
   return(out$B) 
 }
 
@@ -45,27 +39,21 @@ base.rpdgesv <- function(a, b)
 
 base.rpdgetri <- function(a)
 {
-  # BLACS stuff
-  ICTXT <- a@CTXT
-  blacs_ <- base.blacs(ICTXT=ICTXT)
-  MYROW <- blacs_$MYROW
-  MYCOL <- blacs_$MYCOL
-
-  desca <- base.descinit(a@dim, a@bldim, a@ldim, ICTXT=ICTXT)
-
+  desca <- base.descinit(a@dim, a@bldim, a@ldim, ICTXT=a@CTXT)
+  
   n <- desca[4]
-
-  lengths <- .Call("R_PDGETRISZ",
-                   as.integer(ICTXT), as.integer(MYROW), as.integer(MYCOL),
-                   as.integer(desca), as.integer(n),
-                   PACKAGE="pbdBASE"
-                  )
-
+  
+#  lwork <- a@ldim[2] * a@bldim[2]
+  
+#  if (NPROW==NPCOL)
+#    liwork <- a@ldim[2] + a@bldim[2]
+#  else
+#    liwork <- a@ldim[2] + 
+#      max(ceiling(ceiling(a@ldim[1]/a@bldim[1])/(2/NPROW)), a@bldim[2])
+  
   out <- .Call("R_PDGETRI",
-               a@Data, as.integer(dim(a@Data)), as.integer(ICTXT),
-               as.integer(MYROW), as.integer(MYCOL),
+               a@Data, as.integer(a@ldim), 
                as.integer(desca), as.integer(n),
-               as.integer(lengths$TEMP), as.integer(lengths$ITEMP),
                PACKAGE="pbdBASE"
               )
   
@@ -222,33 +210,25 @@ base.rpdgetrf <- function(a)
 
 base.pdpotrf <- function(a)
 {
-  # BLACS stuff
-  ICTXT <- a@CTXT
-  blacs_ <- base.blacs(ICTXT=ICTXT)
-  MYROW <- blacs_$MYROW
-  MYCOL <- blacs_$MYCOL
-
-  desca <- base.descinit(a@dim, a@bldim, a@ldim, ICTXT=ICTXT)
-
+  desca <- base.descinit(a@dim, a@bldim, a@ldim, ICTXT=a@CTXT)
+    
   n <- desca[4]
   
   uplo <- "U"
-
+  
   # Call ScaLAPACK
   out <- .Call("R_PDPOTRF",
-               a@Data, as.integer(dim(a@Data)),
-               as.integer(ICTXT), as.integer(MYROW), as.integer(MYCOL),
-               as.integer(desca), as.integer(n),
+               as.integer(n),
+               a@Data, as.integer(a@ldim), as.integer(desca),
                as.character(uplo),
                PACKAGE="pbdBASE"
               )
   
-
   if (out$info!=0)
     warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
   else
-      out$A <- base.low2zero(A=out$A, dim=a@dim, ldim=a@ldim, bldim=a@bldim, CTXT=a@CTXT)
-
-  return(out$A) 
+    ret <- base.low2zero(A=out$A, dim=a@dim, ldim=a@ldim, bldim=a@bldim, CTXT=a@CTXT)
+  
+  return(ret) 
 }
 

@@ -1,9 +1,9 @@
 ### Configurations.
-RCPP_CXXFLAGS = @RCPP_CXXFLAGS@
-RCPP_LDFLAGS = @RCPP_LDFLAGS@
-SLAP_LDFLAGS = @SLAP_LDFLAGS@
-SPMD_CPPFLAGS = @SPMD_CPPFLAGS@
-SPMD_LDFLAGS = @SPMD_LDFLAGS@
+RCPP_CXXFLAGS = 
+RCPP_LDFLAGS = 
+SLAP_LDFLAGS = 
+SPMD_CPPFLAGS = 
+SPMD_LDFLAGS = 
 
 ### Setup R package flags and substitute by configure for ${MPI_...}.
 PKG_CPPFLAGS = $(SPMD_CPPFLAGS)
@@ -25,12 +25,12 @@ R_OBJS = \
   lm.o \
   mpi_blacs.o \
   par_selection.o \
+  pblas_level3.o \
   scalapack.o \
   scalapack_utility_cpp.o \
   scalapack_utility_fort.o \
   selection.o \
   base_mpi_blac.o \
-  base_pblas_level3.o \
   base_scalapack.o \
   base_scalapack_utility_fort.o \
   bprnt_c.o

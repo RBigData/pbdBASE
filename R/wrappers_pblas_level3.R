@@ -25,20 +25,11 @@ base.pdtran <- function(a)
   descc <- base.descinit(c@dim, c@bldim, c@ldim, ICTXT=ICTXT)
 
   ret <- .Call("R_PDTRAN",
-                  a@Data, as.integer(cldim),
-                  as.integer(ICTXT), as.integer(MYROW), as.integer(MYCOL),
-                  as.integer(desca), as.integer(descc),
-                  as.integer(m), as.integer(n),
-                  PACKAGE="pbdBASE"
-                 )
-
-#  ret <- .Call("R_PDTRAN",
-#                  as.integer(m), as.integer(n),
-#                  a@Data, as.integer(desca), 
-#                  as.integer(cldim), as.integer(descc),
-#                  as.integer(ICTXT),
-#                  PACKAGE="pbdBASE"
-#                 )
+                as.integer(m), as.integer(n),
+                a@Data, as.integer(desca),
+                as.integer(cldim), as.integer(descc),
+                PACKAGE="pbdBASE"
+              )
 
   c@Data <- ret
 
@@ -54,31 +45,32 @@ base.pdtran <- function(a)
 base.pdgemm <- function(a, b)
 {
   ICTXT <- a@CTXT
-  blacs_ <- base.blacs(ICTXT=a@CTXT)
-  MYROW <- blacs_$MYROW
-  MYCOL <- blacs_$MYCOL
-
-  m <- a@dim[1]
-  n <- b@dim[2]
-  k <- b@dim[1]
-
-  cdim <- c(a@dim[1], b@dim[2])
   
+  m <- a@dim[1L]
+  n <- b@dim[2L]
+  k <- b@dim[1L]
+  
+  bldim <- a@bldim
+  
+  cdim <- c(a@dim[1L], b@dim[2L])
   cldim <- base.numroc(cdim, a@bldim, ICTXT=ICTXT)
   
-  c <- new("ddmatrix", Data=matrix(nrow=0, ncol=0),
-                       dim=cdim, ldim=cldim, bldim=a@bldim, CTXT=ICTXT)
-
-  desca <- base.descinit(a@dim, a@bldim, a@ldim, ICTXT=ICTXT)
-  descb <- base.descinit(b@dim, b@bldim, b@ldim, ICTXT=ICTXT)
-  descc <- base.descinit(c@dim, c@bldim, c@ldim, ICTXT=ICTXT)
+  desca <- base.descinit(a@dim, bldim, a@ldim, ICTXT=ICTXT)
+  descb <- base.descinit(b@dim, bldim, b@ldim, ICTXT=ICTXT)
+  descc <- base.descinit(cdim, bldim, cldim, ICTXT=ICTXT)
   
-  c@Data <- .Call("R_PDGEMM",
-                  a@Data, b@Data, as.integer(cldim),
-                  as.integer(ICTXT), as.integer(MYROW), as.integer(MYCOL),
-                  as.integer(desca), as.integer(descb), as.integer(descc),
+  trans <- 'N'
+  
+  ret <- .Call("R_PDGEMM",
+                  as.character(trans), as.character(trans),
                   as.integer(m), as.integer(n), as.integer(k),
+                  a@Data, as.integer(desca),
+                  b@Data, as.integer(descb),
+                  as.integer(cldim), as.integer(descc),
                   PACKAGE="pbdBASE"
                  )
+  
+  c <- new("ddmatrix", Data=ret, dim=cdim, ldim=cldim, bldim=a@bldim, CTXT=ICTXT)
+  
   return(c)
 }

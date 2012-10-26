@@ -20,34 +20,7 @@ extern void F77_NAME(row_col_sums)(int *ictxt, const char *scope, int *m,
 				int *n, int *lda, double *a);
 
 
-
-/* Functions in "pblas_level3.f". */
-//extern void F77_NAME(rpdtran)(double *a, double *c, int *ictxt, int *myrow,
-//				int *mycol, int *desca, int *descc,
-//				int *m, int *n);
-extern void F77_NAME(rpdgemm)(double *a, double *b, double *c,
-				int *ictxt, int *myrow, int *mycol,
-				int *desca, int *descb, int *descc,
-				int *m, int *n, int *k);
-
-extern void F77_NAME(pdtran)(int m, int n, double one, 
-        double *a, int ia, int ja, int *desca, double zero,
-        double *c, int ic, int jc, int *descc);
-
-
-
 /* Functions in "scalapack.f". */
-extern void F77_NAME(rpdgesv)(double *a, double *b, int *ictxt, int *myrow,
-				int *mycol, int *desca, int *descb, int *n,
-				int *nrhs, int *mxldims, int *info);
-extern void F77_NAME(rpdgetrisz)(int *ictxt, int *myrow, int *mycol, int *desca,
-				int *n, int *info, double *temp, int *itemp);
-extern void F77_NAME(rpdgetri)(double *a, int *ictxt, int *myrow, int *mycol,
-				int *desca, int *n, int *info, int *lwork,
-				int *liwork);
-extern void F77_NAME(rpdgetrf)(double *a, int *ictxt, int *myrow, int *mycol,
-				int *desca, int *m, int *n, int *lipiv,
-				int *info);
 extern void F77_NAME(rpdpotrf)(double *a, int *ictxt, int *myrow, int *mycol,
 				int *desca, int *n, const char *uplo,
 				int *info);
