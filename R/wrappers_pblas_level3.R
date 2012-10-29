@@ -14,7 +14,7 @@ base.pdtran <- function(a)
   m <- a@dim[2]
   n <- a@dim[1]
   
-  desca <- base.descinit(a@dim, a@bldim, a@ldim, ICTXT=ICTXT)
+  desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=ICTXT)
 
   cdim <- c(m, n)
   cldim <- base.numroc(cdim, a@bldim, ICTXT=ICTXT)
@@ -55,9 +55,9 @@ base.pdgemm <- function(a, b)
   cdim <- c(a@dim[1L], b@dim[2L])
   cldim <- base.numroc(cdim, a@bldim, ICTXT=ICTXT)
   
-  desca <- base.descinit(a@dim, bldim, a@ldim, ICTXT=ICTXT)
-  descb <- base.descinit(b@dim, bldim, b@ldim, ICTXT=ICTXT)
-  descc <- base.descinit(cdim, bldim, cldim, ICTXT=ICTXT)
+  desca <- base.descinit(dim=a@dim, bldim=bldim, ldim=a@ldim, ICTXT=ICTXT)
+  descb <- base.descinit(dim=b@dim, bldim=bldim, ldim=b@ldim, ICTXT=ICTXT)
+  descc <- base.descinit(dim=cdim, bldim=bldim, ldim=cldim, ICTXT=ICTXT)
   
   trans <- 'N'
   

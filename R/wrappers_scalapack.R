@@ -9,8 +9,8 @@ base.rpdgesv <- function(a, b)
   ICTXT <- a@CTXT
   
   # Matrix descriptors
-  desca <- base.descinit(a@dim, a@bldim, a@ldim, ICTXT=ICTXT)
-  descb <- base.descinit(b@dim, b@bldim, b@ldim, ICTXT=ICTXT)
+  desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=ICTXT)
+  descb <- base.descinit(dim=b@dim, bldim=b@bldim, ldim=b@ldim, ICTXT=ICTXT)
   
   n <- desca[4L]
   nrhs <- descb[4L]
@@ -39,9 +39,9 @@ base.rpdgesv <- function(a, b)
 
 base.rpdgetri <- function(a)
 {
-  desca <- base.descinit(a@dim, a@bldim, a@ldim, ICTXT=a@CTXT)
+  desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=a@CTXT)
   
-  n <- desca[4]
+  n <- desca[4L]
   
 #  lwork <- a@ldim[2] * a@bldim[2]
   
@@ -74,15 +74,15 @@ base.rpdgesvd <- function(A, nu, nv)
   ICTXT <- A@CTXT
   
   # Matrix descriptors
-  m <- A@dim[1]
-  n <- A@dim[2]
+  m <- A@dim[1L]
+  n <- A@dim[2L]
   size <- min(A@dim)
   bldim <- A@bldim
-  desca <- base.descinit(A@dim, A@bldim, A@ldim, ICTXT=ICTXT)
+  desca <- base.descinit(dim=A@dim, bldim=A@bldim, ldim=A@ldim, ICTXT=ICTXT)
 
   if (nu==0){
     jobu <- 'N'
-    udim <- c(1, 1)
+    udim <- c(1L, 1L)
   }
   else {
     jobu <- 'V'
@@ -90,24 +90,24 @@ base.rpdgesvd <- function(A, nu, nv)
   }
   if (nv==0){
     jobvt <- 'N'
-    vtdim <- c(1,1)
+    vtdim <- c(1L, 1L)
   }
   else {
     jobvt <- 'V'
     vtdim <- c(size, n)
   }
 
-  uldim <- base.numroc(udim, bldim, ICTXT=ICTXT)
+  uldim <- base.numroc(dim=udim, bldim=bldim, ICTXT=ICTXT)
 
   u <- new("ddmatrix", Data=matrix(nrow=0, ncol=0),
                        dim=udim, ldim=uldim, bldim=bldim, CTXT=ICTXT)
-  descu <- base.descinit(u@dim, u@bldim, u@ldim, ICTXT=ICTXT)
+  descu <- base.descinit(dim=u@dim, bldim=u@bldim, ldim=u@ldim, ICTXT=ICTXT)
   
-  vtldim <- base.numroc(vtdim, bldim, ICTXT=ICTXT)
+  vtldim <- base.numroc(dim=vtdim, bldim=bldim, ICTXT=ICTXT)
 
   vt <- new("ddmatrix", Data=matrix(nrow=0, ncol=0),
                         dim=vtdim, ldim=vtldim, bldim=bldim, CTXT=ICTXT)
-  descvt <- base.descinit(vt@dim, vt@bldim, vt@ldim, ICTXT=ICTXT)
+  descvt <- base.descinit(dim=vt@dim, bldim=vt@bldim, ldim=vt@ldim, ICTXT=ICTXT)
 
   mxa <- pbdMPI::allreduce(max(A@ldim), op='max')
   mxu <- pbdMPI::allreduce(max(uldim), op='max')
@@ -152,9 +152,9 @@ base.rpdgesvd <- function(A, nu, nv)
   else
     vt@Data <- out$vt
 
-  if (nu && nu < u@dim[2])
+  if (nu && nu < u@dim[2L])
     u <- u[, 1L:nu]
-  if (nv && nv < vt@dim[1])
+  if (nv && nv < vt@dim[1L])
     vt <- vt[1L:nv, ]
 
   if (out$info!=0)
@@ -173,24 +173,17 @@ base.rpdgesvd <- function(A, nu, nv)
 
 base.rpdgetrf <- function(a)
 {
-  # BLACS stuff
-  ICTXT <- a@CTXT
-  blacs_ <- base.blacs(ICTXT=ICTXT)
-  MYROW <- blacs_$MYROW
-  MYCOL <- blacs_$MYCOL
+  desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=a@CTXT)
 
-  desca <- base.descinit(a@dim, a@bldim, a@ldim, ICTXT=ICTXT)
+  m <- desca[3L]
+  n <- desca[4L]
 
-  m <- desca[3]
-  n <- desca[4]
-
-  lipiv <- base.maxdim(a@ldim)[1] + a@bldim[1]
+  lipiv <- base.maxdim(a@ldim)[1L] + a@bldim[1L]
 
   # Call ScaLAPACK
   out <- .Call("R_PDGETRF",
-               a@Data, as.integer(dim(a@Data)),
-               as.integer(ICTXT), as.integer(MYROW), as.integer(MYCOL),
-               as.integer(desca), as.integer(m), as.integer(n),
+               as.integer(m), as.integer(n),
+               a@Data, as.integer(dim(a@Data)), as.integer(desca),
                as.integer(lipiv),
                PACKAGE="pbdBASE"
               )
@@ -210,9 +203,9 @@ base.rpdgetrf <- function(a)
 
 base.pdpotrf <- function(a)
 {
-  desca <- base.descinit(a@dim, a@bldim, a@ldim, ICTXT=a@CTXT)
+  desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=a@CTXT)
     
-  n <- desca[4]
+  n <- desca[4L]
   
   uplo <- "U"
   

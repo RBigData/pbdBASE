@@ -1,3 +1,9 @@
+2012-10-30:
+  * Made lm.fit-related foreign language wrappers more efficient.
+  
+2012-10-26:
+  * Significantly cleaned up all foreign language wrappers.
+  
 2012-10-23:
   * Cleaned up wrappers for singular value decomposition.
   

@@ -31,6 +31,7 @@ SEXP R_PDGESV(SEXP N, SEXP NRHS, SEXP MXLDIMS,
     pt_ORG++;
     pt_COPY++;
   }
+  
   pt_ORG = REAL(B);
   pt_COPY = REAL(B_OUT);
   for(i = 0; i < pt_BLDIM[0] * pt_BLDIM[1]; i++){
@@ -74,16 +75,18 @@ SEXP R_PDGESVD(SEXP M, SEXP N, SEXP ASIZE,
   /* Protect R objects. */
   PROTECT(RET = allocVector(VECSXP, 4));
   PROTECT(RET_NAMES = allocVector(STRSXP, 4));
+  
   PROTECT(INFO = allocVector(INTSXP, 1));
   PROTECT(D = allocVector(REALSXP, INTEGER(ASIZE)[0]));
   PROTECT(U = allocMatrix(REALSXP, INTEGER(ULDIM)[0], INTEGER(ULDIM)[1]));
   PROTECT(VT = allocMatrix(REALSXP,
       INTEGER(VTLDIM)[0], INTEGER(VTLDIM)[1]));
-
+  
   SET_VECTOR_ELT(RET, 0, INFO);
   SET_VECTOR_ELT(RET, 1, D);
   SET_VECTOR_ELT(RET, 2, U);
   SET_VECTOR_ELT(RET, 3, VT);
+  
   SET_STRING_ELT(RET_NAMES, 0, mkChar("info")); 
   SET_STRING_ELT(RET_NAMES, 1, mkChar("d")); 
   SET_STRING_ELT(RET_NAMES, 2, mkChar("u")); 
@@ -162,9 +165,8 @@ SEXP R_PDGETRI(SEXP A, SEXP CLDIM, SEXP DESCA, SEXP N)
   
   /* LU decomposition */
   INTEGER(INFO)[0] = 0;
-  F77_CALL(pdgetrf)(INTEGER(N), INTEGER(N), 
-    REAL(C), &IJ, &IJ, INTEGER(DESCA),
-    ipiv, INTEGER(INFO));
+  F77_CALL(pdgetrf)(INTEGER(N), INTEGER(N), REAL(C), &IJ, &IJ, 
+    INTEGER(DESCA), ipiv, INTEGER(INFO));
   
   /* workspace query for inverse */
   INTEGER(INFO)[0] = 0;
@@ -187,10 +189,11 @@ SEXP R_PDGETRI(SEXP A, SEXP CLDIM, SEXP DESCA, SEXP N)
 } /* End of R_PDGETRI(). */
 
 
-SEXP R_PDGETRF(SEXP A, SEXP CLDIM, SEXP ICTXT, SEXP MYROW, SEXP MYCOL,
-    SEXP DESCA, SEXP M, SEXP N, SEXP LIPIV){
-  int i, *pt_CLDIM = INTEGER(CLDIM);
+SEXP R_PDGETRF(SEXP M, SEXP N, SEXP A, SEXP CLDIM, SEXP DESCA, SEXP LIPIV)
+{
+  int i, *pt_CLDIM = INTEGER(CLDIM), *ipiv;
   double *pt_A, *pt_C;
+  const int IJ = 1;
   SEXP RET, RET_NAMES, INFO, C;
 
   /* Protect R objects. */
@@ -214,12 +217,13 @@ SEXP R_PDGETRF(SEXP A, SEXP CLDIM, SEXP ICTXT, SEXP MYROW, SEXP MYCOL,
     pt_A++;
     pt_C++;
   }
-
-  /* Call Fortran. */
-        F77_CALL(rpdgetrf)(REAL(C), INTEGER(ICTXT), INTEGER(MYROW),
-      INTEGER(MYCOL), INTEGER(DESCA), INTEGER(M), INTEGER(N),
-      INTEGER(LIPIV), INTEGER(INFO));
-
+  
+  ipiv = (int *) R_alloc(INTEGER(LIPIV), sizeof(int));
+  
+  INTEGER(INFO)[0] = 0;
+  F77_CALL(pdgetrf)(INTEGER(M), INTEGER(N), REAL(C), 
+    &IJ, &IJ, INTEGER(DESCA), ipiv, INTEGER(INFO));
+  
   /* Return. */
   UNPROTECT(4);
         return(RET);

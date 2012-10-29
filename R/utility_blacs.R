@@ -245,7 +245,7 @@ base.blacs.sum <- function(SCOPE, A, dim, na.rm=FALSE, ICTXT=0, means=FALSE, num
   }
 
   ### WCC: out should be allocated within .Call.
-  out <- .Call("R_row_col_sums",
+  out <- .Call("R_dgsum2d",
                as.integer(ICTXT), as.character(SCOPE),
                as.integer(M), as.integer(N), A, as.integer(LDA),
                PACKAGE="pbdBASE"

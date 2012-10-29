@@ -61,22 +61,16 @@ numroc <- base.numroc
 # Hook into ScaLAPACK tool PDLAPRNT
 base.pdlaprnt <- function(dx)
 {
-  ICTXT <- dx@CTXT
-  blacs_ <- base.blacs(ICTXT=ICTXT)
-  MYROW <- blacs_$MYROW
-  MYCOL <- blacs_$MYCOL
-
-  desc <- base.descinit(dx@dim, dx@bldim, dx@ldim)
+  m <- dx@dim[1L]
+  n <- dx@dim[2L]
+  
+  desca <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=dx@ldim, ICTXT=dx@CTXT)
   
   .Call("R_PDLAPRNT", 
-        as.integer(dx@dim[1]), as.integer(dx@dim[2]),
-        as.double(dx@Data), 
-        as.integer(1), as.integer(1),
-        as.integer(desc),
-        as.integer(0), as.integer(0),
+        as.integer(m), as.integer(n),
+        as.double(dx@Data), as.integer(desca),
         as.character(deparse(substitute(dx))),
         as.integer(6),  #WCC: 0 for stderr, 6 for stdout. Both are disabled.
-        as.integer(ICTXT), as.integer(MYROW), as.integer(MYCOL),
         PACKAGE="pbdBASE"
         )
   

@@ -159,7 +159,10 @@ distribute <- base.distribute
 
 base.redistribute <- function(dx, bldim=.BLDIM, ICTXT=0)
 {
-  return( base.reblock(dx=dx, bldim=bldim, ICTXT=ICTXT) )
+  if (dx@CTXT != ICTXT)
+    dx <- base.reblock(dx=dx, bldim=bldim, ICTXT=ICTXT)
+  
+  return( dx )
 }
 
 redistribute <- base.redistribute
