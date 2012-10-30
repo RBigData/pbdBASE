@@ -1,19 +1,19 @@
-\name{as.matrix}
+\name{Binders}
 \docType{methods}
 
-\alias{as.vector-method}
-\alias{as.vector,ddmatrix-method}
-\alias{as.vector,ANY-method}
-\alias{as.vector}
+\alias{rbind-method}
+\alias{rbind,ddmatrix-method}
+\alias{rbind,ANY-method}
+\alias{rbind}
 
-\alias{as.matrix-method}
-\alias{as.matrix,ddmatrix-method}
-\alias{as.matrix}
+\alias{cbind-method}
+\alias{cbind,ddmatrix-method}
+\alias{cbind,ANY-method}
+\alias{cbind}
 
-\title{ Distributed-to-non-distributed Matrix Converters }
+\title{ Row and Column binds for Distributed Matricesh }
 \description{
-  Converts objects of class \code{ddmatrix} to the requested
-  non-distributed type.
+  Row and column binds.
 }
 \section{Methods}{
 \describe{

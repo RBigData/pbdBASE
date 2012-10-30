@@ -17,9 +17,9 @@ setGeneric(name="rbind",
     standardGeneric("rbind")
 )
 
-setGeneric(name="cbind", 
-  function(..., ICTXT=0)
-    standardGeneric("cbind")
+setGeneric(name="as.vector", 
+  function(x, ...)
+    standardGeneric("as.vector")
 )
 
 ### S4 methods for new things

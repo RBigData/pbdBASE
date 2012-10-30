@@ -99,7 +99,7 @@ base.init.grid <- function(nprow, npcol, ICTXT)
 
   # Informing the user of creation
   if (ICTXT==0)
-    pbdMPI::comm.cat(sprintf("%s", paste("Using a default grid size of ", nprow, "x", npcol, "\n\n", sep="")), quiet=TRUE)
+    pbdMPI::comm.cat(sprintf("%s", paste("Using ", nprow, "x", npcol, "for the default grid size\n\n", sep="")), quiet=TRUE)
   else
     pbdMPI::comm.cat(sprintf("%s", paste("Grid ICTXT=", ICTXT, " of size ", nprow, "x", npcol, " successfully created\n\n", sep="")), quiet=TRUE)
 

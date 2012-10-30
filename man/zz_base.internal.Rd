@@ -48,6 +48,14 @@
 \alias{base.vecops}
 \alias{base.whatdo}
 
+\alias{base.pdorgqr}
+\alias{base.pdormqr}
+\alias{base.pdtrsv}
+\alias{base.pdtzrzf}
+\alias{base.qr.R}
+\alias{base.rbind}
+\alias{base.cbind}
+
 \alias{.conflicts.OK}
 
 \title{ All pbdPASE Internal Functions and Data }
