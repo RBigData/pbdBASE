@@ -21,8 +21,7 @@ is.ddmatrix <- base.is.ddmatrix
     #   and http://acts.nersc.gov/scalapack/hands-on/datadist.html
 base.as.ddmatrix <- function(x, bldim=.BLDIM, ICTXT=0)
 {
-  ICTXT <- base.blacs(ICTXT=ICTXT)$ICTXT
-  
+#  ICTXT <- base.blacs(ICTXT=ICTXT)$ICTXT
   nprocs <- pbdMPI::comm.size()
   owns <- pbdMPI::allreduce(is.matrix(x), op='sum')
   
@@ -34,7 +33,7 @@ base.as.ddmatrix <- function(x, bldim=.BLDIM, ICTXT=0)
     else
       iown <- 0
     iown <- allreduce(iown, op='max')
-    return( base.distribute(x, bldim=bldim, xCTXT=iown, ICTXT=ICTXT) )
+    return( base.distribute(x=x, bldim=bldim, xCTXT=0, ICTXT=ICTXT) )
   } 
   # global ownership is assumed --- this should only ever really happen in testing
   else if (owns==nprocs){ 
@@ -114,14 +113,14 @@ tail.ddmatrix <- function(x, n=6L, ...)
 # distribute a matrix from process (0,0) to the full ICTXT grid
 base.distribute <- function(x, bldim=.BLDIM, xCTXT=0, ICTXT=0)
 {
+  if (length(bldim)==1)
+    bldim <- rep(bldim, 2L)
+  
   if (!is.matrix(x) && is.null(x)){
     x <- matrix(0)
     iown <- FALSE
   } else
     iown <- TRUE
-  
-  if (length(bldim)==1)
-    bldim <- rep(bldim, 2L)
   
   if (iown)
     dim <- dim(x)
@@ -149,8 +148,10 @@ base.distribute <- function(x, bldim=.BLDIM, xCTXT=0, ICTXT=0)
   dx <- new("ddmatrix", Data=x, dim=dim, ldim=ldim, bldim=dim, CTXT=xCTXT)
 
   if (xCTXT != ICTXT)
-    base.reblock(dx=dx, bldim=bldim, ICTXT=ICTXT)
-
+    dx <- base.reblock(dx=dx, bldim=bldim, ICTXT=ICTXT)
+  else if (any(dx@bldim != bldim))
+    dx <- base.reblock(dx=dx, bldim=bldim, ICTXT=dx@CTXT)
+  
   return( dx )
 }
 

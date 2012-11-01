@@ -55,6 +55,7 @@
 \alias{base.qr.R}
 \alias{base.rbind}
 \alias{base.cbind}
+\alias{base.rbind2}
 
 \alias{.conflicts.OK}
 

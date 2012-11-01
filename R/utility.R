@@ -431,7 +431,6 @@ base.reblock <- function(dx, bldim=dx@bldim, ICTXT)
 #    descb <- rep(0, 9)
     descb[2] <- -1
   }
-
   ret <- .Call("R_PDGEMR2D",
                as.integer(m), as.integer(n),
                dx@Data, as.integer(descx),
@@ -441,17 +440,7 @@ base.reblock <- function(dx, bldim=dx@bldim, ICTXT)
                as.integer(dx@ldim[1]), as.integer(dx@ldim[2]),
                PACKAGE="pbdBASE"
             )
-
-#  ret <- .Fortran("PDGEMR2D",
-#                   as.integer(m), as.integer(n),
-#                   dx@Data, 
-#                   as.integer(1), as.integer(1), as.integer(descx),
-#                   B=matrix(0, TldimB[1], TldimB[2]),
-#                   as.integer(1), as.integer(1), as.integer(descb),
-#                   as.integer(ICTXT),
-#                   PACKAGE="pbdBASE", DUP=T
-#                  )$B
-
+    
     ret <- ret + 0
     dB@Data <- ret
     
@@ -605,6 +594,13 @@ base.rbind <- function(..., ICTXT=0)
 {
   args <- list(...)
   
+  return( base.rbind2(args=args, ICTXT=ICTXT) )
+}
+
+base.rbind2 <- function(args, ICTXT=0)
+{ 
+#  args <- list(...)
+  
   oldctxt <- args[[1]]@CTXT
   
   args <- lapply(args, 
@@ -617,7 +613,7 @@ base.rbind <- function(..., ICTXT=0)
   
   Data <- lapply(args, submatrix)
   
-  ret <- new("ddmatrix", Data=Reduce(rbind, Data), dim=dim, ldim=ldim, bldim=bldim, CTXT=1)
+  ret <- new("ddmatrix", Data=Reduce(base::rbind, Data), dim=dim, ldim=ldim, bldim=bldim, CTXT=1)
   
   if (ICTXT!=1)
     base.redistribute(dx=ret, bldim=ret@bldim, ICTXT=ICTXT)
@@ -641,7 +637,7 @@ base.cbind <- function(..., ICTXT=0)
   
   Data <- lapply(args, submatrix)
   
-  ret <- new("ddmatrix", Data=Reduce(cbind, Data), dim=dim, ldim=ldim, bldim=bldim, CTXT=2)
+  ret <- new("ddmatrix", Data=Reduce(base::cbind, Data), dim=dim, ldim=ldim, bldim=bldim, CTXT=2)
   
   if (ICTXT!=2)
     base.redistribute(dx=ret, bldim=ret@bldim, ICTXT=ICTXT)

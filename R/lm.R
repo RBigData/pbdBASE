@@ -150,25 +150,9 @@ base.pdorgqr <- function(qr)
   
   k <- qr$rank
   
-#  # Determine size of work array 
-#  lwork <- .Fortran("PDORGQR",
-#            M=as.integer(m), N=as.integer(n), as.integer(k),
-#            A=double(1), as.integer(1), as.integer(1), DESCA=as.integer(desca), 
-#            TAU=double(1), 
-#            WORK=double(1), LWORK=as.integer(-1), INFO=integer(1),
-#            PACKAGE="pbdBASE")$WORK[1]
-
-#  # perform QR
-#  out <- .Fortran("PDORGQR",
-#            M=as.integer(m), N=as.integer(n), as.integer(k),
-#            A=x@Data, as.integer(1), as.integer(1), DESCA=as.integer(desca), 
-#            TAU=as.double(qr$tau), 
-#            WORK=double(lwork), LWORK=as.integer(lwork), INFO=integer(1),
-#            PACKAGE="pbdBASE")
-  
   out <- .Call("R_PDORGQR",
             as.integer(m), as.integer(n), as.integer(k),
-            a@Data, as.integer(a@ldim), as.integer(desca),
+            x@Data, as.integer(x@ldim), as.integer(desca),
             as.double(qr$tau),
             PACKAGE="pbdBASE")
   
@@ -273,41 +257,25 @@ base.pdtzrzf <- function(x)
   
   k <- qr$rank
   
-#  # Determine size of work array 
-#  lwork <- .Fortran("PDTZRZF",
-#            M=as.integer(m), N=as.integer(n), 
-#            A=double(1), as.integer(1), as.integer(1), DESCA=as.integer(desca), 
-#            TAU=double(1), 
-#            WORK=double(1), LWORK=as.integer(-1), INFO=integer(1),
-#            PACKAGE="pbdBASE")$WORK[1]
-
-#  # reduce
-#  out <- .Fortran("PDTZRZF",
-#            M=as.integer(m), N=as.integer(n), 
-#            A=x@Data, as.integer(1), as.integer(1), DESCA=as.integer(desca), 
-#            TAU=as.double(qr$tau), 
-#            WORK=double(lwork), LWORK=as.integer(lwork), INFO=integer(1),
-#            PACKAGE="pbdBASE")
-  
   out <- .Call("R_PDTZRZF",
             as.integer(m), as.integer(n),
-            a@Data, as.integer(a@ldim), as.integer(desca),
+            x@Data, as.integer(x@ldim), as.integer(desca),
             as.double(qr$tau),
             PACKAGE="pbdBASE")
   
   if (out$INFO!=0)
     warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
   
-  dim <- rep(a@dim[1L], 2)
+  dim <- rep(x@dim[1L], 2)
   
-  ldim <- base.numroc(dim=dim, bldim=a@bldim, ICTXT=a@CTXT, fixme=FALSE)
+  ldim <- base.numroc(dim=dim, bldim=x@bldim, ICTXT=x@CTXT, fixme=FALSE)
   if (any(ldim<1))
     Data <- matrix(0)
   else
     Data <- matrix(out$A, nrow=ldim[1], ncol=ldim[2])
   
   ret <- new("ddmatrix", Data=Data, dim=dim,
-                    ldim=dim(Data), bldim=a@bldim, CTXT=a@CTXT)
+                    ldim=dim(Data), bldim=x@bldim, CTXT=x@CTXT)
   
   return( ret )
 }

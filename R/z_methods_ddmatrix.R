@@ -130,19 +130,19 @@ setReplaceMethod("submatrix", signature(x ="ddmatrix"),
 #    invisible(NULL)
 #)
 
-setMethod("rbind", signature(x="matrix"), 
+setMethod("rbind", "ANY", 
   function(..., ICTXT=0, deparse.level=1)
   {
     args <- list(...)
     
     if (is.ddmatrix(args[[1]]))
-      return( base.rbind(...=..., ICTXT=ICTXT) )
+      return( base.rbind(args=args, ICTXT=ICTXT) )
     else
-      return( base::rbind(...=..., deparse.level=deparse.level) )
+      return( base::rbind2(...=..., deparse.level=deparse.level) )
   }
 )
 
-setMethod("cbind", signature(x="matrix"), 
+setMethod("cbind", "ANY", 
   function(..., ICTXT=0, deparse.level=1)
   {
     args <- list(...)
@@ -468,7 +468,7 @@ setMethod("print", signature(x="ddmatrix"),
       ff <- paste(paste(format(base.firstfew(x, atmost=4), scientific=TRUE, digits=3), collapse=", "), ", ...", sep="")
       if (comm.rank()==0){
         blacs_ <- blacs(x@CTXT)
-        cat(sprintf("\nDENSE DISTRIBUTED MATRIX\n---------------------------\n@Data:\t\t\t%s\nProcess grid:\t\t%dx%d\nGlobal dimension:\t%dx%d\n(max) Local dimension:\t%dx%d\nBlocking:\t\t%dx%d\nBLACS ctxt:\t\t%d\n\n",
+        cat(sprintf("\nDENSE DISTRIBUTED MATRIX\n---------------------------\n@Data:\t\t\t%s\nProcess grid:\t\t%dx%d\nGlobal dimension:\t%dx%d\n(max) Local dimension:\t%dx%d\nBlocking:\t\t%dx%d\nBLACS CTXT:\t\t%d\n\n",
           ff, blacs_$NPROW, blacs_$NPCOL, x@dim[1], x@dim[2], x@ldim[1], x@ldim[2], x@bldim[1], x@bldim[2], x@CTXT))
       }
     }

@@ -13,12 +13,12 @@ setGeneric(name="as.vector",
 )
 
 setGeneric(name="rbind", 
-  function(..., ICTXT=0)
+  function(..., ICTXT=0, deparse.level=1)
     standardGeneric("rbind")
 )
 
 setGeneric(name="cbind", 
-  function(..., ICTXT=0)
+  function(..., ICTXT=0, deparse.level=1)
     standardGeneric("cbind")
 )
 

@@ -9,7 +9,8 @@ exportMethods(
   "submatrix", "submatrix<-",
   "[", "[<-", "na.exclude",
   "ldim", "bldim", "ctxt",
-  "summary"
+  "summary",
+  "rbind", "cbind"
 )
 
 export(
@@ -31,5 +32,7 @@ export(
   ### comparator
   any, all,
   
-  summary
+  summary,
+  
+  rbind, cbind
 )

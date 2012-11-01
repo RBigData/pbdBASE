@@ -1,3 +1,5 @@
+2012-11-01:
+  * Fixed some nasty redistribution bugs.
 2012-10-30:
   * Made lm.fit-related foreign language wrappers more efficient.
   
