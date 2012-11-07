@@ -616,7 +616,7 @@ base.rbind2 <- function(args, ICTXT=0)
   ret <- new("ddmatrix", Data=Reduce(base::rbind, Data), dim=dim, ldim=ldim, bldim=bldim, CTXT=1)
   
   if (ICTXT!=1)
-    base.redistribute(dx=ret, bldim=ret@bldim, ICTXT=ICTXT)
+    ret <- base.redistribute(dx=ret, bldim=ret@bldim, ICTXT=ICTXT)
   
   return( ret )
 }
@@ -640,7 +640,7 @@ base.cbind <- function(..., ICTXT=0)
   ret <- new("ddmatrix", Data=Reduce(base::cbind, Data), dim=dim, ldim=ldim, bldim=bldim, CTXT=2)
   
   if (ICTXT!=2)
-    base.redistribute(dx=ret, bldim=ret@bldim, ICTXT=ICTXT)
+    ret <- base.redistribute(dx=ret, bldim=ret@bldim, ICTXT=ICTXT)
   
   return( ret )
 }
