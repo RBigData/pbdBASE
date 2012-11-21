@@ -21,7 +21,7 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
   const double tmp = 0;
   double work = 0;
   
-  char trans = 'N';
+  char trans = 'N'; // If trans='T', expect all hell to break loose
   
   SEXP RET, RET_NAMES, INFO, A_OUT, B_OUT, FT, RSD, TAU, IPIV, RANK;
   
@@ -358,7 +358,7 @@ SEXP R_PDTZRZF(SEXP M, SEXP N,
   
   SET_VECTOR_ELT(RET, 0, INFO);
   SET_VECTOR_ELT(RET, 1, A_OUT);
-  SET_STRING_ELT(RET_NAMES, 0, mkChar("info")); 
+  SET_STRING_ELT(RET_NAMES, 0, mkChar("INFO")); 
   SET_STRING_ELT(RET_NAMES, 1, mkChar("A")); 
   
   setAttrib(RET, R_NamesSymbol, RET_NAMES);
@@ -374,7 +374,7 @@ SEXP R_PDTZRZF(SEXP M, SEXP N,
   
   /* workspace query */
   INTEGER(INFO)[0] = 0;
-  F77_CALL(pdorgqr)(INTEGER(M), INTEGER(N),
+  F77_CALL(pdtzrzf)(INTEGER(M), INTEGER(N),
     &tmp, &IJ, &IJ, INTEGER(DESCA), 
     &tmp,
     &work, &lwork, INTEGER(INFO));
@@ -384,7 +384,7 @@ SEXP R_PDTZRZF(SEXP M, SEXP N,
   p_work = (double *) R_alloc(lwork, sizeof(double));
   
   INTEGER(INFO)[0] = 0;
-  F77_CALL(pdorgqr)(INTEGER(M), INTEGER(N), 
+  F77_CALL(pdtzrzf)(INTEGER(M), INTEGER(N), 
     REAL(A_OUT), &IJ, &IJ, INTEGER(DESCA), 
     REAL(TAU),
     p_work, &lwork, INTEGER(INFO));
@@ -421,7 +421,7 @@ SEXP R_PDTRSV(SEXP UPLO, SEXP TRANS, SEXP DIAG,
   SET_VECTOR_ELT(RET, 1, A_OUT);
   SET_VECTOR_ELT(RET, 2, B_OUT);
   
-  SET_STRING_ELT(RET_NAMES, 0, mkChar("info")); 
+  SET_STRING_ELT(RET_NAMES, 0, mkChar("INFO")); 
   SET_STRING_ELT(RET_NAMES, 1, mkChar("A")); 
   SET_STRING_ELT(RET_NAMES, 3, mkChar("B")); 
   

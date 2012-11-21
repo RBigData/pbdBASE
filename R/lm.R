@@ -22,8 +22,6 @@ base.rpdgels <- function(a, b, tol=1e-7)
   if (descb[9]==1)
     descb[9] <- mxldb
   
-  IJ <- 1 # IA, JA, IB, JB
-  
 #  # Determine size of work array 
 #  lwork <- .Fortran("RPDGELS", 
 #                    as.double(tol), as.character("N"), 
@@ -134,10 +132,6 @@ base.rpdgels <- function(a, b, tol=1e-7)
 
 
 
-
-
-
-
 # qr()
 base.rpdgeqpf <- function(x, tol=1e-7)
 {
@@ -146,24 +140,6 @@ base.rpdgeqpf <- function(x, tol=1e-7)
 
   m <- desca[3]
   n <- desca[4]
-  
-#  # Determine size of work array
-#  lwork <- .Fortran("RPDGEQPF",
-#            TOL=as.double(tol), M=as.integer(m), N=as.integer(n),
-#            A=double(1), as.integer(1), as.integer(1), DESCA=as.integer(desca),
-#            IPIV=as.integer(1), TAU=double(1),
-#            WORK=double(1), LWORK=as.integer(-1),
-#            RANK=as.integer(n), INFO=integer(1),
-#            package="pbdBASE")$WORK[1]
-
-#  # perform QR
-#  out <- .Fortran("RPDGEQPF",
-#            TOL=as.double(tol), M=as.integer(m), N=as.integer(n),
-#            A=x@Data, as.integer(1), as.integer(1), DESCA=as.integer(desca),
-#            IPIV=integer(x@ldim[2]), TAU=double(min(m, n)),
-#            WORK=double(lwork), LWORK=as.integer(lwork),
-#            RANK=as.integer(n), INFO=integer(1),
-#            package="pbdBASE")
   
   ret <- .Call("R_PDGEQPF",
                as.double(tol), as.integer(m), as.integer(n), 
@@ -259,28 +235,15 @@ base.pdormqr <- function(qr, y, side='L', trans='T')
   n <- y@dim[2]
   k <- qr$rank
   
-  IJ <- 1 # IA, JA, IC, JC
+  # FIXME adjustment for weird lda issue
+  mxlda <- pbdMPI::allreduce(desca[9], op='max')
+  mxldb <- pbdMPI::allreduce(descb[9], op='max')
   
-#  # Determine size of work array 
-#  lwork <- .Fortran("PDORMQR",
-#            SIDE=as.character(side), TRANS=as.character(trans),
-#            M=as.integer(m), N=as.integer(n), K=as.integer(k),
-#            A=double(1), as.integer(IJ), as.integer(IJ), DESCA=as.integer(desca), 
-#            TAU=double(1), 
-#            C=double(1), as.integer(IJ), as.integer(IJ), DESCC=as.integer(descc), 
-#            WORK=double(1), LWORK=as.integer(-1), INFO=integer(1),
-#            PACKAGE="pbdBASE")$WORK[1]
-
-#  # perform QR
-#  out <- .Fortran("PDORMQR",
-#            SIDE=as.character(side), TRANS=as.character(trans),
-#            M=as.integer(m), N=as.integer(n), K=as.integer(k),
-#            A=x@Data, as.integer(IJ), as.integer(IJ), DESCA=as.integer(desca), 
-#            TAU=as.double(qr$tau), 
-#            C=y@Data, as.integer(IJ), as.integer(IJ), DESCC=as.integer(descc),
-#            WORK=double(lwork), LWORK=as.integer(lwork), INFO=integer(1),
-#            PACKAGE="pbdBASE")
-
+  if (desca[9]==1)
+    desca[9] <- mxlda
+  if (descb[9]==1)
+    descb[9] <- mxldb
+  
   out <- .Call("R_PDORMQR",
             as.character(side), as.character(trans),
             as.integer(m), as.integer(n), as.integer(k),
@@ -301,15 +264,15 @@ base.pdormqr <- function(qr, y, side='L', trans='T')
 
 
 # reduces upper trapezoidal to traingular form
-base.pdtzrzf <- function(x)
+base.pdtzrzf <- function(qr)
 {
+  x <- qr$qr
+  
   # Matrix descriptors
   desca <- base.descinit(x@dim, x@bldim, x@ldim, ICTXT=x@CTXT)
 
   m <- desca[3]
   n <- desca[4]
-  
-  k <- qr$rank
   
   out <- .Call("R_PDTZRZF",
             as.integer(m), as.integer(n),
@@ -346,17 +309,6 @@ base.pdtrsv <- function(x, y, uplo='U', trans='T')
   
   dg <- 'N'
   
-#pdtrsv(uplo, trans, diag, n, a, ia, ja, desca, x, ix, jx, descx, incx)
-
-  # perform QR
-#  out <- .C("pdtrsv_",
-#            UPLO=as.character(uplo), TRANS=as.character(trans),
-#            DIAG=as.character('N'), N=as.integer(n),
-#            A=x@Data, as.integer(1), as.integer(1), DESCA=as.integer(desca), 
-#            X=y@Data, as.integer(1), as.integer(1), DESCC=as.integer(descc),
-#            INCX=as.integer(1),
-#            PACKAGE="pbdBASE")
-
   out <- .Call("R_PDTRSV",
             as.character(uplo), as.character(trans), as.character(dg),
             as.integer(n),
@@ -366,7 +318,7 @@ base.pdtrsv <- function(x, y, uplo='U', trans='T')
   
   if (out$INFO!=0)
     warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
-
+  
   y@Data <- out$C
   
   return( y )
