@@ -133,6 +133,59 @@ base.rpdgels <- function(a, b, tol=1e-7)
 }
 
 
+
+
+
+
+
+# qr()
+base.rpdgeqpf <- function(x, tol=1e-7)
+{
+  # Matrix descriptors
+  desca <- base.descinit(x@dim, x@bldim, x@ldim, ICTXT=x@CTXT)
+
+  m <- desca[3]
+  n <- desca[4]
+  
+#  # Determine size of work array
+#  lwork <- .Fortran("RPDGEQPF",
+#            TOL=as.double(tol), M=as.integer(m), N=as.integer(n),
+#            A=double(1), as.integer(1), as.integer(1), DESCA=as.integer(desca),
+#            IPIV=as.integer(1), TAU=double(1),
+#            WORK=double(1), LWORK=as.integer(-1),
+#            RANK=as.integer(n), INFO=integer(1),
+#            package="pbdBASE")$WORK[1]
+
+#  # perform QR
+#  out <- .Fortran("RPDGEQPF",
+#            TOL=as.double(tol), M=as.integer(m), N=as.integer(n),
+#            A=x@Data, as.integer(1), as.integer(1), DESCA=as.integer(desca),
+#            IPIV=integer(x@ldim[2]), TAU=double(min(m, n)),
+#            WORK=double(lwork), LWORK=as.integer(lwork),
+#            RANK=as.integer(n), INFO=integer(1),
+#            package="pbdBASE")
+  
+  ret <- .Call("R_PDGEQPF",
+               as.double(tol), as.integer(m), as.integer(n), 
+               x@Data, as.integer(x@ldim), as.integer(desca),
+               as.integer(min(m, n)),
+               PACKAGE="pbdBASE")
+  
+  if (ret$INFO!=0)
+    warning(paste("ScaLAPACK returned INFO=", ret$INFO, "; returned solution is likely invalid", sep=""))
+  
+  x@Data <- ret$qr
+  ret$qr <- x
+  ret$INFO <- NULL
+  
+  attr(ret, "class") <- "qr"
+  
+  return( ret )
+}
+
+
+
+
 # qr.Q()
 # recover Q from base.rpdgeqrf
 base.pdorgqr <- function(qr)
@@ -170,13 +223,14 @@ base.qr.R <- function(qr, complete=FALSE)
 {
   ret <- qr$qr
   
-  if (!complete)
+  if (!complete){
     if (min(ret@dim)!=ret@dim[1])
       ret <- ret[1:min(ret@dim), ]
+  }
   
   ret@Data <- base.low2zero(A=ret@Data, dim=ret@dim, ldim=ret@ldim, bldim=ret@bldim, CTXT=ret@CTXT)
   
-  # not particularly efficient, but no one should really be calling this...
+  # not particularly efficient, but I don't expect this to get any real use...
   rank <- qr$rank
   n <- ret@dim[1]
   p <- ret@dim[2]

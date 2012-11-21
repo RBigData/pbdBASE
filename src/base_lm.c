@@ -7,7 +7,7 @@
 /* strategy from R's dqrls.f is used. I don't think this is     */
 /* numerically stable, but it's the cost of preserving the      */
 /* order of the model matrix, which has important interpretive  */
-/* value.                                                       */
+/* value sometimes.                                             */
 SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
   SEXP A, SEXP ALDIM, SEXP DESCA,
   SEXP B, SEXP BLDIM, SEXP DESCB,
@@ -114,6 +114,81 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
 /*           QR functions no one will ever use           */
 /* ----------------------------------------------------- */
 
+/* Computing QR */
+SEXP R_PDGEQPF(SEXP TOL, SEXP M, SEXP N,
+  SEXP A, SEXP ALDIM, SEXP DESCA,
+  SEXP LTAU)
+{
+  int i, *pt_ALDIM = INTEGER(ALDIM);
+  int lwork = -1;
+  const int IJ = 1;
+  
+  double *pt_ORG, *pt_COPY;
+  double work = 0;
+  const double tmp = 0;
+  
+  double *p_work;
+  
+  SEXP RET, RET_NAMES, INFO, A_OUT, TAU, IPIV, RANK;
+  
+  /* Protect R objects. */
+  PROTECT(INFO = allocVector(INTSXP, 1));
+  PROTECT(A_OUT = allocMatrix(REALSXP, pt_ALDIM[0], pt_ALDIM[1]));
+  PROTECT(TAU = allocVector(REALSXP, INTEGER(LTAU)[0]));
+  PROTECT(IPIV = allocVector(INTSXP, pt_ALDIM[1]));
+  PROTECT(RANK = allocVector(INTSXP, 1));
+  
+  /* Manage return */
+  PROTECT(RET = allocVector(VECSXP, 5));
+  PROTECT(RET_NAMES = allocVector(STRSXP, 5));
+  
+  SET_VECTOR_ELT(RET, 0, A_OUT);
+  SET_VECTOR_ELT(RET, 1, RANK);
+  SET_VECTOR_ELT(RET, 2, TAU);
+  SET_VECTOR_ELT(RET, 3, IPIV);
+  SET_VECTOR_ELT(RET, 4, INFO);
+  
+  SET_STRING_ELT(RET_NAMES, 0, mkChar("qr")); 
+  SET_STRING_ELT(RET_NAMES, 1, mkChar("rank")); 
+  SET_STRING_ELT(RET_NAMES, 2, mkChar("tau")); 
+  SET_STRING_ELT(RET_NAMES, 3, mkChar("pivot")); 
+  SET_STRING_ELT(RET_NAMES, 4, mkChar("INFO")); 
+  
+  setAttrib(RET, R_NamesSymbol, RET_NAMES);
+  
+  /* Copy A since pdorgqr writes in place */
+  pt_ORG = REAL(A);
+  pt_COPY = REAL(A_OUT);
+  for(i = 0; i < pt_ALDIM[0] * pt_ALDIM[1]; i++){
+    *pt_COPY = *pt_ORG;
+    pt_ORG++;
+    pt_COPY++;
+  }
+  
+  /* workspace query */
+  INTEGER(INFO)[0] = 0;
+  F77_CALL(rpdgeqpf)(REAL(TOL), INTEGER(M), INTEGER(N),
+    &tmp, &IJ, &IJ, INTEGER(DESCA), 
+    &IJ, &tmp,
+    &work, &lwork, &IJ, INTEGER(INFO));
+  
+  /* allocate work vector and factor A=QR */
+  lwork = (int) work;
+  p_work = (double *) R_alloc(lwork, sizeof(double));
+  
+  INTEGER(INFO)[0] = 0;
+  F77_CALL(rpdgeqpf)(REAL(TOL), INTEGER(M), INTEGER(N),
+    REAL(A_OUT), &IJ, &IJ, INTEGER(DESCA), 
+    INTEGER(IPIV), REAL(TAU),
+    p_work, &lwork, INTEGER(RANK), INTEGER(INFO));
+  
+  /* Return. */
+  UNPROTECT(7);
+  return(RET);
+} 
+
+
+
 
 /* For computing Q*y or Q^T*y */
 SEXP R_PDORMQR(SEXP SIDE, SEXP TRANS, SEXP M, SEXP N, SEXP K,
@@ -125,11 +200,11 @@ SEXP R_PDORMQR(SEXP SIDE, SEXP TRANS, SEXP M, SEXP N, SEXP K,
   int lwork = -1;
   const int IJ = 1;
   
-  double *pt_ORG, *pt_COPY, *A_OUT;
+  double *pt_ORG, *pt_COPY, *A_CPY;
   double work = 0;
   const double tmp = 0;
   
-  double *p_work, *tau;
+  double *p_work;
   
   SEXP RET, RET_NAMES, INFO, B_OUT;
   
@@ -141,14 +216,14 @@ SEXP R_PDORMQR(SEXP SIDE, SEXP TRANS, SEXP M, SEXP N, SEXP K,
   
   SET_VECTOR_ELT(RET, 0, INFO);
   SET_VECTOR_ELT(RET, 1, B_OUT);
-  SET_STRING_ELT(RET_NAMES, 0, mkChar("info")); 
+  SET_STRING_ELT(RET_NAMES, 0, mkChar("INFO")); 
   SET_STRING_ELT(RET_NAMES, 1, mkChar("B")); 
   setAttrib(RET, R_NamesSymbol, RET_NAMES);
   
   /* Copy A and B since pdormqr writes in place */
-  A_OUT = (double *) R_alloc(pt_ALDIM[0] * pt_ALDIM[1], sizeof(double));
+  A_CPY = (double *) R_alloc(pt_ALDIM[0] * pt_ALDIM[1], sizeof(double));
   pt_ORG = REAL(A);
-  pt_COPY = A_OUT;
+  pt_COPY = A_CPY;
   for(i = 0; i < pt_ALDIM[0] * pt_ALDIM[1]; i++){
     *pt_COPY = *pt_ORG;
     pt_ORG++;
@@ -170,7 +245,7 @@ SEXP R_PDORMQR(SEXP SIDE, SEXP TRANS, SEXP M, SEXP N, SEXP K,
     &tmp, &IJ, &IJ, INTEGER(DESCA), 
     &tmp,
     &tmp, &IJ, &IJ, INTEGER(DESCB),
-    &work, &lwork, INTEGER(INFO)[0]);
+    &work, &lwork, INTEGER(INFO));
   
   /* allocate work vector and compute Q*y or Q^T*y */
   lwork = (int) work;
@@ -179,10 +254,10 @@ SEXP R_PDORMQR(SEXP SIDE, SEXP TRANS, SEXP M, SEXP N, SEXP K,
   INTEGER(INFO)[0] = 0;
   F77_CALL(pdormqr)(CHARPT(SIDE, 0), CHARPT(TRANS, 0),
     INTEGER(M), INTEGER(N), INTEGER(K), 
-    REAL(A_OUT), &IJ, &IJ, INTEGER(DESCA), 
-    tau,
+    A_CPY, &IJ, &IJ, INTEGER(DESCA), 
+    REAL(TAU),
     REAL(B_OUT), &IJ, &IJ, INTEGER(DESCB),
-    p_work, &lwork, INTEGER(INFO)[0]);
+    p_work, &lwork, INTEGER(INFO));
   
   /* Return. */
   UNPROTECT(4);
@@ -220,14 +295,14 @@ SEXP R_PDORGQR(SEXP M, SEXP N, SEXP K,
   
   SET_VECTOR_ELT(RET, 0, INFO);
   SET_VECTOR_ELT(RET, 1, A_OUT);
-  SET_STRING_ELT(RET_NAMES, 0, mkChar("info")); 
+  SET_STRING_ELT(RET_NAMES, 0, mkChar("INFO")); 
   SET_STRING_ELT(RET_NAMES, 1, mkChar("A")); 
   
   setAttrib(RET, R_NamesSymbol, RET_NAMES);
   
   /* Copy A since pdorgqr writes in place */
   pt_ORG = REAL(A);
-  pt_COPY = A_OUT;
+  pt_COPY = REAL(A_OUT);
   for(i = 0; i < pt_ALDIM[0] * pt_ALDIM[1]; i++){
     *pt_COPY = *pt_ORG;
     pt_ORG++;
@@ -239,9 +314,9 @@ SEXP R_PDORGQR(SEXP M, SEXP N, SEXP K,
   F77_CALL(pdorgqr)(INTEGER(M), INTEGER(N), INTEGER(K), 
     &tmp, &IJ, &IJ, INTEGER(DESCA), 
     &tmp,
-    &work, &lwork, INTEGER(INFO)[0]);
+    &work, &lwork, INTEGER(INFO));
   
-  /* allocate work vector and compute Q*y or Q^T*y */
+  /* allocate work vector and recover Q */
   lwork = (int) work;
   p_work = (double *) R_alloc(lwork, sizeof(double));
   
@@ -249,14 +324,12 @@ SEXP R_PDORGQR(SEXP M, SEXP N, SEXP K,
   F77_CALL(pdorgqr)(INTEGER(M), INTEGER(N), INTEGER(K), 
     REAL(A_OUT), &IJ, &IJ, INTEGER(DESCA), 
     REAL(TAU),
-    p_work, &lwork, INTEGER(INFO)[0]);
+    p_work, &lwork, INTEGER(INFO));
   
   /* Return. */
   UNPROTECT(4);
   return(RET);
 } 
-
-
 
 
 
@@ -292,7 +365,7 @@ SEXP R_PDTZRZF(SEXP M, SEXP N,
   
   /* Copy A since pdorgqr writes in place */
   pt_ORG = REAL(A);
-  pt_COPY = A_OUT;
+  pt_COPY = REAL(A_OUT);
   for(i = 0; i < pt_ALDIM[0] * pt_ALDIM[1]; i++){
     *pt_COPY = *pt_ORG;
     pt_ORG++;
@@ -304,9 +377,9 @@ SEXP R_PDTZRZF(SEXP M, SEXP N,
   F77_CALL(pdorgqr)(INTEGER(M), INTEGER(N),
     &tmp, &IJ, &IJ, INTEGER(DESCA), 
     &tmp,
-    &work, &lwork, INTEGER(INFO)[0]);
+    &work, &lwork, INTEGER(INFO));
   
-  /* allocate work vector and compute Q*y or Q^T*y */
+  /* allocate work vector and reduce to upper triangular */
   lwork = (int) work;
   p_work = (double *) R_alloc(lwork, sizeof(double));
   
@@ -314,7 +387,7 @@ SEXP R_PDTZRZF(SEXP M, SEXP N,
   F77_CALL(pdorgqr)(INTEGER(M), INTEGER(N), 
     REAL(A_OUT), &IJ, &IJ, INTEGER(DESCA), 
     REAL(TAU),
-    p_work, &lwork, INTEGER(INFO)[0]);
+    p_work, &lwork, INTEGER(INFO));
   
   /* Return. */
   UNPROTECT(4);
@@ -356,7 +429,7 @@ SEXP R_PDTRSV(SEXP UPLO, SEXP TRANS, SEXP DIAG,
   
   /* Copy A and B since pdtrsv writes in place */
   pt_ORG = REAL(A);
-  pt_COPY = A_OUT;
+  pt_COPY = REAL(A_OUT);
   for(i = 0; i < pt_ALDIM[0] * pt_ALDIM[1]; i++){
     *pt_COPY = *pt_ORG;
     pt_ORG++;
