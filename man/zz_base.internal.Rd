@@ -52,6 +52,7 @@
 \alias{base.pdormqr}
 \alias{base.pdtrsv}
 \alias{base.pdtzrzf}
+\alias{base.rpdgeqpf}
 \alias{base.qr.R}
 \alias{base.rbind}
 \alias{base.cbind}

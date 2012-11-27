@@ -6,8 +6,10 @@
       SUBROUTINE RPDORMQR( SIDE, TRANS, M, N, K, A, IA, JA, DESCA, TAU,
      $                    C, IC, JC, DESCC, WORK, LWORK, INFO )
 *
-*     Originally:
+*     THIS IS A MODIFIED ROUTINE
+*     See http://www.netlib.org/scalapack/ for the original version
 *
+*     Originally:
 *  -- ScaLAPACK routine (version 1.7) --
 *     University of Tennessee, Knoxville, Oak Ridge National Laboratory,
 *     and University of California, Berkeley.
@@ -270,6 +272,9 @@
 !
       SUBROUTINE RPDGEQPF( TOL, M, N, A, IA, JA, DESCA, IPIV, TAU, 
      $                    WORK, LWORK, RANK, INFO )
+*
+*     THIS IS A MODIFIED ROUTINE
+*     See http://www.netlib.org/scalapack/ for the original version
 *
 *     Originally:
 *  -- ScaLAPACK routine (version 1.7) --
@@ -714,8 +719,11 @@
      $                    TAU, WORK, LWORK, IPIV,
      $                    RANK, INFO )
 *
+*     THIS IS A MODIFIED ROUTINE
+*     See http://www.netlib.org/scalapack/ for the original version
+*
 *     Originally:
-*  -- ScaLAPACK routine (version 1.7) --
+*  -- ScaLAPACK routine (version 1.7) --`
 *     University of Tennessee, Knoxville, Oak Ridge National Laboratory,
 *     and University of California, Berkeley.
 *     May 1, 1997
@@ -960,34 +968,20 @@
 *
       IPW = LTAU + 1
 *
-!      IF( M.GE.N ) THEN
 *
 *        compute QR factorization of A
 *
-!
-!
 !
         ! Copy B over to RSD for later residual calculation
          CALL PDLACPY('All', M, NRHS, B, IB, JB, DESCB,
      $                    RSD, IB, JB, DESCB)
 !
-!         CALL PDGEQRF( M, N, A, IA, JA, DESCA, WORK, WORK( IPW ),
-!     $                 LWORK-LTAU, INFO )
          CALL RPDGEQPF( TOL, M, N, A, IA, JA, DESCA, IPIV, 
      $                  TAU, WORK( IPW ), LWORK-LTAU, RANK, INFO)
          ! Adjust number of columns to fit numerical rank
          ITMP = N ! original N
          N = RANK
          DESCA(4) = N
-!         IF ( M.LT.ITMP ) THEN
-!           CALL PDTZRZF( M, ITMP, A, IA, JA, DESCA, TAU, WORK, LWORK, 
-!     $                   INFO )
-!         END IF
-!
-*
-*        workspace at least N, optimally N*NB
-*
-         IF( .NOT.TPSD ) THEN
 *
 *           Least-Squares Problem min || A * X - B ||
 *
@@ -1026,92 +1020,6 @@
 *
             SCLLEN = N
 *
-         ELSE
-*
-*           Overdetermined system of equations sub( A )' * X = sub( B )
-*
-*           sub( B ) := inv(R') * sub( B )
-*
-            CALL PDTRSM( 'Left', 'Upper', 'Transpose', 'Non-unit', N,
-     $                   NRHS, ONE, A, IA, JA, DESCA, B, IB, JB, DESCB )
-*
-*           B(IB+N:IB+M-1,JB:JB+NRHS-1) = ZERO
-*
-            CALL PDLASET( 'All', M-N, NRHS, ZERO, ZERO, B, IB+N, JB,
-     $                    DESCB )
-*
-*           B(IB:IB+M-1,JB:JB+NRHS-1) := Q(1:N,:) *
-*                                        B(IB:IB+N-1,JB:JB+NRHS-1)
-*
-            CALL PDORMQR( 'Left', 'No transpose', M, NRHS, N, A, IA, JA,
-     $                    DESCA, WORK, B, IB, JB, DESCB, WORK( IPW ),
-     $                    LWORK-LTAU, INFO )
-*
-*           workspace at least NRHS, optimally NRHS*NB
-*
-            SCLLEN = M
-*
-         END IF
-*
-!!!!!      ELSE
-!!!!!*
-!!!!!*        Compute LQ factorization of sub( A )
-!!!!!*
-!!!!!         CALL PDGELQF( M, N, A, IA, JA, DESCA, WORK, WORK( IPW ),
-!!!!!     $                 LWORK-LTAU, INFO )
-!!!!!*
-!!!!!*        workspace at least M, optimally M*NB.
-!!!!!*
-!!!!!         IF( .NOT.TPSD ) THEN
-!!!!!*
-!!!!!*           underdetermined system of equations sub( A ) * X = sub( B )
-!!!!!*
-!!!!!*           B(IB:IB+M-1,JB:JB+NRHS-1) := inv(L) *
-!!!!!*                                        B(IB:IB+M-1,JB:JB+NRHS-1)
-!!!!!*
-!!!!!            CALL PDTRSM( 'Left', 'Lower', 'No transpose', 'Non-unit', M,
-!!!!!     $                   NRHS, ONE, A, IA, JA, DESCA, B, IB, JB, DESCB )
-!!!!!*
-!!!!!*           B(IB+M:IB+N-1,JB:JB+NRHS-1) = 0
-!!!!!*
-!!!!!            CALL PDLASET( 'All', N-M, NRHS, ZERO, ZERO, B, IB+M, JB,
-!!!!!     $                    DESCB )
-!!!!!*
-!!!!!*           B(IB:IB+N-1,JB:JB+NRHS-1) := Q(1:N,:)' *
-!!!!!*                                        B(IB:IB+M-1,JB:JB+NRHS-1)
-!!!!!*
-!!!!!            CALL PDORMLQ( 'Left', 'Transpose', N, NRHS, M, A, IA, JA,
-!!!!!     $                    DESCA, WORK, B, IB, JB, DESCB, WORK( IPW ),
-!!!!!     $                    LWORK-LTAU, INFO )
-!!!!!*
-!!!!!*           workspace at least NRHS, optimally NRHS*NB
-!!!!!*
-!!!!!            SCLLEN = N
-!!!!!*
-!!!!!         ELSE
-!!!!!*
-!!!!!*           overdetermined system min || A' * X - B ||
-!!!!!*
-!!!!!*           B(IB:IB+N-1,JB:JB+NRHS-1) := Q * B(IB:IB+N-1,JB:JB+NRHS-1)
-!!!!!*
-!!!!!            CALL PDORMLQ( 'Left', 'No transpose', N, NRHS, M, A, IA, JA,
-!!!!!     $                    DESCA, WORK, B, IB, JB, DESCB, WORK( IPW ),
-!!!!!     $                    LWORK-LTAU, INFO )
-!!!!!*
-!!!!!*           workspace at least NRHS, optimally NRHS*NB
-!!!!!*
-!!!!!*           B(IB:IB+M-1,JB:JB+NRHS-1) := inv(L') *
-!!!!!*                                        B(IB:IB+M-1,JB:JB+NRHS-1)
-!!!!!*
-!!!!!            CALL PDTRSM( 'Left', 'Lower', 'Transpose', 'Non-unit', M,
-!!!!!     $                   NRHS, ONE, A, IA, JA, DESCA, B, IB, JB, DESCB )
-!!!!!*
-!!!!!            SCLLEN = M
-!!!!!*
-!!!!!         END IF
-!!!!!*
-!!!!!      END IF
-*
 *     Undo scaling
 *
       IF( IASCL.EQ.1 ) THEN
@@ -1131,8 +1039,6 @@
 *
    10 CONTINUE
 
-      ! pass back TAU
-!      TAU(1:LTAU) = WORK(1:LTAU)
       WORK( 1 ) = DBLE( LWMIN )
 *
       RETURN
