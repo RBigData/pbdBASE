@@ -42,35 +42,36 @@ base.pdtran <- function(a)
 # ------------------------------------------------
 # ################################################
 
-base.pdgemm <- function(a, b)
+base.rpdgemm <- function(x, y, outbldim)
 {
-  ICTXT <- a@CTXT
+  ICTXT <- x@CTXT
   
-  m <- a@dim[1L]
-  n <- b@dim[2L]
-  k <- b@dim[1L]
+  m <- x@dim[1L]
+  n <- y@dim[2L]
+  k <- y@dim[1L]
   
-  bldim <- a@bldim
+  bldimx <- x@bldim
+  bldimy <- y@bldim
   
-  cdim <- c(a@dim[1L], b@dim[2L])
-  cldim <- base.numroc(cdim, a@bldim, ICTXT=ICTXT)
+  cdim <- c(x@dim[1L], y@dim[2L])
+  cldim <- base.numroc(cdim, outbldim, ICTXT=ICTXT)
   
-  desca <- base.descinit(dim=a@dim, bldim=bldim, ldim=a@ldim, ICTXT=ICTXT)
-  descb <- base.descinit(dim=b@dim, bldim=bldim, ldim=b@ldim, ICTXT=ICTXT)
-  descc <- base.descinit(dim=cdim, bldim=bldim, ldim=cldim, ICTXT=ICTXT)
+  desca <- base.descinit(dim=x@dim, bldim=bldimx, ldim=x@ldim, ICTXT=ICTXT)
+  descb <- base.descinit(dim=y@dim, bldim=bldimy, ldim=y@ldim, ICTXT=ICTXT)
+  descc <- base.descinit(dim=cdim, bldim=outbldim, ldim=cldim, ICTXT=ICTXT)
   
   trans <- 'N'
   
   ret <- .Call("R_PDGEMM",
                   as.character(trans), as.character(trans),
                   as.integer(m), as.integer(n), as.integer(k),
-                  a@Data, as.integer(desca),
-                  b@Data, as.integer(descb),
+                  x@Data, as.integer(desca),
+                  y@Data, as.integer(descb),
                   as.integer(cldim), as.integer(descc),
                   PACKAGE="pbdBASE"
                  )
   
-  c <- new("ddmatrix", Data=ret, dim=cdim, ldim=cldim, bldim=a@bldim, CTXT=ICTXT)
+  c <- new("ddmatrix", Data=ret, dim=cdim, ldim=cldim, bldim=outbldim, CTXT=ICTXT)
   
   return(c)
 }
