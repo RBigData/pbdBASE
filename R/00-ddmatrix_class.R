@@ -5,7 +5,6 @@
 # ##################################################
 
 # Distributed Dense Matrix
-ddmatrix <- 
   setClass(
            "ddmatrix", 
             representation(

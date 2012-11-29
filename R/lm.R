@@ -123,6 +123,8 @@ base.rpdgels <- function(a, b, tol=1e-7)
   
   qr <- list(qr=a, tau=out$TAU, pivot=pivot, tol=tol, rank=out$RANK)
   
+  attr(qr, "class") <- "qr"
+  
   ret <- list(coefficients=b, residuals=residuals, effects=NULL, 
               rank=out$RANK, fitted.values=fitted.values, assign=NULL,
               qr=qr, df.residual=(a@dim[1] - out$RANK))

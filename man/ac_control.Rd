@@ -14,4 +14,3 @@
   Any time a function takes the \code{bldim=} argument, it will 
   default to this value unless the user specifies an alternative.
 }
-\keyword{Global Variables}

@@ -467,7 +467,7 @@ setMethod("print", signature(x="ddmatrix"),
     } else {
       ff <- paste(paste(format(base.firstfew(x, atmost=4), scientific=TRUE, digits=3), collapse=", "), ", ...", sep="")
       if (comm.rank()==0){
-        blacs_ <- blacs(x@CTXT)
+        blacs_ <- base.blacs(x@CTXT)
         cat(sprintf("\nDENSE DISTRIBUTED MATRIX\n---------------------------\n@Data:\t\t\t%s\nProcess grid:\t\t%dx%d\nGlobal dimension:\t%dx%d\n(max) Local dimension:\t%dx%d\nBlocking:\t\t%dx%d\nBLACS CTXT:\t\t%d\n\n",
           ff, blacs_$NPROW, blacs_$NPCOL, x@dim[1], x@dim[2], x@ldim[1], x@ldim[2], x@bldim[1], x@bldim[2], x@CTXT))
       }

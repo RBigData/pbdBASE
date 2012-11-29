@@ -19,7 +19,7 @@
   
   The function frees the requested BLACS context. It is a trivial
   wrapper for the BLACS routine \code{BLACS_GRIDEXIT}. Also removes
-  the globally stored R object \code{.__blacs_gridinfo_ICTXT}. 
+  the object \code{.__blacs_gridinfo_ICTXT}. 
   
   Contexts 0, 1, and 2 can not be freed in this way unless the
   argument \code{override=FALSE}. This will probably break something
@@ -33,4 +33,3 @@
   \code{\link{InitGrid}}
 }
 \keyword{BLACS}
-\keyword{Global Variables}

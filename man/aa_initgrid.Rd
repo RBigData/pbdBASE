@@ -14,15 +14,16 @@
   \item{ICTXT}{BLACS context number.}
 }
 \details{
-  If \code{ICTXT} is missing, three global variables will be created:
+  If \code{ICTXT} is missing, three variables will be created in the
+  \code{.pbdBASEEnv} environment:
   
-  .__blacs_gridinfo_0
+  \code{.__blacs_gridinfo_0}
   
-  .__blacs_gridinfo_1
+  \code{.__blacs_gridinfo_1}
   
-  .__blacs_gridinfo_2
+  \code{.__blacs_gridinfo_2}
 
-  These global variables store the BLACS process grid information for the BLACS
+  These variables store the BLACS process grid information for the BLACS
   context corresponding to the trailing digit of the variable. Most users should
   invoke \code{init.grid()} in this fashion, namely with ICTXT missing, and only
   do so once.
@@ -45,17 +46,18 @@
   grid will be chosen for the user based on the total available number of
   processes. Here ``best'' means as close to a square grid as possible.
   
-  The global variables \code{.__blacs_gridinfo_ICTXT} are just storage mechanisms
+  The variables \code{.__blacs_gridinfo_ICTXT} are just storage mechanisms
   to avoid needing to directly invoke the BLACS routine \code{BLACS_GRIDINFO}.
 
-  Additionally, another global variable is created when running 
-  \code{init.grid()}, namely \code{.__blacs_initialized}. Its existence 
+  Additionally, another variable is created in the \code{.pbdBASEEnv}
+  environment, namely \code{.__blacs_initialized}. Its existence 
   is to alert \code{finalize()} to shut down BLACS communicators, if
   necessary, to prevent memory leaks.
 }
 \value{
-  Silently returns 0 when successful. Additionally, several global variables
-  are produced.  See Details section.
+  Silently returns 0 when successful. Additionally, several variables
+  are created in the \code{.pbdBASEEnv} environment.  See Details 
+  section.
 }
 \seealso{
   \code{\link{as.ddmatrix}, \link{BLACS}, \link{Distribute}}
@@ -72,4 +74,3 @@ finalize()
 }
 }
 \keyword{BLACS}
-\keyword{Global Variables}

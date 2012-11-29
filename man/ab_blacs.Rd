@@ -46,4 +46,3 @@ finalize()
 }
 }
 \keyword{BLACS}
-\keyword{Global Variables}

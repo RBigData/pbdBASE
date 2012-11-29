@@ -1,3 +1,8 @@
+pbdBASE 0.1-1 (2012-11-28) ---------------------------------------------------
+
+2012-28-21:
+  * Created .pbdBASEEnv environment.
+  * Changed functions to write to new env rather than .GlobalEnv.
 2012-11-21:
   * Fixed many problems with qr wrappers.
 2012-11-01:

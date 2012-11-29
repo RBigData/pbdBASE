@@ -518,7 +518,7 @@ base.mat.to.ddmat <- function(x, bldim=.BLDIM, ICTXT=0)
   else if (diff(bldim) != 0)
     warning("Most ScaLAPACK routines do not allow for non-square blocking.  This is highly non-advised.")
 
-  blacs_ <- blacs(ICTXT=ICTXT)
+  blacs_ <- base.blacs(ICTXT=ICTXT)
   nprows <- blacs_$NPROW
   npcols <- blacs_$NPCOL
   dim <- dim(x)

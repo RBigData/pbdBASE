@@ -32,6 +32,8 @@ R_OBJS = \
   base_scalapack.o \
   base_scalapack_utility_fort.o \
   base_lm.o \
+  variance.o \
+  base_variance.o \
   bprnt_c.o
 OBJECTS = $(R_OBJS)
 

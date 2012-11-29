@@ -31,4 +31,3 @@
   \code{\link{InitGrid}}
 }
 \keyword{BLACS}
-\keyword{Global Variables}

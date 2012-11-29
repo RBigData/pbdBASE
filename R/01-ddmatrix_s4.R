@@ -9,29 +9,26 @@ setGeneric(name="all.equal", useAsDefault=all.equal)
 
 setGeneric(name="as.vector", 
   function(x, ...)
-    standardGeneric("as.vector")
+    standardGeneric("as.vector"),
+  package="pbdBASE"
 )
 
 setGeneric(name="rbind", 
   function(..., ICTXT=0, deparse.level=1)
-    standardGeneric("rbind")
+    standardGeneric("rbind"),
+  package="pbdBASE"
 )
 
 setGeneric(name="cbind", 
   function(..., ICTXT=0, deparse.level=1)
-    standardGeneric("cbind")
+    standardGeneric("cbind"),
+  package="pbdBASE"
 )
 
 ### S4 methods for new things
 setGeneric(name="as.ddmatrix", 
   function(x, ...) 
     standardGeneric("as.ddmatrix"), 
-  package="pbdBASE"
-)
-
-setGeneric(name="as.vec", 
-  function(x, ...) 
-    standardGeneric("as.vec"), 
   package="pbdBASE"
 )
 
@@ -43,7 +40,8 @@ setGeneric(name="submatrix",
 
 setGeneric("submatrix<-", 
   function(x, value)
-    standardGeneric("submatrix<-")
+    standardGeneric("submatrix<-"),
+  package="pbdBASE"
 )
 
 setGeneric(name="ldim", 

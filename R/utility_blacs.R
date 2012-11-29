@@ -114,12 +114,12 @@ base.init.grid <- function(nprow, npcol, ICTXT)
   
   if (ICTXT==0){
     # Full context
-    assign(x=".__blacs_gridinfo_0", value=value, envir=.GlobalEnv)
+    assign(x=".__blacs_gridinfo_0", value=value, envir=.pbdBASEEnv)
     # Row context
 #    if (.__blacs_gridinfo_0$NPROW==1)
 #      assign(x=".__blacs_gridinfo_1", 
 #       value=value, 
-#       envir=.GlobalEnv
+#       envir=.pbdBASEEnv
 #      )
 #    else
       assign(x=".__blacs_gridinfo_1", 
@@ -127,12 +127,12 @@ base.init.grid <- function(nprow, npcol, ICTXT)
                     NPROW=as.integer(1), NPCOL=as.integer(nprow*npcol), 
                     ICTXT=as.integer(1), MYROW=as.integer(0), 
                     MYCOL=as.integer(0) ),
-             envir=.GlobalEnv )
+             envir=.pbdBASEEnv )
     # Col context
 #    if (.__blacs_gridinfo_0$NPCOL==1)
 #      assign(x=".__blacs_gridinfo_2", 
 #       value=value, 
-#       envir=.GlobalEnv
+#       envir=.pbdBASEEnv
 #      )
 #    else
       assign(x=".__blacs_gridinfo_2", 
@@ -140,13 +140,13 @@ base.init.grid <- function(nprow, npcol, ICTXT)
                     NPROW=as.integer(nprow*npcol), NPCOL=as.integer(1), 
                     ICTXT=as.integer(2), MYROW=as.integer(0), 
                     MYCOL=as.integer(0) ),
-             envir=.GlobalEnv )
+             envir=.pbdBASEEnv )
   }
   else
-    assign(x=paste(".__blacs_gridinfo_", ICTXT, sep=""), value=value, envir=.GlobalEnv)
+    assign(x=paste(".__blacs_gridinfo_", ICTXT, sep=""), value=value, envir=.pbdBASEEnv)
 
   if (!exists(".__blacs_initialized"))
-    assign(x=".__blacs_initialized", value=TRUE, envir=.GlobalEnv)
+    assign(x=".__blacs_initialized", value=TRUE, envir=.pbdBASEEnv)
   invisible(0) # quiet return
 }
 
@@ -157,7 +157,7 @@ init.grid <- base.init.grid
 base.blacs <- function(ICTXT=0)
 {
   ICTXT <- as.integer(ICTXT)
-  gridinfo <- get(paste(".__blacs_gridinfo_", ICTXT, sep=""), envir=.GlobalEnv)
+  gridinfo <- get(paste(".__blacs_gridinfo_", ICTXT, sep=""), envir=.pbdBASEEnv)
   
   return(gridinfo)
 }
@@ -176,7 +176,7 @@ base.gridexit <- function(ICTXT, ..., override=FALSE)
   if (blacs_$MYROW != -1 && blacs_$MYCOL != -1)
     .Fortran("BLACS_GRIDEXIT", ICONTXT=as.integer(FCTXT), PACKAGE="pbdBASE")
 
-  rm(list = paste(".__blacs_gridinfo_", ICTXT, sep=""), envir=.GlobalEnv)
+  rm(list = paste(".__blacs_gridinfo_", ICTXT, sep=""), envir=.pbdBASEEnv)
 
   return( invisible(0) )
 }
@@ -269,9 +269,9 @@ blacsexit <- base.blacsexit
 # replacement for pbdMPI::finalize() that automatically shuts BLACS down
 finalize <- function(mpi.finalize=.SPMD.CT$mpi.finalize)
 {
-  if (exists(".__blacs_initialized", envir = .GlobalEnv)){
+  if (exists(".__blacs_initialized", envir = .pbdBASEEnv)){
     base.blacsexit(CONT=TRUE)
-    rm(list = ".__blacs_initialized", envir = .GlobalEnv)
+    rm(list = ".__blacs_initialized", envir = .pbdBASEEnv)
   }
     
   pbdMPI::finalize(mpi.finalize=mpi.finalize)

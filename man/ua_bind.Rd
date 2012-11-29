@@ -2,45 +2,46 @@
 \docType{methods}
 
 \alias{rbind-method}
-\alias{rbind,ddmatrix-method}
+\alias{rbind,...-method}
 \alias{rbind,ANY-method}
 \alias{rbind}
 
 \alias{cbind-method}
-\alias{cbind,ddmatrix-method}
+\alias{cbind,...-method}
 \alias{cbind,ANY-method}
 \alias{cbind}
 
-\title{ Row and Column binds for Distributed Matricesh }
+\title{ Row and Column binds for Distributed Matrices}
 \description{
   Row and column binds.
 }
 \section{Methods}{
 \describe{
-\item{\code{signature(x = "ddmatrix")}}{}
+\item{\code{signature(... = "ANY")}}{an R object.}
 }
 }
 \usage{
-  \S4method{rbind}{ddmatrix}(x, mode = 'any', proc.dest = 'all')
+  \S4method{rbind}{...}(..., ICTXT = 0, deparse.level = 1)
+  \S4method{cbind}{...}(..., ICTXT = 0, deparse.level = 1)
 }
 \arguments{
-  \item{x}{numeric distributed matrix}
-  \item{proc.dest}{destination process for storing the matrix}
-  \item{mode}{A character string giving an atomic mode or "list", 
-  or (except for 'vector') "any".}
+\item{...}{vectors, matrices, or distributed matrices.}
+\item{ICTXT}{BLACS communicator number for return object.}
+\item{deparse.level}{integer controlling the construction of labels in 
+  the case of non-matrix-like arguments. Does nothing for distributed
+  matrices.}
 }
 \details{
-  Converts a distributed matrix into a non-distributed vector or matrix.
-  
-  The \code{proc.dest=} argument accepts either the BLACS grid
-  position or the MPI rank if the user desires a single process to own
-  the matrix. Alternatively, passing the default value of \code{'all'}
-  will result in all processes owning the matrix. If only a single process 
-  owns the undistributed matrix, then all other processes store
-  \code{NULL} for that object.
+  The \code{...} list of arguments can be vectors, matrices, or 
+  distributed matrices so long as non-distributed objects are not 
+  used with distributed objects. This kind of mixing-and-matching 
+  will lead to chaos. Currently no check is performed to prevent
+  the user from this mixing-and-matching for performance reasons 
+  (it is slow enough already).
 }
 \value{
-  Returns an ordinary R matrix.
+  Returns a vector, matrix, or distributed matrix, depending on 
+  input.
 }
 \examples{
 \dontrun{
@@ -54,7 +55,9 @@ init.grid()
 x <- matrix(1:16, ncol=4)
 dx <- as.ddmatrix(x) 
 
-y <- as.matrix(dx, proc.dest=0)
+y <- rbind(dx, dx)
+
+print(y)
 
 finalize()
 }

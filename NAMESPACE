@@ -8,9 +8,11 @@ exportMethods(
   "as.matrix", "as.vector", "as.ddmatrix",
   "submatrix", "submatrix<-",
   "[", "[<-", "na.exclude",
-  "ldim", "bldim", "ctxt",
+  "nrow", "ncol", "dim", "ldim", "bldim", "ctxt", "submatrix",
+  "any", "all",
   "summary",
-  "rbind", "cbind"
+  "rbind", "cbind",
+  "print"
 )
 
 export(
@@ -21,18 +23,10 @@ export(
   ### utility
   numroc, ownany,
   is.ddmatrix, is.na, is.nan, is.infinite, is.numeric,
-  print,
-  nrow, ncol, dim, ldim, bldim, ctxt, submatrix,
   head.ddmatrix, tail.ddmatrix,
+  
   "[", "[<-",
   
   ### distribution
-  distribute, redistribute,
-
-  ### comparator
-  any, all,
-  
-  summary,
-  
-  rbind, cbind
+  distribute, redistribute
 )
