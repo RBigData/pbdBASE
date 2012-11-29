@@ -23,15 +23,17 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
   
   char trans = 'N'; // If trans='T', expect all hell to break loose
   
-  SEXP RET, RET_NAMES, INFO, A_OUT, B_OUT, FT, RSD, TAU, IPIV, RANK;
+  SEXP RET, RET_NAMES, INFO, A_OUT, B_OUT, 
+       EFF, FT, RSD, TAU, IPIV, RANK;
   
   /* set up return */
-  PROTECT(RET = allocVector(VECSXP, 8));
-  PROTECT(RET_NAMES = allocVector(STRSXP, 8));
+  PROTECT(RET = allocVector(VECSXP, 9));
+  PROTECT(RET_NAMES = allocVector(STRSXP, 9));
   
   PROTECT(INFO = allocVector(INTSXP, 1));
   PROTECT(A_OUT = allocMatrix(REALSXP, pt_ALDIM[0], pt_ALDIM[1]));
   PROTECT(B_OUT = allocMatrix(REALSXP, pt_BLDIM[0], pt_BLDIM[1]));
+  PROTECT(EFF = allocMatrix(REALSXP, pt_BLDIM[0], pt_BLDIM[1]));
   PROTECT(FT = allocMatrix(REALSXP, pt_BLDIM[0], pt_BLDIM[1]));
   PROTECT(RSD = allocMatrix(REALSXP, pt_BLDIM[0], pt_BLDIM[1]));
   PROTECT(TAU = allocVector(REALSXP, INTEGER(LTAU)[0]));
@@ -41,20 +43,22 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
   SET_VECTOR_ELT(RET, 0, INFO);
   SET_VECTOR_ELT(RET, 1, A_OUT);
   SET_VECTOR_ELT(RET, 2, B_OUT);
-  SET_VECTOR_ELT(RET, 3, FT);
-  SET_VECTOR_ELT(RET, 4, RSD);
-  SET_VECTOR_ELT(RET, 5, TAU);
-  SET_VECTOR_ELT(RET, 6, IPIV);
-  SET_VECTOR_ELT(RET, 7, RANK);
+  SET_VECTOR_ELT(RET, 3, EFF);
+  SET_VECTOR_ELT(RET, 4, FT);
+  SET_VECTOR_ELT(RET, 5, RSD);
+  SET_VECTOR_ELT(RET, 6, TAU);
+  SET_VECTOR_ELT(RET, 7, IPIV);
+  SET_VECTOR_ELT(RET, 8, RANK);
   
   SET_STRING_ELT(RET_NAMES, 0, mkChar("INFO")); 
   SET_STRING_ELT(RET_NAMES, 1, mkChar("A")); 
   SET_STRING_ELT(RET_NAMES, 2, mkChar("B")); 
-  SET_STRING_ELT(RET_NAMES, 3, mkChar("FT")); 
-  SET_STRING_ELT(RET_NAMES, 4, mkChar("RSD")); 
-  SET_STRING_ELT(RET_NAMES, 5, mkChar("TAU")); 
-  SET_STRING_ELT(RET_NAMES, 6, mkChar("IPIV"));
-  SET_STRING_ELT(RET_NAMES, 7, mkChar("RANK")); 
+  SET_STRING_ELT(RET_NAMES, 3, mkChar("EFF")); 
+  SET_STRING_ELT(RET_NAMES, 4, mkChar("FT")); 
+  SET_STRING_ELT(RET_NAMES, 5, mkChar("RSD")); 
+  SET_STRING_ELT(RET_NAMES, 6, mkChar("TAU")); 
+  SET_STRING_ELT(RET_NAMES, 7, mkChar("IPIV"));
+  SET_STRING_ELT(RET_NAMES, 8, mkChar("RANK")); 
   
   setAttrib(RET, R_NamesSymbol, RET_NAMES);
   
@@ -86,7 +90,7 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
     INTEGER(M), INTEGER(N), INTEGER(NRHS),
     &tmp, &IJ, &IJ, INTEGER(DESCA),
     &tmp, &IJ, &IJ, INTEGER(DESCB),
-    &tmp, &tmp,
+    &tmp, &tmp, &tmp,
     &tmp, &work, &lwork, 
     &IJ, &IJ, INTEGER(INFO));
   
@@ -99,12 +103,12 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
     INTEGER(M), INTEGER(N), INTEGER(NRHS),
     REAL(A_OUT), &IJ, &IJ, INTEGER(DESCA),
     REAL(B_OUT), &IJ, &IJ, INTEGER(DESCB),
-    REAL(FT), REAL(RSD),
+    REAL(EFF), REAL(FT), REAL(RSD),
     REAL(TAU), p_work, &lwork, 
     INTEGER(IPIV), INTEGER(RANK), INTEGER(INFO));
   
   /* Return. */
-  UNPROTECT(10);
+  UNPROTECT(11);
   return(RET);
 } 
 

@@ -22,56 +22,26 @@ base.rpdgels <- function(a, b, tol=1e-7)
   if (descb[9]==1)
     descb[9] <- mxldb
   
-#  # Determine size of work array 
-#  lwork <- .Fortran("RPDGELS", 
-#                    as.double(tol), as.character("N"), 
-#                    as.integer(m), as.integer(n), as.integer(nrhs),
-#                    double(1), as.integer(IJ), as.integer(IJ), as.integer(desca),
-#                    double(1), as.integer(IJ), as.integer(IJ), as.integer(descb),
-#                    double(1), double(1),
-#                    TAU=double(1), WORK=double(1), as.integer(-1), as.integer(1), 
-#                    integer(1), INFO=as.integer(0)
-#                    )$WORK[1]
-
-#  # Convert to .Call()
-#  # in: tol, trans, m, n, nrhs, IA, JA, desca, IB, JB, descb, lwork
-#  # in/out: A, B, 
-#  # out: FT, RSD, TAU, IPIV, RANK
-#  # local (just allocate in C, not a SEXP): work
-#  
-#  # IMPORTANT VVVVV
-#  # NOTE that FT must be initialized to zero
-#  # IMPORTANT ^^^^^
-
-#  # Fit the model
-#  out <- .Fortran("RPDGELS", 
-#                  TOL=as.double(tol), TRANS=as.character("N"),
-#                  M=as.integer(m), N=as.integer(n), NRHS=as.integer(nrhs),
-#                  A=a@Data, IA=as.integer(IJ), JA=as.integer(IJ), DESCA=as.integer(desca), 
-#                  B=b@Data, IB=as.integer(IJ), JB=as.integer(IJ), DESCB=as.integer(descb),
-#                  FT=matrix(double(prod(b@ldim)), b@ldim[1]), RSD=matrix(double(prod(b@ldim)), b@ldim[1]),
-#                  TAU=double(min(m, n)), WORK=double(lwork), LWORK=as.integer(lwork), IPIV=integer(a@ldim[2]),
-#                  RANK=integer(1), INFO=as.integer(0),
-#                  PACKAGE="pbdBASE")
-
   out <- .Call("R_PDGELS",
             TOL=as.double(tol), M=as.integer(m), N=as.integer(n), NRHS=as.integer(nrhs),
             A=a@Data, ALDIM=as.integer(a@ldim), DESCA=as.integer(desca),
             B=b@Data, BLDIM=as.integer(b@ldim), DESCB=as.integer(descb),
             LTAU=as.integer(min(m, n)),
             PACKAGE="pbdBASE")
-
+  
   
   if (out$INFO!=0)
     warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
-
+  
   a@Data <- out$A
   b@Data <- out$B
   
+  eff <- new("ddmatrix", Data=out$EFF, dim=b@dim, 
+             ldim=b@bldim, bldim=b@bldim, CTXT=b@CTXT)
   fitted.values <- new("ddmatrix", Data=out$FT, dim=b@dim,
                        ldim=b@ldim, bldim=b@bldim, CTXT=b@CTXT)
   residuals <- new("ddmatrix", Data=out$RSD, dim=b@dim,
-                       ldim=b@ldim, bldim=b@bldim, CTXT=b@CTXT)
+                   ldim=b@ldim, bldim=b@bldim, CTXT=b@CTXT)
   
   # rearranging solution in the overdetermined and/or rank deficient case
   temp <- 1L:n # indexing of coefficients
@@ -125,10 +95,10 @@ base.rpdgels <- function(a, b, tol=1e-7)
   
   attr(qr, "class") <- "qr"
   
-  ret <- list(coefficients=b, residuals=residuals, effects=NULL, 
-              rank=out$RANK, fitted.values=fitted.values, assign=NULL,
+  ret <- list(coefficients=b, residuals=residuals, effects=eff, 
+              rank=out$RANK, fitted.values=fitted.values, assign=attr(a@Data, "assign"),
               qr=qr, df.residual=(a@dim[1] - out$RANK))
-
+  
   return( ret )
 }
 

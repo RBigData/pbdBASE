@@ -715,7 +715,7 @@
       SUBROUTINE RPDGELS( TOL, TRANS, M, N, NRHS, 
      $                    A, IA, JA, DESCA, 
      $                    B, IB, JB, DESCB, 
-     $                    FT, RSD,
+     $                    EFF, FT, RSD,
      $                    TAU, WORK, LWORK, IPIV,
      $                    RANK, INFO )
 *
@@ -967,10 +967,10 @@
       END IF
 *
       IPW = LTAU + 1
-*
-*
-*        compute QR factorization of A
-*
+!*
+!*
+!*        compute QR factorization of A
+!*
 !
         ! Copy B over to RSD for later residual calculation
          CALL PDLACPY('All', M, NRHS, B, IB, JB, DESCB,
@@ -983,19 +983,22 @@
          N = RANK
          DESCA(4) = N
 *
-*           Least-Squares Problem min || A * X - B ||
-*
-*           B(IB:IB+M-1,JB:JB+NRHS-1) := Q' * B(IB:IB+M-1,JB:JB+NRHS-1)
-*
+!*           Least-Squares Problem min || A * X - B ||
+!*
+!*           B(IB:IB+M-1,JB:JB+NRHS-1) := Q' * B(IB:IB+M-1,JB:JB+NRHS-1)
+!*
             CALL PDORMQR( 'Left', 'Transpose', M, NRHS, N, A, IA, JA,
      $                    DESCA, TAU, B, IB, JB, DESCB, WORK( IPW ),
      $                    LWORK-LTAU, INFO )
-*
-*           workspace at least NRHS, optimally NRHS*NB
-*
-*           B(IB:IB+N-1,JB:JB+NRHS-1) := inv(R) *
-*                                        B(IB:IB+N-1,JB:JB+NRHS-1)
-*
+!           "effects" variable
+            CALL PDLACPY('All', M, NRHS, B, IB, JB, DESCB,
+     $                    EFF, IB, JB, DESCB)
+!*
+!*           workspace at least NRHS, optimally NRHS*NB
+!*
+!*           B(IB:IB+N-1,JB:JB+NRHS-1) := inv(R) *
+!*                                        B(IB:IB+N-1,JB:JB+NRHS-1)
+!*
             CALL PDTRSM( 'Left', 'Upper', 'No transpose', 'Non-unit', N,
      $                   NRHS, ONE, A, IA, JA, DESCA, B, IB, JB, DESCB )
 !!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1017,11 +1020,11 @@
      $                     FT, IB, JB, DESCB, 1.0D+0, 
      $                     RSD, IB, JB, DESCB)
 !!!!!!!!!!!!!!!!!!!!!!!!!!
-*
+!*
             SCLLEN = N
-*
-*     Undo scaling
-*
+!*
+!*     Undo scaling
+!*
       IF( IASCL.EQ.1 ) THEN
          CALL PDLASCL( 'G', ANRM, SMLNUM, SCLLEN, NRHS, B, IB, JB,
      $                 DESCB, INFO )
@@ -1036,10 +1039,10 @@
          CALL PDLASCL( 'G', BIGNUM, BNRM, SCLLEN, NRHS, B, IB, JB,
      $                 DESCB, INFO )
       END IF
-*
+!*
    10 CONTINUE
 
       WORK( 1 ) = DBLE( LWMIN )
-*
+!*
       RETURN
       END
