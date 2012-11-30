@@ -28,7 +28,9 @@ base.rpdgesv <- function(a, b)
   if (out$info!=0)
     warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
   
-  return(out$B) 
+  b@Data <- out$B
+  
+  return(b) 
 }
 
 # ################################################
@@ -69,16 +71,16 @@ base.rpdgetri <- function(a)
 # ------------------------------------------------
 # ################################################
 
-base.rpdgesvd <- function(A, nu, nv)
+base.rpdgesvd <- function(x, nu, nv)
 {
-  ICTXT <- A@CTXT
+  ICTXT <- x@CTXT
   
   # Matrix descriptors
-  m <- A@dim[1L]
-  n <- A@dim[2L]
-  size <- min(A@dim)
-  bldim <- A@bldim
-  desca <- base.descinit(dim=A@dim, bldim=A@bldim, ldim=A@ldim, ICTXT=ICTXT)
+  m <- x@dim[1L]
+  n <- x@dim[2L]
+  size <- min(x@dim)
+  bldim <- x@bldim
+  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=ICTXT)
 
   if (nu==0){
     jobu <- 'N'
@@ -109,18 +111,18 @@ base.rpdgesvd <- function(A, nu, nv)
                         dim=vtdim, ldim=vtldim, bldim=bldim, CTXT=ICTXT)
   descvt <- base.descinit(dim=vt@dim, bldim=vt@bldim, ldim=vt@ldim, ICTXT=ICTXT)
 
-  mxa <- pbdMPI::allreduce(max(A@ldim), op='max')
+  mxa <- pbdMPI::allreduce(max(x@ldim), op='max')
   mxu <- pbdMPI::allreduce(max(uldim), op='max')
   mxvt <- pbdMPI::allreduce(max(vtldim), op='max')
 
-  if (all(A@ldim==1))
+  if (all(x@ldim==1))
     desca[9] <- mxa
   if (all(uldim==1))
     descu[9] <- mxu
   if (all(vtldim==1))
     descvt[9] <- mxvt
 
-  if (A@dim[1]>1){
+  if (x@dim[1]>1){
     if (pbdMPI::allreduce(desca[9], op='max')==1)
       desca[9] <- mxa
   }
@@ -136,7 +138,7 @@ base.rpdgesvd <- function(A, nu, nv)
   # Call ScaLAPACK
   out <- .Call("R_PDGESVD", 
             as.integer(m), as.integer(n), as.integer(size),
-            A@Data, as.integer(desca), as.integer(A@ldim),
+            x@Data, as.integer(desca), as.integer(x@ldim),
             as.integer(uldim), as.integer(descu),
             as.integer(vtldim), as.integer(descvt),
             as.character(jobu), as.character(jobvt),
@@ -201,9 +203,9 @@ base.rpdgetrf <- function(a)
 # ------------------------------------------------
 # ################################################
 
-base.pdpotrf <- function(a)
+base.rpdpotrf <- function(x)
 {
-  desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=a@CTXT)
+  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=x@CTXT)
     
   n <- desca[4L]
   
@@ -212,15 +214,15 @@ base.pdpotrf <- function(a)
   # Call ScaLAPACK
   out <- .Call("R_PDPOTRF",
                as.integer(n),
-               a@Data, as.integer(a@ldim), as.integer(desca),
+               x@Data, as.integer(x@ldim), as.integer(desca),
                as.character(uplo),
                PACKAGE="pbdBASE"
               )
   
   if (out$info!=0)
     warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
-  else
-    ret <- base.low2zero(A=out$A, dim=a@dim, ldim=a@ldim, bldim=a@bldim, CTXT=a@CTXT)
+  
+  ret <- base.low2zero(A=out$A, dim=x@dim, ldim=x@ldim, bldim=x@bldim, CTXT=x@CTXT)
   
   return(ret) 
 }

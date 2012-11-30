@@ -136,7 +136,7 @@ base.rpdgeqpf <- function(x, tol=1e-7)
 
 # qr.Q()
 # recover Q from base.rpdgeqrf
-base.pdorgqr <- function(qr)
+base.rpdorgqr <- function(qr)
 {
   x <- qr$qr
   
@@ -194,9 +194,8 @@ base.qr.R <- function(qr, complete=FALSE)
 
 
 # multiply Q/Q^T against y
-base.pdormqr <- function(qr, y, side='L', trans='T')
+base.rpdormqr <- function(qr, y, side='L', trans='T')
 {
-#  x <- base.pdorgqr(qr)
   x <- qr$qr
 
   # Matrix descriptors
@@ -236,7 +235,7 @@ base.pdormqr <- function(qr, y, side='L', trans='T')
 
 
 # reduces upper trapezoidal to traingular form
-base.pdtzrzf <- function(qr)
+base.rpdtzrzf <- function(qr)
 {
   x <- qr$qr
   
@@ -271,7 +270,7 @@ base.pdtzrzf <- function(qr)
 
 
 # triangle system solve --- probably not needed
-base.pdtrsv <- function(x, y, uplo='U', trans='T')
+base.rpdtrsv <- function(x, y, uplo='U', trans='T')
 {
   # Matrix descriptors
   desca <- base.descinit(x@dim, x@bldim, x@ldim, ICTXT=x@CTXT)

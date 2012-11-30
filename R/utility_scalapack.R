@@ -59,7 +59,7 @@ numroc <- base.numroc
 
 
 # Hook into ScaLAPACK tool PDLAPRNT
-base.pdlaprnt <- function(dx)
+base.rpdlaprnt <- function(dx)
 {
   m <- dx@dim[1L]
   n <- dx@dim[2L]
@@ -77,4 +77,4 @@ base.pdlaprnt <- function(dx)
   return( invisible(0) )
 }
 
-pdlaprnt <- base.pdlaprnt
+rpdlaprnt <- base.rpdlaprnt

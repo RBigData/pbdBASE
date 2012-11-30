@@ -4,29 +4,27 @@
 # ------------------------------------------------
 # ################################################
 
-base.pdtran <- function(a)
+base.rpdtran <- function(x)
 {
-  ICTXT <- a@CTXT
+  ICTXT <- x@CTXT
   blacs_ <- base.blacs(ICTXT=ICTXT)
-  MYROW <- blacs_$MYROW
-  MYCOL <- blacs_$MYCOL
   
-  m <- a@dim[2]
-  n <- a@dim[1]
+  m <- x@dim[2]
+  n <- x@dim[1]
   
-  desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=ICTXT)
+  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=ICTXT)
 
   cdim <- c(m, n)
-  cldim <- base.numroc(cdim, a@bldim, ICTXT=ICTXT)
+  cldim <- base.numroc(cdim, x@bldim, ICTXT=ICTXT)
 
   c <- new("ddmatrix", Data=matrix(nrow=0, ncol=0),
-                       dim=cdim, ldim=cldim, bldim=a@bldim, CTXT=ICTXT)
+                       dim=cdim, ldim=cldim, bldim=x@bldim, CTXT=ICTXT)
 
   descc <- base.descinit(c@dim, c@bldim, c@ldim, ICTXT=ICTXT)
 
   ret <- .Call("R_PDTRAN",
                 as.integer(m), as.integer(n),
-                a@Data, as.integer(desca),
+                x@Data, as.integer(desca),
                 as.integer(cldim), as.integer(descc),
                 PACKAGE="pbdBASE"
               )
@@ -42,8 +40,11 @@ base.pdtran <- function(a)
 # ------------------------------------------------
 # ################################################
 
-base.rpdgemm <- function(x, y, outbldim)
+base.rpdgemm <- function(x, y, outbldim=x@bldim)
 {
+  if (length(outbldim)==1L)
+    outbldim <- rep(outbldim, 2)
+  
   ICTXT <- x@CTXT
   
   m <- x@dim[1L]

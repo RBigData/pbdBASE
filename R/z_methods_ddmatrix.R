@@ -463,7 +463,7 @@ setMethod("print", signature(x="ddmatrix"),
   function(x, ..., all=FALSE, name = "x"){
     if (all){
       assign(name, x)
-      eval(parse(text = paste("base.pdlaprnt(", name, ")", sep = "") ))
+      eval(parse(text = paste("base.rpdlaprnt(", name, ")", sep = "") ))
     } else {
       ff <- paste(paste(format(base.firstfew(x, atmost=4), scientific=TRUE, digits=3), collapse=", "), ", ...", sep="")
       if (comm.rank()==0){
