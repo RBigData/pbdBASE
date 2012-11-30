@@ -1,6 +1,6 @@
 Package: pbdBASE
 Title: Programming with Big Data -- Core pbd Classes and Methods
-Version: 0.1-1
+Version: 0.1-2
 Date: 2012-10-02
 Depends: R (>= 2.15.1), methods, rlecuyer, Rcpp, pbdMPI (>= 0.1-1), 
          pbdSLAP
