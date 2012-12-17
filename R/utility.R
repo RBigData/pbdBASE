@@ -167,7 +167,10 @@ base.submat <- function(A, bldim, ICTXT=0)
   if (length(bldim)==1) bldim <- rep(bldim, 2)
   dim <- dim(A)
   ldim <- base.numroc(dim, bldim)
-  
+
+  if (!is.double(A))
+    storage.mode(A) <- "double"
+
   out <- .Call("block_submat", 
              A=A,
              dim=as.integer(dim),
@@ -205,7 +208,10 @@ base.gmat <- function(dx, proc.dest="all")
       out <- NULL
     return(out)
   }
-  else  
+  else {
+    if (!is.double(dx@Data))
+      storage.mode(dx@Data) <- "double"
+    
     out <- .Call("submat_to_gmat", 
                subx=dx@Data,
                dim=as.integer(dim),
@@ -215,7 +221,8 @@ base.gmat <- function(dx, proc.dest="all")
                SRC=as.integer(c(RSRC, CSRC)),
                PACKAGE="pbdBASE"
                )
-
+  }
+  
   if (all(proc.dest=="all"))
     out <- pbdMPI::allreduce(out, op='sum')
   else {
@@ -301,6 +308,9 @@ base.low2zero <- function(A, dim, ldim, bldim, CTXT=0)
   PROCS <- c(blacs_$NPROW, blacs_$NPCOL)
   RSRC <- CSRC <- 0
   ISRCPROC <- 0
+  
+  if (!is.double(A))
+    storage.mode(A) <- "double"
   
   out <- .Call("fill_lower_zero", 
              A=A,
@@ -431,6 +441,10 @@ base.reblock <- function(dx, bldim=dx@bldim, ICTXT)
 #    descb <- rep(0, 9)
     descb[2] <- -1
   }
+  
+  if (!is.double(dx@Data))
+    storage.mode(dx@Data) <- "double"
+  
   ret <- .Call("R_PDGEMR2D",
                as.integer(m), as.integer(n),
                dx@Data, as.integer(descx),
@@ -544,7 +558,10 @@ base.vecops <- function(dx, vec, FUN)
   blacs_ <- base.blacs(dx@CTXT)
   procs <- c(blacs_$NPROW, blacs_$NPCOL)
   myprocs <- c(blacs_$MYROW, blacs_$MYCOL)
-  src <- c(0,0)
+  src <- c(0, 0)
+  
+  if (!is.double(dx@Data))
+    storage.mode(dx@Data) <- "double"
   
   out <- .Call("ddmatrix_vecops", 
     dx@Data, as.integer(dx@dim), as.integer(dx@bldim),
@@ -573,6 +590,9 @@ base.insert <- function(dx, vec, i, j)
     new <- 1:dx@dim[2]
     j <- new[-which(new %in% abs(j))] # FIXME make this less stupid
   }
+  
+  if (!is.double(dx@Data))
+    storage.mode(dx@Data) <- "double"
   
   out <- .Call("ddmatrix_insert", 
     dx@Data, as.integer(dx@dim), as.integer(dx@bldim),

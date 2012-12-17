@@ -22,6 +22,11 @@ base.rpdgels <- function(a, b, tol=1e-7)
   if (descb[9]==1)
     descb[9] <- mxldb
   
+  if (!is.double(a@Data))
+    storage.mode(a@Data) <- "double"
+  if (!is.double(b@Data))
+    storage.mode(b@Data) <- "double"
+  
   out <- .Call("R_PDGELS",
             TOL=as.double(tol), M=as.integer(m), N=as.integer(n), NRHS=as.integer(nrhs),
             A=a@Data, ALDIM=as.integer(a@ldim), DESCA=as.integer(desca),
@@ -113,6 +118,9 @@ base.rpdgeqpf <- function(x, tol=1e-7)
   m <- desca[3]
   n <- desca[4]
   
+  if (!is.double(x@Data))
+    storage.mode(x@Data) <- "double"
+  
   ret <- .Call("R_PDGEQPF",
                as.double(tol), as.integer(m), as.integer(n), 
                x@Data, as.integer(x@ldim), as.integer(desca),
@@ -150,6 +158,9 @@ base.rpdorgqr <- function(qr)
   n <- desca[4]
   
   k <- qr$rank
+  
+  if (!is.double(x@Data))
+    storage.mode(x@Data) <- "double"
   
   out <- .Call("R_PDORGQR",
             as.integer(m), as.integer(n), as.integer(k),
@@ -215,6 +226,11 @@ base.rpdormqr <- function(qr, y, side='L', trans='T')
   if (descb[9]==1)
     descb[9] <- mxldb
   
+  if (!is.double(x@Data))
+    storage.mode(x@Data) <- "double"
+  if (!is.double(y@Data))
+    storage.mode(y@Data) <- "double"
+  
   out <- .Call("R_PDORMQR",
             as.character(side), as.character(trans),
             as.integer(m), as.integer(n), as.integer(k),
@@ -226,7 +242,7 @@ base.rpdormqr <- function(qr, y, side='L', trans='T')
   
   if (out$INFO!=0)
     warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
-
+  
   y@Data <- out$B
   
   return( y )
@@ -244,6 +260,9 @@ base.rpdtzrzf <- function(qr)
 
   m <- desca[3]
   n <- desca[4]
+  
+  if (!is.double(x@Data))
+    storage.mode(x@Data) <- "double"
   
   out <- .Call("R_PDTZRZF",
             as.integer(m), as.integer(n),
@@ -279,6 +298,11 @@ base.rpdtrsv <- function(x, y, uplo='U', trans='T')
   n <- desca[4]
   
   dg <- 'N'
+  
+  if (!is.double(x@Data))
+    storage.mode(x@Data) <- "double"
+  if (!is.double(y@Data))
+    storage.mode(y@Data) <- "double"
   
   out <- .Call("R_PDTRSV",
             as.character(uplo), as.character(trans), as.character(dg),

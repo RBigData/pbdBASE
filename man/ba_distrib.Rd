@@ -10,7 +10,7 @@
 }
 \usage{
   distribute(x, bldim = .BLDIM, xCTXT = 0, ICTXT = 0)
-  redistribute(dx, bldim = .BLDIM, ICTXT = 0)
+  redistribute(dx, bldim = dx@bldim, ICTXT = 0)
 }
 \arguments{
   \item{x}{a numeric matrix}

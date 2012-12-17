@@ -66,9 +66,12 @@ base.rpdlaprnt <- function(dx)
   
   desca <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=dx@ldim, ICTXT=dx@CTXT)
   
+  if (!is.double(dx@Data))
+    storage.mode(dx@Data) <- "double"
+  
   .Call("R_PDLAPRNT", 
         as.integer(m), as.integer(n),
-        as.double(dx@Data), as.integer(desca),
+        dx@Data, as.integer(desca),
         as.character(deparse(substitute(dx))),
         as.integer(6),  #WCC: 0 for stderr, 6 for stdout. Both are disabled.
         PACKAGE="pbdBASE"

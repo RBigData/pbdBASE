@@ -16,7 +16,12 @@ base.rpdgesv <- function(a, b)
   nrhs <- descb[4L]
   # max of the local dimensions
   mxldims <- c(base.maxdim(a@ldim), base.maxdim(b@ldim))
-  
+
+  if (!is.double(a@Data))
+    storage.mode(a@Data) <- "double"
+  if (!is.double(b@Data))
+    storage.mode(b@Data) <- "double"
+
   # Call ScaLAPACK
   out <- .Call("R_PDGESV",
                as.integer(n), as.integer(nrhs), as.integer(mxldims),
@@ -45,13 +50,8 @@ base.rpdgetri <- function(a)
   
   n <- desca[4L]
   
-#  lwork <- a@ldim[2] * a@bldim[2]
-  
-#  if (NPROW==NPCOL)
-#    liwork <- a@ldim[2] + a@bldim[2]
-#  else
-#    liwork <- a@ldim[2] + 
-#      max(ceiling(ceiling(a@ldim[1]/a@bldim[1])/(2/NPROW)), a@bldim[2])
+  if (!is.double(a@Data))
+    storage.mode(a@Data) <- "double"
   
   out <- .Call("R_PDGETRI",
                a@Data, as.integer(a@ldim), 
@@ -135,6 +135,9 @@ base.rpdgesvd <- function(x, nu, nv)
       desca[9] <- mxvt
   }
 
+  if (!is.double(x@Data))
+    storage.mode(x@Data) <- "double"
+
   # Call ScaLAPACK
   out <- .Call("R_PDGESVD", 
             as.integer(m), as.integer(n), as.integer(size),
@@ -182,6 +185,9 @@ base.rpdgetrf <- function(a)
 
   lipiv <- base.maxdim(a@ldim)[1L] + a@bldim[1L]
 
+  if (!is.double(a@Data))
+    storage.mode(a@Data) <- "double"
+
   # Call ScaLAPACK
   out <- .Call("R_PDGETRF",
                as.integer(m), as.integer(n),
@@ -210,7 +216,10 @@ base.rpdpotrf <- function(x)
   n <- desca[4L]
   
   uplo <- "U"
-  
+
+  if (!is.double(x@Data))
+    storage.mode(x@Data) <- "double"
+
   # Call ScaLAPACK
   out <- .Call("R_PDPOTRF",
                as.integer(n),

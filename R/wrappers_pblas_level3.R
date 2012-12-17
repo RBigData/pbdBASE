@@ -22,6 +22,9 @@ base.rpdtran <- function(x)
 
   descc <- base.descinit(c@dim, c@bldim, c@ldim, ICTXT=ICTXT)
 
+  if (!is.double(x@Data))
+    storage.mode(x@Data) <- "double"
+
   ret <- .Call("R_PDTRAN",
                 as.integer(m), as.integer(n),
                 x@Data, as.integer(desca),
@@ -62,7 +65,12 @@ base.rpdgemm <- function(x, y, outbldim=x@bldim)
   descc <- base.descinit(dim=cdim, bldim=outbldim, ldim=cldim, ICTXT=ICTXT)
   
   trans <- 'N'
-  
+
+  if (!is.double(x@Data))
+    storage.mode(x@Data) <- "double"
+  if (!is.double(y@Data))
+    storage.mode(y@Data) <- "double"
+
   ret <- .Call("R_PDGEMM",
                   as.character(trans), as.character(trans),
                   as.integer(m), as.integer(n), as.integer(k),
