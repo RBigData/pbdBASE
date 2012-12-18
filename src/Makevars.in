@@ -38,13 +38,11 @@ R_OBJS = \
 OBJECTS = $(R_OBJS)
 
 ### For user configuration.
-USER_ETC = ../inst/etc${R_ARCH}
-USER_CONF = $(USER_ETC)/Makeconf
+USER_CONF = Makeconf
  
 ### Start making here.
 all: $(SHLIB)
-	@if test ! -e $(USER_ETC); then mkdir -p $(USER_ETC); fi
-	@echo "SLAP_LDFLAGS = $(SLAP_LDFLAGS)" >> $(USER_CONF)
+	@echo "SLAP_LDFLAGS = $(SLAP_LDFLAGS)" > $(USER_CONF)
 	@echo "SPMD_CPPFLAGS = $(SPMD_CPPFLAGS)" >> $(USER_CONF)
 	@echo "SPMD_LDFLAGS = $(SPMD_LDFLAGS)" >> $(USER_CONF)
 	@echo "PKG_CPPFLAGS = $(PKG_CPPFLAGS)" >> $(USER_CONF)
@@ -56,5 +54,4 @@ $(SHLIB): $(OBJECTS)
 
 clean:
 	@rm -rf *.o *.d *.rc *.so *.dylib *.dll *.a *.lib \
-                Makedeps Makevars $(SHLIB) $(OBJECTS)
-	@rm -rf $(USER_ETC)
+                Makedeps Makevars $(USER_CONF) $(SHLIB) $(OBJECTS)
