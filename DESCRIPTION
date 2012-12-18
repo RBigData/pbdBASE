@@ -1,9 +1,9 @@
 Package: pbdBASE
 Title: Programming with Big Data -- Core pbd Classes and Methods
-Version: 0.1-1
-Date: 2012-10-02
-Depends: R (>= 2.15.1), methods, rlecuyer, Rcpp, pbdMPI (>= 0.1-1), 
-         pbdSLAP
+Version: 0.1-2
+Date: 2012-10-17
+Depends: R (>= 2.15.1), methods, rlecuyer, Rcpp, pbdMPI (>= 0.1-3),
+        pbdSLAP
 LazyLoad: yes
 LazyData: yes
 Authors@R: c(person("Drew", "Schmidt", role = c("aut", "cre"), email =
@@ -16,7 +16,10 @@ SystemRequirements: OpenMPI (>= 1.5.4) on Solaris, Linux and Mac,
         MPICH2 (>= 1.4.1p1) on Windows
 License: GPL (>= 2)
 URL: http://r-pbd.org/
-Packaged: 2012-10-11 18:22:11 UTC; snoweye
+BugReports: RBigDataProgramming on Google Group
+MailingList: Please send questions and comments regarding pbdR to
+        RBigData@gmail.com
+Packaged: 2012-12-18 04:45:21 UTC; snoweye
 Author: Drew Schmidt [aut, cre],
   Wei-Chen Chen [aut],
   George Ostrouchov [aut],

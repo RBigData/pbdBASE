@@ -1,9 +1,15 @@
-pbdBASE 0.1-1 (2012-11-29) ----------------------------------------------------
+2012-12-17:
+  * Fixed bug in SEXP wrappers of ScaLAPACK functions; passing 0-byte Ralloc'd vectors.
+  * Fix multi-arch problem.
+  * Add copyright to vignette.
 
-2012-11-29:
+pbdBASE 0.1-1 (2012-12-1) ----------------------------------------------------
+
+2012-11-30:
   * Created .pbdBASEEnv environment.
   * Changed functions to write to new env rather than .GlobalEnv.
   * Finished cleaning up lm.fit.
+  * Made PBLAS/ScaLAPACK wrappers less stupid.
 
 2012-11-21:
   * Fixed many problems with qr wrappers.

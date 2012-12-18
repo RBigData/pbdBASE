@@ -244,7 +244,9 @@ base.blacs.sum <- function(SCOPE, A, dim, na.rm=FALSE, ICTXT=0, means=FALSE, num
     M <- mxm
   }
 
-  ### WCC: out should be allocated within .Call.
+  if (!is.double(A))
+    storage.mode(A) <- "double"
+
   out <- .Call("R_dgsum2d",
                as.integer(ICTXT), as.character(SCOPE),
                as.integer(M), as.integer(N), A, as.integer(LDA),

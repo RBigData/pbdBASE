@@ -99,25 +99,27 @@ SEXP R_PDGESVD(SEXP M, SEXP N, SEXP ASIZE,
   memcpy(A_OUT, REAL(A), i * sizeof(double));
 
   /* Query size of workspace */
-    INTEGER(INFO)[0] = 0;
-    F77_CALL(pdgesvd)(CHARPT(JOBU, 0), CHARPT(JOBVT, 0),
-      INTEGER(M), INTEGER(N),
-      &temp_A, &temp_IJ, &temp_IJ, INTEGER(DESCA),
-      &temp_A, &temp_A, &temp_IJ, &temp_IJ, INTEGER(DESCU),
-      &temp_A, &temp_IJ, &temp_IJ, INTEGER(DESCVT),
-      &temp_work, &temp_lwork, INTEGER(INFO));
-    temp_lwork = (int) temp_work;
-
-    /* Allocate work vector and calculate svd */
-    WORK = (double *) R_alloc(temp_lwork, sizeof(double));
+  INTEGER(INFO)[0] = 0;
+  F77_CALL(pdgesvd)(CHARPT(JOBU, 0), CHARPT(JOBVT, 0),
+    INTEGER(M), INTEGER(N),
+    &temp_A, &temp_IJ, &temp_IJ, INTEGER(DESCA),
+    &temp_A, &temp_A, &temp_IJ, &temp_IJ, INTEGER(DESCU),
+    &temp_A, &temp_IJ, &temp_IJ, INTEGER(DESCVT),
+    &temp_work, &temp_lwork, INTEGER(INFO));
     
-    INTEGER(INFO)[0] = 0;
-    F77_CALL(pdgesvd)(CHARPT(JOBU, 0), CHARPT(JOBVT, 0),
-      INTEGER(M), INTEGER(N),
-      A_OUT, &temp_IJ, &temp_IJ, INTEGER(DESCA),
-      REAL(D), REAL(U), &temp_IJ, &temp_IJ, INTEGER(DESCU),
-      REAL(VT), &temp_IJ, &temp_IJ, INTEGER(DESCVT),
-      WORK, &temp_lwork, INTEGER(INFO));
+  /* Allocate work vector and calculate svd */
+  temp_lwork = (int) temp_work;
+  temp_lwork = nonzero(temp_lwork);
+  
+  WORK = (double *) R_alloc(temp_lwork, sizeof(double));
+  
+  INTEGER(INFO)[0] = 0;
+  F77_CALL(pdgesvd)(CHARPT(JOBU, 0), CHARPT(JOBVT, 0),
+    INTEGER(M), INTEGER(N),
+    A_OUT, &temp_IJ, &temp_IJ, INTEGER(DESCA),
+    REAL(D), REAL(U), &temp_IJ, &temp_IJ, INTEGER(DESCU),
+    REAL(VT), &temp_IJ, &temp_IJ, INTEGER(DESCVT),
+    WORK, &temp_lwork, INTEGER(INFO));
 
   /* Return. */
   UNPROTECT(6);
@@ -143,13 +145,13 @@ SEXP R_PDGETRI(SEXP A, SEXP CLDIM, SEXP DESCA, SEXP N)
   PROTECT(RET_NAMES = allocVector(STRSXP, 2));
   PROTECT(INFO = allocVector(INTSXP, 1));
   PROTECT(C = allocMatrix(REALSXP, pt_CLDIM[0], pt_CLDIM[1]));
-
+  
   SET_VECTOR_ELT(RET, 0, INFO);
   SET_VECTOR_ELT(RET, 1, C);
   SET_STRING_ELT(RET_NAMES, 0, mkChar("info")); 
   SET_STRING_ELT(RET_NAMES, 1, mkChar("A")); 
   setAttrib(RET, R_NamesSymbol, RET_NAMES);
-
+  
   /* Copy A -> C and set INFO and return R objects. */
   INTEGER(INFO)[0] = 0;
   pt_A = REAL(A);
@@ -175,8 +177,11 @@ SEXP R_PDGETRI(SEXP A, SEXP CLDIM, SEXP DESCA, SEXP N)
   
   /* allocate work arrays and invert A */
   lwork = (int) tmp1;
+  lwork = nonzero(lwork);
+  
   work = (double *) R_alloc(lwork, sizeof(double));
   
+  liwork = nonzero(liwork);
   iwork = (int *) R_alloc(liwork, sizeof(int));
   
   INTEGER(INFO)[0] = 0;
@@ -218,6 +223,7 @@ SEXP R_PDGETRF(SEXP M, SEXP N, SEXP A, SEXP CLDIM, SEXP DESCA, SEXP LIPIV)
     pt_C++;
   }
   
+  LIPIV = nonzero(LIPIV);
   ipiv = (int *) R_alloc(INTEGER(LIPIV), sizeof(int));
   
   INTEGER(INFO)[0] = 0;
@@ -228,7 +234,6 @@ SEXP R_PDGETRF(SEXP M, SEXP N, SEXP A, SEXP CLDIM, SEXP DESCA, SEXP LIPIV)
   UNPROTECT(4);
         return(RET);
 } /* End of R_PDGETRF(). */
-
 
 
 SEXP R_PDPOTRF(SEXP N, SEXP A, SEXP CLDIM, SEXP DESCA, SEXP UPLO)

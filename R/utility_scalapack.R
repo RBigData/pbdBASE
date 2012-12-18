@@ -59,16 +59,19 @@ numroc <- base.numroc
 
 
 # Hook into ScaLAPACK tool PDLAPRNT
-base.pdlaprnt <- function(dx)
+base.rpdlaprnt <- function(dx)
 {
   m <- dx@dim[1L]
   n <- dx@dim[2L]
   
   desca <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=dx@ldim, ICTXT=dx@CTXT)
   
+  if (!is.double(dx@Data))
+    storage.mode(dx@Data) <- "double"
+  
   .Call("R_PDLAPRNT", 
         as.integer(m), as.integer(n),
-        as.double(dx@Data), as.integer(desca),
+        dx@Data, as.integer(desca),
         as.character(deparse(substitute(dx))),
         as.integer(6),  #WCC: 0 for stderr, 6 for stdout. Both are disabled.
         PACKAGE="pbdBASE"
@@ -77,4 +80,4 @@ base.pdlaprnt <- function(dx)
   return( invisible(0) )
 }
 
-pdlaprnt <- base.pdlaprnt
+rpdlaprnt <- base.rpdlaprnt
