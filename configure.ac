@@ -20,21 +20,6 @@ dnl pbdMPI
 SPMD_CPPFLAGS=`${R_SCMD} "source('./R/get_conf.r');get.conf('PKG_CPPFLAGS','"${R_ARCH}"')"`
 SPMD_LDFLAGS=`${R_SCMD} "source('./R/get_conf.r');get.conf('PKG_LIBS','"${R_ARCH}"')"`
 
-dnl Report
-echo " "
-echo "****************** Results of pbdBASE package configure *****************"
-echo " "
-echo ">> RCPP_CXXFLAGS = ${RCPP_CXXFLAGS}"
-echo ">> RCPP_LDFLAGS = ${RCPP_LDFLAGS}"
-echo ">> EXT_LDFLAGS = ${EXT_LDFLAGS}"
-echo ">> R_SLAP = ${R_SLAP}"
-echo ">> SLAP_LDFLAGS = ${SLAP_LDFLAGS}"
-echo ">> SPMD_CPPFLAGS = ${SPMD_CPPFLAGS}"
-echo ">> SPMD_LDFLAGS = ${SPMD_LDFLAGS}"
-echo " "
-echo "*************************************************************************"
-echo " "
-
 dnl Start to substitute templates
 AC_SUBST(RCPP_CXXFLAGS)
 AC_SUBST(RCPP_LDFLAGS)

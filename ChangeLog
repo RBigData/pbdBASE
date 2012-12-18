@@ -1,7 +1,5 @@
 2012-12-17:
   * Fixed bug in SEXP wrappers of ScaLAPACK functions; passing 0-byte Ralloc'd vectors.
-  * Fix multi-arch problem.
-  * Add copyright to vignette.
 
 pbdBASE 0.1-1 (2012-12-1) ----------------------------------------------------
 
