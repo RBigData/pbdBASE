@@ -273,3 +273,31 @@ SEXP R_PDPOTRF(SEXP N, SEXP A, SEXP CLDIM, SEXP DESCA, SEXP UPLO)
   UNPROTECT(4);
         return(RET);
 } /* End of R_PDPOTRF(). */
+
+
+
+
+
+
+SEXP R_PDLANGE(SEXP TYPE, SEXP M, SEXP N, SEXP A, SEXP DESCA,
+  SEXP LWORK)
+{
+  const int IJ = 1;
+  double *work;
+  
+  /* Protect R objects. */
+  SEXP VAL;
+  PROTECT(VAL = allocVector(REALSXP, 1));
+  
+  /* Allocate work vector. */
+  work = (double *) R_alloc(INTEGER(LWORK)[0], sizeof(double));
+  
+  /* Call Fortran. */
+  REAL(VAL)[0] = F77_CALL(pdlange)(CHARPT(TYPE, 0), INTEGER(M),
+    INTEGER(N), REAL(A), &IJ, &IJ, INTEGER(DESCA), work);
+  
+  /* Return. */
+  UNPROTECT(1);
+  
+  return(VAL);
+}

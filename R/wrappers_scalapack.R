@@ -1,8 +1,12 @@
 # ################################################
 # ------------------------------------------------
-# PDGESV:  Solving Ax=b
+# Linear Equations
 # ------------------------------------------------
 # ################################################
+
+# ------------------------------------------------
+# PDGESV:  Solving Ax=b
+# ------------------------------------------------
 
 base.rpdgesv <- function(a, b)
 {
@@ -38,11 +42,9 @@ base.rpdgesv <- function(a, b)
   return(b) 
 }
 
-# ################################################
 # ------------------------------------------------
 # PDGETRI:  Matrix inverse
 # ------------------------------------------------
-# ################################################
 
 base.rpdgetri <- function(a)
 {
@@ -67,9 +69,13 @@ base.rpdgetri <- function(a)
 
 # ################################################
 # ------------------------------------------------
-# PDGESVD:  SVD of x
+# Matrix Factorizations
 # ------------------------------------------------
 # ################################################
+
+# ------------------------------------------------
+# PDGESVD:  SVD of x
+# ------------------------------------------------
 
 base.rpdgesvd <- function(x, nu, nv)
 {
@@ -170,11 +176,9 @@ base.rpdgesvd <- function(x, nu, nv)
   return( ret )
 }
 
-# ################################################
 # ------------------------------------------------
 # PDGETRF:  LU Decomposition
 # ------------------------------------------------
-# ################################################
 
 base.rpdgetrf <- function(a)
 {
@@ -203,11 +207,9 @@ base.rpdgetrf <- function(a)
   return(a) 
 }
 
-# ################################################
 # ------------------------------------------------
 # PDPOTRF:  Cholesky Factorization
 # ------------------------------------------------
-# ################################################
 
 base.rpdpotrf <- function(x)
 {
@@ -235,4 +237,73 @@ base.rpdpotrf <- function(x)
   
   return(ret) 
 }
+
+
+
+# ################################################
+# ------------------------------------------------
+# Auxillary
+# ------------------------------------------------
+# ################################################
+
+base.indxg2p <- function(INDXGLOB, NB, NPROCS)
+{
+  
+  ISRCPROC <- 0L
+  
+  ret <- (ISRCPROC + (INDXGLOB - 1L) / NB) %% NPROCS
+  
+  return( ret )
+}
+
+base.rpdlange <- function(x, type)
+{
+  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=x@CTXT)
+  
+  m <- x@dim[1L]
+  n <- x@dim[2L]
+  
+  type <- toupper(type)
+  if (type == "M" || type == "F")
+    lwork <- 1L
+  else {
+    blacs_ <- base.blacs(ICTXT=x@CTXT)
+    ia <- ja <- 1L
+    
+    if (type == "O"){
+      mb <- x@bldim[1L]
+      npcol <- blacs_$NPCOL
+      
+      icoffa <- (ja-1) %% mb
+      iacol <- base.indxg2p(ja, mb, npcol)
+      
+      lwork <- base.numroc(c(n+icoffa, 0), c(mb, 0), ICTXT=x@CTXT)[1L]
+    }
+    else if (type == "I"){
+      nb <- x@bldim[2L]
+      nprow <- blacs_$NPROW
+      
+      iroffa <- (ia-1) %% nb
+      iarow <- base.indxg2p(ia, nb, nprow)
+      
+      lwork <- base.numroc(c(m+iroffa, 0), c(nb, 0), ICTXT=x@CTXT)[1L]
+    }
+  }
+  
+  lwork <- max(lwork, 1)
+  lwork <- 4000 # not allocating correctly ???
+  
+  if (!is.double(x@Data))
+    storage.mode(x@Data) <- "double"
+  
+  ret <- .Call("R_PDLANGE", 
+        as.character(type), as.integer(m), as.integer(n),
+        x@Data, as.integer(desca), as.integer(lwork),
+        PACKAGE="pbdBASE")
+  
+  return( ret )
+}
+
+
+
 
