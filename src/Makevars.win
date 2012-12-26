@@ -1,6 +1,10 @@
 ### Rscript
 R_SCMD = ${R_HOME}/bin${R_ARCH_BIN}/Rscript -e
 
+### Get Rcpp information.
+RCPP_CXXFLAGS = $(shell ${R_SCMD} "cat(Rcpp:::Rcpp.system.file(\"include\"))")
+RCPP_LDFLAGS = $(shell ${R_SCMD} "Rcpp:::LdFlags(TRUE)")
+
 ### Get ScaLAPACK information from "pbdSLAP".
 SLAP_LDFLAGS = $(shell ${R_SCMD} \
   "source('../R/get_lib.r');get.lib('R_SLAP','"${R_ARCH}"')")
@@ -13,16 +17,18 @@ MPI_LIB = $(shell ${R_SCMD} \
 
 ### Setup R package flags and substitute by configure for ${MPI_...}.
 PKG_CPPFLAGS = -I"$(MPI_ROOT)/include"
+PKG_CXXFLAGS = -I"$(RCPP_CXXFLAGS)"
 PKG_CFLAGS = -w
 PKG_FFLAGS = -w
 ### Order is matter.
-PKG_LIBS = "$(SLAP_LDFLAGS)" $(LAPACK_LIBS) $(BLAS_LIBS) \
+PKG_LIBS = "$(RCPP_LDFLAGS)" "$(SLAP_LDFLAGS)" $(LAPACK_LIBS) $(BLAS_LIBS) \
            $(FLIBS) -L"$(MPI_LIB)" -lmpi
 
 ### Setup R source code and objects.
+R_SRCS_CXX = $(wildcard *.cpp)
 R_SRCS_C = $(wildcard *.c)
 R_SRCS_F = $(wildcard *.f)
-R_OBJS = $(R_SRCS_C:.c=.o) $(R_SRCS_F:.f=.o)
+R_OBJS = $(R_SRCS_CXX:.cpp=.o) $(R_SRCS_C:.c=.o) $(R_SRCS_F:.f=.o)
 OBJECTS = $(R_OBJS)
 
 ### For user configuration.
