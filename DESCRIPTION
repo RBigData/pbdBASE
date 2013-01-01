@@ -1,7 +1,7 @@
 Package: pbdBASE
 Title: Programming with Big Data -- Core pbd Classes and Methods
 Version: 0.1-2
-Date: 2012-10-17
+Date: 2013-01-01
 Depends: R (>= 2.15.1), methods, rlecuyer, Rcpp, pbdMPI (>= 0.1-3),
         pbdSLAP
 LazyLoad: yes
@@ -19,7 +19,7 @@ URL: http://r-pbd.org/
 BugReports: RBigDataProgramming on Google Group
 MailingList: Please send questions and comments regarding pbdR to
         RBigData@gmail.com
-Packaged: 2012-12-26 02:33:47 UTC; snoweye
+Packaged: 2013-01-01 17:32:34 UTC; snoweye
 Author: Drew Schmidt [aut, cre],
   Wei-Chen Chen [aut],
   George Ostrouchov [aut],
