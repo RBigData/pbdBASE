@@ -256,6 +256,7 @@ base.indxg2p <- function(INDXGLOB, NB, NPROCS)
   return( ret )
 }
 
+# matrix norms
 base.rpdlange <- function(x, type)
 {
   desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=x@CTXT)

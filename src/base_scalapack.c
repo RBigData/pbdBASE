@@ -2,8 +2,10 @@
 #include <Rinternals.h>
 #include "base_global.h"
 
-SEXP R_PDGESV(SEXP N, SEXP NRHS, SEXP MXLDIMS, 
-  SEXP A, SEXP ALDIM, SEXP DESCA,
+
+
+/* Solving systems of linear equations */
+SEXP R_PDGESV(SEXP N, SEXP NRHS, SEXP MXLDIMS, SEXP A, SEXP ALDIM, SEXP DESCA,
   SEXP B, SEXP BLDIM, SEXP DESCB)
 {
   int i, *pt_ALDIM = INTEGER(ALDIM), *pt_BLDIM = INTEGER(BLDIM);
@@ -41,7 +43,6 @@ SEXP R_PDGESV(SEXP N, SEXP NRHS, SEXP MXLDIMS,
   }
   
   const int IJ = 1;
-/*  IPIV ( MXLDIMS(1) + DESCA(6) )*/
   int * ipiv;
   ipiv = (int *) R_alloc(INTEGER(MXLDIMS)[0] + INTEGER(DESCA)[5], sizeof(int));
   
@@ -54,15 +55,14 @@ SEXP R_PDGESV(SEXP N, SEXP NRHS, SEXP MXLDIMS,
   
   /* Return. */
   UNPROTECT(4);
-  // Free(A_OUT);    // .Call takes care of this.
   return(RET);
 } /* End of R_PDGESV(). */
 
 
 
-SEXP R_PDGESVD(SEXP M, SEXP N, SEXP ASIZE, 
-                SEXP A, SEXP DESCA, SEXP ALDIM, SEXP ULDIM,
-                SEXP DESCU, SEXP VTLDIM, SEXP DESCVT, SEXP JOBU, SEXP JOBVT)
+/* SVD */
+SEXP R_PDGESVD(SEXP M, SEXP N, SEXP ASIZE, SEXP A, SEXP DESCA, SEXP ALDIM, 
+  SEXP ULDIM, SEXP DESCU, SEXP VTLDIM, SEXP DESCVT, SEXP JOBU, SEXP JOBVT)
 {
   int i, *pt_ALDIM = INTEGER(ALDIM);
   double *A_OUT;
@@ -129,6 +129,7 @@ SEXP R_PDGESVD(SEXP M, SEXP N, SEXP ASIZE,
 
 
 
+/* Matrix inverse */
 SEXP R_PDGETRI(SEXP A, SEXP CLDIM, SEXP DESCA, SEXP N)
 {
   int *pt_CLDIM = INTEGER(CLDIM), *ipiv, *iwork;
@@ -190,10 +191,12 @@ SEXP R_PDGETRI(SEXP A, SEXP CLDIM, SEXP DESCA, SEXP N)
   
   /* Return. */
   UNPROTECT(4);
-        return(RET);
+  return(RET);
 } /* End of R_PDGETRI(). */
 
 
+
+/* LU factorization */
 SEXP R_PDGETRF(SEXP M, SEXP N, SEXP A, SEXP CLDIM, SEXP DESCA, SEXP LIPIV)
 {
   int i, *pt_CLDIM = INTEGER(CLDIM), *ipiv;
@@ -236,6 +239,8 @@ SEXP R_PDGETRF(SEXP M, SEXP N, SEXP A, SEXP CLDIM, SEXP DESCA, SEXP LIPIV)
 } /* End of R_PDGETRF(). */
 
 
+
+/* Cholesky */
 SEXP R_PDPOTRF(SEXP N, SEXP A, SEXP CLDIM, SEXP DESCA, SEXP UPLO)
 {
   int i, *pt_CLDIM = INTEGER(CLDIM);
@@ -276,28 +281,20 @@ SEXP R_PDPOTRF(SEXP N, SEXP A, SEXP CLDIM, SEXP DESCA, SEXP UPLO)
 
 
 
-
-
-
-SEXP R_PDLANGE(SEXP TYPE, SEXP M, SEXP N, SEXP A, SEXP DESCA,
-  SEXP LWORK)
+/* Matrix norms */
+SEXP R_PDLANGE(SEXP TYPE, SEXP M, SEXP N, SEXP A, SEXP DESCA, SEXP LWORK)
 {
   const int IJ = 1;
   double *work;
   
-  /* Protect R objects. */
   SEXP VAL;
   PROTECT(VAL = allocVector(REALSXP, 1));
   
-  /* Allocate work vector. */
   work = (double *) R_alloc(INTEGER(LWORK)[0], sizeof(double));
   
-  /* Call Fortran. */
-  REAL(VAL)[0] = F77_CALL(pdlange)(CHARPT(TYPE, 0), INTEGER(M),
+  F77_CALL(subpdlange)(REAL(VAL), CHARPT(TYPE, 0), INTEGER(M),
     INTEGER(N), REAL(A), &IJ, &IJ, INTEGER(DESCA), work);
   
-  /* Return. */
   UNPROTECT(1);
-  
   return(VAL);
 }

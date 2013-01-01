@@ -15,9 +15,13 @@ extern "C" {
 /* need this when alloc'ing work vectors for fortran */
 #define nonzero(x) (x?x:1)
 
+/* Functions aux.f. */
+extern void F77_NAME(subpdlange)(double* val, char* norm, int* m, int* n,
+  double* a, int* ia, int* ja, int* desca, double* work);
+
 /* Functions in "mpi_blacs.f". */
 extern void F77_NAME(mpi_blacs_initialize)(int * nprow, int *npcol, int *ictxt,
-				int *myrow, int *mycol);
+  int *myrow, int *mycol);
 
 #ifdef  __cplusplus
 }
