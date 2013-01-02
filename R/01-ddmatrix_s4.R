@@ -6,6 +6,7 @@ setGeneric(name="ncol", useAsDefault=ncol)
 setGeneric(name="as.matrix", useAsDefault=as.matrix)
 setGeneric(name="na.exclude", useAsDefault=na.exclude)
 setGeneric(name="all.equal", useAsDefault=all.equal)
+setGeneric(name="summary", useAsDefault=summary)
 
 setGeneric(name="as.vector", 
   function(x, ...)

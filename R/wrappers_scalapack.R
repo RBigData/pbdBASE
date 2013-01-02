@@ -256,6 +256,28 @@ base.indxg2p <- function(INDXGLOB, NB, NPROCS)
   return( ret )
 }
 
+
+numroc2 <- function(N, NB, IPROC, NPROCS)
+{
+  ISRCPROC <- 0L
+  
+  MYDIST <- (NPROCS + IPROC -  ISRCPROC) %% NPROCS
+  NBLOCKS <- floor(N / NB)
+  ldim <- floor(NBLOCKS / NPROCS) * NB
+  EXTRABLKS <- NBLOCKS %% NPROCS
+  
+  if (is.na(EXTRABLKS))
+    EXTRABLKS <- 0L
+  
+  if (MYDIST < EXTRABLKS)
+    ldim <- ldim + NB
+  else if (MYDIST == EXTRABLKS)
+    ldim <- ldim + N %% NB
+  
+  return(ldim)
+}
+
+
 # matrix norms
 base.rpdlange <- function(x, type)
 {
@@ -264,45 +286,105 @@ base.rpdlange <- function(x, type)
   m <- x@dim[1L]
   n <- x@dim[2L]
   
-  type <- toupper(type)
-  if (type == "M" || type == "F")
-    lwork <- 1L
-  else {
-    blacs_ <- base.blacs(ICTXT=x@CTXT)
-    ia <- ja <- 1L
-    
-    if (type == "O"){
-      mb <- x@bldim[1L]
-      npcol <- blacs_$NPCOL
-      
-      icoffa <- (ja-1) %% mb
-      iacol <- base.indxg2p(ja, mb, npcol)
-      
-      lwork <- base.numroc(c(n+icoffa, 0), c(mb, 0), ICTXT=x@CTXT)[1L]
-    }
-    else if (type == "I"){
-      nb <- x@bldim[2L]
-      nprow <- blacs_$NPROW
-      
-      iroffa <- (ia-1) %% nb
-      iarow <- base.indxg2p(ia, nb, nprow)
-      
-      lwork <- base.numroc(c(m+iroffa, 0), c(nb, 0), ICTXT=x@CTXT)[1L]
-    }
-  }
+  if (length(type)>1L)
+    type <- type[1L]
   
-  lwork <- max(lwork, 1)
-  lwork <- 4000 # not allocating correctly ???
+  type <- toupper(type)
+  
+#  if (type == "M" || type == "F")
+#    lwork <- 1L
+#  else {
+#    blacs_ <- base.blacs(ICTXT=x@CTXT)
+#    ia <- ja <- 1L
+#    
+#    if (type == "O"){
+#      mb <- x@bldim[1L]
+#      npcol <- blacs_$NPCOL
+#      
+#      icoffa <- (ja-1L) %% mb
+#      iacol <- base.indxg2p(ja, mb, npcol)
+#      
+#      lwork <- numroc2(n+icoffa, mb, blacs_$MYCOL, npcol)
+#    }
+#    else if (type == "I"){
+#      nb <- x@bldim[2L]
+#      nprow <- blacs_$NPROW
+#      
+#      iroffa <- (ia-1L) %% nb
+#      iarow <- base.indxg2p(ia, nb, nprow)
+#      
+#      lwork <- numroc2(m+iroffa, nb, blacs_$MYROW, nprow)
+#    }
+#  }
+#  
+#  lwork <- max(lwork, 1L)
   
   if (!is.double(x@Data))
     storage.mode(x@Data) <- "double"
   
   ret <- .Call("R_PDLANGE", 
         as.character(type), as.integer(m), as.integer(n),
-        x@Data, as.integer(desca), as.integer(lwork),
+        x@Data, as.integer(desca),
         PACKAGE="pbdBASE")
   
   return( ret )
+}
+
+
+# Inverse condition number - general matrix
+base.rpdgecon <- function(x, type)
+{
+  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=x@CTXT)
+  
+  m <- x@dim[1L]
+  n <- x@dim[2L]
+  
+  if (length(type)>1L)
+    type <- type[1L]
+  
+  type <- toupper(type)
+  
+  if (!is.double(x@Data))
+    storage.mode(x@Data) <- "double"
+  
+  ret <- .Call("R_PDGECON", 
+        as.character(type), as.integer(m), as.integer(n),
+        x@Data, as.integer(desca), as.integer(x@ldim),
+        PACKAGE="pbdBASE")
+  
+  if (ret[2] < 0)
+    warning(paste("INFO =", ret[2]))
+  
+  return( ret[1] )
+}
+
+
+# Inverse condition number - triangular matrix
+base.rpdtrcon <- function(x, type, uplo="L")
+{
+  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=x@CTXT)
+  
+  m <- x@dim[1L]
+  n <- x@dim[2L]
+  
+  if (length(type)>1L)
+    type <- type[1L]
+  
+  type <- toupper(type)
+  uplo <- toupper(uplo)
+  
+  if (!is.double(x@Data))
+    storage.mode(x@Data) <- "double"
+  
+  ret <- .Call("R_PDTRCON", 
+        as.character(type), as.character(uplo), 
+        as.integer(n), x@Data, as.integer(desca),
+        PACKAGE="pbdBASE")
+  
+  if (ret[2] < 0)
+    warning(paste("INFO =", ret[2]))
+  
+  return( ret[1] )
 }
 
 

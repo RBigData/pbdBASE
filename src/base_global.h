@@ -16,8 +16,11 @@ extern "C" {
 #define nonzero(x) (x?x:1)
 
 /* Functions aux.f. */
-extern void F77_NAME(subpdlange)(double* val, char* norm, int* m, int* n,
-  double* a, int* ia, int* ja, int* desca, double* work);
+extern void F77_NAME(matnorm)(double* val, char* norm, int* m, int* n,
+  double* a, int* ia, int* ja, int* desca);
+
+extern void F77_NAME(condnum)(char* norm, int* m, int* n, double* a, 
+  int* ia, int* ja, int* desca, double* ret, int* info);
 
 /* Functions in "mpi_blacs.f". */
 extern void F77_NAME(mpi_blacs_initialize)(int * nprow, int *npcol, int *ictxt,
