@@ -364,7 +364,7 @@ base.rpdtrcon <- function(x, type, uplo="L")
 {
   desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=x@CTXT)
   
-  m <- x@dim[1L]
+#  m <- x@dim[1L]
   n <- x@dim[2L]
   
   if (length(type)>1L)

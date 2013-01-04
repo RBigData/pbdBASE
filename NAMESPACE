@@ -3,6 +3,9 @@ import(methods, rlecuyer, pbdMPI, pbdSLAP, Rcpp)
 
 # All internal functions
 exportPattern("^base\\.[[:alpha:]]+")
+export(
+  .Last.lib    # For finalize blacs.
+)
 
 exportMethods(
   "as.matrix", "as.vector", "as.ddmatrix",

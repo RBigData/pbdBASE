@@ -35,6 +35,7 @@ R_OBJS = \
   variance.o \
   base_variance.o \
   aux.o \
+  kmeans.o \
   bprnt_c.o
 OBJECTS = $(R_OBJS)
 

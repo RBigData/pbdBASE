@@ -5,7 +5,7 @@
 
 ! mu = [mu1; mu2; ... ; mun]
 ! X = mxn
-! mu = kxn
+! mu = kxn (local (rows)xldim2)
 ! Z = m-length vector
 
 ! Lloyd's Algorithm for K Means Clustering on block cyclic data
@@ -48,12 +48,12 @@
       ! Initialize
       IF ( INIMHD.EQ.1 ) THEN
         CALL BCKMNIT1()
-      ELSE IF ( INIMHD.EQ.2 ) THEN
-        CALL BCKMNIT2()
+!      ELSE IF ( INIMHD.EQ.2 ) THEN
+!        CALL BCKMNIT2()
       END IF
       
       ! Main
-      DO 10, ITER = 2, IMAX
+      DO 10, ITER = 1, IMAX
         ! Assign grouping by row x_n
         ! x_n in k whenever 
         DO 100, I = 1, DESCX(3) ! for each row of X
@@ -61,18 +61,20 @@
           TEST = 0
           DO 200, J = 1, K ! for each of the cluster centers
             TMPMU = MU(I,:)
+            
             ! Compute euclidean norm (x(i,:)-mu(j,:))^T * (x(i,:)-mu(j,:))
             CALL PDGEADD('N', DESCX(4), 1, NEGONE, TMPMU, IONE, IONE, DESCROW, 
      $                    ONE, TMP, IONE, IONE, DESCROW)
-            
             CALl PDNRM2(DESCX(4), NRM, TMP, IONE, IONE, DESCROW, IONE)
             
+            ! Determine if norm changed
             IF ( I.EQ.1 ) THEN
               LSTBST = NRM
               Z(I) = 1
             ELSE
               IF ( LSTBST.GT.NRM ) THEN
                 Z(I) = I
+                LSTBST = NRM
               END IF
             END IF
   200 CONTINUE
@@ -131,15 +133,16 @@
 
 ! Initialize Centroids --- Forgy's method
 ! Randomly choose K points as the centroids
-      SUBROUTINE BCKMNIT1()
+      SUBROUTINE BCKMNIT1(K, M, X, DESCX, MU, DESCMU)
       ! #######################################################################
       ! In/Out
-      INTEGER             K, M
+      INTEGER             K, M,
+     $                    DESCX( 9 ), DESCMU( 9 )
+      DOUBLE PRECISION    X(, ), MU(, )
       ! Local
       INTEGER             TIME,
      $                    ICTXT, NPROW, NPCOL, MYPROW, MYPCOL,
      $                    ROW( M ), MUROW( K )
-      INTEGER, DIMENSION( M ) :: ROW = (/ (I, I=0, M-1) /)
       DOUBLE PRECISION    R, TMP
       ! External functions
       EXTERNAL            DGSUM2D, BLACS_GRIDINFO
@@ -150,6 +153,7 @@
       CALL BLACS_GRIDINFO( ICTXT, NPROW, NPCOL, MYPROW, MYPCOL ) 
       
       IF ( MYPROW.EQ.0 .AND. MYPCOL.EQ.0 ) THEN
+        ROW = (/ (I, I=0, M-1) /)
         CALL SYSTEM_CLOCK( TIME )
         CALL RANDOM_SEED( TIME )
         DO 10, I = 1, K
@@ -160,6 +164,11 @@
           ROW(I) = TMP
           MUROW(I) = TMP
    10 CONTINUE
+      ELSE
+        DO 11, I = 1, K
+          MUROW = 0
+   10 CONTINUE
+      END IF
       
       CALL DGSUM2D( ICTXT, 'A', ' ', M, 1, MUROW, LDA, RDEST, CDEST )
       
@@ -176,17 +185,17 @@
 
 
 
-! Initialize Centroids --- Random partition
-! Randomly assign each observation to a group
-      SUBROUTINE BCKMNIT2()
-      ! #######################################################################
-      ! In/Out
-      
-      ! #######################################################################
-      
-      
-      RETURN
-      END
+!! Initialize Centroids --- Random partition
+!! Randomly assign each observation to a group then get the means
+!      SUBROUTINE BCKMNIT2()
+!      ! #######################################################################
+!      ! In/Out
+!      
+!      ! #######################################################################
+!      
+!      
+!      RETURN
+!      END
 
 
 

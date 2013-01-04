@@ -89,20 +89,14 @@
       
       ! Step 3:  Call pdgecon
       CALL PDGECON(NORM, N, A, IA, JA, DESCA, ANORM, RCOND, 
-     $             TMP1, IN1, LIWORK, IN1, INFO)
+     $             TMP, IN1, LIWORK, IN1, INFO)
       
-      LWORK = 10000!INT(TMP1)
+      LWORK = INT(TMP)
       ALLOCATE (WORK(LWORK))
       ALLOCATE (IWORK(LIWORK))
       
-!      WRITE (*,*) "LWORK=",LWORK
-!      WRITE (*,*) "TMP1=",TMP1
-      
       CALL PDGECON(NORM, N, A, IA, JA, DESCA, ANORM, RCOND, 
      $             WORK, LWORK, IWORK, LIWORK, INFO)
-      
-!      WRITE (*,*) "INFO=",INFO
-!      WRITE (*,*) "RCOND=",RCOND
       
       DEALLOCATE (IPIV)
       DEALLOCATE (IWORK)
