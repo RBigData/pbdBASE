@@ -22,7 +22,7 @@
         MN(I) = 0
         DO 20 J = 1, LCM, 1
           MN(I) = MN(I) + (X(J,I) / M)
-   20 CONTINUE
+   20   CONTINUE
    10 CONTINUE
       
       CALL DGSUM2D( ICTXT, 'Column', ' ', LCN, 1, MN, 1, -1, -1 )
@@ -61,7 +61,7 @@
         VAR(I) = 0
         DO 20 J = 1, LCM, 1
           VAR(I) = VAR(I) + ( X(J,I) ** 2 ) / (M-1)
-   20 CONTINUE
+   20   CONTINUE
    10 CONTINUE
       
       CALL DGSUM2D( ICTXT, 'Column', ' ', LCN, 1, VAR, 1, -1, -1 )

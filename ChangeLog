@@ -1,3 +1,6 @@
+2013-1-4:
+  * Added new matrix norm and condition number routines.
+
 2012-12-17:
   * Fixed bug in SEXP wrappers of ScaLAPACK functions; passing 0-byte Ralloc'd vectors.
   * Fix multi-arch problem.
