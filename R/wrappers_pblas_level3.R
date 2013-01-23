@@ -58,7 +58,7 @@ base.rpdtran <- function(x)
 # PDGEMM:  Matrix-Matrix multiplication
 # ------------------------------------------------
 
-base.rpdgemm <- function(x, y, outbldim=x@bldim)
+base.rpdgemm <- function(transx='N', transy='N', x, y, outbldim=x@bldim)
 {
   if (length(outbldim)==1L)
     outbldim <- rep(outbldim, 2)
@@ -79,15 +79,13 @@ base.rpdgemm <- function(x, y, outbldim=x@bldim)
   descb <- base.descinit(dim=y@dim, bldim=bldimy, ldim=y@ldim, ICTXT=ICTXT)
   descc <- base.descinit(dim=cdim, bldim=outbldim, ldim=cldim, ICTXT=ICTXT)
   
-  trans <- 'N'
-
   if (!is.double(x@Data))
     storage.mode(x@Data) <- "double"
   if (!is.double(y@Data))
     storage.mode(y@Data) <- "double"
-
+    
   ret <- .Call("R_PDGEMM",
-                  as.character(trans), as.character(trans),
+                  as.character(transx), as.character(transy),
                   as.integer(m), as.integer(n), as.integer(k),
                   x@Data, as.integer(desca),
                   y@Data, as.integer(descb),
@@ -99,3 +97,58 @@ base.rpdgemm <- function(x, y, outbldim=x@bldim)
   
   return(c)
 }
+
+# ------------------------------------------------
+# PDSVRK:  Symmetric Rank-k Update
+# ------------------------------------------------
+
+base.rpdsvrk <- function(trans, x, outbldim=x@bldim)
+{
+  if (length(outbldim)==1L)
+    outbldim <- rep(outbldim, 2)
+  
+  ICTXT <- x@CTXT
+  
+  if (trans=='N' || trans=='n'){
+    n <- x@dim[1L]
+    k <- x@dim[2L]
+  } else {
+    n <- x@dim[2L]
+    k <- x@dim[1L]
+  }
+  
+  bldim <- x@bldim
+  
+  cdim <- c(n, n)
+  cldim <- base.numroc(cdim, outbldim, ICTXT=ICTXT)
+  
+  desca <- base.descinit(dim=x@dim, bldim=bldim, ldim=x@ldim, ICTXT=ICTXT)
+  descc <- base.descinit(dim=cdim, bldim=outbldim, ldim=cldim, ICTXT=ICTXT)
+  
+  if (!is.double(x@Data))
+    storage.mode(x@Data) <- "double"
+  
+  uplo <- 'U'
+  
+  blacs_ <- base.blacs(ICTXT=x@CTXT)
+  myP <- c(blacs_$MYROW, blacs_$MYCOL)
+  PROCS <- c(blacs_$NPROW, blacs_$NPCOL)
+  SRC <- c(0L, 0L)
+  
+  ret <- .Call("R_PDSYRK",
+                  as.character(uplo), as.character(trans),
+                  as.integer(n), as.integer(k),
+                  x@Data, as.integer(desca),
+                  as.integer(cldim), as.integer(descc),
+                  as.integer(cdim), as.integer(outbldim), as.integer(myP), as.integer(PROCS), as.integer(SRC),
+                  PACKAGE="pbdBASE"
+                 )
+  
+  c <- new("ddmatrix", Data=ret, dim=cdim, ldim=cldim, bldim=outbldim, CTXT=ICTXT)
+  
+  return(c)
+}
+
+
+
+
