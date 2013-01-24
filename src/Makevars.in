@@ -32,7 +32,7 @@ R_OBJS = \
   base_lm.o \
   variance.o \
   base_variance.o \
-  aux.o \
+  auxil.o \
   bprnt_c.o
 OBJECTS = $(R_OBJS)
 

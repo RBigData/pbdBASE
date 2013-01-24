@@ -15,7 +15,6 @@
       INTEGER             I0
       PARAMETER ( I0 = 0 )
       ! Functions
-      EXTERNAL            PDGECON
       DOUBLE PRECISION    PDLANGE
       INTEGER             INDXG2P, NUMROC
       ! #######################################################################

@@ -42,7 +42,7 @@ SEXP R_PDGEMM(SEXP TRANSA, SEXP TRANSB, SEXP M, SEXP N, SEXP K,
 }
 
 // PDSYRK
-static void c_l2g_coord(int* ret, int i, int j, int* dim, int* bldim, int* procs, int* myproc)
+static void c_l2g_coord(int* ret, int i, int j, int* dim, int* bldim, int* procs, int myproc)
 {
   const int nprocs = procs[0] * procs[1];
   ret[0] = nprocs*bldim[0] * (i-1)/bldim[0] + (i-1)%bldim[0] + ((nprocs+myproc)%nprocs)*bldim[0] + 1;
