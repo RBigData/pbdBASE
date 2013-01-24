@@ -1,5 +1,7 @@
-2013-1-4:
+2013-01-04: Ver. 0.1-2
   * Added new matrix norm and condition number routines.
+  * Fix .Last.lib problem.
+  * Expose BLACS C extension.
 
 2012-12-17:
   * Fixed bug in SEXP wrappers of ScaLAPACK functions; passing 0-byte Ralloc'd vectors.

@@ -33,7 +33,8 @@ R_OBJS = \
   variance.o \
   base_variance.o \
   auxil.o \
-  bprnt_c.o
+  bprnt_c.o \
+  pkg_tools.o
 OBJECTS = $(R_OBJS)
 
 ### For user configuration.
