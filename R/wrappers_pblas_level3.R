@@ -130,17 +130,11 @@ base.rpdsvrk <- function(trans, x, outbldim=x@bldim)
   
   uplo <- 'U'
   
-  blacs_ <- base.blacs(ICTXT=x@CTXT)
-  myP <- c(blacs_$MYROW, blacs_$MYCOL)
-  PROCS <- c(blacs_$NPROW, blacs_$NPCOL)
-  SRC <- c(0L, 0L)
-  
   ret <- .Call("R_PDSYRK",
                   as.character(uplo), as.character(trans),
                   as.integer(n), as.integer(k),
                   x@Data, as.integer(desca),
                   as.integer(cldim), as.integer(descc),
-                  as.integer(cdim), as.integer(outbldim), as.integer(myP), as.integer(PROCS), as.integer(SRC),
                   PACKAGE="pbdBASE"
                  )
   
@@ -150,5 +144,38 @@ base.rpdsvrk <- function(trans, x, outbldim=x@bldim)
 }
 
 
-
+base.crossprod <- function(trans, x)
+{
+  ICTXT <- x@CTXT
+  
+  if (trans=='N' || trans=='n'){
+    n <- x@dim[2L]
+    k <- x@dim[1L]
+  } else {
+    n <- x@dim[1L]
+    k <- x@dim[2L]
+  }
+  
+  bldim <- x@bldim
+  
+  cdim <- c(n, n)
+  cldim <- base.numroc(cdim, bldim, ICTXT=ICTXT)
+  
+  desca <- base.descinit(dim=x@dim, bldim=bldim, ldim=x@ldim, ICTXT=ICTXT)
+  descc <- base.descinit(dim=cdim, bldim=bldim, ldim=cldim, ICTXT=ICTXT)
+  
+  if (!is.double(x@Data))
+    storage.mode(x@Data) <- "double"
+  
+  ret <- .Call("R_PDCROSSPROD",
+                  as.character(trans),
+                  x@Data, as.integer(desca),
+                  as.integer(cldim), as.integer(descc),
+                  PACKAGE="pbdBASE"
+                 )
+  
+  c <- new("ddmatrix", Data=ret, dim=cdim, ldim=cldim, bldim=bldim, CTXT=ICTXT)
+  
+  return(c)
+}
 
