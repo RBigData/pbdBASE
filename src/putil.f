@@ -238,49 +238,68 @@
 
 !!!! Does what pdlacpy SHOULD do, namely copies the triangle of a global 
 !!!! distributed matrix onto the triangle of another matrix.
-!!!      SUBROUTINE PDLACPY2(UPLO, IP, A, IA, JA, DESCA, B, IB, JB, DESCB)
+!!!!
+!!!! If TRANS = 'Y', then A^T will be used.  This requires communication.
+!!!!
+!!!! For simplicity, we assume DESCA = DESCB.
+!!!! Not as efficient as it could be, but them's the breaks.
+!!!!
+!!!! PDMKSYM should be more efficient if A=B.
+!!!      SUBROUTINE PDGELACPY2(TRANS, UPLO, DIAG, A, IA, JA, DESCA, 
+!!!     $                      B, IB, JB)
+!!!      IMPLICIT NONE
 !!!      ! IN/OUT
-!!!      INTEGER             IA, JA, IB, JB, DESCA(9), DESCB(9)
-!!!      DOUBLE PRECISION    X(DESCX(9), *), Y(DESCY(9), *)
-!!!      CHARACTER*1         UPLO, IP ! should copy of A onto B be in place?
+!!!      INTEGER             IA, JA, DESCA(9), IB, JB
+!!!      DOUBLE PRECISION    A(DESCA(9), *), B(DESCA(9), * )
+!!!      CHARACTER*1         TRANS, UPLO, DIAG
 !!!      ! Local
-!!!      INTEGER             I, J, GI, GJ, LDM(2), BLACS(4), NPROCS
-!!!      DOUBLE PRECISION, ALLOCATABLE, CPA(:)
+!!!      INTEGER             M, N, I, J, GI, GJ
+!!!      DOUBLE PRECISION, ALLOCATABLE CPX(:,:)
 !!!      ! Parameter
-!!!      DOUBLE PRECISION    ZERO, ONE
-!!!      PARAMETER ( ZERO = 0.0D0, ONE = 1.0D0 )
+!!!      DOUBLE PRECISION    ONE
+!!!      PARAMETER ( ONE = 1.0D0 )
 !!!      ! External
-!!!      EXTERNAL            PDLACPY, PDIMS
-!!!      INTEGER             INDXL2G
+!!!      EXTERNAL            PDIMS, PDLACPY, PTRI2ZERO, PDGEADD
 !!!      
 !!!      
+!!!      ! Get local and proc grid info
 !!!      CALL PDIMS(DESCA, LDM, BLACS)
 !!!      
+!!!      M = LDM(1)
+!!!      N = LDM(2)
+!!!      
 !!!      ! Upper part to be copied
-!!!      IF (UPLO.EQ.'U') THEN
+!!!      IF (TRANS.EQ.'N') THEN
+!!!        ! Copy over the desired triangle
+!!!        CALL PDLACPY(UPLO, M, N, A, IA, JA, DESCA, 
+!!!     $               B, IB, JB, DESCB)
 !!!        
-!!!        IF (IP.EQ.'N') THEN
-!!!          ALLOCATE(CPA(LDM(1) * LDM(2)))
+!!!        ! Copy over the diagonal if needed
+!!!        IF (DIAG.EQ.'Y') THEN
+!!!          DO J = 1, N
+!!!            DO I = 1, M
+!!!              CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+!!!              IF (GI.EQ.GJ) THEN
+!!!                B(I,J) = A(I,J)
+!!!              END IF
+!!!            END DO 
+!!!          END DO
+!!!        END IF
+!!!      
+!!!      ELSE IF (TRANS.EQ.'Y') THEN
+!!!        IF (UPLO.EQ.'U' .OR. UPLO.EQ.'L') THEN
+!!!          ! Zero out to-be unused parts of B
+!!!          CALL PTRI2ZERO(UPLO, DIAG, B, DESCB) 
+!!!          
+!!!          ! Copy over via PDGEADD
+!!!          CALL PDGEADD('N', DESCX(3), DESCX(4), ONE, X, IX, JX, 
+!!!     $                  DESCX, ONE, X, IX, JX, DESCX)
+!!!        ELSE
 !!!          
 !!!        END IF
-!!!        
-!!!        ! Zero upper of B
-!!!        
-!!!        
-!!!        ! Add the two matrices
-!!!        
-!!!      ! Lower part to be copied
-!!!      ELSE IF (UPLO.EQ.'L') THEN
-!!!        
-!!!        
-!!!        
-!!!        
-!!!        
-!!!      ! A = B
 !!!      ELSE
-!!!        CALL PDLACPY('B', M, N, A, IA, JA, DESCA, B, IB, JB, DESCB)
+!!!        STOP "Invalid argument 'TRANS'"
 !!!      END IF
-!!!      
 !!!      
 !!!      RETURN
 !!!      END

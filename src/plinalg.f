@@ -55,10 +55,13 @@
 
 
 !!!! Mahalanobis distance d_M(X,Y)
-!!!      DOUBLE PRECISION FUNCTION DMAHAL(N, X, INCX, Y, INCY, MN, COVINV)
+!!!      DOUBLE PRECISION FUNCTION PDMAHAL(N, X, IX, JX, DESCX, INCX,
+!!!     $                                  Y, IY, JY, DESCY, INCY,
+!!!     $                                  MN, COVINV)
 !!!      IMPLICIT NONE
 !!!      ! IN/OUT
-!!!      INTEGER             N, INCX, INCY
+!!!      INTEGER             N, IX, JX, INCX, IY, JY, INCY,
+!!!     $                    DESCX( 9 ), DESCY( 9 )
 !!!      DOUBLE PRECISION    X( * ), Y( * ), MN( * ), COVINV( * )
 !!!      ! Local
 !!!      INTEGER             I
@@ -75,12 +78,14 @@
 !!!      ALLOCATE(WORK2(N))
 !!!      
 !!!      ! WORK1 = X - Y
-!!!      CALL DCOPY(N, X, INCX, WORK1, INCY)
+!!!      CALL PDCOPY(N, X, IX, JX, DESCX, INCX, WORK1, IX, JX, DESCX, 1)
 !!!      
-!!!      CALL DAXPY(N, ONE, WORK1, 1, Y, INCY)
+!!!      CALL PDAXPY(N, ONE, WORK1, IX, JX, DESCX, 1, Y, IY, JY, DESCY, 
+!!!     $            INCY)
 !!!      
 !!!      ! DMAHAL = WORK1^T * COVINV * WORK2
 !!!      CALL DGEMV('N', N, N, ONE, COVINV, N, WORK1, 1, ZERO, WORK2, 1)
+!!!      CALL PDGEMV('N', N, N, ONE, COVINV, ia, ja, desca, x, ix, jx, descx, incx, beta, y, iy, jy, descy, incy)
 !!!      
 !!!      DMAHAL = SQRT(DDOT(N, WORK1, 1, WORK2, 1))
 !!!      
