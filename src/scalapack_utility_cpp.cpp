@@ -80,44 +80,6 @@ RcppExport SEXP rcpp_g2l_coord( SEXP ind_,
 }
 
 
-//  // ----------------------------------------------------- //
-// /* Fill lower triangle of A, distributed as subA, with 0 */
-//// ----------------------------------------------------- //
-
-//RcppExport SEXP fill_lower_zero(SEXP subA_, 
-//                             SEXP dim_, SEXP bldim_,
-//                             SEXP procs_, SEXP myproc_, SEXP src_
-//                             )
-//{
-//  Rcpp::NumericMatrix subA(subA_);
-//  Rcpp::IntegerVector dim(dim_);
-//  Rcpp::IntegerVector bldim(bldim_);
-//  Rcpp::IntegerVector procs(procs_);
-//  Rcpp::IntegerVector myproc(myproc_);
-//  Rcpp::IntegerVector src(src_);
-
-//  int i, j;
-//  std::vector<int> ret(6);
-//  
-//  int top = dim[1];
-//  
-//  if (dim[1] >= dim[0])
-//    top--;
-//  
-//  for (j=0; j<top; j++){
-//    for (i=j+1; i<dim[0]; i++){
-//      g2l_coord(ret, i, j, dim, bldim, procs, src);
-//      if (myproc[0]==ret[2] && myproc[1]==ret[3]){ // fill subA
-//        subA(ret[4], ret[5]) = 0;
-//      }
-//    }
-//  }
-//  
-//  return subA;
-//}
-
-
-
   // ------------------------ //
  /* Matrix/vector operations */
 // ------------------------- //
@@ -238,9 +200,9 @@ RcppExport SEXP ddmatrix_insert(SEXP subA_, SEXP dim_, SEXP bldim_,
     for (i=0; i<ni; i++){
       g2l_coord(ret, I[i]-1, J[j]-1, dim, bldim, procs, src);
       if (myproc[0]==ret[2] && myproc[1]==ret[3]){
-
+        
         k = (i+j*dim[0]) % nvec;
-
+        
         subA(ret[4], ret[5]) = vec[k];
       }
     }

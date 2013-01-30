@@ -27,6 +27,21 @@ SEXP R_MKGBLMAT(SEXP SUBX, SEXP DESCX, SEXP RDEST, SEXP CDEST)
 } 
 
 
+SEXP R_DALLREDUCE(SEXP X, SEXP LDIM, SEXP DESCX, SEXP OP, SEXP SCOPE)
+{
+  const int ictxt = INTEGER(DESCX)[1];
+  const int m = INTEGER(DESCX)[2], n = INTEGER(DESCX)[3];
+  
+  SEXP RET;
+  PROTECT(RET = allocMatrix(REALSXP, INTEGER(LDIM)[0], INTEGER(LDIM)[1]));
+  
+  dallreduce_(REAL(X), INTEGER(DESCX), CHARPT(OP, 0), CHARPT(SCOPE, 0));
+  
+  UNPROTECT(1);
+  return RET;
+} 
+
+
 SEXP R_PTRI2ZERO(SEXP UPLO, SEXP DIAG, SEXP X, SEXP LDIM, SEXP DESCX)
 {
   const int m = INTEGER(LDIM)[0], n = INTEGER(LDIM)[1];
@@ -42,5 +57,51 @@ SEXP R_PTRI2ZERO(SEXP UPLO, SEXP DIAG, SEXP X, SEXP LDIM, SEXP DESCX)
   return CPX;
 }
 
+
+SEXP R_PDSWEEP(SEXP X, SEXP LDIM, SEXP DESCX, SEXP VEC, SEXP LVEC, SEXP MARGIN, SEXP FUN)
+{
+  const int m = INTEGER(LDIM)[0], n = INTEGER(LDIM)[1];
+  const int IJ = 1;
+  
+  SEXP CPX;
+  PROTECT(CPX = allocMatrix(REALSXP, m, n));
+  
+  memcpy(REAL(CPX), REAL(X), m*n*sizeof(double));
+  
+  pdsweep_(REAL(CPX), &IJ, &IJ, INTEGER(DESCX), REAL(VEC), INTEGER(LVEC), 
+    INTEGER(MARGIN), CHARPT(FUN, 0));
+  
+  UNPROTECT(1);
+  return CPX;
+}
+
+
+SEXP R_PDDIAGTK(SEXP X, SEXP LDIM, SEXP DESCX, SEXP LDIAG)
+{
+  const int IJ = 1;
+  
+  SEXP DIAG;
+  PROTECT(DIAG = allocVector(REALSXP, INTEGER(LDIAG)[0]));
+  
+  pddiagtk_(REAL(X), &IJ, &IJ, INTEGER(DESCX), REAL(DIAG));
+  
+  UNPROTECT(1);
+  return DIAG;
+}
+
+
+SEXP R_PDDIAGMK(SEXP LDIM, SEXP DESCX, SEXP DIAG, SEXP LDIAG)
+{
+  const int m = INTEGER(LDIM)[0], n = INTEGER(LDIM)[1];
+  const int IJ = 1;
+  
+  SEXP X;
+  PROTECT(X = allocMatrix(REALSXP, m, n));
+  
+  pddiagmk_(REAL(X), &IJ, &IJ, INTEGER(DESCX), REAL(DIAG), INTEGER(LDIAG));
+  
+  UNPROTECT(1);
+  return X;
+}
 
 

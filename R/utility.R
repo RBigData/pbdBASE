@@ -188,12 +188,6 @@ base.dim0 <- function(dim, ICTXT=0)
 # Reverse of submat above.  Same restrictions apply.
 base.gmat <- function(dx, proc.dest="all")
 {
-#  blacs_ <- base.blacs(dx@CTXT)
-#  myP <- c(blacs_$MYROW, blacs_$MYCOL)
-#  PROCS <- c(blacs_$NPROW, blacs_$NPCOL)
-#  RSRC <- CSRC <- 0 # processes with first row/col of global A
-#  ISRCPROC <- 0
-#  
   xattrs <- attributes(dx@Data)
   names <- xattrs$dimnames
   
@@ -208,33 +202,13 @@ base.gmat <- function(dx, proc.dest="all")
       out <- NULL
     return(out)
   }
-#  else {
-#    if (!is.double(dx@Data))
-#      storage.mode(dx@Data) <- "double"
-#    
-#    out <- .Call("submat_to_gmat", 
-#               subx=dx@Data,
-#               dim=as.integer(dim),
-#               bldim=as.integer(bldim),
-#               gP=as.integer(PROCS),
-#               myP=as.integer(myP),
-#               SRC=as.integer(c(RSRC, CSRC)),
-#               PACKAGE="pbdBASE"
-#               )
-#  }
-#  
-#  if (all(proc.dest=="all"))
-#    out <- pbdMPI::allreduce(out, op='sum')
-#  else {
-#    if (all(myP==proc.dest))
-#      outproc <- pbdMPI::comm.rank()
-#    else
-#      outproc <- 0
-#    outproc <- pbdMPI::allreduce(outproc, op='max')
-#    out <- pbdMPI::reduce(out, op='sum', rank.dest=outproc)
-#  }
   
   out <- base.mkgblmat(dx, proc.dest=proc.dest)
+  
+#  out <- allreduce(out)
+#  out <- matrix(out, nrow=dim[1], ncol=dim[2])
+#  
+  
   
   if (is.null(out))
     return(out)

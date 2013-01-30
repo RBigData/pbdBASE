@@ -233,9 +233,9 @@ base.rpdpotrf <- function(x)
   if (out$info!=0)
     warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
   
-  ret <- new("ddmatrix", Data=out$A, dim=x@dim, bldim=x@bldim, CTXT=x@CTXT)
+  ret <- new("ddmatrix", Data=out$A, dim=x@dim, ldim=x@ldim, bldim=x@bldim, CTXT=x@CTXT)
   
-#  ret <- base.tri2zero(dx=ret, 'L', 'N')
+  ret <- base.tri2zero(dx=ret, 'L', 'N')
   
   return(ret) 
 }

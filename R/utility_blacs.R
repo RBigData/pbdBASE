@@ -220,20 +220,16 @@ base.blacs.sum <- function(SCOPE, A, dim, na.rm=FALSE, ICTXT=0, means=FALSE, num
     SCOPE <- 'Row'
   if (SCOPE==2)
     SCOPE <- 'Column'
-
+  
   if (SCOPE=='Row')
-    if (!means)
-      f <- function(x, na.rm=na.rm) rowSums(x, na.rm=na.rm)
-    else
-      f <- function(x, na.rm=na.rm) rowSums(x, na.rm=na.rm) / num
+    f <- function(x, na.rm=na.rm) rowSums(x, na.rm=na.rm)
   else if (SCOPE=='Column')
-    if (!means)
-      f <- function(x, na.rm=na.rm) colSums(x, na.rm=na.rm)
-    else
-      f <- function(x, na.rm=na.rm) colSums(x, na.rm=na.rm) / num
-
-  A <- f(x=A, na.rm=na.rm)
-
+    f <- function(x, na.rm=na.rm) colSums(x, na.rm=na.rm)
+  
+  if (!means)
+    num <- 1
+  A <- f(x=A/num, na.rm=na.rm)
+  
   M <- max(dim)
   N <- 1
   LDA <- length(A)
@@ -243,16 +239,16 @@ base.blacs.sum <- function(SCOPE, A, dim, na.rm=FALSE, ICTXT=0, means=FALSE, num
     A <- numeric(mxm)
     M <- mxm
   }
-
+    
   if (!is.double(A))
     storage.mode(A) <- "double"
-
+  
   out <- .Call("R_dgsum2d",
                as.integer(ICTXT), as.character(SCOPE),
                as.integer(M), as.integer(N), A, as.integer(LDA),
                PACKAGE="pbdBASE"
                )
-
+  
   return(out)
 }
 

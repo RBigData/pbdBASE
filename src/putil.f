@@ -84,46 +84,60 @@
 
 
 ! Reductions using BLACS
-      SUBROUTINE DALLREDUCE(M, N, X, OP, SCOPE, ICTXT)
+      SUBROUTINE DALLREDUCE(X, DESCX, OP, SCOPE)
       IMPLICIT NONE
       ! IN/OUT
-      INTEGER             M, N, ICTXT
+      INTEGER             DESCX(9)
       DOUBLE PRECISION    X( * )
       CHARACTER           OP, SCOPE
+      ! Local
+      INTEGER             M, N, LDA, ICTXT
       ! External
       EXTERNAL            DGSUM2D, DGAMX2D, DGMN2D
       
       
+      M = DESCX(3)
+      N = DESCX(4)
+      LDA = DESCX(9)
+      ICTXT = DESCX(2)
+      
       IF (OP.EQ.'MIN') THEN
-        CALL DGAMN2D(ICTXT, SCOPE, ' ', M, N, X, 1,-1,-1,-1,-1,-1)
+        CALL DGAMN2D(ICTXT,SCOPE,' ',M,N,X,LDA,-1,-1,-1,-1,-1)
       ELSE IF (OP.EQ.'MAX') THEN
-        CALL DGAMX2D(ICTXT, SCOPE, ' ', M, N, X, 1,-1,-1,-1,-1,-1)
-      ELSE
-        CALL DGSUM2D(ICTXT, SCOPE, ' ', M, N, X, 1,-1,-1)
+        CALL DGAMX2D(ICTXT,SCOPE,' ',M,N,X,LDA,-1,-1,-1,-1,-1)
+      ELSE ! default to sum
+        CALL DGSUM2D(ICTXT, SCOPE, ' ', M, N, X, LDA, -1, -1)
       END IF
       
       RETURN 
       END
 
 
-      SUBROUTINE DREDUCE(M, N, X, OP, RDEST, CDEST, SCOPE, ICTXT)
+      SUBROUTINE DREDUCE(X, M, N, LDA, OP, RDEST, CDEST, SCOPE)
       IMPLICIT NONE
       ! IN/OUT
-      INTEGER             M, N, RDEST, CDEST, ICTXT
+      INTEGER             DESCX(9), RDEST, CDEST
       DOUBLE PRECISION    X( * )
       CHARACTER           OP, SCOPE
+      ! Local
+      INTEGER             M, N, LDA, ICTXT
       ! External
       EXTERNAL            DGSUM2D, DGAMX2D, DGMN2D
       
       
+      M = DESCX(3)
+      N = DESCX(4)
+      LDA = DESCX(9)
+      ICTXT = DESCX(2)
+      
       IF (OP.EQ.'MIN') THEN
-        CALL DGAMN2D(ICTXT, SCOPE, ' ', M, N, X, 1, -1, -1, -1, 
+        CALL DGAMN2D(ICTXT, SCOPE, ' ', M, N, X, LDA, -1, -1, -1, 
      $               RDEST, CDEST)
       ELSE IF (OP.EQ.'MAX') THEN
-        CALL DGAMX2D(ICTXT, SCOPE, ' ', M, N, X, 1, -1, -1, -1,
+        CALL DGAMX2D(ICTXT, SCOPE, ' ', M, N, X, LDA, -1, -1, -1,
      $               RDEST, CDEST)
       ELSE
-        CALL DGSUM2D(ICTXT, SCOPE, ' ', M, N, X, 1, RDEST, CDEST)
+        CALL DGSUM2D(ICTXT, SCOPE, ' ', M, N, X, LDA, RDEST, CDEST)
       END IF
       
       RETURN 
@@ -230,14 +244,12 @@
       
       ! Only do work if we own any local pieces
       IF (M.GT.0 .AND. N.GT.0) THEN
-      
         DO J = 1, N
           DO I = 1, M
             CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
             SUBX(I,J) = GBLX(GI,GJ)
           END DO 
         END DO
-      
       END IF
       
       RETURN
@@ -276,10 +288,9 @@
       END DO
       
       IF (RDEST.EQ.-1) THEN
-        CALL DALLREDUCE(DESCX(3), DESCX(4), GBLX, 'S', 'All', DESCX(2))
+        CALL DALLREDUCE(GBLX, DESCX, 'S', 'All')
       ELSE
-        CALL DREDUCE(DESCX(3), DESCX(4), GBLX, 'S', RDEST, CDEST,
-     $               'All', DESCX(2))
+        CALL DREDUCE(GBLX, DESCX, 'S', RDEST, CDEST, 'All')
       END IF
       
       RETURN
@@ -403,6 +414,7 @@
       CHARACTER*1         UPLO
       ! Local
       INTEGER             M, N, I, J, GI, GJ, LDM(2), BLACS(5)
+      DOUBLE PRECISION, ALLOCATABLE :: CPX(:,:)
       ! Parameter
       DOUBLE PRECISION    ZERO, ONE, HALF
       PARAMETER ( ZERO = 0.0D0, ONE = 1.0D0, HALF = 0.5D0 )
@@ -430,9 +442,14 @@
           RETURN! "Invalid argument 'UPLO'"
         END IF
         
+        ALLOCATE(CPX(M,N))
+        CPX(1:M,1:N) = X(1:M,1:N)
+        
         ! X = t(X) + X
-        CALL PDGEADD('T', DESCX(3), DESCX(4), ONE, X, IX, JX, 
+        CALL PDGEADD('T', DESCX(3), DESCX(4), ONE, CPX, IX, JX, 
      $                DESCX, ONE, X, IX, JX, DESCX)
+        
+        DEALLOCATE(CPX)
         
         ! Correct diagonal
         DO J = 1, N
@@ -517,4 +534,213 @@
 !!!      
 !!!      RETURN
 !!!      END
+
+
+
+
+! Copyright 2013, Schmidt
+
+      INTEGER FUNCTION IND(I, J)
+      INTEGER I, J
+      
+      IND = MOD(I, J)
+      IF (IND.EQ.0) THEN
+        IND = J
+      END IF
+      
+      RETURN
+      END
+
+
+! SWEEP array out of distributed matrix
+      SUBROUTINE PDSWEEP(X, IX, JX, DESCX, VEC, LVEC, MARGIN, FUN)
+      IMPLICIT NONE
+      ! IN/OUT
+      INTEGER             IX, JX, DESCX(9), MARGIN, LVEC
+      DOUBLE PRECISION    X(DESCX(9), *), VEC(LVEC)
+      CHARACTER*1         FUN
+      ! Local
+      INTEGER             K, M, N, POS, I, J, GI, GJ, LDM(2), BLACS(5)
+      ! External
+      EXTERNAL            PDIMS
+      ! Function
+      INTEGER             IND
+      
+      
+      ! Get local and proc grid info
+      CALL PDIMS(DESCX, LDM, BLACS)
+      
+      M = LDM(1)
+      N = LDM(2)
+      K = DESCX(4)
+      
+      ! Only do work if we own any local pieces
+      IF (M.GT.0 .AND. N.GT.0) THEN
+        ! Addition
+        IF (FUN.EQ."+") THEN
+          IF (MARGIN.EQ.1) THEN
+            DO J = 1, N
+              DO I = 1, M
+                CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+                POS = IND(GI + K*(GJ-1), LVEC)
+                X(I, J) = X(I, J) + VEC(POS)
+                POS = IND(POS+1, LVEC)
+              END DO
+            END DO
+          ELSE IF (MARGIN.EQ.2) THEN
+            DO J = 1, N
+              DO I = 1, M
+                CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+                POS = IND(GJ + K*(GI-1), LVEC)
+                X(I, J) = X(I, J) + VEC(POS)
+              END DO
+            END DO
+          END IF
+        ! Subtraction
+        ELSE IF (FUN.EQ."-") THEN
+          IF (MARGIN.EQ.1) THEN
+            DO J = 1, N
+              DO I = 1, M
+                CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+                POS = IND(GI + K*(GJ-1), LVEC)
+                X(I, J) = X(I, J) - VEC(POS)
+                POS = IND(POS+1, LVEC)
+              END DO
+            END DO
+          ELSE IF (MARGIN.EQ.2) THEN
+            DO J = 1, N
+              DO I = 1, M
+                CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+                POS = IND(GJ + K*(GI-1), LVEC)
+                X(I, J) = X(I, J) - VEC(POS)
+              END DO
+            END DO
+          END IF
+        ! Multiplication
+        ELSE IF (FUN.EQ."*") THEN
+          IF (MARGIN.EQ.1) THEN
+            DO J = 1, N
+              DO I = 1, M
+                CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+                POS = IND(GI + K*(GJ-1), LVEC)
+                X(I, J) = X(I, J) * VEC(POS)
+                POS = IND(POS+1, LVEC)
+              END DO
+            END DO
+          ELSE IF (MARGIN.EQ.2) THEN
+            DO J = 1, N
+              DO I = 1, M
+                CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+                POS = IND(GJ + K*(GI-1), LVEC)
+                X(I, J) = X(I, J) * VEC(POS)
+              END DO
+            END DO
+          END IF
+        ! Division
+        ELSE IF (FUN.EQ."/") THEN
+          IF (MARGIN.EQ.1) THEN
+            DO J = 1, N
+              DO I = 1, M
+                CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+                POS = IND(GI + K*(GJ-1), LVEC)
+                X(I, J) = X(I, J) / VEC(POS)
+                POS = IND(POS+1, LVEC)
+              END DO
+            END DO
+          ELSE IF (MARGIN.EQ.2) THEN
+            DO J = 1, N
+              DO I = 1, M
+                CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+                POS = IND(GJ + K*(GI-1), LVEC)
+                X(I, J) = X(I, J) / VEC(POS)
+              END DO
+            END DO
+          END IF
+        END IF
+      END IF
+      
+      RETURN
+      END
+
+
+! grab diagonal of matrix
+      SUBROUTINE PDDIAGTK(X, IX, JX, DESCX, DIAG)
+      IMPLICIT NONE
+      ! IN/OUT
+      INTEGER             IX, JX, DESCX(9)
+      DOUBLE PRECISION    X(DESCX(9), *), DIAG( * )
+      ! Local
+      INTEGER             K, M, N, I, J, GI, GJ, GK, LDM(2), 
+     $                    BLACS(5), DESC(9)
+      ! External
+      EXTERNAL            PDIMS, DALLREDUCE
+      
+      
+      ! Get local and proc grid info
+      CALL PDIMS(DESCX, LDM, BLACS)
+      
+      M = LDM(1)
+      N = LDM(2)
+      
+      DO J = 1, N
+        DO I = 1, M
+          CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+          IF (GI.EQ.GJ) THEN
+            DIAG(GI) = X(I,J)
+          END IF
+        END DO
+      END DO
+      
+      K = MIN(M, N)
+      GK = MIN(DESCX(3), DESCX(4))
+      
+      DESC(2) = DESCX(2)
+      DESC(3) = GK
+      DESC(4) = 1
+      DESC(9) = K
+      
+      CALL DALLREDUCE(DIAG, DESC, 'Sum', 'All')
+      
+      RETURN
+      END
+
+
+! construct matrix containing diagonal DIAG
+      SUBROUTINE PDDIAGMK(X, IX, JX, DESCX, DIAG, LDIAG)
+      IMPLICIT NONE
+      ! IN/OUT
+      INTEGER             IX, JX, DESCX(9), LDIAG
+      DOUBLE PRECISION    X(DESCX(9), *), DIAG( * )
+      ! Local
+      INTEGER             M, N, I, J, GI, GJ, LDM(2), BLACS(5)
+      ! Parameter
+      DOUBLE PRECISION    ZERO
+      PARAMETER ( ZERO = 0.0D0 )
+      ! External
+      EXTERNAL            PDIMS
+      ! Function
+      INTEGER             IND
+      
+      
+      ! Get local and proc grid info
+      CALL PDIMS(DESCX, LDM, BLACS)
+      
+      M = LDM(1)
+      N = LDM(2)
+      
+      DO J = 1, N
+        DO I = 1, M
+          CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+          IF (GI.EQ.GJ) THEN
+            X(I,J) = DIAG( IND(GI, LDIAG) )
+          ELSE 
+            X(I,J) = ZERO
+          END IF
+        END DO
+      END DO
+      
+      RETURN
+      END
+
+
 
