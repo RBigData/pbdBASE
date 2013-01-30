@@ -225,65 +225,74 @@
 !!!      END
 
 
-!!!! Compute matrix inverse without having to understand LAPACK/BLAS peculiarities
-!!!! In place version (X is overwritten with X^-1)
-!!!      SUBROUTINE DINVIP(N, X, INFO)
-!!!      IMPLICIT NONE
-!!!      ! IN/OUT
-!!!      INTEGER             N
-!!!      DOUBLE PRECISION    X(N, N)
-!!!      ! Local
-!!!      INTEGER             I, J, LWORK, INFO
-!!!      DOUBLE PRECISION    TMP
-!!!      INTEGER, ALLOCATABLE :: IPIV(:)
-!!!      DOUBLE PRECISION, ALLOCATABLE :: WORK(:)
-!!!      ! External
-!!!      EXTERNAL           DGETRF, DGETRI
-!!!      
-!!!      ! Factor X=LU
-!!!      ALLOCATE(IPIV(N))
-!!!      CALL DGETRF(N, N, X, N, IPIV, INFO)
-!!!      
-!!!      IF (INFO.NE.0) RETURN
-!!!      
-!!!      ! Invert X
-!!!      LWORK = -1
-!!!      
-!!!      CALL DGETRI(N, X, N, IPIV, TMP, LWORK, INFO)
-!!!      
-!!!      LWORK = INT(TMP)
-!!!      ALLOCATE(WORK(LWORK))
-!!!      
-!!!      CALL DGETRI(N, X, N, IPIV, WORK, LWORK, INFO)
-!!!      
-!!!      DEALLOCATE(WORK)
-!!!      DEALLOCATE(IPIV)
-!!!      
-!!!      RETURN
-!!!      END
+! Compute matrix inverse without having to understand ScaLAPACK peculiarities
+! In place version (X is overwritten with X^-1)
+      SUBROUTINE PDINVIP(X, IX, JX, DESCX, INFO)
+      IMPLICIT NONE
+      ! IN/OUT
+      INTEGER             IX, JX, DESCX(9), INFO
+      DOUBLE PRECISION    X( * )
+      ! Local
+      INTEGER             N, LWORK, LIWORK, ALLOCERR
+      DOUBLE PRECISION    TMP
+      INTEGER, ALLOCATABLE :: IPIV(:), IWORK(:)
+      DOUBLE PRECISION, ALLOCATABLE :: WORK(:)
+      ! External
+      EXTERNAL           PDGETRF, PDGETRI
+      
+      
+      ALLOCERR = 0
+      N = DESCX(3)
+      
+      ! Factor X=LU
+      ALLOCATE(IPIV(N + DESCX(6)), STAT=ALLOCERR)
+      IF (ALLOCERR.NE.0) RETURN! "Out of memory"
+      
+      CALL PDGETRF(N, N, X, IX, JX, DESCX, IPIV, INFO)
+      IF (INFO.NE.0) RETURN
+      
+      ! Invert X
+      LWORK = -1
+      LIWORK = -1
+      
+      CALL PDGETRI(N, X, IX, JX, DESCX, IPIV, TMP, LWORK, LIWORK, 
+     $             LIWORK, INFO)
+      IF (INFO.NE.0) RETURN
+      
+      LWORK = INT(TMP)
+      ALLOCATE(WORK(LWORK), STAT=ALLOCERR)
+      IF (ALLOCERR.NE.0) RETURN! "Out of memory"
+      
+      ALLOCATE(IWORK(LIWORK), STAT=ALLOCERR)
+      IF (ALLOCERR.NE.0) RETURN! "Out of memory"
+      
+      CALL PDGETRI(N, X, IX, JX, DESCX, IPIV, WORK, LWORK, IWORK, 
+     $             LIWORK, INFO)
+      
+      DEALLOCATE(IPIV)
+      DEALLOCATE(WORK)
+      DEALLOCATE(IWORK)
+      
+      RETURN
+      END
 
 
-!!!! Compute matrix inverse without having to understand LAPACK/BLAS peculiarities
-!!!! Non-in-place version (on return, INV = X^-1)
-!!!      SUBROUTINE DINV(N, X, INV, INFO)
-!!!      IMPLICIT NONE
-!!!      ! IN/OUT
-!!!      INTEGER             N
-!!!      DOUBLE PRECISION    X(N, N), INV(N, N)
-!!!      ! Local
-!!!      INTEGER             I, J, LWORK, INFO
-!!!      DOUBLE PRECISION    TMP
-!!!      INTEGER, ALLOCATABLE :: IPIV(:)
-!!!      DOUBLE PRECISION, ALLOCATABLE :: WORK(:)
-!!!      ! External
-!!!      EXTERNAL           DLACPY, DINVIP
-!!!      
-!!!      ! INV = X
-!!!      CALL DLACPY('A', N, N, X, N, INV, N)
-!!!      
-!!!      CALL DINVIP(N, INV, INFO)
-!!!      
-!!!      RETURN
-!!!      END
+! Non-in-place version of matrix inverse (on return, INV = X^-1)
+      SUBROUTINE PDINV(X, IX, JX, DESCX, INV, INFO)
+      IMPLICIT NONE
+      ! IN/OUT
+      INTEGER             IX, JX, DESCX, INFO
+      DOUBLE PRECISION    X( * ), INV( * )
+      ! External
+      EXTERNAL           PDLACPY, PDINVIP
+      
+      ! INV = X
+      CALL PDLACPY('B', DESCX(3), DESCX(4), X, IX, JX, DESCX, INV,
+     $             IX, JX, DESCX)
+      
+      CALL PDINVIP(INV, IX, JX, DESCX, INFO)
+      
+      RETURN
+      END
 
 

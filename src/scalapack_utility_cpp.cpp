@@ -79,130 +79,43 @@ RcppExport SEXP rcpp_g2l_coord( SEXP ind_,
   return Rcpp::wrap( ret );
 }
 
-  // --------------------------------------------- //
- /* create local subA from global A or vice versa */
-// --------------------------------------------- //
 
-// A --> subA
-RcppExport SEXP block_submat(SEXP A_, 
-                             SEXP dim_, SEXP ldim_, SEXP bldim_,
-                             SEXP procs_, SEXP myproc_, SEXP src_
-                             )
-{
-  Rcpp::NumericMatrix A(A_);
-  Rcpp::IntegerVector dim(dim_);
-  Rcpp::IntegerVector ldim(ldim_);
-  Rcpp::IntegerVector bldim(bldim_);
-  Rcpp::IntegerVector procs(procs_);
-  Rcpp::IntegerVector myproc(myproc_);
-  Rcpp::IntegerVector src(src_);
+//  // ----------------------------------------------------- //
+// /* Fill lower triangle of A, distributed as subA, with 0 */
+//// ----------------------------------------------------- //
 
-  Rcpp::NumericMatrix subA(ldim[0], ldim[1]);
-  
-  int i, j;
-  std::vector<int> ret(6);
+//RcppExport SEXP fill_lower_zero(SEXP subA_, 
+//                             SEXP dim_, SEXP bldim_,
+//                             SEXP procs_, SEXP myproc_, SEXP src_
+//                             )
+//{
+//  Rcpp::NumericMatrix subA(subA_);
+//  Rcpp::IntegerVector dim(dim_);
+//  Rcpp::IntegerVector bldim(bldim_);
+//  Rcpp::IntegerVector procs(procs_);
+//  Rcpp::IntegerVector myproc(myproc_);
+//  Rcpp::IntegerVector src(src_);
 
-  // see http://www.netlib.org/scalapack/slug/node76.html#SECTION04432000000000000000
-  for (j=0; j<dim[1]; j++){
-    for (i=0; i<dim[0]; i++){
-      g2l_coord(ret, i, j, dim, bldim, procs, src);
-      if (myproc[0]==ret[2] && myproc[1]==ret[3]){ // fill subA
-        subA(ret[4], ret[5]) = A(i,j);
-      }
-    }
-  }
-  
-  return subA;
-}
+//  int i, j;
+//  std::vector<int> ret(6);
+//  
+//  int top = dim[1];
+//  
+//  if (dim[1] >= dim[0])
+//    top--;
+//  
+//  for (j=0; j<top; j++){
+//    for (i=j+1; i<dim[0]; i++){
+//      g2l_coord(ret, i, j, dim, bldim, procs, src);
+//      if (myproc[0]==ret[2] && myproc[1]==ret[3]){ // fill subA
+//        subA(ret[4], ret[5]) = 0;
+//      }
+//    }
+//  }
+//  
+//  return subA;
+//}
 
-// subA --> A
-RcppExport SEXP submat_to_gmat(SEXP subA_, 
-                             SEXP dim_, SEXP bldim_,
-                             SEXP procs_, SEXP myproc_, SEXP src_
-                             )
-{
-  Rcpp::NumericMatrix subA(subA_);
-  Rcpp::IntegerVector dim(dim_);
-  Rcpp::IntegerVector bldim(bldim_);
-  Rcpp::IntegerVector procs(procs_);
-  Rcpp::IntegerVector myproc(myproc_);
-  Rcpp::IntegerVector src(src_);
-  
-  Rcpp::NumericMatrix A(dim[0], dim[1]);
-
-  int i, j;
-  std::vector<int> ret(6);
-  
-  for (j=0; j<dim[1]; j++){
-    for (i=0; i<dim[0]; i++){
-      g2l_coord(ret, i, j, dim, bldim, procs, src);
-      if (myproc[0]==ret[2] && myproc[1]==ret[3]){ // fill subA
-        A(i,j) = subA(ret[4], ret[5]);
-      }
-    }
-  }
-  
-  return A;
-}
-
-
-  // ----------------------------------------------------- //
- /* Fill lower triangle of A, distributed as subA, with 0 */
-// ----------------------------------------------------- //
-
-RcppExport SEXP fill_lower_zero(SEXP subA_, 
-                             SEXP dim_, SEXP bldim_,
-                             SEXP procs_, SEXP myproc_, SEXP src_
-                             )
-{
-  Rcpp::NumericMatrix subA(subA_);
-  Rcpp::IntegerVector dim(dim_);
-  Rcpp::IntegerVector bldim(bldim_);
-  Rcpp::IntegerVector procs(procs_);
-  Rcpp::IntegerVector myproc(myproc_);
-  Rcpp::IntegerVector src(src_);
-
-  int i, j;
-  std::vector<int> ret(6);
-  
-  int top = dim[1];
-  
-  if (dim[1] >= dim[0])
-    top--;
-  
-  for (j=0; j<top; j++){
-    for (i=j+1; i<dim[0]; i++){
-      g2l_coord(ret, i, j, dim, bldim, procs, src);
-      if (myproc[0]==ret[2] && myproc[1]==ret[3]){ // fill subA
-        subA(ret[4], ret[5]) = 0;
-      }
-    }
-  }
-  
-  return subA;
-}
-
-
-RcppExport SEXP optimal_process_grid (SEXP nprocs_)
-{
-  const int nprocs = *(INTEGER(nprocs_));
-  Rcpp::IntegerVector procs(2);
-
-  const int root = (int)std::sqrt(nprocs);
-  int test = 0;
-  
-  for (int i=0; i<root; i++){
-    test = root - i;
-    
-    if (nprocs % test == 0)
-      break;
-  }
-  
-  procs[0] = test;
-  procs[1] = nprocs/test;
-  
-  return procs;
-}
 
 
   // ------------------------ //
@@ -210,7 +123,7 @@ RcppExport SEXP optimal_process_grid (SEXP nprocs_)
 // ------------------------- //
 
 // Calculate a "mod" b, where b is numeric
-double fp_modulo (double a, double b)
+static double fp_modulo (double a, double b)
 {
   double ret=a;
 

@@ -187,7 +187,8 @@ base.qr.R <- function(qr, complete=FALSE)
       ret <- ret[1:min(ret@dim), ]
   }
   
-  ret@Data <- base.low2zero(A=ret@Data, dim=ret@dim, ldim=ret@ldim, bldim=ret@bldim, CTXT=ret@CTXT)
+  ret <- base.tri2zero(dx=ret, 'L', 'N')
+#  ret@Data <- base.low2zero(A=ret@Data, dim=ret@dim, ldim=ret@ldim, bldim=ret@bldim, CTXT=ret@CTXT)
   
   # not particularly efficient, but I don't expect this to get any real use...
   rank <- qr$rank

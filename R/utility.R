@@ -153,47 +153,47 @@ base.dim0 <- function(dim, ICTXT=0)
 
 
 
-# Take a (regular) matrix common to all nodes and distribute it as
-# ddmatrix.  Should only be used in testing! This is inefficient 
-# for real work.
-base.submat <- function(A, bldim, ICTXT=0)
-{
-  blacs_ <- base.blacs(ICTXT=ICTXT)
-  myP <- c(blacs_$MYROW, blacs_$MYCOL)
-  PROCS <- c(blacs_$NPROW, blacs_$NPCOL)
-  RSRC <- CSRC <- 0 # processes with first row/col of global A
-  ISRCPROC <- 0
-  
-  if (length(bldim)==1) bldim <- rep(bldim, 2)
-  dim <- dim(A)
-  ldim <- base.numroc(dim, bldim)
+## Take a (regular) matrix common to all nodes and distribute it as
+## ddmatrix.  Should only be used in testing! This is inefficient 
+## for real work.
+#base.submat <- function(A, bldim, ICTXT=0)
+#{
+#  blacs_ <- base.blacs(ICTXT=ICTXT)
+#  myP <- c(blacs_$MYROW, blacs_$MYCOL)
+#  PROCS <- c(blacs_$NPROW, blacs_$NPCOL)
+#  RSRC <- CSRC <- 0 # processes with first row/col of global A
+#  ISRCPROC <- 0
+#  
+#  if (length(bldim)==1) bldim <- rep(bldim, 2)
+#  dim <- dim(A)
+#  ldim <- base.numroc(dim, bldim)
 
-  if (!is.double(A))
-    storage.mode(A) <- "double"
+#  if (!is.double(A))
+#    storage.mode(A) <- "double"
 
-  out <- .Call("block_submat", 
-             A=A,
-             dim=as.integer(dim),
-             ldim=as.integer(ldim),
-             bldim=as.integer(bldim),
-             gP=as.integer(PROCS),
-             myP=as.integer(myP),
-             SRC=as.integer(c(RSRC, CSRC)),
-             PACKAGE="pbdBASE"
-             )
-  
-  return(out)
-}
+#  out <- .Call("block_submat", 
+#             A=A,
+#             dim=as.integer(dim),
+#             ldim=as.integer(ldim),
+#             bldim=as.integer(bldim),
+#             gP=as.integer(PROCS),
+#             myP=as.integer(myP),
+#             SRC=as.integer(c(RSRC, CSRC)),
+#             PACKAGE="pbdBASE"
+#             )
+#  
+#  return(out)
+#}
 
 # Reverse of submat above.  Same restrictions apply.
 base.gmat <- function(dx, proc.dest="all")
 {
-  blacs_ <- base.blacs(dx@CTXT)
-  myP <- c(blacs_$MYROW, blacs_$MYCOL)
-  PROCS <- c(blacs_$NPROW, blacs_$NPCOL)
-  RSRC <- CSRC <- 0 # processes with first row/col of global A
-  ISRCPROC <- 0
-  
+#  blacs_ <- base.blacs(dx@CTXT)
+#  myP <- c(blacs_$MYROW, blacs_$MYCOL)
+#  PROCS <- c(blacs_$NPROW, blacs_$NPCOL)
+#  RSRC <- CSRC <- 0 # processes with first row/col of global A
+#  ISRCPROC <- 0
+#  
   xattrs <- attributes(dx@Data)
   names <- xattrs$dimnames
   
@@ -208,41 +208,42 @@ base.gmat <- function(dx, proc.dest="all")
       out <- NULL
     return(out)
   }
-  else {
-    if (!is.double(dx@Data))
-      storage.mode(dx@Data) <- "double"
-    
-    out <- .Call("submat_to_gmat", 
-               subx=dx@Data,
-               dim=as.integer(dim),
-               bldim=as.integer(bldim),
-               gP=as.integer(PROCS),
-               myP=as.integer(myP),
-               SRC=as.integer(c(RSRC, CSRC)),
-               PACKAGE="pbdBASE"
-               )
-  }
+#  else {
+#    if (!is.double(dx@Data))
+#      storage.mode(dx@Data) <- "double"
+#    
+#    out <- .Call("submat_to_gmat", 
+#               subx=dx@Data,
+#               dim=as.integer(dim),
+#               bldim=as.integer(bldim),
+#               gP=as.integer(PROCS),
+#               myP=as.integer(myP),
+#               SRC=as.integer(c(RSRC, CSRC)),
+#               PACKAGE="pbdBASE"
+#               )
+#  }
+#  
+#  if (all(proc.dest=="all"))
+#    out <- pbdMPI::allreduce(out, op='sum')
+#  else {
+#    if (all(myP==proc.dest))
+#      outproc <- pbdMPI::comm.rank()
+#    else
+#      outproc <- 0
+#    outproc <- pbdMPI::allreduce(outproc, op='max')
+#    out <- pbdMPI::reduce(out, op='sum', rank.dest=outproc)
+#  }
   
-  if (all(proc.dest=="all"))
-    out <- pbdMPI::allreduce(out, op='sum')
-  else {
-    if (all(myP==proc.dest))
-      outproc <- pbdMPI::comm.rank()
-    else
-      outproc <- 0
-    outproc <- pbdMPI::allreduce(outproc, op='max')
-    out <- pbdMPI::reduce(out, op='sum', rank.dest=outproc)
-  }
+  out <- base.mkgblmat(dx, proc.dest=proc.dest)
   
   if (is.null(out))
     return(out)
   else {
-    out <- matrix(out, nrow=dim[1], ncol=dim[2])
+#    out <- matrix(out, nrow=dim[1], ncol=dim[2])
     if (length(xattrs)>1){
-      if (length(names)>0){
+      if (length(names)>0)
         xattrs$dimnames <- NULL
-        
-      }
+      
       oattrs <- union(attributes(out), xattrs[-1])
       names(oattrs) <- names(xattrs)
       attributes(out) <- oattrs
@@ -299,100 +300,32 @@ base.firstfew <- function(dx, atmost=5)
   return(out)
 }
 
-# fill lower triangle of distributed matrix A with 0's
-# used to force chol() return from ScaLAPACK to match R's return
-base.low2zero <- function(A, dim, ldim, bldim, CTXT=0)
-{
-  blacs_ <- base.blacs(CTXT)
-  myproc <- c(blacs_$MYROW, blacs_$MYCOL)
-  PROCS <- c(blacs_$NPROW, blacs_$NPCOL)
-  RSRC <- CSRC <- 0
-  ISRCPROC <- 0
-  
-  if (!is.double(A))
-    storage.mode(A) <- "double"
-  
-  out <- .Call("fill_lower_zero", 
-             A=A,
-             dim=as.integer(dim),
-             bldim=as.integer(bldim),
-             gP=as.integer(PROCS),
-             myP=as.integer(myproc),
-             SRC=as.integer(c(RSRC, CSRC)),
-             PACKAGE="pbdBASE"
-             )
-  
-  return(out) # A@Data
-}
-
-#base.reblock <- function(dx, bldim=dx@bldim, ICTXT)
+## fill lower triangle of distributed matrix A with 0's
+## used to force chol() return from ScaLAPACK to match R's return
+#base.low2zero <- function(A, dim, ldim, bldim, CTXT=0)
 #{
-#  if (length(bldim)==1)
-#    bldim <- rep(bldim, 2)
-
-#  dim <- dx@dim
+#  blacs_ <- base.blacs(CTXT)
+#  myproc <- c(blacs_$MYROW, blacs_$MYCOL)
+#  PROCS <- c(blacs_$NPROW, blacs_$NPCOL)
+#  RSRC <- CSRC <- 0
+#  ISRCPROC <- 0
 #  
-#  xattrs <- attributes(dx@Data)
+#  if (!is.double(A))
+#    storage.mode(A) <- "double"
 #  
-#  m <- dim[1]
-#  n <- dim[2]
+#  out <- .Call("fill_lower_zero", 
+#             A=A,
+#             dim=as.integer(dim),
+#             bldim=as.integer(bldim),
+#             gP=as.integer(PROCS),
+#             myP=as.integer(myproc),
+#             SRC=as.integer(c(RSRC, CSRC)),
+#             PACKAGE="pbdBASE"
+#             )
 #  
-#  descx <- base.descinit(dim, dx@bldim, dx@ldim, ICTXT=dx@CTXT)
-#  
-#  # create descriptor for and initialize reblocked output matrix
-#  ldimB <- base.numroc(dim, bldim, ICTXT=ICTXT)
-
-#  # Otherwise
-#  descb <- base.descinit(dim, bldim, ldimB, ICTXT=ICTXT)
-#  dB <- new("ddmatrix", Data=matrix(0, ldimB[1], ldimB[2]), 
-#           dim=dim, ldim=ldimB, bldim=bldim, CTXT=ICTXT)
-
-#  xblacs_ <- base.blacs(dx@CTXT)
-#  if (xblacs_$MYROW==-1 || xblacs_$MYCOL==-1){
-##    descx <- rep(0, 9)
-#    descx[2] <- -1
-#  }
-
-#  blacs_ <- base.blacs(ICTXT=ICTXT)
-#  if (blacs_$MYROW==-1 || blacs_$MYCOL==-1){
-##    descb <- rep(0, 9)
-#    descb[2] <- -1
-#  }
-#  
-#  # lda's of 1 infuriate pdgemr2d
-#  mxx <- pbdMPI::allreduce(max(dx@ldim), op='max')
-#  mxb <- pbdMPI::allreduce(max(ldimB), op='max')
-
-#  if (all(ldim(dx)==1))
-#    descx[9] <- mxx
-#  if (all(ldim(dB)==1))
-#    descb[9] <- mxb
-
-##   things break when a 1xm matrix is stored so we have to pass a larger lda
-#  if (pbdMPI::allreduce(as.integer(descx[9]), op='max')==1 && dx@dim[1]>1)
-#    descx[9] <- mxx
-#  if (pbdMPI::allreduce(as.integer(descb[9]), op='max')==1)
-#    descb[9] <- mxb
-
-#  ### WCC: dim(b@Data) is added to allocate B for replacing.
-#  dB@Data <- .Call("R_PDGEMR2D",
-#                   as.integer(m), as.integer(n),
-#                   dx@Data, as.integer(descx),
-#                   as.integer(ldimB), as.integer(descb),
-#                   as.integer(0),
-#                   as.integer(ldim(dx)[1]), as.integer(ldim(dx)[2]),
-#                   as.integer(ldim(dB)[1]), as.integer(ldim(dB)[2]),
-#                   PACKAGE="pbdBASE"
-#                   )
-
-#  if (length(xattrs)>1){
-#    battrs <- union(attributes(dB@Data), xattrs[-1])
-#    names(battrs) <- names(xattrs)
-#    attributes(dB@Data) <- battrs
-#  }
-
-#  return(dB)
+#  return(out) # A@Data
 #}
+
 
 base.reblock <- function(dx, bldim=dx@bldim, ICTXT)
 {
@@ -531,23 +464,11 @@ base.mat.to.ddmat <- function(x, bldim=.BLDIM, ICTXT=0)
     bldim <- rep(bldim, 2) 
   else if (diff(bldim) != 0)
     warning("Most ScaLAPACK routines do not allow for non-square blocking.  This is highly non-advised.")
-
-  blacs_ <- base.blacs(ICTXT=ICTXT)
-  nprows <- blacs_$NPROW
-  npcols <- blacs_$NPCOL
-  dim <- dim(x)
-  ldim <- base.numroc(dim, bldim)
-
-  ddmat <- new("ddmatrix", Data=matrix(0), dim=dim, ldim=ldim, bldim=bldim)
-
-  if (any(ldim==0)){
-    ddmat@ldim <- c(1,1)
-    ddmat@Data <- matrix(0)
-  } else
-      ddmat@Data <- base.submat(A=x, bldim=bldim)
+  
+   dx <- base.mksubmat(x=x, bldim=bldim, ICTXT=ICTXT)
   
 #  pbdMPI::barrier()
-  return(ddmat)
+  return(dx)
 }
 
 # wrapper around some C++ code to handle R's cyclic matrix-vector operatoins
