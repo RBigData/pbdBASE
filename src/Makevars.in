@@ -9,7 +9,7 @@ SPMD_LDFLAGS = @SPMD_LDFLAGS@
 PKG_CPPFLAGS = $(SPMD_CPPFLAGS)
 PKG_CXXFLAGS = $(RCPP_CXXFLAGS)
 PKG_CFLAGS = -w
-PKG_FFLAGS = $(SAFE_FFLAGS) -w
+PKG_FFLAGS = $(SAFE_FFLAGS) -w 
 ### Order is matter.
 PKG_LIBS = $(RCPP_LDFLAGS) $(SLAP_LDFLAGS) $(FLIBS) $(SPMD_LDFLAGS)
 
@@ -30,10 +30,13 @@ R_OBJS = \
   base_scalapack.o \
   base_scalapack_utility_fort.o \
   base_lm.o \
+  base_putil.o \
   variance.o \
   base_variance.o \
   auxil.o \
   bprnt_c.o \
+  putil.o \
+  plinalg.o \
   pkg_tools.o
 OBJECTS = $(R_OBJS)
 

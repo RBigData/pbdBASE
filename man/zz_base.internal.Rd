@@ -58,6 +58,13 @@
 \alias{base.cbind}
 \alias{base.rbind2}
 
+\alias{base.crossprod}
+\alias{base.indxg2p}
+\alias{base.rpdgecon}
+\alias{base.rpdlange}
+\alias{base.rpdsvrk}
+\alias{base.rpdtrcon}
+
 \alias{.conflicts.OK}
 
 \title{ All pbdPASE Internal Functions and Data }

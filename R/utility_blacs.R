@@ -1,9 +1,9 @@
 # "Optimal" process grid when nprow and npcol are empty
 base.procgrid <- function(nprocs)
 {
-  out <- .Call("optimal_process_grid", as.integer(nprocs), PACKAGE="pbdBASE")
-#  return(list(nprow=out[1], npcol=out[2]))
-  return(list(nprow=out[2], npcol=out[1]))
+  out <- .Fortran("OPTIMALGRID", as.integer(nprocs), integer(1), integer(1))
+  out[[1]] <- NULL
+  return(list(nprow=out[[2]], npcol=out[[1]]))
 }
 
 procgrid <- base.procgrid

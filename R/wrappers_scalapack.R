@@ -218,10 +218,10 @@ base.rpdpotrf <- function(x)
   n <- desca[4L]
   
   uplo <- "U"
-
+  
   if (!is.double(x@Data))
     storage.mode(x@Data) <- "double"
-
+  
   # Call ScaLAPACK
   out <- .Call("R_PDPOTRF",
                as.integer(n),
@@ -233,7 +233,9 @@ base.rpdpotrf <- function(x)
   if (out$info!=0)
     warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
   
-  ret <- base.low2zero(A=out$A, dim=x@dim, ldim=x@ldim, bldim=x@bldim, CTXT=x@CTXT)
+  ret <- new("ddmatrix", Data=out$A, dim=x@dim, bldim=x@bldim, CTXT=x@CTXT)
+  
+#  ret <- base.tri2zero(dx=ret, 'L', 'N')
   
   return(ret) 
 }
