@@ -11,7 +11,9 @@ base.mksubmat <- function(x, bldim=.BLDIM, ICTXT=0)
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  subx <- .Call("R_MKSUBMAT", x, as.integer(ldim), as.integer(descx), PACKAGE="pbdBASE")
+  subx <- .Call("R_MKSUBMAT", 
+                x, as.integer(ldim), as.integer(descx), 
+                PACKAGE="pbdBASE")
   
   new("ddmatrix", Data=subx, dim=dim, ldim=ldim, bldim=bldim, CTXT=ICTXT)
 }
@@ -38,7 +40,12 @@ base.mkgblmat <- function(dx, proc.dest='all')
   if (!is.double(dx@Data))
     storage.mode(dx@Data) <- "double"
   
-  .Call("R_MKGBLMAT", dx@Data, as.integer(descx), as.integer(rsrc), as.integer(csrc), PACKAGE="pbdBASE")
+  ret <- .Call("R_MKGBLMAT", 
+       dx@Data, as.integer(descx), as.integer(rsrc), as.integer(csrc), 
+       PACKAGE="pbdBASE")
+  
+  return( ret )
+  
 }
 
 
@@ -86,8 +93,11 @@ base.pdsweep <- function(dx, vec, MARGIN, FUN)
   if (!is.double(dx@Data))
     storage.mode(dx@Data) <- "double"
   
-  ret <- .Call("R_PTRI2ZERO", 
-               dx@Data, as.integer(ldim), as.integer(descx), as.double(vec), as.integer(length(vec)), as.integer(MARGIN), as.character(FUN),
+  if (!is.double(vec))
+    storage.mode(vec) <- "double"
+  
+  ret <- .Call("R_PDSWEEP", 
+               dx@Data, as.integer(ldim), as.integer(descx), vec, as.integer(length(vec)), as.integer(MARGIN), as.character(FUN),
                PACKAGE="pbdBASE")
   
   dx@Data <- ret

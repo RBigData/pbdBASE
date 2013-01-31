@@ -32,13 +32,15 @@ SEXP R_DALLREDUCE(SEXP X, SEXP LDIM, SEXP DESCX, SEXP OP, SEXP SCOPE)
   const int ictxt = INTEGER(DESCX)[1];
   const int m = INTEGER(DESCX)[2], n = INTEGER(DESCX)[3];
   
-  SEXP RET;
-  PROTECT(RET = allocMatrix(REALSXP, INTEGER(LDIM)[0], INTEGER(LDIM)[1]));
+  SEXP CPX;
+  PROTECT(CPX = allocMatrix(REALSXP, INTEGER(LDIM)[0], INTEGER(LDIM)[1]));
   
-  dallreduce_(REAL(X), INTEGER(DESCX), CHARPT(OP, 0), CHARPT(SCOPE, 0));
+  memcpy(REAL(CPX), REAL(X), m*n*sizeof(double));
+  
+  dallreduce_(REAL(CPX), INTEGER(DESCX), CHARPT(OP, 0), CHARPT(SCOPE, 0));
   
   UNPROTECT(1);
-  return RET;
+  return CPX;
 } 
 
 

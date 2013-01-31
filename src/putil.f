@@ -1,7 +1,14 @@
 ! Copyright 2013, Schmidt
 
 
-! Optimal process grid shape
+! "Optimal" process grid shape; tries to make the grid as close to square as 
+! possible.  If a square grid is not possible, e.g. NPROCS=10, then the 
+! larger number goes to NROWS, e.g. NROWS=5, NCOLS=2.
+! INPUTS
+  ! NPROCS = Number of processors to be used.
+! OUTPUTS
+  ! NROWS = "Optimal" number of process rows
+  ! NCOLS = "Optimal" number of process columns
       SUBROUTINE OPTIMALGRID(NPROCS, NROWS, NCOLS)
       IMPLICIT NONE
       ! IN/OUT
@@ -24,10 +31,15 @@
       END
 
 
-! DESC = ScaLAPACK descriptor array
-! DM = [DM1, DM2] = Global dimension
-! LDM = [LDM1, LDM2] = Local dimension
-! BLACS = [NPROCS, NPROW, NPCOL, MYPROW, MYPCOL]
+! Takes a ScaLAPACK descriptor array and from it determines full (1) local
+! dimension information (calling NUMROC) and (2) BLACS grid information.
+! The local dimension LDIM is set to (/ 0, 0 /) if there is not actual 
+! ownership of local data on that process.
+! INPUTS
+  ! DESC = ScaLAPACK descriptor array
+! OUTPUTS
+  ! LDM = [LDM1, LDM2] = Local dimension
+  ! BLACS = [NPROCS, NPROW, NPCOL, MYPROW, MYPCOL]
       SUBROUTINE PDIMS(DESC, LDM, BLACS)
       IMPLICIT NONE
       ! IN/OUT
@@ -52,13 +64,20 @@
       LDM(2) = NUMROC(DESC(4), DESC(6), BLACS(5), 
      $                DESC(8), BLACS(3))
       
-      IF (LDM(1).LT.1) LDM(1) = 0
-      IF (LDM(2).LT.1) LDM(2) = 0
+      IF (LDM(1).LT.1 .OR. LDM(2).LT.1) THEN
+        LDM(1) = 0
+        LDM(2) = 0
+      END IF
       
       RETURN
       END
 
-! Simple timing routine 
+
+! Simple timing routine.  Call once with ONOFF = 1 to start, then call again
+! with ONOFF = 0 to halt and print the wallclock runtime.
+! INPUTS/OUTPUTS
+  ! If ONOFF = 1, then TIME is INPUT
+  ! If ONOFF = 0, then TIME is output.
       SUBROUTINE TIMER(TIME, ONOFF)
       IMPLICIT NONE
       ! IN/OUT
@@ -83,7 +102,17 @@
       END
 
 
-! Reductions using BLACS
+! Reductions using BLACS routines.  Bindings meant to mimic ALLREDUCE, which is
+! much more friendly than the weird BLACS calls.
+! INPUTS/OUTPUTS
+  ! X = Array of data to be reduced
+! INPUTS
+  ! DESCX = Descriptor array of X
+  ! OP = Operation: 'MIN', 'MAX', 'SUM'.  Default if you pass something else is 
+    ! to sum.
+  ! SCOPE = BLACS processor grid scope along which the reduction will take 
+    ! place: 'All', 'Column', 'Row'
+  ! RDEST/CDEST: Row/Column destination in the case of *REDUCE (rather than ALL)
       SUBROUTINE DALLREDUCE(X, DESCX, OP, SCOPE)
       IMPLICIT NONE
       ! IN/OUT
@@ -113,7 +142,7 @@
       END
 
 
-      SUBROUTINE DREDUCE(X, M, N, LDA, OP, RDEST, CDEST, SCOPE)
+      SUBROUTINE DREDUCE(X, DESCX, OP, RDEST, CDEST, SCOPE)
       IMPLICIT NONE
       ! IN/OUT
       INTEGER             DESCX(9), RDEST, CDEST
@@ -144,14 +173,21 @@
       END
 
 
-      SUBROUTINE IALLREDUCE(M, N, X, OP, SCOPE, ICTXT)
+      SUBROUTINE IALLREDUCE(X, DESCX, OP, SCOPE)
       IMPLICIT NONE
       ! IN/OUT
-      INTEGER             M, N, ICTXT, X( * )
+      INTEGER             DESCX(9), X( * )
       CHARACTER           OP, SCOPE
+      ! Local
+      INTEGER             M, N, LDA, ICTXT
       ! External
       EXTERNAL            IGSUM2D, IGAMX2D, IGMN2D
       
+      
+      M = DESCX(3)
+      N = DESCX(4)
+      LDA = DESCX(9)
+      ICTXT = DESCX(2)
       
       IF (OP.EQ.'MIN') THEN
         CALL IGAMN2D(ICTXT, SCOPE, ' ', M, N, X, 1,-1,-1,-1,-1,-1)
@@ -165,15 +201,21 @@
       END
 
 
-      SUBROUTINE IREDUCE(M, N, X, OP, RDEST, CDEST, SCOPE, ICTXT)
+      SUBROUTINE IREDUCE(X, DESCX, OP, RDEST, CDEST, SCOPE)
       IMPLICIT NONE
       ! IN/OUT
-      INTEGER             M, N, RDEST, CDEST, ICTXT
-      DOUBLE PRECISION    X( * )
+      INTEGER             DESCX(9), X( * ), RDEST, CDEST
       CHARACTER           OP, SCOPE
+      ! Local
+      INTEGER             M, N, LDA, ICTXT
       ! External
       EXTERNAL            IGSUM2D, IGAMX2D, IGMN2D
       
+      
+      M = DESCX(3)
+      N = DESCX(4)
+      LDA = DESCX(9)
+      ICTXT = DESCX(2)
       
       IF (OP.EQ.'MIN') THEN
         CALL IGAMN2D(ICTXT, SCOPE, ' ', M, N, X, 1, -1, -1, -1, 
@@ -190,6 +232,12 @@
 
 
 ! Local-to-global pair of indices; shorthand for calling INDXL2G twice.
+! INPUTS
+  ! I/J = Local coordinates.
+  ! DESC = BLACS descriptor array.
+  ! BLACS = BLACS process grid information, taken from PDIMS.
+! OUTPUTS
+  ! GI/GJ = Global coordinates.
       SUBROUTINE L2GPAIR(I, J, GI, GJ, DESC, BLACS)
       IMPLICIT NONE
       ! IN/OUT
@@ -206,6 +254,12 @@
 
 
 ! Global-to-local pair of indices; shorthand for calling INDXG2L twice.
+! INPUTS
+  ! GI/GJ = Global coordinates.
+  ! DESC = BLACS descriptor array.
+  ! BLACS = BLACS process grid information, taken from PDIMS.
+! OUTPUTS
+  ! I/J = Local coordinates.
       SUBROUTINE G2LPAIR(I, J, GI, GJ, DESC, BLACS)
       IMPLICIT NONE
       ! IN/OUT
@@ -224,6 +278,16 @@
 
 
 ! Construct local submatrix from global matrix
+! INPUTS
+  ! GBLX = Global, non-distributed matrix.  Owned by which processor(s) depends 
+    ! on R/CSRC values
+  ! DESCX = ScaLAPACK descriptor array for SUBX (not a typo).
+  ! RSRC/CSRC = Row/Column process value corresponding to BLACS grid for the
+    ! value in DESCX(2) (the ICTXT) on which the data is stored.  If RSRC = -1,
+    ! then CSRC is ignored and total ownership is assumed, i.e., GBLX is owned 
+    ! by all processors.
+! OUTPUTS
+  ! SUBX = Local submatrix.
       SUBROUTINE MKSUBMAT(GBLX, SUBX, DESCX)!, RSRC, CSRC)
       IMPLICIT NONE
       ! IN/OUT
@@ -256,7 +320,16 @@
       END
 
 
-! Construct global matrix from local submatrix
+! Construct global matrix from local submatrix.
+! INPUTS
+  ! SUBX = Local submatrix.
+  ! DESCX = ScaLAPACK descriptor array for SUBX.
+  ! RDEST/CDEST = Row/Column process value corresponding to BLACS grid for the
+    ! value in DESCX(2) (the ICTXT) on which the global matrix GBLX will be 
+    ! stored.  If RDEST = -1, then CDEST is ignored and total ownership is 
+    ! assumed, i.e., GBLX is given to all processors.
+! OUTPUTS
+  ! GBLX = Global, non-distributed matrix.
       SUBROUTINE MKGBLMAT(GBLX, SUBX, DESCX, RDEST, CDEST)
       IMPLICIT NONE
       ! IN/OUT
@@ -297,8 +370,16 @@
       END
 
 
-
-! Zero out the (global) triangle of a distributed matrix
+! Zero out the (global) triangle and/or diagonal of a distributed matrix
+! INPUTS/OUTPUTS
+  ! X = Array of data to be zeroed (in part or whole)
+! INPUTS
+  ! UPLO = Char specifying whether 'U'pper or 'L'ower triangle is to be zeroed,
+    ! or whether 'B'oth should be zeroed, or whether 'N'either triangle should.
+  ! DIAG = Char specifying whether 'Y'es, zero the diagonal too, or 'N'o, do not.
+! EXAMPLE:  UPLO='B', DIAG='N' produces a diagonal matrix
+!           UPLO='N', DIAG='Y' zeroes out only the diagonal
+!           UPLO='L', DIAG='Y' zeros the diagonal and upper triangle
       SUBROUTINE PTRI2ZERO(UPLO, DIAG, X, DESCX)
       IMPLICIT NONE
       ! IN/OUT
@@ -323,8 +404,27 @@
       
       ! Only do work if we own any local pieces
       IF (M.GT.0 .AND. N.GT.0) THEN
-      
-      ! Zeroing both triangles
+        
+        ! Diagonal only (zeroing neither triangle
+        IF (UPLO.EQ.'N') THEN
+          ! Quick return if possible
+          IF (DIAG.EQ.'N') THEN
+            RETURN
+          ELSE IF (DIAG.EQ.'Y') THEN
+            DO J = 1, N
+              DO I = 1, M
+                CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+                IF (GI.EQ.GJ) THEN
+                  X(I,J) = ZERO
+                END IF
+              END DO 
+            END DO
+          ELSE
+            RETURN! "Invalid argument 'DIAG'"
+          END IF
+        END IF
+        
+        ! Zeroing both triangles
         IF (UPLO.EQ.'B') THEN
           ! Zero the diagonal as well
           IF (DIAG.EQ.'Y') THEN
@@ -404,8 +504,14 @@
       END 
 
 
-! Make symmetric via copying from one (global) triangle to the other.
-! UPLO = 'U', copy FROM upper
+! Make the matrix symmetric via copying from one (global) triangle to the other.
+! INPUTS/OUTPUTS
+  ! X = Array of data to be zeroed (in part or whole)
+! INPUTS
+  ! UPLO = Copy FROM 'U'pper or copy FROM 'L'ower.  The modified data lives in 
+    ! the opposite triangle from UPLO.
+  ! IX/JX = 
+  ! DESCX = ScaLAPACK descriptor array for X.
       SUBROUTINE PDMKSYM(UPLO, X, IX, JX, DESCX)
       IMPLICIT NONE
       ! IN/OUT
@@ -540,12 +646,21 @@
 
 ! Copyright 2013, Schmidt
 
-      INTEGER FUNCTION IND(I, J)
-      INTEGER I, J
+! For internal use.
+! In the case of Matrix-Vector operations where the vector is global and not
+! necessarily of "appropriate" length, this is used to adjust which element
+! of the vector is used with the matrix.  Enables the equivalent of doing,
+! for example, something like matrix(1, nrow=5, ncol=2) + 1:3 in R.
+! INPUTS
+  ! I = Index
+  ! M = Modulus
+      INTEGER FUNCTION IND(I, M)
+      IMPLICIT NONE
+      INTEGER I, M
       
-      IND = MOD(I, J)
+      IND = MOD(I, M)
       IF (IND.EQ.0) THEN
-        IND = J
+        IND = M
       END IF
       
       RETURN
@@ -553,6 +668,16 @@
 
 
 ! SWEEP array out of distributed matrix
+! INPUTS/OUTPUTS
+  ! X = Submatrix of data which should globally be "swept"
+! INPUTS
+  ! IX/JX = 
+  ! DESCX = Descriptor array for X
+  ! VEC = Vector to "sweep" through X
+  ! LVEC = Length of VEC
+  ! MARGIN = 1 for row sweeping, 2 for column sweeping
+  ! FUN = Char with 4 possibilities, describing the type of sweep to perform:
+    ! "+", "-", "*", "/"
       SUBROUTINE PDSWEEP(X, IX, JX, DESCX, VEC, LVEC, MARGIN, FUN)
       IMPLICIT NONE
       ! IN/OUT
@@ -663,7 +788,13 @@
       END
 
 
-! grab diagonal of matrix
+! Grab diagonal of matrix
+! INPUTS
+  ! X = Submatrix whose global diagonal is to be taken
+  ! IX/JX = 
+  ! DESCX = Descriptor array for X
+! OUTPUTS
+  ! DIAG = Diagonal of the global matrix for which X is the submatrix.
       SUBROUTINE PDDIAGTK(X, IX, JX, DESCX, DIAG)
       IMPLICIT NONE
       ! IN/OUT
@@ -705,7 +836,15 @@
       END
 
 
-! construct matrix containing diagonal DIAG
+! Construct matrix containing diagonal DIAG
+! INPUTS
+  ! IX/JX = 
+  ! DESCX = Descriptor array for X
+  ! DIAG = Global vector which should be the diagonal of a distributed matrix
+  ! LDIAG = Length of Diag.  Need not be equal to K = MIN(DESCX(3), DESCX(4)),
+    ! though only the first K elements of DIAG will be used.
+! OUTPUTS
+  ! X = Submatrix of the global matrix with diagonal DIAG
       SUBROUTINE PDDIAGMK(X, IX, JX, DESCX, DIAG, LDIAG)
       IMPLICIT NONE
       ! IN/OUT
@@ -741,6 +880,4 @@
       
       RETURN
       END
-
-
 
