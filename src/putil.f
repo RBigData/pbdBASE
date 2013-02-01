@@ -277,6 +277,58 @@
       END
 
 
+! Wrapper for pdgemr2d
+! INPUTS
+  ! X = Input submatrix.
+  ! IX/JX = 
+  ! DESCX = Descriptor array for X.
+  ! IY/JY = 
+  ! DESCY = Descriptor array for Y.
+  ! CMNCTXT = Common BLACS context for X and Y.
+! OUTPUTS
+  ! Y = 
+!!!      SUBROUTINE REDIST(X, IX, JX, DESCX, Y, IY, JY, DESCY, CMNCTXT)
+!!!      IMPLICIT NONE
+!!!      ! IN/OUT
+!!!      INTEGER             IX, JX, DESCX(9), IY, JY, DESCY(9), CMNCTXT
+!!!      DOUBLE PRECISION    X( * ), Y( * )
+!!!      ! Local
+!!!      INTEGER             M, N, MXLDM, DESCA(9),
+!!!     $                    LDMX(2), LDMY(2), BLACSX(4), BLACSY(4)
+!!!      ! External
+!!!      EXTERNAL            PDGEMR2D
+!!!      
+!!!      
+!!!      ! Get local and proc grid info
+!!!      CALL PDIMS(DESCX, LDMX, BLACSX)
+!!!      CALL PDIMS(DESCX, LDMY, BLACSY)
+!!!      
+!!!      M = DESCX(3)
+!!!      N = DESCX(4)
+!!!      
+!!!      ! Adjust LDA since PDGEMR2D crashes all the time when LDA=1
+!!!      DESCA(3) = 1
+!!!      DESCA(4) = 1
+!!!      DESCA(9) = 1
+!!!      
+!!!      MXLDM = MAX(LDMX)
+!!!      DESCA(2) = DESCX(2)
+!!!      CALL IALLREDUCE(MXLDM, DESCA, 'MAX', 'All')
+!!!      IF (DESCX(9).EQ.1 .AND. DESCX(3).GT.1) DESCX(9) = MXLDM
+!!!      
+!!!      MXLDM = MAX(LDMY)
+!!!      DESCA(2) = DESCY(2)
+!!!      CALL IALLREDUCE(MXLDM, DESCA, 'MAX', 'All')
+!!!      IF (DESCY(9).EQ.1 .AND. DESCY(3).GT.1) DESCY(9) = MXLDM
+!!!      
+!!!      ! Redistribute
+!!!      CALL PDGEMR2D(M, N, X, IX, JX, DESCX,
+!!!     $              Y, IY, JY, DESCY, CMNCTXT)
+!!!      
+!!!      RETURN
+!!!      END
+
+
 ! Construct local submatrix from global matrix
 ! INPUTS
   ! GBLX = Global, non-distributed matrix.  Owned by which processor(s) depends 

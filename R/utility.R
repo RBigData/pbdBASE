@@ -362,7 +362,7 @@ base.reblock <- function(dx, bldim=dx@bldim, ICTXT)
                PACKAGE="pbdBASE"
             )
     
-    ret <- ret + 0
+#    ret <- ret + 0
     dB@Data <- ret
     
   if (length(xattrs) > 1){

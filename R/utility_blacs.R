@@ -232,6 +232,18 @@ base.blacs.sum <- function(dx, SCOPE, na.rm=FALSE, means=FALSE, num=1) # SCOPE= 
   
   A <- f(x=dx@Data/num, na.rm=na.rm)
   
+  # quick return if possible
+  if (SCOPE=='Row'){
+    if (dim[2L] <= dx@bldim[1L])
+      return(A)
+  }
+  else if (SCOPE=='Col'){
+    if (dim[1L] <= dx@bldim[2L])
+      return(A)
+  }
+  
+  
+  
   M <- if(SCOPE=='Row') dim[1L] else dim[2L]
   LDA <- length(A)
   
