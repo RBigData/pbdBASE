@@ -5,6 +5,34 @@
 # ##################################################
 
 # -------------------
+# Creation
+# -------------------
+
+setMethod("ddmatrix", signature(data="ANY"), 
+  function(data, nrow, ncol, bldim=.BLDIM, CTXT=0)
+  {
+    if(missing(data)){
+      data <- NA
+    }
+    
+    if (length(bldim)==1)
+      bldim <- rep(bldim, 2)
+    
+    if (length(data) > 1)
+      warning("This may have odd behavior at the moment...")
+    
+    dim <- c(nrow, ncol)
+    
+    ldim <- base.numroc(dim=dim, bldim=bldim, ICTXT=CTXT, fixme=TRUE)
+    Data <- matrix(data, ldim[1L], ldim[2L])
+    
+    dx <- new("ddmatrix", Data=Data, dim=dim, ldim=ldim, bldim=bldim, CTXT=CTXT)
+    
+    return( dx )
+  }
+)
+
+# -------------------
 # Converters
 # -------------------
 
@@ -51,15 +79,15 @@ setMethod("[", signature(x="ddmatrix"),
       return(x)
     else
       newObj <- x
-
+    
     imiss <- missing(i)
     if (!imiss)
       ilng <- length(i)
-
+    
     jmiss <- missing(j)
     if (!jmiss)
       jlng <- length(j)
-
+    
     # special case where user wants exactly 1 value
     if (!imiss && !jmiss){
       if (ilng==1 && i>0 && jlng==1 && j>0){
@@ -109,8 +137,8 @@ setReplaceMethod("[", signature(x ="ddmatrix"),
       print("Error : subscript out of bounds")
       stop("")
     }
-
-    base.insert(dx=x, vec=value, i=i, j=j)
+    
+    x <- base.rl2insert(dx=x, vec=value, i=i, j=j)
     
     return(x)
   }
@@ -245,7 +273,7 @@ setMethod("<", signature(e1="ddmatrix", e2="numeric"),
       if (len==1)
         e1@Data <- e1@Data<e2
       else
-        e1@Data <- matrix(as.logical(base.vecops(dx=e1, vec=e2, FUN="7")), e1@ldim[1], e1@ldim[2])
+        e1@Data <- matrix(as.logical(base.rl2blas(dx=e1, vec=e2, FUN=7)), e1@ldim[1], e1@ldim[2])
     }
     return(e1)
   }
@@ -266,7 +294,7 @@ setMethod(">", signature(e1="ddmatrix", e2="numeric"),
       if (len==1)
         e1@Data <- e1@Data>e2
       else
-        e1@Data <- matrix(as.logical(base.vecops(dx=e1, vec=e2, FUN="8")), e1@ldim[1], e1@ldim[2])
+        e1@Data <- matrix(as.logical(base.rl2blas(dx=e1, vec=e2, FUN=8)), e1@ldim[1], e1@ldim[2])
     }
     return(e1)
   }
@@ -287,7 +315,7 @@ setMethod("<=", signature(e1="ddmatrix", e2="numeric"),
       if (len==1)
         e1@Data <- e1@Data<=e2
       else
-        e1@Data <- matrix(as.logical(base.vecops(dx=e1, vec=e2, FUN="9")), e1@ldim[1], e1@ldim[2])
+        e1@Data <- matrix(as.logical(base.rl2blas(dx=e1, vec=e2, FUN=9)), e1@ldim[1], e1@ldim[2])
     }
     return(e1)
   }
@@ -308,7 +336,7 @@ setMethod(">=", signature(e1="ddmatrix", e2="numeric"),
       if (len==1)
         e1@Data <- e1@Data>=e2
       else
-        e1@Data <- matrix(as.logical(base.vecops(dx=e1, vec=e2, FUN="10")), e1@ldim[1], e1@ldim[2])
+        e1@Data <- matrix(as.logical(base.rl2blas(dx=e1, vec=e2, FUN=10)), e1@ldim[1], e1@ldim[2])
     }
     return(e1)
   }
@@ -329,7 +357,7 @@ setMethod("==", signature(e1="ddmatrix", e2="numeric"),
       if (len==1)
         e1@Data <- e1@Data==e2
       else
-        e1@Data <- matrix(as.logical(base.vecops(dx=e1, vec=e2, FUN="11")), e1@ldim[1], e1@ldim[2])
+        e1@Data <- matrix(as.logical(base.rl2blas(dx=e1, vec=e2, FUN=11)), e1@ldim[1], e1@ldim[2])
     }
     return(e1)
   }

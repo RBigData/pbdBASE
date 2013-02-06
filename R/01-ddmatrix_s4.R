@@ -27,6 +27,12 @@ setGeneric(name="cbind",
 )
 
 ### S4 methods for new things
+setGeneric(name="ddmatrix", 
+  function(data, ...) 
+    standardGeneric("ddmatrix"), 
+  package="pbdBASE"
+)
+
 setGeneric(name="as.ddmatrix", 
   function(x, ...) 
     standardGeneric("as.ddmatrix"), 

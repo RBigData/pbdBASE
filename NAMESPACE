@@ -1,5 +1,5 @@
 useDynLib(pbdBASE)
-import(methods, rlecuyer, pbdMPI, pbdSLAP, Rcpp)
+import(methods, rlecuyer, pbdMPI, pbdSLAP)
 
 # All internal functions
 exportPattern("^base\\.[[:alpha:]]+")
@@ -8,7 +8,7 @@ export(
 )
 
 exportMethods(
-  "as.matrix", "as.vector", "as.ddmatrix",
+  "as.matrix", "as.vector", "as.ddmatrix", "ddmatrix",
   "submatrix", "submatrix<-",
   "[", "[<-", "na.exclude",
   "nrow", "ncol", "dim", "ldim", "bldim", "ctxt", "submatrix",

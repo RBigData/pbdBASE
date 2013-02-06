@@ -9,6 +9,7 @@ base.procgrid <- function(nprocs)
 procgrid <- base.procgrid
 
 
+# Checking if ICTXT is valid
 base.valid_context <- function(ICTXT, ..., override=FALSE)
 {
   if (!override)
@@ -33,6 +34,7 @@ base.valid_context <- function(ICTXT, ..., override=FALSE)
 valid_context <- base.valid_context
 
 
+# finding the minimum avaliable BLACS context
 base.minctxt <- function(after=0)
 {
   if (after < 0){
@@ -54,13 +56,14 @@ base.minctxt <- function(after=0)
 
 minctxt <- base.minctxt
 
+
 #Initialize Process Grid
 base.init.grid <- function(nprow, npcol, ICTXT)
 {
   pbdMPI::init() # initialize pbdMPI communicator
   
   nprocs <- pbdMPI::comm.size()
-
+  
   if (missing(ICTXT)){
     if (exists(".__blacs_gridinfo_0")){
       warning("Context 0 is already initialized. No new grid created")
@@ -78,7 +81,7 @@ base.init.grid <- function(nprow, npcol, ICTXT)
     comm.print("Context must be an integer")
     stop("")
   }
-
+  
   # optimal size grid if parameters are missing
   if (missing(nprow) && missing(npcol)){
     procs <- base.procgrid(nprocs=nprocs)
@@ -96,13 +99,13 @@ base.init.grid <- function(nprow, npcol, ICTXT)
     comm.print(paste("Error: grid size of ", nprow, "*", npcol, " is not possible with ", nprocs, " processes", sep=""))
     stop("")
   }
-
+  
   # Informing the user of creation
   if (ICTXT==0)
     pbdMPI::comm.cat(sprintf("%s", paste("Using ", nprow, "x", npcol, " for the default grid size\n\n", sep="")), quiet=TRUE)
   else
     pbdMPI::comm.cat(sprintf("%s", paste("Grid ICTXT=", ICTXT, " of size ", nprow, "x", npcol, " successfully created\n\n", sep="")), quiet=TRUE)
-
+  
   value <- .Fortran("mpi_blacs_initialize", 
                   NPROW=as.integer(nprow), 
                   NPCOL=as.integer(npcol), 
@@ -214,49 +217,57 @@ pcoord <- base.pcoord
 
 
 # row/column sums of matrices via BLACS
-base.blacs.sum <- function(SCOPE, A, dim, na.rm=FALSE, ICTXT=0, means=FALSE, num=1) # SCOPE= 'Row', 'Column', 'All'
+base.blacs.sum <- function(dx, SCOPE, na.rm=FALSE, means=FALSE, num=1) # SCOPE= 'Row', 'Col', 'All'
 {
-  if (SCOPE==1)
-    SCOPE <- 'Row'
-  if (SCOPE==2)
-    SCOPE <- 'Column'
-
+  dim <- dx@dim
+  ICTXT <- dx@CTXT
+  
   if (SCOPE=='Row')
-    if (!means)
-      f <- function(x, na.rm=na.rm) rowSums(x, na.rm=na.rm)
-    else
-      f <- function(x, na.rm=na.rm) rowSums(x, na.rm=na.rm) / num
-  else if (SCOPE=='Column')
-    if (!means)
-      f <- function(x, na.rm=na.rm) colSums(x, na.rm=na.rm)
-    else
-      f <- function(x, na.rm=na.rm) colSums(x, na.rm=na.rm) / num
-
-  A <- f(x=A, na.rm=na.rm)
-
-  M <- max(dim)
-  N <- 1
+    f <- function(x, na.rm=na.rm) rowSums(x, na.rm=na.rm)
+  else if (SCOPE=='Col')
+    f <- function(x, na.rm=na.rm) colSums(x, na.rm=na.rm)
+  
+  if (!means)
+    num <- 1
+  
+  A <- f(x=dx@Data/num, na.rm=na.rm)
+  
+  # quick return if possible
+  if (SCOPE=='Row'){
+    if (dim[2L] <= dx@bldim[1L])
+      return(A)
+  }
+  else if (SCOPE=='Col'){
+    if (dim[1L] <= dx@bldim[2L])
+      return(A)
+  }
+  
+  
+  
+  M <- if(SCOPE=='Row') dim[1L] else dim[2L]
   LDA <- length(A)
   
-  mxm <- pbdMPI::allreduce(M, op='max')
-  if (length(A)==1 && A[1]==0){
-    A <- numeric(mxm)
-    M <- mxm
-  }
-
+#  mxm <- pbdMPI::allreduce(M, op='max')
+#  if (!base.ownany(dim=dim, dx@bldim, CTXT=ICTXT)){
+#    A <- numeric(mxm)
+#    M <- mxm
+#  }
+    
   if (!is.double(A))
     storage.mode(A) <- "double"
-
+  
   out <- .Call("R_dgsum2d",
                as.integer(ICTXT), as.character(SCOPE),
-               as.integer(M), as.integer(N), A, as.integer(LDA),
-               PACKAGE="pbdBASE"
-               )
-
+               as.integer(M), A, as.integer(LDA),
+               PACKAGE="pbdBASE")
+  
+#  out <- out + 0
+  
   return(out)
 }
 
 blacs.sum <- base.blacs.sum
+
 
 # exit the blacs grid
 base.blacsexit <- function(CONT=TRUE)
@@ -267,6 +278,7 @@ base.blacsexit <- function(CONT=TRUE)
 }
 
 blacsexit <- base.blacsexit
+
 
 # replacement for pbdMPI::finalize() that automatically shuts BLACS down
 finalize <- function(mpi.finalize=.SPMD.CT$mpi.finalize)
