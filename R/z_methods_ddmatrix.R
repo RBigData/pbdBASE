@@ -11,22 +11,31 @@
 setMethod("ddmatrix", signature(data="ANY"), 
   function(data, nrow, ncol, bldim=.BLDIM, CTXT=0)
   {
+    if (length(bldim)==1)
+      bldim <- rep(bldim, 2)
+    
     if(missing(data)){
       data <- NA
     }
     
-    if (length(bldim)==1)
-      bldim <- rep(bldim, 2)
-    
-    if (length(data) > 1)
-      warning("This may have odd behavior at the moment...")
-    
+    data <- as.vector(data)
     dim <- c(nrow, ncol)
+    ldim <- base.numroc(dim=dim, bldim=bldim, ICTXT=CTXT, fixme=FALSE)
     
-    ldim <- base.numroc(dim=dim, bldim=bldim, ICTXT=CTXT, fixme=TRUE)
-    Data <- matrix(data, ldim[1L], ldim[2L])
-    
-    dx <- new("ddmatrix", Data=Data, dim=dim, ldim=ldim, bldim=bldim, CTXT=CTXT)
+    if (length(data) > 1){
+      Data <- matrix(0, ldim[1L], ldim[2L])
+      dx <- new("ddmatrix", Data=Data, dim=dim, ldim=ldim, bldim=bldim, CTXT=CTXT)
+      
+      dx <- base.pdsweep(dx, data, MARGIN=1, FUN="+")
+    } 
+    else {
+      if (any(ldim)<1)
+        Data <- matrix(0, 1, 1)
+      else
+        Data <- matrix(data, ldim[1L], ldim[2L])
+      
+      dx <- new("ddmatrix", Data=Data, dim=dim, ldim=ldim, bldim=bldim, CTXT=CTXT)
+    }
     
     return( dx )
   }
