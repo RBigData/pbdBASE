@@ -8,38 +8,46 @@
 # Creation
 # -------------------
 
-setMethod("ddmatrix", signature(data="ANY"), 
-  function(data, nrow, ncol, bldim=.BLDIM, CTXT=0)
-  {
-    if (length(bldim)==1)
-      bldim <- rep(bldim, 2)
-    
-    if(missing(data)){
-      data <- NA
-    }
-    
+ddmatrix <-  function(data, nrow, ncol, bldim=.BLDIM, CTXT=0)
+{
+  if (is.matrix(data))
     data <- as.vector(data)
-    dim <- c(nrow, ncol)
-    ldim <- base.numroc(dim=dim, bldim=bldim, ICTXT=CTXT, fixme=FALSE)
-    
-    if (length(data) > 1){
-      Data <- matrix(0, ldim[1L], ldim[2L])
-      dx <- new("ddmatrix", Data=Data, dim=dim, ldim=ldim, bldim=bldim, CTXT=CTXT)
-      
-      dx <- base.pdsweep(dx, data, MARGIN=1, FUN="+")
-    } 
-    else {
-      if (any(ldim)<1)
-        Data <- matrix(0, 1, 1)
-      else
-        Data <- matrix(data, ldim[1L], ldim[2L])
-      
-      dx <- new("ddmatrix", Data=Data, dim=dim, ldim=ldim, bldim=bldim, CTXT=CTXT)
-    }
-    
-    return( dx )
+  else if (!is.vector(data)){
+    comm.print("'data' must be of type 'vector' or 'matrix'")
+    stop("")
   }
-)
+  
+  if (length(bldim)==1)
+    bldim <- rep(bldim, 2)
+  
+  if (missing(data))
+    data <- NA
+  if (missing(nrow))
+    nrow <- 1
+  if (missing(ncol))
+    ncol <- 1
+  
+  dim <- c(nrow, ncol)
+  ldim <- base.numroc(dim=dim, bldim=bldim, ICTXT=CTXT)
+  
+  if (length(data) > 1){
+    Data <- matrix(0, ldim[1L], ldim[2L])
+    dx <- new("ddmatrix", Data=Data, dim=dim, ldim=ldim, bldim=bldim, CTXT=CTXT)
+    
+    dx <- base.pdsweep(dx, data, MARGIN=1, FUN="+")
+  } 
+  else {
+    if (!base.ownany(dim=dim, bldim=bldim, CTXT=CTXT))
+      Data <- matrix(0, 1, 1)
+    else
+      Data <- matrix(data, ldim[1L], ldim[2L])
+    
+    dx <- new("ddmatrix", Data=Data, dim=dim, ldim=ldim, bldim=bldim, CTXT=CTXT)
+  }
+  
+  return( dx )
+}
+
 
 # -------------------
 # Converters
@@ -113,23 +121,23 @@ setMethod("[", signature(x="ddmatrix"),
         return( out )
       }
     }
-
+    
     # general case
     if (!imiss) { # skip if no 'i' was supplied
       if (ilng > 0) # ignore i = numeric(0)
         if (newObj@CTXT != 1)
           newObj <- base.dropper(x=newObj, oldbldim=oldbldim, iorj='i', ij=i, ICTXT=1)
     }
-
+    
     if (!jmiss)
       if (base::length(j)>0)
         if (newObj@CTXT != 2)
           newObj <- base.dropper(x=newObj, oldbldim=oldbldim, iorj='j', ij=j, ICTXT=2)
-
+    
     # bring everything back to full process grid
     if (newObj@CTXT != oldCTXT)
       newObj <- base.reblock(dx=newObj, bldim=oldbldim, ICTXT=oldCTXT)
-
+    
     return(newObj)
   }
 )
@@ -153,7 +161,7 @@ setReplaceMethod("[", signature(x ="ddmatrix"),
   }
 )
 
-setReplaceMethod("submatrix", signature(x ="ddmatrix"),
+setReplaceMethod("submatrix", signature(x="ddmatrix"),
   function(x, value) 
   {
     x@Data <- value

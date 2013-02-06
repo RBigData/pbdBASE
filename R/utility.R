@@ -60,36 +60,6 @@ base.dropper <- function(x, oldbldim, iorj, ij, ICTXT)
 dropper <- base.dropper
 
 
-# For use with local arithmetic; basically does nothing if the 
-# local storage is just filler to make scalapack happy
-# return is logical answer to the question:  'do I own anything?', 
-# and not a C-style return
-base.ownany <- function(dim, bldim, CTXT=0)
-{
-  if (length(bldim)==1)
-    bldim <- rep(bldim, 2)
-  check <- base.numroc(dim=dim, bldim=bldim, ICTXT=CTXT, fixme=FALSE)
-  
-  if (any(check<1))
-    return(FALSE)
-  else
-    return(TRUE)
-}
-
-ownany <- function(x, ..., dim, bldim, CTXT=0)
-{
-  if (!missing(bldim) && length(bldim)==1)
-    bldim <- rep(bldim, 2)
-  if (!missing(x) && is.ddmatrix(x))
-    return( base.ownany(dim=x@dim, bldim=x@bldim, CTXT=x@CTXT) )
-  else if (!missing(dim) && !missing(bldim) && missing(x) && is.numeric(dim) && is.numeric(bldim))
-    return( base.ownany(dim=dim, bldim=bldim, CTXT=CTXT) )
-  else{
-    print("Error: bad input(s) in ownany()")
-    stop("")
-  }
-}
-
 
 # checking compatibility between distributed matrices for use with
 # scalapack/pblas. For internal use only.

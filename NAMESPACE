@@ -8,7 +8,7 @@ export(
 )
 
 exportMethods(
-  "as.matrix", "as.vector", "as.ddmatrix", "ddmatrix",
+  "as.matrix", "as.vector", "as.ddmatrix",
   "submatrix", "submatrix<-",
   "[", "[<-", "na.exclude",
   "nrow", "ncol", "dim", "ldim", "bldim", "ctxt", "submatrix",
@@ -24,6 +24,7 @@ export(
   minctxt,
   
   ### utility
+  ddmatrix, 
   numroc, ownany,
   is.ddmatrix, is.na, is.nan, is.infinite, is.numeric,
   head.ddmatrix, tail.ddmatrix,
