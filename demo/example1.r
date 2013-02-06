@@ -6,7 +6,7 @@ init.grid(1, 2)
 
 # Setup for the remainder
 set.seed(25)
-M <- N <- 10 # number of rows/cols
+M <- N <- 6 # number of rows/cols
 BL <- 2 # blocking factor --- passing single value BL assumes BLxBL blocking
 
 # First we generate the matrix on process 0 and then distribute it to
@@ -24,7 +24,12 @@ dA <- as.ddmatrix(A, bldim=BL) # distribute
 print(dA)
 
 # Set the first column to zero of the global matrix
-dA[, 1] <- c(0,10)
+dA[, 1] <- 0
+
+print(dA)
+
+newA <- as.matrix(dA)
+comm.print(newA)
 
 # Get a global vector of the first column, stored only on process 0
 # Whenever a non-distributed matrix is owned by only one processor, 

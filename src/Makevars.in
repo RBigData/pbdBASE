@@ -1,30 +1,20 @@
 ### Configurations.
-RCPP_CXXFLAGS = @RCPP_CXXFLAGS@
-RCPP_LDFLAGS = @RCPP_LDFLAGS@
 SLAP_LDFLAGS = @SLAP_LDFLAGS@
 SPMD_CPPFLAGS = @SPMD_CPPFLAGS@
 SPMD_LDFLAGS = @SPMD_LDFLAGS@
 
 ### Setup R package flags and substitute by configure for ${MPI_...}.
 PKG_CPPFLAGS = $(SPMD_CPPFLAGS)
-PKG_CXXFLAGS = $(RCPP_CXXFLAGS)
 PKG_CFLAGS = -w
 PKG_FFLAGS = $(SAFE_FFLAGS) -w 
 ### Order is matter.
-PKG_LIBS = $(RCPP_LDFLAGS) $(SLAP_LDFLAGS) $(FLIBS) $(SPMD_LDFLAGS)
+PKG_LIBS = $(SLAP_LDFLAGS) $(FLIBS) $(SPMD_LDFLAGS)
 
 ### Setup R source code and objects.
-#R_OBJS = \
-#  base_mpi_blac.o                bprnt.o          scalapack.o \
-#  base_pblas_level3.o            lm.o             scalapack_utility_cpp.o \
-#  base_scalapack.o               mpi_blacs.o      scalapack_utility_fort.o \
-#  base_scalapack_utility_fort.o  par_selection.o  selection.o \
-#  bprnt_c.o                      pblas_level3.o
 R_OBJS = \
   bprnt.o \
   lm.o \
   mpi_blacs.o \
-  scalapack_utility_cpp.o \
   base_mpi_blac.o \
   base_pblas_level3.o \
   base_scalapack.o \
@@ -37,7 +27,8 @@ R_OBJS = \
   bprnt_c.o \
   putil.o \
   plinalg.o \
-  pkg_tools.o
+  pkg_tools.o \
+  other.o
 OBJECTS = $(R_OBJS)
 
 ### For user configuration.

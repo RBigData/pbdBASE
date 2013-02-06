@@ -65,6 +65,17 @@
 \alias{base.rpdsvrk}
 \alias{base.rpdtrcon}
 
+\alias{base.dallreduce}
+\alias{base.ddiagmk}
+\alias{base.ddiagtk}
+\alias{base.mkgblmat}
+\alias{base.mksubmat}
+\alias{base.pdsweep}
+\alias{base.rl2blas}
+\alias{base.rl2insert}
+\alias{base.tri2zero}
+
+
 \alias{.conflicts.OK}
 
 \title{ All pbdPASE Internal Functions and Data }

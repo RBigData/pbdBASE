@@ -271,7 +271,7 @@
       
       
       I = INDXG2L(GI, DESC(5), DUM, DUM, BLACS(2))
-      J = INDXG2L(GI, DESC(6), DUM, DUM, BLACS(3))
+      J = INDXG2L(GJ, DESC(6), DUM, DUM, BLACS(3))
       
       RETURN
       END
@@ -394,7 +394,7 @@
       DOUBLE PRECISION    ZERO
       PARAMETER ( ZERO = 0.0D0 )
       ! External
-      EXTERNAL            PDIMS, G2LPAIR, DGSUM2D, DALLREDUCE
+      EXTERNAL            PDIMS, L2GPAIR, DGSUM2D, DALLREDUCE
       
       
       ! Get local and proc grid info
@@ -932,4 +932,264 @@
       
       RETURN
       END
+
+
+
+
+
+! R level 2 BLAS
+! INPUTS/OUTPUTS
+  ! X = Submatrix of data which should globally be "swept"
+! INPUTS
+  ! IX/JX = 
+  ! DESCX = Descriptor array for X
+  ! VEC = Vector to "sweep" through X
+  ! LVEC = Length of VEC
+  ! FUN = Char with 4 possibilities, describing the type of sweep to perform:
+    ! "+", "-", "*", "/"
+      DOUBLE PRECISION FUNCTION FPMOD(A, B)
+      DOUBLE PRECISION A, B
+      
+      IF (B.EQ.0) THEN
+        FPMOD = NaN
+      ELSE IF (B.GT.0) THEN
+        IF (A.GE.0) THEN
+          FPMOD = DMOD(A, B)
+        ELSE
+          FPMOD = B - DMOD(-A, B)
+        END IF
+      ELSE
+        IF (A.EQ.0) THEN
+          FPMOD = 0.0D0
+        ELSE IF (A.GT.0) THEN
+          FPMOD = B + DMOD(A, -B)
+        ELSE
+          FPMOD = -DMOD(-A, -B)
+        END IF
+      END IF
+      
+      RETURN
+      END
+
+      SUBROUTINE RL2BLAS(X, IX, JX, DESCX, VEC, LVEC, FUN)
+      IMPLICIT NONE
+      ! IN/OUT
+      INTEGER             IX, JX, DESCX(9), LVEC, FUN
+      DOUBLE PRECISION    X(DESCX(9), *), VEC(LVEC)
+      ! Local
+      INTEGER             K, M, N, POS, I, J, GI, GJ, LDM(2), BLACS(5)
+      ! Parameter
+      DOUBLE PRECISION    ZERO, ONE
+      PARAMETER ( ZERO = 0.0D0, ONE = 1.0D0 )
+      ! External
+      EXTERNAL            PDIMS, L2GPAIR
+      ! Function
+      INTEGER             IND
+      DOUBLE PRECISION    FPMOD
+      
+      
+      ! Get local and proc grid info
+      CALL PDIMS(DESCX, LDM, BLACS)
+      
+      M = LDM(1)
+      N = LDM(2)
+      K = DESCX(4)
+      
+      ! Resorting to magic numbers because C strings are just too kludgy and terrible
+      
+      ! Only do work if we own any local pieces
+      IF (M.GT.0 .AND. N.GT.0) THEN
+        ! Addition
+        IF (FUN.EQ.0) THEN
+          DO J = 1, N
+            DO I = 1, M
+              CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+              POS = IND(GI + K*(GJ-1), LVEC)
+              X(I, J) = X(I, J) + VEC(POS)
+            END DO
+          END DO
+        ! Subtraction
+        ELSE IF (FUN.EQ.1) THEN
+          DO J = 1, N
+            DO I = 1, M
+              CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+              POS = IND(GI + K*(GJ-1), LVEC)
+              X(I, J) = X(I, J) - VEC(POS)
+            END DO
+          END DO
+        ! Multiplication
+        ELSE IF (FUN.EQ.2) THEN
+          DO J = 1, N
+            DO I = 1, M
+              CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+              POS = IND(GI + K*(GJ-1), LVEC)
+              X(I, J) = X(I, J) * VEC(POS)
+            END DO
+          END DO
+        ! Division
+        ELSE IF (FUN.EQ.3) THEN
+          DO J = 1, N
+            DO I = 1, M
+              CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+              POS = IND(GI + K*(GJ-1), LVEC)
+              X(I, J) = X(I, J) / VEC(POS)
+            END DO
+          END DO
+        ! Power
+        ELSE IF (FUN.EQ.4) THEN
+          DO J = 1, N
+            DO I = 1, M
+              CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+              POS = IND(GI + K*(GJ-1), LVEC)
+              X(I, J) = X(I, J) ** VEC(POS)
+            END DO
+          END DO
+        ! %%
+        ELSE IF (FUN.EQ.5) THEN
+          DO J = 1, N
+            DO I = 1, M
+              CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+              POS = IND(GI + K*(GJ-1), LVEC)
+              X(I, J) = FPMOD( X(I, J), VEC(POS) )
+            END DO
+          END DO 
+        ! %/%
+        ELSE IF (FUN.EQ.6) THEN
+          DO J = 1, N
+            DO I = 1, M
+              CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+              POS = IND(GI + K*(GJ-1), LVEC)
+              X(I, J) = FPMOD( VEC(POS), X(I, J) )
+            END DO
+          END DO
+        ! <
+        ELSE IF (FUN.EQ.7) THEN
+          DO J = 1, N
+            DO I = 1, M
+              CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+              POS = IND(GI + K*(GJ-1), LVEC)
+              IF (X(I, J) .LT. VEC(POS)) THEN
+                X(I, J) = ONE
+              ELSE
+                X(I, J) = ZERO
+              END IF
+            END DO
+          END DO
+        ! >
+        ELSE IF (FUN.EQ.8) THEN
+          DO J = 1, N
+            DO I = 1, M
+              CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+              POS = IND(GI + K*(GJ-1), LVEC)
+              IF (X(I, J) .GT. VEC(POS)) THEN
+                X(I, J) = ONE
+              ELSE
+                X(I, J) = ZERO
+              END IF
+            END DO
+          END DO
+        ! <=
+        ELSE IF (FUN.EQ.9) THEN
+          DO J = 1, N
+            DO I = 1, M
+              CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+              POS = IND(GI + K*(GJ-1), LVEC)
+              IF (X(I, J) .LE. VEC(POS)) THEN
+                X(I, J) = ONE
+              ELSE
+                X(I, J) = ZERO
+              END IF
+            END DO
+          END DO
+        ! >=
+        ELSE IF (FUN.EQ.10) THEN
+          DO J = 1, N
+            DO I = 1, M
+              CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+              POS = IND(GI + K*(GJ-1), LVEC)
+              IF (X(I, J) .GE. VEC(POS)) THEN
+                X(I, J) = ONE
+              ELSE
+                X(I, J) = ZERO
+              END IF
+            END DO
+          END DO
+        ! <
+        ELSE IF (FUN.EQ.11) THEN
+          DO J = 1, N
+            DO I = 1, M
+              CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+              POS = IND(GI + K*(GJ-1), LVEC)
+              IF (X(I, J) .EQ. VEC(POS)) THEN
+                X(I, J) = ONE
+              ELSE
+                X(I, J) = ZERO
+              END IF
+            END DO
+          END DO
+        END IF
+      END IF
+      
+      RETURN
+      END
+
+
+      LOGICAL FUNCTION CHECKPROC(I, J, DESC, BLACS)
+      INTEGER I, J, DESC(9), BLACS(5)
+      
+      CHECKPROC = ( MOD( (I-1)/DESC(5), BLACS(2) ) .EQ. BLACS(4)
+     $                      .AND.
+     $              MOD( (J-1)/DESC(6), BLACS(3) ) .EQ. BLACS(5) )
+      
+      RETURN
+      END
+
+      SUBROUTINE RL2INSERT(X, IX, JX, DESCX, VEC, LVEC, INDI, LINDI, 
+     $                   INDJ, LINDJ)
+      IMPLICIT NONE
+      ! IN/OUT
+      INTEGER             IX, JX, DESCX(9), LVEC, LINDI, LINDJ,
+     $                    INDI(LINDI), INDJ(LINDJ)
+      DOUBLE PRECISION    X(DESCX(9), *), VEC(LVEC)
+      ! Local
+      INTEGER             K, M, N, POS, I, J, TI, TJ, GI, GJ, 
+     $                    LDM(2), BLACS(5)
+      ! Parameter
+      DOUBLE PRECISION    ZERO, ONE
+      PARAMETER ( ZERO = 0.0D0, ONE = 1.0D0 )
+      ! External
+      EXTERNAL            PDIMS, G2LPAIR
+      ! Function
+      LOGICAL             CHECKPROC
+      INTEGER             IND
+      DOUBLE PRECISION    FPMOD
+      
+      
+      ! Get local and proc grid info
+      CALL PDIMS(DESCX, LDM, BLACS)
+      
+      M = LDM(1)
+      N = LDM(2)
+      K = DESCX(3)
+      
+      ! Only do work if we own any local pieces
+      IF (M.GT.0 .AND. N.GT.0) THEN
+        ! Insertion
+        DO TJ = 1, LINDJ
+          GJ = INDJ(TJ)
+          DO TI = 1, LINDI
+            GI = INDI(TI)
+            CALL G2LPAIR(I, J, GI, GJ, DESCX, BLACS)
+            IF (CHECKPROC(GI, GJ, DESCX, BLACS)) THEN
+              POS = IND(I + K*(J-1), LVEC)
+              X(I, J) = VEC(POS)
+            END IF
+          END DO
+        END DO
+      END IF
+      
+      RETURN
+      END
+
+
 

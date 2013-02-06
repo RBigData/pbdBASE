@@ -1,5 +1,5 @@
 useDynLib(pbdBASE)
-import(methods, rlecuyer, pbdMPI, pbdSLAP, Rcpp)
+import(methods, rlecuyer, pbdMPI, pbdSLAP)
 
 # All internal functions
 exportPattern("^base\\.[[:alpha:]]+")

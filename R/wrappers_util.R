@@ -106,6 +106,61 @@ base.pdsweep <- function(dx, vec, MARGIN, FUN)
 }
 
 
+base.rl2blas <- function(dx, vec, FUN)
+{
+  ldim <- dx@ldim
+  
+  descx <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=ldim, ICTXT=dx@CTXT)
+  
+  if (!is.double(dx@Data))
+    storage.mode(dx@Data) <- "double"
+  
+  if (!is.double(vec))
+    storage.mode(vec) <- "double"
+  
+  ret <- .Call("R_RL2BLAS", 
+               dx@Data, as.integer(ldim), as.integer(descx), vec, as.integer(length(vec)), as.integer(FUN),
+               PACKAGE="pbdBASE")
+  
+#####  dx@Data <- ret
+#####  
+#####  return(dx)
+  return(ret)
+}
+
+
+base.rl2insert <- function(dx, vec, i, j)
+{
+  ldim <- dx@ldim
+  
+  descx <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=ldim, ICTXT=dx@CTXT)
+  
+  if (all(i<0)){
+    new <- 1:dx@dim[1]
+    i <- new[-which(new %in% abs(i))] # FIXME make this less stupid
+  }
+  
+  if (all(j<0)){
+    new <- 1:dx@dim[2]
+    j <- new[-which(new %in% abs(j))] # FIXME make this less stupid
+  }
+  
+  if (!is.double(dx@Data))
+    storage.mode(dx@Data) <- "double"
+  
+  if (!is.double(vec))
+    storage.mode(vec) <- "double"
+  
+  ret <- .Call("R_RL2INSERT", 
+               dx@Data, as.integer(ldim), as.integer(descx), vec, as.integer(length(vec)), as.integer(i), as.integer(length(i)), as.integer(j), as.integer(length(j)),
+               PACKAGE="pbdBASE")
+  
+  dx@Data <- ret
+  
+  return(dx)
+}
+
+
 base.ddiagtk <- function(dx)
 {
   ldim <- dx@ldim
