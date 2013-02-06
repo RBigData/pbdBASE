@@ -5,6 +5,34 @@
 # ##################################################
 
 # -------------------
+# Creation
+# -------------------
+
+setMethod("ddmatrix", signature(data="ANY"), 
+  function(data, nrow, ncol, bldim=.BLDIM, CTXT=0)
+  {
+    if(missing(data)){
+      data <- NA
+    }
+    
+    if (length(bldim)==1)
+      bldim <- rep(bldim, 2)
+    
+    if (length(data) > 1)
+      warning("This may have odd behavior at the moment...")
+    
+    dim <- c(nrow, ncol)
+    
+    ldim <- base.numroc(dim=dim, bldim=bldim, ICTXT=CTXT, fixme=TRUE)
+    Data <- matrix(data, ldim[1L], ldim[2L])
+    
+    dx <- new("ddmatrix", Data=Data, dim=dim, ldim=ldim, bldim=bldim, CTXT=CTXT)
+    
+    return( dx )
+  }
+)
+
+# -------------------
 # Converters
 # -------------------
 
