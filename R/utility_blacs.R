@@ -220,7 +220,7 @@ pcoord <- base.pcoord
 base.blacs.sum <- function(dx, SCOPE, na.rm=FALSE, means=FALSE, num=1) # SCOPE= 'Row', 'Col', 'All'
 {
   dim <- dx@dim
-  ICTXT <- dx@CTXT
+  ICTXT <- dx@ICTXT
   
   if (SCOPE=='Row')
     f <- function(x, na.rm=na.rm) rowSums(x, na.rm=na.rm)
@@ -248,7 +248,7 @@ base.blacs.sum <- function(dx, SCOPE, na.rm=FALSE, means=FALSE, num=1) # SCOPE= 
   LDA <- length(A)
   
 #  mxm <- pbdMPI::allreduce(M, op='max')
-#  if (!base.ownany(dim=dim, dx@bldim, CTXT=ICTXT)){
+#  if (!base.ownany(dim=dim, dx@bldim, ICTXT=ICTXT)){
 #    A <- numeric(mxm)
 #    M <- mxm
 #  }

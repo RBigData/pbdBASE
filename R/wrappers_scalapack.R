@@ -10,7 +10,7 @@
 
 base.rpdgesv <- function(a, b)
 {
-  ICTXT <- a@CTXT
+  ICTXT <- a@ICTXT
   
   # Matrix descriptors
   desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=ICTXT)
@@ -48,7 +48,7 @@ base.rpdgesv <- function(a, b)
 
 base.rpdgetri <- function(a)
 {
-  desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=a@CTXT)
+  desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=a@ICTXT)
   
   n <- desca[4L]
   
@@ -79,7 +79,7 @@ base.rpdgetri <- function(a)
 
 base.rpdgesvd <- function(x, nu, nv)
 {
-  ICTXT <- x@CTXT
+  ICTXT <- x@ICTXT
   
   # Matrix descriptors
   m <- x@dim[1L]
@@ -108,13 +108,13 @@ base.rpdgesvd <- function(x, nu, nv)
   uldim <- base.numroc(dim=udim, bldim=bldim, ICTXT=ICTXT)
 
   u <- new("ddmatrix", Data=matrix(nrow=0, ncol=0),
-                       dim=udim, ldim=uldim, bldim=bldim, CTXT=ICTXT)
+                       dim=udim, ldim=uldim, bldim=bldim, ICTXT=ICTXT)
   descu <- base.descinit(dim=u@dim, bldim=u@bldim, ldim=u@ldim, ICTXT=ICTXT)
   
   vtldim <- base.numroc(dim=vtdim, bldim=bldim, ICTXT=ICTXT)
 
   vt <- new("ddmatrix", Data=matrix(nrow=0, ncol=0),
-                        dim=vtdim, ldim=vtldim, bldim=bldim, CTXT=ICTXT)
+                        dim=vtdim, ldim=vtldim, bldim=bldim, ICTXT=ICTXT)
   descvt <- base.descinit(dim=vt@dim, bldim=vt@bldim, ldim=vt@ldim, ICTXT=ICTXT)
 
   mxa <- pbdMPI::allreduce(max(x@ldim), op='max')
@@ -182,7 +182,7 @@ base.rpdgesvd <- function(x, nu, nv)
 
 base.rpdgetrf <- function(a)
 {
-  desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=a@CTXT)
+  desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=a@ICTXT)
 
   m <- desca[3L]
   n <- desca[4L]
@@ -213,7 +213,7 @@ base.rpdgetrf <- function(a)
 
 base.rpdpotrf <- function(x)
 {
-  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=x@CTXT)
+  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=x@ICTXT)
     
   n <- desca[4L]
   
@@ -233,7 +233,7 @@ base.rpdpotrf <- function(x)
   if (out$info!=0)
     warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
   
-  ret <- new("ddmatrix", Data=out$A, dim=x@dim, ldim=x@ldim, bldim=x@bldim, CTXT=x@CTXT)
+  ret <- new("ddmatrix", Data=out$A, dim=x@dim, ldim=x@ldim, bldim=x@bldim, ICTXT=x@ICTXT)
   
   ret <- base.tri2zero(dx=ret, 'L', 'N')
   
@@ -283,7 +283,7 @@ numroc2 <- function(N, NB, IPROC, NPROCS)
 # matrix norms
 base.rpdlange <- function(x, type)
 {
-  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=x@CTXT)
+  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=x@ICTXT)
   
   m <- x@dim[1L]
   n <- x@dim[2L]
@@ -296,7 +296,7 @@ base.rpdlange <- function(x, type)
 #  if (type == "M" || type == "F")
 #    lwork <- 1L
 #  else {
-#    blacs_ <- base.blacs(ICTXT=x@CTXT)
+#    blacs_ <- base.blacs(ICTXT=x@ICTXT)
 #    ia <- ja <- 1L
 #    
 #    if (type == "O"){
@@ -336,7 +336,7 @@ base.rpdlange <- function(x, type)
 # Inverse condition number - general matrix
 base.rpdgecon <- function(x, type)
 {
-  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=x@CTXT)
+  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=x@ICTXT)
   
   m <- x@dim[1L]
   n <- x@dim[2L]
@@ -364,7 +364,7 @@ base.rpdgecon <- function(x, type)
 # Inverse condition number - triangular matrix
 base.rpdtrcon <- function(x, type, uplo="L")
 {
-  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=x@CTXT)
+  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=x@ICTXT)
   
 #  m <- x@dim[1L]
   n <- x@dim[2L]

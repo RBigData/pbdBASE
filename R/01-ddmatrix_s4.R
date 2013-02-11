@@ -57,8 +57,8 @@ setGeneric(name="bldim",
   package="pbdBASE"
 )
 
-setGeneric(name="ctxt", 
+setGeneric(name="ictxt", 
   function(x, ...) 
-    standardGeneric("ctxt"), 
+    standardGeneric("ictxt"), 
   package="pbdBASE"
 )

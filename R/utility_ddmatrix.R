@@ -53,7 +53,7 @@ base.as.matrix <- function(x, proc.dest="all")
    return( base.gmat(dx=x, proc.dest="all") )
   else if (is.numeric(proc.dest)){
     if (base::length(proc.dest)==1){
-      blacs_ <- base.blacs(x@CTXT)
+      blacs_ <- base.blacs(x@ICTXT)
       if (pbdMPI::comm.rank()==proc.dest)
         proc.dest <- c(blacs_$MYROW, blacs_$MYCOL)
       else
@@ -145,12 +145,12 @@ base.distribute <- function(x, bldim=.BLDIM, xCTXT=0, ICTXT=0)
   if (all(ldim==0))
     ldim <- c(1,1)
 
-  dx <- new("ddmatrix", Data=x, dim=dim, ldim=ldim, bldim=dim, CTXT=xCTXT)
+  dx <- new("ddmatrix", Data=x, dim=dim, ldim=ldim, bldim=dim, ICTXT=xCTXT)
 
   if (xCTXT != ICTXT)
     dx <- base.reblock(dx=dx, bldim=bldim, ICTXT=ICTXT)
   else if (any(dx@bldim != bldim))
-    dx <- base.reblock(dx=dx, bldim=bldim, ICTXT=dx@CTXT)
+    dx <- base.reblock(dx=dx, bldim=bldim, ICTXT=dx@ICTXT)
   
   return( dx )
 }
@@ -160,7 +160,7 @@ distribute <- base.distribute
 
 base.redistribute <- function(dx, bldim=dx@bldim, ICTXT=0)
 {
-  if (dx@CTXT != ICTXT)
+  if (dx@ICTXT != ICTXT)
     dx <- base.reblock(dx=dx, bldim=bldim, ICTXT=ICTXT)
   
   return( dx )

@@ -40,3 +40,26 @@ SEXP R_dgsum2d(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP A, SEXP LDA)
   return(OUT);
 }
 
+
+
+
+SEXP R_dgsum2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA)
+{
+  int i;
+/*  double *pt_A = REAL(A), *pt_OUT;*/
+  const int m = INTEGER(M)[0], n = INTEGER(N)[0];
+  char top = ' ';
+  const int dest = -1;
+  
+  SEXP OUT;
+  PROTECT(OUT = allocMatrix(REALSXP, m, n));
+  
+  memcpy(REAL(OUT), REAL(A), m*n*sizeof(double));
+  
+  Cdgsum2d(INTEGER(ICTXT)[0], CHARPT(SCOPE, 0), &top, m, n, REAL(OUT), 
+    INTEGER(LDA)[0], dest, dest);
+  
+  UNPROTECT(1);
+  return(OUT);
+}
+

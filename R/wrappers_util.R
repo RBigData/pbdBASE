@@ -15,13 +15,13 @@ base.mksubmat <- function(x, bldim=.BLDIM, ICTXT=0)
                 x, as.integer(ldim), as.integer(descx), 
                 PACKAGE="pbdBASE")
   
-  new("ddmatrix", Data=subx, dim=dim, ldim=ldim, bldim=bldim, CTXT=ICTXT)
+  new("ddmatrix", Data=subx, dim=dim, ldim=ldim, bldim=bldim, ICTXT=ICTXT)
 }
 
 
 base.mkgblmat <- function(dx, proc.dest='all')
 {
-  ICTXT <- dx@CTXT
+  ICTXT <- dx@ICTXT
   
   dim <- dx@dim
   ldim <- dx@ldim
@@ -54,7 +54,7 @@ base.dallreduce <- function(dx, op='sum', scope='All')
 {
   ldim <- dx@ldim
   
-  descx <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=ldim, ICTXT=dx@CTXT)
+  descx <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=ldim, ICTXT=dx@ICTXT)
   
   if (!is.double(dx@Data))
     storage.mode(dx@Data) <- "double"
@@ -69,7 +69,7 @@ base.tri2zero <- function(dx, uplo='L', diag='N')
 {
   ldim <- dx@ldim
   
-  descx <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=ldim, ICTXT=dx@CTXT)
+  descx <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=ldim, ICTXT=dx@ICTXT)
   
   if (!is.double(dx@Data))
     storage.mode(dx@Data) <- "double"
@@ -88,7 +88,7 @@ base.pdsweep <- function(dx, vec, MARGIN, FUN)
 {
   ldim <- dx@ldim
   
-  descx <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=ldim, ICTXT=dx@CTXT)
+  descx <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=ldim, ICTXT=dx@ICTXT)
   
   if (!is.double(dx@Data))
     storage.mode(dx@Data) <- "double"
@@ -110,7 +110,7 @@ base.rl2blas <- function(dx, vec, FUN)
 {
   ldim <- dx@ldim
   
-  descx <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=ldim, ICTXT=dx@CTXT)
+  descx <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=ldim, ICTXT=dx@ICTXT)
   
   if (!is.double(dx@Data))
     storage.mode(dx@Data) <- "double"
@@ -133,7 +133,7 @@ base.rl2insert <- function(dx, vec, i, j)
 {
   ldim <- dx@ldim
   
-  descx <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=ldim, ICTXT=dx@CTXT)
+  descx <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=ldim, ICTXT=dx@ICTXT)
   
   if (all(i<0)){
     new <- 1:dx@dim[1]
@@ -165,7 +165,7 @@ base.ddiagtk <- function(dx)
 {
   ldim <- dx@ldim
   
-  descx <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=ldim, ICTXT=dx@CTXT)
+  descx <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=ldim, ICTXT=dx@ICTXT)
   
   if (!is.double(dx@Data))
     storage.mode(dx@Data) <- "double"
@@ -173,7 +173,6 @@ base.ddiagtk <- function(dx)
   ret <- .Call("R_PDDIAGTK", 
                dx@Data, as.integer(ldim), as.integer(descx), as.integer(min(dx@dim)),
                PACKAGE="pbdBASE")
-  
   
   return( ret )
 }
@@ -193,7 +192,7 @@ base.ddiagmk <- function(diag, nrow, ncol, bldim, ICTXT=0)
                as.integer(ldim), as.integer(descx), diag, as.integer(length(diag)),
                PACKAGE="pbdBASE")
   
-  ret <- new("ddmatrix", Data=out, dim=dim, ldim=ldim, bldim=bldim, CTXT=ICTXT)
+  ret <- new("ddmatrix", Data=out, dim=dim, ldim=ldim, bldim=bldim, ICTXT=ICTXT)
   
   return( ret )
 }

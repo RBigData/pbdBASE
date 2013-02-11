@@ -3,7 +3,7 @@
 # squares problems.
 base.rpdgels <- function(a, b, tol=1e-7)
 {
-  oldctxt <- b@CTXT
+  oldctxt <- b@ICTXT
   
   # Matrix descriptors
   desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=oldctxt)
@@ -42,11 +42,11 @@ base.rpdgels <- function(a, b, tol=1e-7)
   b@Data <- out$B
   
   eff <- new("ddmatrix", Data=out$EFF, dim=b@dim, 
-             ldim=b@bldim, bldim=b@bldim, CTXT=b@CTXT)
+             ldim=b@bldim, bldim=b@bldim, ICTXT=b@ICTXT)
   fitted.values <- new("ddmatrix", Data=out$FT, dim=b@dim,
-                       ldim=b@ldim, bldim=b@bldim, CTXT=b@CTXT)
+                       ldim=b@ldim, bldim=b@bldim, ICTXT=b@ICTXT)
   residuals <- new("ddmatrix", Data=out$RSD, dim=b@dim,
-                   ldim=b@ldim, bldim=b@bldim, CTXT=b@CTXT)
+                   ldim=b@ldim, bldim=b@bldim, ICTXT=b@ICTXT)
   
   # rearranging solution in the overdetermined and/or rank deficient case
   temp <- 1L:n # indexing of coefficients
@@ -54,16 +54,16 @@ base.rpdgels <- function(a, b, tol=1e-7)
     b <- b[temp, , ICTXT=1L]
   } else {
     cdim <- c(n-b@dim[1L], b@dim[2L])
-    cldim <- base.numroc(dim=cdim, bldim=b@bldim, ICTXT=b@CTXT, fixme=TRUE)
-    c <- new("ddmatrix", Data=matrix(as.double(NA), nrow=cldim[1L], ncol=cldim[2L]), dim=cdim, ldim=cldim, bldim=b@bldim, CTXT=b@CTXT)
+    cldim <- base.numroc(dim=cdim, bldim=b@bldim, ICTXT=b@ICTXT, fixme=TRUE)
+    c <- new("ddmatrix", Data=matrix(as.double(NA), nrow=cldim[1L], ncol=cldim[2L]), dim=cdim, ldim=cldim, bldim=b@bldim, ICTXT=b@ICTXT)
     b <- base.rbind(b, c, ICTXT=1L)
   }
   
   # convert IPIV to global vector if it isn't already
-  if (base.blacs(ICTXT=a@CTXT)$NPCOL > 1L){
+  if (base.blacs(ICTXT=a@ICTXT)$NPCOL > 1L){
     c <- new("ddmatrix", Data=matrix(out$IPIV, nrow=1L),
               dim=c(1L, b@dim[1L]), ldim=c(1L, b@ldim[1L]), 
-              bldim=b@bldim, CTXT=oldctxt)
+              bldim=b@bldim, ICTXT=oldctxt)
     pivot <- as.vector(c)
   } else {
     pivot <- out$IPIV
@@ -72,10 +72,10 @@ base.rpdgels <- function(a, b, tol=1e-7)
   if (out$RANK < n){
 #    vec <- as.ddmatrix(matrix(NA, nrow=1, ncol=nrhs), bldim=b@bldim)
     if (m >= n)
-      b[(out$RANK+1L):n, , ICTXT=b@CTXT] <- as.double(NA)
+      b[(out$RANK+1L):n, , ICTXT=b@ICTXT] <- as.double(NA)
     else {
       if (out$RANK < m)
-        b[(out$RANK+1L):m, , ICTXT=b@CTXT] <- as.double(NA)
+        b[(out$RANK+1L):m, , ICTXT=b@ICTXT] <- as.double(NA)
     }
     if (any(pivot - temp != 0L)){
       perm <- sapply(temp, function(i) temp[which(i==pivot)])
@@ -89,7 +89,7 @@ base.rpdgels <- function(a, b, tol=1e-7)
   }
   
   # rownames
-#  if (base.ownany(dim=b@dim, bldim=b@bldim, CTXT=b@CTXT)){
+#  if (base.ownany(dim=b@dim, bldim=b@bldim, ICTXT=b@CTXT)){
 #    coords <- sapply(temp, function(i) base.g2l_coord(ind=i, dim=b@dim, bldim=b@bldim, ICTXT=b@CTXT)[5])
 #    mycoords <- coords[which(!is.na(coords))]
 #    
@@ -113,7 +113,7 @@ base.rpdgels <- function(a, b, tol=1e-7)
 base.rpdgeqpf <- function(x, tol=1e-7)
 {
   # Matrix descriptors
-  desca <- base.descinit(x@dim, x@bldim, x@ldim, ICTXT=x@CTXT)
+  desca <- base.descinit(x@dim, x@bldim, x@ldim, ICTXT=x@ICTXT)
 
   m <- desca[3]
   n <- desca[4]
@@ -152,7 +152,7 @@ base.rpdorgqr <- function(qr)
     x <- x[, 1:qr$rank]
   
   # Matrix descriptors
-  desca <- base.descinit(x@dim, x@bldim, x@ldim, ICTXT=x@CTXT)
+  desca <- base.descinit(x@dim, x@bldim, x@ldim, ICTXT=x@ICTXT)
 
   m <- desca[3]
   n <- desca[4]
@@ -188,7 +188,7 @@ base.qr.R <- function(qr, complete=FALSE)
   }
   
   ret <- base.tri2zero(dx=ret, 'L', 'N')
-#  ret@Data <- base.low2zero(A=ret@Data, dim=ret@dim, ldim=ret@ldim, bldim=ret@bldim, CTXT=ret@CTXT)
+#  ret@Data <- base.low2zero(A=ret@Data, dim=ret@dim, ldim=ret@ldim, bldim=ret@bldim, ICTXT=ret@ICTXT)
   
   # not particularly efficient, but I don't expect this to get any real use...
   rank <- qr$rank
@@ -211,8 +211,8 @@ base.rpdormqr <- function(qr, y, side='L', trans='T')
   x <- qr$qr
 
   # Matrix descriptors
-  desca <- base.descinit(x@dim, x@bldim, x@ldim, ICTXT=x@CTXT)
-  descb <- base.descinit(y@dim, y@bldim, y@ldim, ICTXT=y@CTXT)
+  desca <- base.descinit(x@dim, x@bldim, x@ldim, ICTXT=x@ICTXT)
+  descb <- base.descinit(y@dim, y@bldim, y@ldim, ICTXT=y@ICTXT)
 
   m <- desca[3]
   n <- y@dim[2]
@@ -257,7 +257,7 @@ base.rpdtzrzf <- function(qr)
   x <- qr$qr
   
   # Matrix descriptors
-  desca <- base.descinit(x@dim, x@bldim, x@ldim, ICTXT=x@CTXT)
+  desca <- base.descinit(x@dim, x@bldim, x@ldim, ICTXT=x@ICTXT)
 
   m <- desca[3]
   n <- desca[4]
@@ -276,14 +276,14 @@ base.rpdtzrzf <- function(qr)
   
   dim <- rep(x@dim[1L], 2)
   
-  ldim <- base.numroc(dim=dim, bldim=x@bldim, ICTXT=x@CTXT, fixme=FALSE)
+  ldim <- base.numroc(dim=dim, bldim=x@bldim, ICTXT=x@ICTXT, fixme=FALSE)
   if (any(ldim<1))
     Data <- matrix(0)
   else
     Data <- matrix(out$A, nrow=ldim[1], ncol=ldim[2])
   
   ret <- new("ddmatrix", Data=Data, dim=dim,
-                    ldim=dim(Data), bldim=x@bldim, CTXT=x@CTXT)
+                    ldim=dim(Data), bldim=x@bldim, CTXT=x@ICTXT)
   
   return( ret )
 }
@@ -293,8 +293,8 @@ base.rpdtzrzf <- function(qr)
 base.rpdtrsv <- function(x, y, uplo='U', trans='T')
 {
   # Matrix descriptors
-  desca <- base.descinit(x@dim, x@bldim, x@ldim, ICTXT=x@CTXT)
-  descb <- base.descinit(y@dim, y@bldim, y@ldim, ICTXT=y@CTXT)
+  desca <- base.descinit(x@dim, x@bldim, x@ldim, ICTXT=x@ICTXT)
+  descb <- base.descinit(y@dim, y@bldim, y@ldim, ICTXT=y@ICTXT)
   
   n <- desca[4]
   
