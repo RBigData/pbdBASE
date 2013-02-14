@@ -10,7 +10,15 @@
 
 ddmatrix <-  function(data, nrow, ncol, bldim=.BLDIM, ICTXT=0)
 {
-  if (is.matrix(data))
+  if (is.ddmatrix(data)){
+    if (nrow==data@dim[1L] && ncol==data@dim[2L])
+      return( data )
+    else {
+      comm.print("can't do this yet") #FIXME
+      stop("")
+    }
+  }
+  else if (is.matrix(data))
     data <- as.vector(data)
   else if (!is.vector(data)){
     comm.print("'data' must be of type 'vector' or 'matrix'")
@@ -54,7 +62,24 @@ ddmatrix <-  function(data, nrow, ncol, bldim=.BLDIM, ICTXT=0)
 # -------------------
 
 setMethod("as.matrix", signature(x="ddmatrix"), 
-  base.as.matrix
+  function(x, proc.dest="all", attributes=TRUE)
+  {
+    # convert ddmatrix attributes too
+    if (attributes){
+      ddms <- sapply(attributes(x@Data), is.ddmatrix)
+      if (any(ddms)){
+        for (att in which(ddms)){
+          if (any(attributes(x@Data)[[att]]@ldim == 1))
+            attributes(x@Data)[[att]] <- as.vector(attributes(x@Data)[[att]])
+          else
+            attributes(x@Data)[[att]] <- as.matrix(attributes(x@Data)[[att]])
+        }
+      }
+    }
+    
+    ret <- base.as.matrix(x=x, proc.dest=proc.dest)
+    return( ret )
+  }
 )
 
 setMethod("as.vector", signature(x="ddmatrix"), 

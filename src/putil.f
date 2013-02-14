@@ -749,22 +749,22 @@
       
       M = LDM(1)
       N = LDM(2)
-      K = DESCX(4)
       
       ! Only do work if we own any local pieces
       IF (M.GT.0 .AND. N.GT.0) THEN
         ! Addition
         IF (FUN.EQ."+") THEN
           IF (MARGIN.EQ.1) THEN
+            K = DESCX(3)
             DO J = 1, N
               DO I = 1, M
                 CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
                 POS = IND(GI + K*(GJ-1), LVEC)
                 X(I, J) = X(I, J) + VEC(POS)
-                POS = IND(POS+1, LVEC)
               END DO
             END DO
           ELSE IF (MARGIN.EQ.2) THEN
+            K = DESCX(4)
             DO J = 1, N
               DO I = 1, M
                 CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
@@ -776,15 +776,16 @@
         ! Subtraction
         ELSE IF (FUN.EQ."-") THEN
           IF (MARGIN.EQ.1) THEN
+            K = DESCX(3)
             DO J = 1, N
               DO I = 1, M
                 CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
                 POS = IND(GI + K*(GJ-1), LVEC)
                 X(I, J) = X(I, J) - VEC(POS)
-                POS = IND(POS+1, LVEC)
               END DO
             END DO
           ELSE IF (MARGIN.EQ.2) THEN
+            K = DESCX(4)
             DO J = 1, N
               DO I = 1, M
                 CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
@@ -796,15 +797,16 @@
         ! Multiplication
         ELSE IF (FUN.EQ."*") THEN
           IF (MARGIN.EQ.1) THEN
+            K = DESCX(3)
             DO J = 1, N
               DO I = 1, M
                 CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
                 POS = IND(GI + K*(GJ-1), LVEC)
                 X(I, J) = X(I, J) * VEC(POS)
-                POS = IND(POS+1, LVEC)
               END DO
             END DO
           ELSE IF (MARGIN.EQ.2) THEN
+            K = DESCX(4)
             DO J = 1, N
               DO I = 1, M
                 CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
@@ -816,15 +818,16 @@
         ! Division
         ELSE IF (FUN.EQ."/") THEN
           IF (MARGIN.EQ.1) THEN
+            K = DESCX(3)
             DO J = 1, N
               DO I = 1, M
                 CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
                 POS = IND(GI + K*(GJ-1), LVEC)
                 X(I, J) = X(I, J) / VEC(POS)
-                POS = IND(POS+1, LVEC)
               END DO
             END DO
           ELSE IF (MARGIN.EQ.2) THEN
+            K = DESCX(4)
             DO J = 1, N
               DO I = 1, M
                 CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
