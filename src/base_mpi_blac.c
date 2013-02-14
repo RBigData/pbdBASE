@@ -51,7 +51,7 @@ SEXP R_igsum2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP R
   SEXP OUT;
   PROTECT(OUT = allocMatrix(INTSXP, m, n));
   
-  memcpy(REAL(OUT), REAL(A), m*n*sizeof(int));
+  memcpy(INTEGER(OUT), INTEGER(A), m*n*sizeof(int));
   
   Cigsum2d(INTEGER(ICTXT)[0], CHARPT(SCOPE, 0), &top, m, n, INTEGER(OUT), 
     INTEGER(LDA)[0], INTEGER(RDEST)[0], INTEGER(CDEST)[0]);
@@ -89,7 +89,7 @@ SEXP R_igamx2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP R
   SEXP OUT;
   PROTECT(OUT = allocMatrix(INTSXP, m, n));
   
-  memcpy(REAL(OUT), REAL(A), m*n*sizeof(int));
+  memcpy(INTEGER(OUT), INTEGER(A), m*n*sizeof(int));
   
   Cdgamx2d(INTEGER(ICTXT)[0], CHARPT(SCOPE, 0), &top, m, n, INTEGER(OUT), 
     INTEGER(LDA)[0], rcflag, rcflag, rcflag, INTEGER(RDEST)[0], INTEGER(CDEST)[0]);
@@ -128,7 +128,7 @@ SEXP R_igamn2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP R
   SEXP OUT;
   PROTECT(OUT = allocMatrix(INTSXP, m, n));
   
-  memcpy(REAL(OUT), REAL(A), m*n*sizeof(int));
+  memcpy(INTEGER(OUT), INTEGER(A), m*n*sizeof(int));
   
   Cdgamn2d(INTEGER(ICTXT)[0], CHARPT(SCOPE, 0), &top, m, n, INTEGER(OUT), 
     INTEGER(LDA)[0], rcflag, rcflag, rcflag, INTEGER(RDEST)[0], INTEGER(CDEST)[0]);
