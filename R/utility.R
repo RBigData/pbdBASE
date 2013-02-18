@@ -4,7 +4,7 @@ base.dropper <- function(x, oldbldim, iorj, ij, ICTXT)
   blacs_ <- base.blacs(ICTXT)
 
   bldim <- oldbldim #x@bldim
-  if (x@CTXT != ICTXT){
+  if (x@ICTXT != ICTXT){
 # FIXME: would like to alter block dimension so that the data
 # rebalances, but the code below causes a horrible null pointer
 # problem for some cases.
@@ -12,10 +12,10 @@ base.dropper <- function(x, oldbldim, iorj, ij, ICTXT)
 #      bldim <- c(dim(x)[1], ceiling(bldim[2] / blacs_$NPCOL))
 #    if (ICTXT==2)
 #      bldim <- c(ceiling(bldim[1] / blacs_$NPROW), dim(x)[2])
-
+  
     newObj <- base.reblock(dx=x, bldim=bldim, ICTXT)
   }
-
+  
 #  if (blacs_$MYROW != -1 && blacs_$MYCOL != -1){
     if (iorj=='i'){ # rows
       if (newObj@ldim[1] == newObj@dim[1]){
@@ -24,7 +24,7 @@ base.dropper <- function(x, oldbldim, iorj, ij, ICTXT)
           new <- matrix(0)
         if (!is.matrix(new))
           new <- matrix(new, ncol=newObj@ldim[2])
-
+        
         newObj@Data <- new
       }
     } else { # columns
@@ -34,12 +34,12 @@ base.dropper <- function(x, oldbldim, iorj, ij, ICTXT)
           new <- matrix(0)
         if (!is.matrix(new))
           new <- matrix(new, nrow=newObj@ldim[1])
-
+        
         newObj@Data <- new
       }
     }
 #  }
-
+  
   if (iorj=='i'){
     if (base::any(ij<0))
       newObj@dim[1] <- newObj@dim[1] - base::length(ij)
@@ -51,7 +51,7 @@ base.dropper <- function(x, oldbldim, iorj, ij, ICTXT)
     else
       newObj@dim[2] <- base::length(ij)
   }
-
+  
   newObj@ldim <- dim(newObj@Data)
   
   return(newObj)
@@ -73,7 +73,7 @@ base.checkem <- function(x, y, checks=1:3)
     }
   # Same BLACS context
   if (2 %in% checks)
-    if (x@CTXT != y@CTXT){
+    if (x@ICTXT != y@ICTXT){
       pbdMPI::comm.print("Error: Distributed matrices 'x' and 'y' must belong to the same BLACS context")
       stop("")
     }
@@ -167,7 +167,7 @@ base.gmat <- function(dx, proc.dest="all")
 # print first few entries of the global matrix
 base.firstfew <- function(dx, atmost=5)
 {
-  blacs_ <- base.blacs(dx@CTXT)
+  blacs_ <- base.blacs(dx@ICTXT)
   MYROW <- blacs_$MYROW
   MYCOL <- blacs_$MYCOL
   NPROW <- blacs_$NPROW
@@ -213,9 +213,9 @@ base.firstfew <- function(dx, atmost=5)
 
 ## fill lower triangle of distributed matrix A with 0's
 ## used to force chol() return from ScaLAPACK to match R's return
-#base.low2zero <- function(A, dim, ldim, bldim, CTXT=0)
+#base.low2zero <- function(A, dim, ldim, bldim, ICTXT=0)
 #{
-#  blacs_ <- base.blacs(CTXT)
+#  blacs_ <- base.blacs(ICTXT)
 #  myproc <- c(blacs_$MYROW, blacs_$MYCOL)
 #  PROCS <- c(blacs_$NPROW, blacs_$NPCOL)
 #  RSRC <- CSRC <- 0
@@ -268,13 +268,13 @@ base.reblock <- function(dx, bldim=dx@bldim, ICTXT)
   if (pbdMPI::allreduce(ldimB[1], op='max')==1)
     ldimB[1] <- mxb
 
-  descx <- base.descinit(dim=dim, bldim=dx@bldim, ldim=dx@ldim, ICTXT=dx@CTXT)
+  descx <- base.descinit(dim=dim, bldim=dx@bldim, ldim=dx@ldim, ICTXT=dx@ICTXT)
   descb <- base.descinit(dim=dim, bldim=bldim, ldim=ldimB, ICTXT=ICTXT)
 
   dB <- new("ddmatrix", Data=matrix(0, 1, 1), 
-           dim=dim, ldim=TldimB, bldim=bldim, CTXT=ICTXT)
+           dim=dim, ldim=TldimB, bldim=bldim, ICTXT=ICTXT)
 
-  xblacs_ <- base.blacs(dx@CTXT)
+  xblacs_ <- base.blacs(dx@ICTXT)
   if (xblacs_$MYROW==-1 || xblacs_$MYCOL==-1){
 #    descx <- rep(0, 9)
     descx[2] <- -1
@@ -395,7 +395,7 @@ base.rbind2 <- function(args, ICTXT=0)
 { 
 #  args <- list(...)
   
-  oldctxt <- args[[1]]@CTXT
+  oldctxt <- args[[1]]@ICTXT
   
   args <- lapply(args, 
     FUN=function(dx) base.redistribute(dx=dx, bldim=dx@bldim, ICTXT=1)
@@ -407,7 +407,7 @@ base.rbind2 <- function(args, ICTXT=0)
   
   Data <- lapply(args, submatrix)
   
-  ret <- new("ddmatrix", Data=Reduce(base::rbind, Data), dim=dim, ldim=ldim, bldim=bldim, CTXT=1)
+  ret <- new("ddmatrix", Data=Reduce(base::rbind, Data), dim=dim, ldim=ldim, bldim=bldim, ICTXT=1)
   
   if (ICTXT!=1)
     ret <- base.redistribute(dx=ret, bldim=ret@bldim, ICTXT=ICTXT)
@@ -419,7 +419,7 @@ base.cbind <- function(..., ICTXT=0)
 {
   args <- list(...)
   
-  oldctxt <- args[[1]]@CTXT
+  oldctxt <- args[[1]]@ICTXT
   
   args <- lapply(args, 
     FUN=function(dx) base.redistribute(dx=dx, bldim=dx@bldim, ICTXT=2)
@@ -431,7 +431,7 @@ base.cbind <- function(..., ICTXT=0)
   
   Data <- lapply(args, submatrix)
   
-  ret <- new("ddmatrix", Data=Reduce(base::cbind, Data), dim=dim, ldim=ldim, bldim=bldim, CTXT=2)
+  ret <- new("ddmatrix", Data=Reduce(base::cbind, Data), dim=dim, ldim=ldim, bldim=bldim, ICTXT=2)
   
   if (ICTXT!=2)
     ret <- base.redistribute(dx=ret, bldim=ret@bldim, ICTXT=ICTXT)

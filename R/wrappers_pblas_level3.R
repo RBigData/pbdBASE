@@ -11,7 +11,7 @@
 
 base.rpdtran <- function(x)
 {
-  ICTXT <- x@CTXT
+  ICTXT <- x@ICTXT
   blacs_ <- base.blacs(ICTXT=ICTXT)
   
   m <- x@dim[2]
@@ -23,7 +23,7 @@ base.rpdtran <- function(x)
   cldim <- base.numroc(cdim, x@bldim, ICTXT=ICTXT)
 
   c <- new("ddmatrix", Data=matrix(nrow=0, ncol=0),
-                       dim=cdim, ldim=cldim, bldim=x@bldim, CTXT=ICTXT)
+                       dim=cdim, ldim=cldim, bldim=x@bldim, ICTXT=ICTXT)
 
   descc <- base.descinit(c@dim, c@bldim, c@ldim, ICTXT=ICTXT)
 
@@ -51,7 +51,7 @@ base.rpdgemm <- function(transx='N', transy='N', x, y, outbldim=x@bldim)
   if (length(outbldim)==1L)
     outbldim <- rep(outbldim, 2)
   
-  ICTXT <- x@CTXT
+  ICTXT <- x@ICTXT
   
   m <- x@dim[1L]
   n <- y@dim[2L]
@@ -81,7 +81,7 @@ base.rpdgemm <- function(transx='N', transy='N', x, y, outbldim=x@bldim)
                   PACKAGE="pbdBASE"
                  )
   
-  c <- new("ddmatrix", Data=ret, dim=cdim, ldim=cldim, bldim=outbldim, CTXT=ICTXT)
+  c <- new("ddmatrix", Data=ret, dim=cdim, ldim=cldim, bldim=outbldim, ICTXT=ICTXT)
   
   return(c)
 }
@@ -95,7 +95,7 @@ base.rpdsvrk <- function(trans, x, outbldim=x@bldim)
   if (length(outbldim)==1L)
     outbldim <- rep(outbldim, 2)
   
-  ICTXT <- x@CTXT
+  ICTXT <- x@ICTXT
   
   if (trans=='N' || trans=='n'){
     n <- x@dim[1L]
@@ -126,7 +126,7 @@ base.rpdsvrk <- function(trans, x, outbldim=x@bldim)
                   PACKAGE="pbdBASE"
                  )
   
-  c <- new("ddmatrix", Data=ret, dim=cdim, ldim=cldim, bldim=outbldim, CTXT=ICTXT)
+  c <- new("ddmatrix", Data=ret, dim=cdim, ldim=cldim, bldim=outbldim, ICTXT=ICTXT)
   
   return(c)
 }
@@ -134,7 +134,7 @@ base.rpdsvrk <- function(trans, x, outbldim=x@bldim)
 
 base.crossprod <- function(trans, x)
 {
-  ICTXT <- x@CTXT
+  ICTXT <- x@ICTXT
   
   if (trans=='N' || trans=='n'){
     n <- x@dim[2L]
@@ -162,7 +162,7 @@ base.crossprod <- function(trans, x)
                   PACKAGE="pbdBASE"
                  )
   
-  c <- new("ddmatrix", Data=ret, dim=cdim, ldim=cldim, bldim=bldim, CTXT=ICTXT)
+  c <- new("ddmatrix", Data=ret, dim=cdim, ldim=cldim, bldim=bldim, ICTXT=ICTXT)
   
   return(c)
 }

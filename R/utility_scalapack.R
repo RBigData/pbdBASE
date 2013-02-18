@@ -62,11 +62,11 @@ numroc <- base.numroc
 # local storage is just filler to make scalapack happy
 # return is logical answer to the question:  'do I own anything?', 
 # and not a C-style return
-base.ownany <- function(dim, bldim, CTXT=0)
+base.ownany <- function(dim, bldim, ICTXT=0)
 {
   if (length(bldim)==1)
     bldim <- rep(bldim, 2)
-  check <- base.numroc(dim=dim, bldim=bldim, ICTXT=CTXT, fixme=FALSE)
+  check <- base.numroc(dim=dim, bldim=bldim, ICTXT=ICTXT, fixme=FALSE)
   
   if (any(check<1))
     return(FALSE)
@@ -74,14 +74,14 @@ base.ownany <- function(dim, bldim, CTXT=0)
     return(TRUE)
 }
 
-ownany <- function(x, ..., dim, bldim, CTXT=0)
+ownany <- function(x, ..., dim, bldim, ICTXT=0)
 {
   if (!missing(bldim) && length(bldim)==1)
     bldim <- rep(bldim, 2)
   if (!missing(x) && is.ddmatrix(x))
-    return( base.ownany(dim=x@dim, bldim=x@bldim, CTXT=x@CTXT) )
+    return( base.ownany(dim=x@dim, bldim=x@bldim, ICTXT=x@ICTXT) )
   else if (!missing(dim) && !missing(bldim) && missing(x) && is.numeric(dim) && is.numeric(bldim))
-    return( base.ownany(dim=dim, bldim=bldim, CTXT=CTXT) )
+    return( base.ownany(dim=dim, bldim=bldim, ICTXT=ICTXT) )
   else{
     print("Error: bad input(s) in ownany()")
     stop("")
@@ -95,7 +95,7 @@ base.rpdlaprnt <- function(dx)
   m <- dx@dim[1L]
   n <- dx@dim[2L]
   
-  desca <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=dx@ldim, ICTXT=dx@CTXT)
+  desca <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=dx@ldim, ICTXT=dx@ICTXT)
   
   if (!is.double(dx@Data))
     storage.mode(dx@Data) <- "double"

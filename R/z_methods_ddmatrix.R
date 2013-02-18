@@ -8,9 +8,17 @@
 # Creation
 # -------------------
 
-ddmatrix <-  function(data, nrow, ncol, bldim=.BLDIM, CTXT=0)
+ddmatrix <-  function(data, nrow, ncol, bldim=.BLDIM, ICTXT=0)
 {
-  if (is.matrix(data))
+  if (is.ddmatrix(data)){
+    if (nrow==data@dim[1L] && ncol==data@dim[2L])
+      return( data )
+    else {
+      comm.print("can't do this yet") #FIXME
+      stop("")
+    }
+  }
+  else if (is.matrix(data))
     data <- as.vector(data)
   else if (!is.vector(data)){
     comm.print("'data' must be of type 'vector' or 'matrix'")
@@ -28,21 +36,21 @@ ddmatrix <-  function(data, nrow, ncol, bldim=.BLDIM, CTXT=0)
     ncol <- 1
   
   dim <- c(nrow, ncol)
-  ldim <- base.numroc(dim=dim, bldim=bldim, ICTXT=CTXT)
+  ldim <- base.numroc(dim=dim, bldim=bldim, ICTXT=ICTXT)
   
   if (length(data) > 1){
     Data <- matrix(0, ldim[1L], ldim[2L])
-    dx <- new("ddmatrix", Data=Data, dim=dim, ldim=ldim, bldim=bldim, CTXT=CTXT)
+    dx <- new("ddmatrix", Data=Data, dim=dim, ldim=ldim, bldim=bldim, ICTXT=ICTXT)
     
     dx <- base.pdsweep(dx, data, MARGIN=1, FUN="+")
   } 
   else {
-    if (!base.ownany(dim=dim, bldim=bldim, CTXT=CTXT))
+    if (!base.ownany(dim=dim, bldim=bldim, ICTXT=ICTXT))
       Data <- matrix(0, 1, 1)
     else
       Data <- matrix(data, ldim[1L], ldim[2L])
     
-    dx <- new("ddmatrix", Data=Data, dim=dim, ldim=ldim, bldim=bldim, CTXT=CTXT)
+    dx <- new("ddmatrix", Data=Data, dim=dim, ldim=ldim, bldim=bldim, ICTXT=ICTXT)
   }
   
   return( dx )
@@ -54,7 +62,24 @@ ddmatrix <-  function(data, nrow, ncol, bldim=.BLDIM, CTXT=0)
 # -------------------
 
 setMethod("as.matrix", signature(x="ddmatrix"), 
-  base.as.matrix
+  function(x, proc.dest="all", attributes=TRUE)
+  {
+    # convert ddmatrix attributes too
+    if (attributes){
+      ddms <- sapply(attributes(x@Data), is.ddmatrix)
+      if (any(ddms)){
+        for (att in which(ddms)){
+          if (any(attributes(x@Data)[[att]]@ldim == 1))
+            attributes(x@Data)[[att]] <- as.vector(attributes(x@Data)[[att]])
+          else
+            attributes(x@Data)[[att]] <- as.matrix(attributes(x@Data)[[att]])
+        }
+      }
+    }
+    
+    ret <- base.as.matrix(x=x, proc.dest=proc.dest)
+    return( ret )
+  }
 )
 
 setMethod("as.vector", signature(x="ddmatrix"), 
@@ -88,7 +113,7 @@ setMethod("[", signature(x="ddmatrix"),
   function(x, i, j, ICTXT)
   {
     if (missing(ICTXT))
-      oldCTXT <- x@CTXT
+      oldCTXT <- x@ICTXT
     else
       oldCTXT <- ICTXT
     oldbldim <- x@bldim
@@ -100,15 +125,29 @@ setMethod("[", signature(x="ddmatrix"),
     imiss <- missing(i)
     if (!imiss)
       ilng <- length(i)
+    else
+      ilng <- x@dim[1L]
     
     jmiss <- missing(j)
     if (!jmiss)
       jlng <- length(j)
+    else
+      jlng <- x@dim[2L]
     
-    # special case where user wants exactly 1 value
+    if (!imiss){
+      if (is.logical(i))
+        i <- which(as.vector(i > 0))
+    }
+    if (!jmiss){
+      if (is.logical(j))
+        j <- which(as.vector(j > 0))
+    }
+    
+    # special cases 
     if (!imiss && !jmiss){
+      # user wants exactly 1 value
       if (ilng==1 && i>0 && jlng==1 && j>0){
-        coords <- base.g2l_coord(ind=c(i, j), dim=x@dim, bldim=x@bldim, ICTXT=x@CTXT)
+        coords <- base.g2l_coord(ind=c(i, j), dim=x@dim, bldim=x@bldim, ICTXT=x@ICTXT)
         if (all(!is.na(coords[c(3,4)])))
           out <- x@Data[coords[5], coords[6]]
         else
@@ -117,25 +156,52 @@ setMethod("[", signature(x="ddmatrix"),
         if (comm.rank() > 0)
           out <- 0
         out <- new("ddmatrix", Data=matrix(out), dim=c(1,1), 
-                   ldim=c(1,1), bldim=x@bldim, CTXT=x@CTXT)
+                   ldim=c(1,1), bldim=x@bldim, ICTXT=x@ICTXT)
+        return( out )
+      }
+#      else if (ilng==1){
+#        
+#      }
+#      else if (jlng==1){
+#        
+#      }
+    }
+    
+    # special cases:  contiguous blocks starting from row/col 1
+    if (imiss || ( ilng==length(i) && all(1:ilng == i) )){
+      if (jmiss || ( jlng==length(j) && all(1:jlng == j)) ){
+        # user wants block [1:i] x [1:j]
+        dim <- c(ilng, jlng)
+        ldim <- base.numroc(dim=dim, bldim=x@bldim, ICTXT=x@ICTXT, fixme=TRUE)
+        if ( base.ownany(dim=dim, bldim=x@bldim, ICTXT=x@ICTXT) ){
+          Data <- x@Data[1L:ldim[1L], 1L:ldim[2L], drop=FALSE]
+        }
+        else 
+          Data <- matrix(0, 1, 1)
+        
+        out <- new("ddmatrix", Data=Data, dim=dim, ldim=ldim, bldim=x@bldim, ICTXT=x@ICTXT)
+        
         return( out )
       }
     }
     
+    
     # general case
     if (!imiss) { # skip if no 'i' was supplied
       if (ilng > 0) # ignore i = numeric(0)
-        if (newObj@CTXT != 1)
+#        if (newObj@ICTXT != 1)
           newObj <- base.dropper(x=newObj, oldbldim=oldbldim, iorj='i', ij=i, ICTXT=1)
     }
     
-    if (!jmiss)
-      if (base::length(j)>0)
-        if (newObj@CTXT != 2)
+    if (!jmiss){
+      if (jlng > 0)
+        if (base::length(j)>0)
+#          if (newObj@ICTXT != 2)
           newObj <- base.dropper(x=newObj, oldbldim=oldbldim, iorj='j', ij=j, ICTXT=2)
+    }
     
     # bring everything back to full process grid
-    if (newObj@CTXT != oldCTXT)
+    if (newObj@ICTXT != oldCTXT)
       newObj <- base.reblock(dx=newObj, bldim=oldbldim, ICTXT=oldCTXT)
     
     return(newObj)
@@ -215,7 +281,7 @@ setMethod("==", signature(e1="ddmatrix", e2="ddmatrix"),
 setMethod("all", signature(x="ddmatrix"),
   function(x, na.rm=FALSE)
   {
-    if (base.ownany(dim=x@dim, bldim=x@bldim, CTXT=x@CTXT))
+    if (base.ownany(dim=x@dim, bldim=x@bldim, ICTXT=x@ICTXT))
       ret <- base::all(x@Data)
     else
       ret <- 1
@@ -229,7 +295,7 @@ setMethod("all", signature(x="ddmatrix"),
 setMethod("any", signature(x="ddmatrix"),
   function(x, na.rm=FALSE)
   {
-    if (base.ownany(dim=x@dim, bldim=x@bldim, CTXT=x@CTXT))
+    if (base.ownany(dim=x@dim, bldim=x@bldim, ICTXT=x@ICTXT))
       ret <- base::all(x@Data)
     else
       ret <- 0
@@ -286,7 +352,7 @@ setMethod("<", signature(e1="ddmatrix", e2="numeric"),
     len <- base::length(e2)
     if ( (prod(dim)%%len > 0 && len%%prod(dim) > 0) && len > 1)
       warning("longer object length is not a multiple of shorter object length")
-    if (base.ownany(dim=dim, bldim=e1@bldim, CTXT=e1@CTXT)){
+    if (base.ownany(dim=dim, bldim=e1@bldim, ICTXT=e1@ICTXT)){
       if (len==1)
         e1@Data <- e1@Data<e2
       else
@@ -307,7 +373,7 @@ setMethod(">", signature(e1="ddmatrix", e2="numeric"),
     len <- base::length(e2)
     if ( (prod(dim)%%len > 0 && len%%prod(dim) > 0) && len > 1)
       warning("longer object length is not a multiple of shorter object length")
-    if (base.ownany(dim=dim, bldim=e1@bldim, CTXT=e1@CTXT)){
+    if (base.ownany(dim=dim, bldim=e1@bldim, ICTXT=e1@ICTXT)){
       if (len==1)
         e1@Data <- e1@Data>e2
       else
@@ -328,7 +394,7 @@ setMethod("<=", signature(e1="ddmatrix", e2="numeric"),
     len <- base::length(e2)
     if ( (prod(dim)%%len > 0 && len%%prod(dim) > 0) && len > 1)
       warning("longer object length is not a multiple of shorter object length")
-    if (base.ownany(dim=dim, bldim=e1@bldim, CTXT=e1@CTXT)){
+    if (base.ownany(dim=dim, bldim=e1@bldim, ICTXT=e1@ICTXT)){
       if (len==1)
         e1@Data <- e1@Data<=e2
       else
@@ -349,7 +415,7 @@ setMethod(">=", signature(e1="ddmatrix", e2="numeric"),
     len <- base::length(e2)
     if ( (prod(dim)%%len > 0 && len%%prod(dim) > 0) && len > 1)
       warning("longer object length is not a multiple of shorter object length")
-    if (base.ownany(dim=dim, bldim=e1@bldim, CTXT=e1@CTXT)){
+    if (base.ownany(dim=dim, bldim=e1@bldim, ICTXT=e1@ICTXT)){
       if (len==1)
         e1@Data <- e1@Data>=e2
       else
@@ -370,7 +436,7 @@ setMethod("==", signature(e1="ddmatrix", e2="numeric"),
     len <- base::length(e2)
     if ( (prod(dim)%%len > 0 && len%%prod(dim) > 0) && len > 1)
       warning("longer object length is not a multiple of shorter object length")
-    if (base.ownany(dim=dim, bldim=e1@bldim, CTXT=e1@CTXT)){
+    if (base.ownany(dim=dim, bldim=e1@bldim, ICTXT=e1@ICTXT)){
       if (len==1)
         e1@Data <- e1@Data==e2
       else
@@ -409,8 +475,8 @@ setMethod("na.exclude", signature(object="ddmatrix"),
         object@dim[1] <- 0
         object@ldim <- c(1,1)
         if (!missing(ICTXT))
-          object@CTXT <- ICTXT
-      } else if (object@CTXT != ICTXT)
+          object@ICTXT <- ICTXT
+      } else if (object@ICTXT != ICTXT)
         object <- base.reblock(dx=object, bldim=object@bldim, ICTXT=ICTXT)
       
       return(object)
@@ -418,7 +484,7 @@ setMethod("na.exclude", signature(object="ddmatrix"),
     
     # General case
     if (missing(ICTXT))
-      oldCTXT <- object@CTXT
+      oldCTXT <- object@ICTXT
     else
       oldCTXT <- ICTXT
     blacs_ <- base.blacs(1)
@@ -426,10 +492,10 @@ setMethod("na.exclude", signature(object="ddmatrix"),
     oldbldim <- object@bldim
     bldim <- c(dim(object)[1], ceiling(oldbldim[2] / blacs_$NPCOL))
 
-    if (object@CTXT != 1)
+    if (object@ICTXT != 1)
       newObj <- base.reblock(dx=object, bldim=bldim, ICTXT=1)
 
-    iown <- ownany(dim=newObj@dim, bldim=newObj@bldim, CTXT=1)
+    iown <- ownany(dim=newObj@dim, bldim=newObj@bldim, ICTXT=1)
 
 #    if (blacs_$MYROW != -1 && blacs_$MYCOL != -1)   FIXME
 
@@ -464,7 +530,7 @@ setMethod("na.exclude", signature(object="ddmatrix"),
       newObj@Data <- matrix(0)
       newObj@dim[1] <- 0
       newObj@ldim <- c(1,1)
-      newObj@CTXT <- oldCTXT
+      newObj@ICTXT <- oldCTXT
     }
 
     if (all(newObj@dim>0)){
@@ -472,7 +538,7 @@ setMethod("na.exclude", signature(object="ddmatrix"),
       newObj@dim[1]  <- newdim
     }
 
-    if (newObj@CTXT != oldCTXT)
+    if (newObj@ICTXT != oldCTXT)
       newObj <- base.reblock(dx=newObj, bldim=oldbldim, ICTXT=oldCTXT)
 
     return(newObj)
@@ -512,9 +578,9 @@ setMethod("print", signature(x="ddmatrix"),
     } else {
       ff <- paste(paste(format(base.firstfew(x, atmost=4), scientific=TRUE, digits=3), collapse=", "), ", ...", sep="")
       if (comm.rank()==0){
-        blacs_ <- base.blacs(x@CTXT)
-        cat(sprintf("\nDENSE DISTRIBUTED MATRIX\n---------------------------\n@Data:\t\t\t%s\nProcess grid:\t\t%dx%d\nGlobal dimension:\t%dx%d\n(max) Local dimension:\t%dx%d\nBlocking:\t\t%dx%d\nBLACS CTXT:\t\t%d\n\n",
-          ff, blacs_$NPROW, blacs_$NPCOL, x@dim[1], x@dim[2], x@ldim[1], x@ldim[2], x@bldim[1], x@bldim[2], x@CTXT))
+        blacs_ <- base.blacs(x@ICTXT)
+        cat(sprintf("\nDENSE DISTRIBUTED MATRIX\n---------------------------\n@Data:\t\t\t%s\nProcess grid:\t\t%dx%d\nGlobal dimension:\t%dx%d\n(max) Local dimension:\t%dx%d\nBlocking:\t\t%dx%d\nBLACS ICTXT:\t\t%d\n\n",
+          ff, blacs_$NPROW, blacs_$NPCOL, x@dim[1], x@dim[2], x@ldim[1], x@ldim[2], x@bldim[1], x@bldim[2], x@ICTXT))
       }
     }
     
@@ -589,18 +655,18 @@ setMethod("submatrix", signature(x="ddmatrix"),
     base.submatrix
 )
 
-base.ctxt <- function(x)
+base.ictxt <- function(x)
 {
   if (!is.ddmatrix(x)) {
     comm.print("Not a distributed matrix")
     stop("")
   }
   else
-    return(x@CTXT)
+    return(x@ICTXT)
 }
 
-setMethod("ctxt", signature(x="ddmatrix"),
-  base.ctxt
+setMethod("ictxt", signature(x="ddmatrix"),
+  base.ictxt
 )
 
 # -------------------
@@ -610,7 +676,7 @@ setMethod("ctxt", signature(x="ddmatrix"),
 setMethod("summary", signature(object="ddmatrix"),
   function(object)
   {
-    if (object@CTXT != 1){
+    if (object@ICTXT != 1){
       newbldim <- c(object@dim[1], ceiling(object@bldim[2] / object@dim[2]))
       object <- base.redistribute(object, bldim=newbldim, ICTXT=1)
     }

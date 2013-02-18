@@ -749,22 +749,22 @@
       
       M = LDM(1)
       N = LDM(2)
-      K = DESCX(4)
       
       ! Only do work if we own any local pieces
       IF (M.GT.0 .AND. N.GT.0) THEN
         ! Addition
         IF (FUN.EQ."+") THEN
           IF (MARGIN.EQ.1) THEN
+            K = DESCX(3)
             DO J = 1, N
               DO I = 1, M
                 CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
                 POS = IND(GI + K*(GJ-1), LVEC)
                 X(I, J) = X(I, J) + VEC(POS)
-                POS = IND(POS+1, LVEC)
               END DO
             END DO
           ELSE IF (MARGIN.EQ.2) THEN
+            K = DESCX(4)
             DO J = 1, N
               DO I = 1, M
                 CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
@@ -776,15 +776,16 @@
         ! Subtraction
         ELSE IF (FUN.EQ."-") THEN
           IF (MARGIN.EQ.1) THEN
+            K = DESCX(3)
             DO J = 1, N
               DO I = 1, M
                 CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
                 POS = IND(GI + K*(GJ-1), LVEC)
                 X(I, J) = X(I, J) - VEC(POS)
-                POS = IND(POS+1, LVEC)
               END DO
             END DO
           ELSE IF (MARGIN.EQ.2) THEN
+            K = DESCX(4)
             DO J = 1, N
               DO I = 1, M
                 CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
@@ -796,15 +797,16 @@
         ! Multiplication
         ELSE IF (FUN.EQ."*") THEN
           IF (MARGIN.EQ.1) THEN
+            K = DESCX(3)
             DO J = 1, N
               DO I = 1, M
                 CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
                 POS = IND(GI + K*(GJ-1), LVEC)
                 X(I, J) = X(I, J) * VEC(POS)
-                POS = IND(POS+1, LVEC)
               END DO
             END DO
           ELSE IF (MARGIN.EQ.2) THEN
+            K = DESCX(4)
             DO J = 1, N
               DO I = 1, M
                 CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
@@ -816,15 +818,16 @@
         ! Division
         ELSE IF (FUN.EQ."/") THEN
           IF (MARGIN.EQ.1) THEN
+            K = DESCX(3)
             DO J = 1, N
               DO I = 1, M
                 CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
                 POS = IND(GI + K*(GJ-1), LVEC)
                 X(I, J) = X(I, J) / VEC(POS)
-                POS = IND(POS+1, LVEC)
               END DO
             END DO
           ELSE IF (MARGIN.EQ.2) THEN
+            K = DESCX(4)
             DO J = 1, N
               DO I = 1, M
                 CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
@@ -853,11 +856,18 @@
       INTEGER             IX, JX, DESCX(9)
       DOUBLE PRECISION    X(DESCX(9), *), DIAG( * )
       ! Local
-      INTEGER             K, M, N, I, J, GI, GJ, GK, LDM(2), 
+      INTEGER             K, M, N, I, J, GI, GJ, LDM(2), 
      $                    BLACS(5), DESC(9)
+      ! Parameter
+      DOUBLE PRECISION    ZERO
+      PARAMETER ( ZERO = 0.0D0 )
       ! External
       EXTERNAL            PDIMS, DALLREDUCE
       
+      
+      K = MIN(DESCX(3), DESCX(4))
+      
+      DIAG(1:K) = ZERO
       
       ! Get local and proc grid info
       CALL PDIMS(DESCX, LDM, BLACS)
@@ -874,15 +884,7 @@
         END DO
       END DO
       
-      K = MIN(M, N)
-      GK = MIN(DESCX(3), DESCX(4))
-      
-      DESC(2) = DESCX(2)
-      DESC(3) = GK
-      DESC(4) = 1
-      DESC(9) = K
-      
-      CALL DALLREDUCE(DIAG, DESC, 'Sum', 'All')
+      CALL DGSUM2D(DESCX(2), 'All', ' ', K, 1, DIAG, 1,-1,-1)
       
       RETURN
       END
@@ -1134,6 +1136,7 @@
       END
 
 
+
       LOGICAL FUNCTION CHECKPROC(I, J, DESC, BLACS)
       INTEGER I, J, DESC(9), BLACS(5)
       
@@ -1143,6 +1146,7 @@
       
       RETURN
       END
+
 
       SUBROUTINE RL2INSERT(X, IX, JX, DESCX, VEC, LVEC, INDI, LINDI, 
      $                   INDJ, LINDJ)
@@ -1181,7 +1185,7 @@
             GI = INDI(TI)
             CALL G2LPAIR(I, J, GI, GJ, DESCX, BLACS)
             IF (CHECKPROC(GI, GJ, DESCX, BLACS)) THEN
-              POS = IND(I + K*(J-1), LVEC)
+              POS = IND(GI + K*(GJ-1), LVEC)
               X(I, J) = VEC(POS)
             END IF
           END DO
