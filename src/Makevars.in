@@ -28,7 +28,7 @@ R_OBJS = \
   putil.o \
   plinalg.o \
   pkg_tools.o \
-  other.o
+  other.o 
 OBJECTS = $(R_OBJS)
 
 ### For user configuration.

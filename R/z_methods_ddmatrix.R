@@ -208,15 +208,16 @@ setMethod("[", signature(x="ddmatrix"),
   }
 )
 
-setReplaceMethod("[", signature(x ="ddmatrix"),
+
+setReplaceMethod("[", signature(x ="ddmatrix", value="ANY"),
   function(x, i, j, ..., value) 
   {
     if (missing(i))
-      i <- 1:x@dim[1]
+      i <- 1L:x@dim[1L]
     if (missing(j))
-      j <- 1:x@dim[2]
-
-    if (any(i > x@dim[1]) || any(j > x@dim[2])){
+      j <- 1L:x@dim[2L]
+    
+    if (any(i > x@dim[1L]) || any(j > x@dim[2L])){
       print("Error : subscript out of bounds")
       stop("")
     }
@@ -226,6 +227,33 @@ setReplaceMethod("[", signature(x ="ddmatrix"),
     return(x)
   }
 )
+
+
+setReplaceMethod("[", signature(x ="ddmatrix", value="ddmatrix"),
+  function(x, i, j, ..., value) 
+  {
+    if (missing(i) && missing(j)){
+      comm.print("ERROR : incorrect number of subscripts")
+    }
+    else if (missing(i))
+      i <- 1L:x@dim[1L]
+    else if (missing(j))
+      j <- 1L:x@dim[2L]
+    
+    if (any(i > x@dim[1L]) || any(j > x@dim[2L])){
+      print("Error : subscript out of bounds")
+      stop("")
+    }
+    
+##    if ()
+    
+#    dmat.dgesd2d(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
+    
+    
+    return(x)
+  }
+)
+
 
 setReplaceMethod("submatrix", signature(x="ddmatrix"),
   function(x, value) 

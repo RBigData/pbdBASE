@@ -199,3 +199,45 @@ base.ddiagmk <- function(diag, nrow, ncol, bldim, ICTXT=0)
 
 
 
+base.rcolcpy <- function(dx, dy, xcol, ycol)
+{
+  ldim <- dx@ldim
+  
+  descx <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=ldim, ICTXT=dx@ICTXT)
+  descy <- base.descinit(dim=dy@dim, bldim=dy@bldim, ldim=dy@ldim, ICTXT=dy@ICTXT)
+  
+  if (!is.double(dx@Data))
+    storage.mode(dx@Data) <- "double"
+  if (!is.double(dy@Data))
+    storage.mode(dy@Data) <- "double"
+  
+  ret <- .Call("R_RCOLCPY", 
+               dx@Data, as.integer(ldim), as.integer(descx), as.integer(xcol), dy@Data, as.integer(descy), as.integer(ycol), as.integer(length(ycol)),
+               PACKAGE="pbdBASE")
+  
+  dx@Data <- ret
+  
+  return( dx )
+}
+
+base.rrowcpy <- function(dx, dy, xrow, yrow)
+{
+  ldim <- dx@ldim
+  
+  descx <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=ldim, ICTXT=dx@ICTXT)
+  descy <- base.descinit(dim=dy@dim, bldim=dy@bldim, ldim=dy@ldim, ICTXT=dy@ICTXT)
+  
+  if (!is.double(dx@Data))
+    storage.mode(dx@Data) <- "double"
+  if (!is.double(dy@Data))
+    storage.mode(dy@Data) <- "double"
+  
+  ret <- .Call("R_RROWCPY", 
+               dx@Data, as.integer(ldim), as.integer(descx), as.integer(xcol), dy@Data, as.integer(descy), as.integer(ycol), as.integer(length(ycol)),
+               PACKAGE="pbdBASE")
+  
+  dx@Data <- ret
+  
+  return( dx )
+}
+

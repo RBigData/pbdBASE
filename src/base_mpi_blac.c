@@ -157,3 +157,39 @@ SEXP R_dgamn2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP R
   return(OUT);
 }
 
+// Point to point send/receive
+SEXP R_dgesd2d1(SEXP ICTXT, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST)
+{
+  int i;
+  const int m = INTEGER(M)[0], n = INTEGER(N)[0];
+  
+  SEXP OUT;
+  PROTECT(OUT = allocMatrix(REALSXP, m, n));
+  
+  memcpy(REAL(OUT), REAL(A), m*n*sizeof(double));
+  
+  Cdgesd2d(INTEGER(ICTXT)[0], m, n, REAL(OUT), INTEGER(LDA)[0], 
+    INTEGER(RDEST)[0], INTEGER(CDEST)[0]);
+  
+  UNPROTECT(1);
+  return(OUT);
+}
+
+SEXP R_dgerv2d1(SEXP ICTXT, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST)
+{
+  int i;
+  const int m = INTEGER(M)[0], n = INTEGER(N)[0];
+  
+  SEXP OUT;
+  PROTECT(OUT = allocMatrix(REALSXP, m, n));
+  
+  memcpy(REAL(OUT), REAL(A), m*n*sizeof(double));
+  
+  Cdgerv2d(INTEGER(ICTXT)[0], m, n, REAL(OUT), INTEGER(LDA)[0], 
+    INTEGER(RDEST)[0], INTEGER(CDEST)[0]);
+  
+  UNPROTECT(1);
+  return(OUT);
+}
+
+
