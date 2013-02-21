@@ -1419,7 +1419,7 @@
      $                    RBL, CBL, LDM(2), BLACS(5), 
      $                    LXROW, LYROW, XROW, YROW, ROW,
      $                    RSRC, CSRC, RDEST, CDEST,
-     $                    RXLEN, RYLEN, RXTOP, RYTOP
+     $                    CXLEN, CYLEN, CXTOP, CYTOP
       ! External
       EXTERNAL            PDIMS, INDXG2L, INDXL2G
       ! Function
@@ -1497,97 +1497,6 @@
       
       RETURN
       END
-
-! Cyclically shift X by a fixed number of columns, either to the left or right
-      SUBROUTINE PDCOLSHIFT(X, DESCX, DIR)
-      IMPLICIT NONE
-      ! IN/OUT
-      INTEGER             DESCX(9)
-      DOUBLE PRECISION    X(DESCX(9), *), Y(DESCY(9), *)
-      CHARACTER           DIR
-      ! Local
-      LOGICAL             IHAVE, INEED
-      INTEGER             I, J, GI, GJ, MX, NX, MY, NY, GM, GN,
-     $                    RBL, CBL, LDM(2), BLACS(5), 
-     $                    LXCOL, LYCOL, XCOL, YCOL, COL,
-     $                    RSRC, CSRC, RDEST, CDEST,
-     $                    RXLEN, RYLEN, RXTOP, RYTOP,
-     $                    ALLOCERR
-      DOUBLE PRECISION, ALLOCATABLE :: BFR(:)
-      ! External
-      EXTERNAL            PDIMS, INDXG2L, INDXL2G
-      ! Function
-      INTEGER             INDXG2L, INDXL2G
-      ! ################################################################
-      
-      
-      GM = DESCX(3)
-      GN = DESCX(4)
-      
-      IF (GM.NE.DESCY(3)) RETURN
-      
-      RBL = DESCX(5)
-      CBL = DESCX(6)
-      
-      ! Get local and proc grid info
-      CALL PDIMS(DESCX, LDM, BLACS)
-      
-      MX = LDM(1)
-      NX = LDM(2)
-      
-      ALLOCATE(BFR(MX), STAT=ALLOCERR)
-      IF (ALLOCERR.NE.0) STOP "Out of memory"
-      
-      ! The work
-      DO COL = 1, LCOLS, 1
-        XCOL = XCOLS(COL)
-        
-        LXCOL = INDXG2L(XCOL, DESCX(6), 1, 1, BLACS(3))
-        
-        DO GI = 1, GM, RBL
-          ! Index juggling
-          I = INDXG2L(GI, RBL, 1, 1, BLACS(2))
-          
-          RXTOP = MIN(I+RBL-1, MX)
-          RXLEN = RXTOP - I + 1
-          
-          RYTOP = MIN(I+RBL-1, MY)
-          RYLEN = RYTOP - I + 1
-          
-          ! Row and column (processor) source
-          RSRC = MOD( (GI-1)/RBL, BLACS(2) )
-          CSRC = MOD( (YCOL-1)/CBL, BLACS(3) )
-          
-          IHAVE = ( RSRC.EQ.BLACS(4) .AND. CSRC.EQ.BLACS(5) )
-          
-          ! Row and column (processor) destination
-          RDEST = MOD( (GI-1)/RBL, BLACS(2) )
-          CDEST = MOD( (XCOL-1)/CBL, BLACS(3) )
-          
-          INEED = ( RDEST.EQ.BLACS(4) .AND. CDEST.EQ.BLACS(5) )
-          
-          ! Copy
-          IF (IHAVE) THEN ! Check if need to SEND
-            IF (INEED) THEN ! Easy case
-              X(I:RXTOP, LXCOL) = Y(I:RYTOP, LYCOL)
-            ELSE ! Otherwise SEND
-              ! Send
-              CALL DGESD2D(DESCX(2), RYLEN, 1, Y(I, LYCOL), RYLEN, 
-     $                     RDEST, CDEST)
-            END IF
-          ELSE IF (INEED) THEN ! Otherwise check if need to RECEIVE
-            ! Receive
-            CALL DGERV2D(DESCX(2), RXLEN, 1, X(I, LXCOL), RXLEN, 
-     $                   RSRC, CSRC)
-          END IF
-        
-        END DO ! GI
-      END DO ! COL
-      
-      RETURN
-      END
-
-
 
 
 
