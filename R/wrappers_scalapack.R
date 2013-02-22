@@ -1,0 +1,278 @@
+# ################################################
+# ------------------------------------------------
+# Linear Equations
+# ------------------------------------------------
+# ################################################
+
+# ------------------------------------------------
+# PDGETRI:  Matrix inverse
+# ------------------------------------------------
+
+base.rpdgetri <- function(n, a, desca)
+{
+  aldim <- base.numroc(desca[3:4], desca[5:6], ICTXT=desca[2])
+  
+  if (!is.double(a))
+    storage.mode(a) <- "double"
+  
+  out <- .Call("R_PDGETRI",
+               a, as.integer(aldim), 
+               as.integer(desca), as.integer(n),
+               PACKAGE="pbdBASE"
+              )
+  
+  if (out$info!=0)
+    warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
+  
+  return( out$A )
+}
+
+# ------------------------------------------------
+# PDGESV:  Solving Ax=b
+# ------------------------------------------------
+
+base.rpdgesv <- function(n, nrhs, a, desca, b, descb)
+{
+  aldim <- base.numroc(desca[3:4], desca[5:6], ICTXT=desca[2])
+  bldim <- base.numroc(descb[3:4], descb[5:6], ICTXT=descb[2])
+  
+  # max of the local dimensions
+  mxldims <- c(base.maxdim(aldim), base.maxdim(bldim))
+  
+  if (!is.double(a))
+    storage.mode(a) <- "double"
+  if (!is.double(b))
+    storage.mode(b) <- "double"
+
+  # Call ScaLAPACK
+  out <- .Call("R_PDGESV",
+               as.integer(n), as.integer(nrhs), as.integer(mxldims),
+               a, as.integer(aldim), as.integer(desca),
+               b, as.integer(bldim), as.integer(descb),
+               PACKAGE="pbdBASE")
+  
+  if (out$info!=0)
+    warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
+  
+  return( out$B ) 
+}
+
+# ################################################
+# ------------------------------------------------
+# Matrix Factorizations
+# ------------------------------------------------
+# ################################################
+
+# ------------------------------------------------
+# PDGESVD:  SVD of x
+# ------------------------------------------------
+
+base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt)
+{
+  size <- min(m, n)
+  
+  aldim <- dim(a)
+  uldim <- base.numroc(descu[3:4], descu[5:6], ICTXT=descu[2])
+  vtldim <- base.numroc(descvt[3:4], descvt[5:6], ICTXT=descvt[2])
+  
+  mxa <- pbdMPI::allreduce(max(aldim), op='max')
+  mxu <- pbdMPI::allreduce(max(uldim), op='max')
+  mxvt <- pbdMPI::allreduce(max(vtldim), op='max')
+  
+  if (all(aldim==1))
+    desca[9L] <- mxa
+  if (all(uldim==1))
+    descu[9L] <- mxu
+  if (all(vtldim==1))
+    descvt[9L] <- mxvt
+  
+  if (desca[3L]>1){
+    if (pbdMPI::allreduce(desca[9L], op='max')==1)
+      desca[9L] <- mxa
+  }
+  if (descu[3L]>1){
+    if (pbdMPI::allreduce(descu[9L], op='max')==1)
+      desca[9L] <- mxu
+  }
+  if (descvt[3L]>1){
+    if (pbdMPI::allreduce(descvt[9L], op='max')==1)
+      desca[9L] <- mxvt
+  }
+  
+  if (!is.double(a))
+    storage.mode(a) <- "double"
+  
+  # Call ScaLAPACK
+  out <- .Call("R_PDGESVD", 
+            as.integer(m), as.integer(n), as.integer(size),
+            a, as.integer(desca), as.integer(aldim),
+            as.integer(uldim), as.integer(descu),
+            as.integer(vtldim), as.integer(descvt),
+            as.character(jobu), as.character(jobvt),
+            PACKAGE="pbdBASE")
+  
+  if (out$info!=0)
+    warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
+  
+  ret <- list( d=out$d, u=out$u, vt=out$vt )
+  
+  return( ret )
+}
+
+
+# ------------------------------------------------
+# PDPOTRF:  Cholesky Factorization
+# ------------------------------------------------
+
+base.rpdpotrf <- function(uplo, n, a, desca)
+{
+  
+  if (!is.double(a))
+    storage.mode(a) <- "double"
+  
+  # Call ScaLAPACK
+  ret <- .Call("R_PDPOTRF",
+               as.integer(n), a, as.integer(dim(a)), as.integer(desca),
+               as.character(uplo),
+               PACKAGE="pbdBASE")
+  
+  if (ret$info!=0)
+    warning(paste("ScaLAPACK returned INFO=", ret$info, "; returned solution is likely invalid", sep=""))
+  
+  return( ret ) 
+}
+
+
+# ------------------------------------------------
+# PDGETRF:  LU Decomposition
+# ------------------------------------------------
+
+base.rpdgetrf <- function(m, n, a, desca)
+{
+  aldim <- dim(a)
+  lipiv <- base.maxdim(aldim)[1L] + desca[5L]
+  
+  if (!is.double(a))
+    storage.mode(a) <- "double"
+  
+  # Call ScaLAPACK
+  out <- .Call("R_PDGETRF",
+               as.integer(m), as.integer(n),
+               a, as.integer(aldim), as.integer(desca),
+               as.integer(lipiv),
+               PACKAGE="pbdBASE")
+  
+  if (out$info!=0)
+    warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
+  
+  return( out$A ) 
+}
+
+
+# ################################################
+# ------------------------------------------------
+# Auxillary
+# ------------------------------------------------
+# ################################################
+
+base.indxg2p <- function(INDXGLOB, NB, NPROCS)
+{
+  
+  ISRCPROC <- 0L
+  
+  ret <- (ISRCPROC + (INDXGLOB - 1L) / NB) %% NPROCS
+  
+  return( ret )
+}
+
+
+numroc2 <- function(N, NB, IPROC, NPROCS)
+{
+  ISRCPROC <- 0L
+  
+  MYDIST <- (NPROCS + IPROC -  ISRCPROC) %% NPROCS
+  NBLOCKS <- floor(N / NB)
+  ldim <- floor(NBLOCKS / NPROCS) * NB
+  EXTRABLKS <- NBLOCKS %% NPROCS
+  
+  if (is.na(EXTRABLKS))
+    EXTRABLKS <- 0L
+  
+  if (MYDIST < EXTRABLKS)
+    ldim <- ldim + NB
+  else if (MYDIST == EXTRABLKS)
+    ldim <- ldim + N %% NB
+  
+  return(ldim)
+}
+
+
+# matrix norms
+base.rpdlange <- function(norm, m, n, a, desca)
+{
+  if (length(norm)>1L)
+    norm <- norm[1L]
+  
+  norm <- toupper(norm)
+  
+  if (!is.double(a))
+    storage.mode(a) <- "double"
+  
+  ret <- .Call("R_PDLANGE", 
+        norm, as.integer(m), as.integer(n),
+        a, as.integer(desca),
+        PACKAGE="pbdBASE")
+  
+  return( ret )
+}
+
+
+
+# Inverse condition number - triangular matrix
+base.rpdtrcon <- function(norm, uplo, diag, n, a, desca)
+{
+  if (length(norm)>1L)
+    norm <- norm[1L]
+  
+  norm <- toupper(norm)
+  uplo <- toupper(uplo)
+  diag <- toupper(diag)
+  
+  if (!is.double(a))
+    storage.mode(a) <- "double"
+  
+  ret <- .Call("R_PDTRCON", 
+        norm, uplo, diag, 
+        as.integer(n), a, as.integer(desca),
+        PACKAGE="pbdBASE")
+  
+  if (ret[2L] < 0)
+    warning(paste("INFO =", ret[2L]))
+  
+  return( ret[1L] )
+}
+
+
+
+# Inverse condition number - general matrix
+base.rpdgecon <- function(norm, m, n, a, desca)
+{
+  if (length(norm)>1L)
+    norm <- norm[1L]
+  
+  norm <- toupper(norm)
+  
+  if (!is.double(a))
+    storage.mode(a) <- "double"
+  
+  ret <- .Call("R_PDGECON", 
+        norm, as.integer(m), as.integer(n),
+        a, as.integer(desca), as.integer(dim(a)),
+        PACKAGE="pbdBASE")
+  
+  if (ret[2] < 0)
+    warning(paste("INFO =", ret[2]))
+  
+  return( ret[1] )
+}
+

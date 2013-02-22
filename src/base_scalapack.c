@@ -340,7 +340,7 @@ SEXP R_PDGECON(SEXP TYPE, SEXP M, SEXP N, SEXP A, SEXP DESCA, SEXP ALDIM)
 
 
 // Condition # estimator for triangular matrix
-SEXP R_PDTRCON(SEXP TYPE, SEXP UPLO, SEXP N, SEXP A, SEXP DESCA)
+SEXP R_PDTRCON(SEXP TYPE, SEXP UPLO, SEXP DIAG, SEXP N, SEXP A, SEXP DESCA)
 {
   double* work;
   double tmp;
@@ -348,13 +348,12 @@ SEXP R_PDTRCON(SEXP TYPE, SEXP UPLO, SEXP N, SEXP A, SEXP DESCA)
   int i, lwork, liwork, info = 0;
   // consts 
   const int IJ = 1, in1 = -1;
-  char diag = 'N';
   // R objects
   SEXP RET;
   PROTECT(RET = allocVector(REALSXP, 2));
   
   // workspace query and allocate work vectors
-  F77_CALL(pdtrcon)(CHARPT(TYPE, 0), CHARPT(UPLO, 0), &diag,
+  F77_CALL(pdtrcon)(CHARPT(TYPE, 0), CHARPT(UPLO, 0), CHARPT(DIAG, 0),
     INTEGER(N), REAL(A), &IJ, &IJ, INTEGER(DESCA), REAL(RET), 
     &tmp, &in1, &liwork, &in1, &info);
   
@@ -364,7 +363,7 @@ SEXP R_PDTRCON(SEXP TYPE, SEXP UPLO, SEXP N, SEXP A, SEXP DESCA)
   
   // compute inverse of condition number
   info = 0;
-  F77_CALL(pdtrcon)(CHARPT(TYPE, 0), CHARPT(UPLO, 0), &diag,
+  F77_CALL(pdtrcon)(CHARPT(TYPE, 0), CHARPT(UPLO, 0), CHARPT(DIAG, 0),
     INTEGER(N), REAL(A), &IJ, &IJ, INTEGER(DESCA), REAL(RET), 
     work, &lwork, iwork, &liwork, &info);
   
