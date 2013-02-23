@@ -13,7 +13,7 @@ Description: pbdBASE contains the basic methods for dealing with
         distributed data types, as well as the data types themselves.
 SystemRequirements: OpenMPI (>= 1.5.4) on Solaris, Linux and Mac,
         MPICH2 (>= 1.4.1p1) on Windows
-License: GPL (>= 2)
+License: BSD
 URL: http://r-pbd.org/
 BugReports: RBigDataProgramming on Google Group
 MailingList: Please send questions and comments regarding pbdR to

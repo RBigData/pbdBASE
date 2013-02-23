@@ -1015,6 +1015,7 @@
       K = DESCX(4)
       
       ! Resorting to magic numbers because C strings are just too kludgy and terrible
+      ! This is all very ad hoc anyway so I don't think I give a shit.
       
       ! Only do work if we own any local pieces
       IF (M.GT.0 .AND. N.GT.0) THEN

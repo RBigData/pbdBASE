@@ -57,48 +57,6 @@ base.rpdgemm <- function(transx, transy, m, n, k, x, descx, y, descy, descc)
 # PDSVRK:  Symmetric Rank-k Update
 # ------------------------------------------------
 
-base.rpdsvrk <- function(trans, x, outbldim=x@bldim)
-{
-  if (length(outbldim)==1L)
-    outbldim <- rep(outbldim, 2)
-  
-  ICTXT <- x@ICTXT
-  
-  if (trans=='N' || trans=='n'){
-    n <- x@dim[1L]
-    k <- x@dim[2L]
-  } else {
-    n <- x@dim[2L]
-    k <- x@dim[1L]
-  }
-  
-  bldim <- x@bldim
-  
-  cdim <- c(n, n)
-  cldim <- base.numroc(cdim, outbldim, ICTXT=ICTXT)
-  
-  desca <- base.descinit(dim=x@dim, bldim=bldim, ldim=x@ldim, ICTXT=ICTXT)
-  descc <- base.descinit(dim=cdim, bldim=outbldim, ldim=cldim, ICTXT=ICTXT)
-  
-  if (!is.double(x@Data))
-    storage.mode(x@Data) <- "double"
-  
-  uplo <- 'U'
-  
-  ret <- .Call("R_PDSYRK",
-                  as.character(uplo), as.character(trans),
-                  as.integer(n), as.integer(k),
-                  x@Data, as.integer(desca),
-                  as.integer(cldim), as.integer(descc),
-                  PACKAGE="pbdBASE"
-                 )
-  
-  c <- new("ddmatrix", Data=ret, dim=cdim, ldim=cldim, bldim=outbldim, ICTXT=ICTXT)
-  
-  return(c)
-}
-
-
 base.crossprod <- function(trans, x, descx, descc)
 {
   trans <- toupper(trans)
