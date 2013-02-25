@@ -90,25 +90,19 @@ ownany <- function(x, ..., dim, bldim, ICTXT=0)
 
 
 # Hook into ScaLAPACK tool PDLAPRNT
-base.rpdlaprnt <- function(dx)
+base.rpdlaprnt <- function(m, n, a, desca)
 {
-  m <- dx@dim[1L]
-  n <- dx@dim[2L]
-  
-  desca <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=dx@ldim, ICTXT=dx@ICTXT)
-  
-  if (!is.double(dx@Data))
-    storage.mode(dx@Data) <- "double"
+  if (!is.double(a))
+    storage.mode(a) <- "double"
   
   .Call("R_PDLAPRNT", 
         as.integer(m), as.integer(n),
         dx@Data, as.integer(desca),
         as.character(deparse(substitute(dx))),
-        as.integer(6),  #WCC: 0 for stderr, 6 for stdout. Both are disabled.
+        6L,  #WCC: 0 for stderr, 6 for stdout. Both are disabled.
         PACKAGE="pbdBASE"
         )
   
   return( invisible(0) )
 }
 
-rpdlaprnt <- base.rpdlaprnt

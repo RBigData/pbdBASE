@@ -5,66 +5,56 @@
 # ################################################
 
 # ------------------------------------------------
-# PDGESV:  Solving Ax=b
-# ------------------------------------------------
-
-base.rpdgesv <- function(a, b)
-{
-  ICTXT <- a@ICTXT
-  
-  # Matrix descriptors
-  desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=ICTXT)
-  descb <- base.descinit(dim=b@dim, bldim=b@bldim, ldim=b@ldim, ICTXT=ICTXT)
-  
-  n <- desca[4L]
-  nrhs <- descb[4L]
-  # max of the local dimensions
-  mxldims <- c(base.maxdim(a@ldim), base.maxdim(b@ldim))
-
-  if (!is.double(a@Data))
-    storage.mode(a@Data) <- "double"
-  if (!is.double(b@Data))
-    storage.mode(b@Data) <- "double"
-
-  # Call ScaLAPACK
-  out <- .Call("R_PDGESV",
-               as.integer(n), as.integer(nrhs), as.integer(mxldims),
-               a@Data, as.integer(a@ldim), as.integer(desca),
-               b@Data, as.integer(b@ldim), as.integer(descb),
-               PACKAGE="pbdBASE"
-              )
-  
-  if (out$info!=0)
-    warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
-  
-  b@Data <- out$B
-  
-  return(b) 
-}
-
-# ------------------------------------------------
 # PDGETRI:  Matrix inverse
 # ------------------------------------------------
 
-base.rpdgetri <- function(a)
+base.rpdgetri <- function(n, a, desca)
 {
-  desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=a@ICTXT)
+  aldim <- base.numroc(desca[3:4], desca[5:6], ICTXT=desca[2])
   
-  n <- desca[4L]
-  
-  if (!is.double(a@Data))
-    storage.mode(a@Data) <- "double"
+  if (!is.double(a))
+    storage.mode(a) <- "double"
   
   out <- .Call("R_PDGETRI",
-               a@Data, as.integer(a@ldim), 
+               a, as.integer(aldim), 
                as.integer(desca), as.integer(n),
                PACKAGE="pbdBASE"
               )
   
   if (out$info!=0)
     warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
+  
+  return( out$A )
+}
 
-  return(out$A) 
+# ------------------------------------------------
+# PDGESV:  Solving Ax=b
+# ------------------------------------------------
+
+base.rpdgesv <- function(n, nrhs, a, desca, b, descb)
+{
+  aldim <- base.numroc(desca[3:4], desca[5:6], ICTXT=desca[2])
+  bldim <- base.numroc(descb[3:4], descb[5:6], ICTXT=descb[2])
+  
+  # max of the local dimensions
+  mxldims <- c(base.maxdim(aldim), base.maxdim(bldim))
+  
+  if (!is.double(a))
+    storage.mode(a) <- "double"
+  if (!is.double(b))
+    storage.mode(b) <- "double"
+
+  # Call ScaLAPACK
+  out <- .Call("R_PDGESV",
+               as.integer(n), as.integer(nrhs), as.integer(mxldims),
+               a, as.integer(aldim), as.integer(desca),
+               b, as.integer(bldim), as.integer(descb),
+               PACKAGE="pbdBASE")
+  
+  if (out$info!=0)
+    warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
+  
+  return( out$B ) 
 }
 
 # ################################################
@@ -77,169 +67,106 @@ base.rpdgetri <- function(a)
 # PDGESVD:  SVD of x
 # ------------------------------------------------
 
-base.rpdgesvd <- function(x, nu, nv)
+base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt)
 {
-  ICTXT <- x@ICTXT
+  size <- min(m, n)
   
-  # Matrix descriptors
-  m <- x@dim[1L]
-  n <- x@dim[2L]
-  size <- min(x@dim)
-  bldim <- x@bldim
-  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=ICTXT)
-
-  if (nu==0){
-    jobu <- 'N'
-    udim <- c(1L, 1L)
-  }
-  else {
-    jobu <- 'V'
-    udim <- c(m, size)
-  }
-  if (nv==0){
-    jobvt <- 'N'
-    vtdim <- c(1L, 1L)
-  }
-  else {
-    jobvt <- 'V'
-    vtdim <- c(size, n)
-  }
-
-  uldim <- base.numroc(dim=udim, bldim=bldim, ICTXT=ICTXT)
-
-  u <- new("ddmatrix", Data=matrix(nrow=0, ncol=0),
-                       dim=udim, ldim=uldim, bldim=bldim, ICTXT=ICTXT)
-  descu <- base.descinit(dim=u@dim, bldim=u@bldim, ldim=u@ldim, ICTXT=ICTXT)
+  aldim <- dim(a)
+  uldim <- base.numroc(descu[3:4], descu[5:6], ICTXT=descu[2])
+  vtldim <- base.numroc(descvt[3:4], descvt[5:6], ICTXT=descvt[2])
   
-  vtldim <- base.numroc(dim=vtdim, bldim=bldim, ICTXT=ICTXT)
-
-  vt <- new("ddmatrix", Data=matrix(nrow=0, ncol=0),
-                        dim=vtdim, ldim=vtldim, bldim=bldim, ICTXT=ICTXT)
-  descvt <- base.descinit(dim=vt@dim, bldim=vt@bldim, ldim=vt@ldim, ICTXT=ICTXT)
-
-  mxa <- pbdMPI::allreduce(max(x@ldim), op='max')
+  mxa <- pbdMPI::allreduce(max(aldim), op='max')
   mxu <- pbdMPI::allreduce(max(uldim), op='max')
   mxvt <- pbdMPI::allreduce(max(vtldim), op='max')
-
-  if (all(x@ldim==1))
-    desca[9] <- mxa
+  
+  if (all(aldim==1))
+    desca[9L] <- mxa
   if (all(uldim==1))
-    descu[9] <- mxu
+    descu[9L] <- mxu
   if (all(vtldim==1))
-    descvt[9] <- mxvt
-
-  if (x@dim[1]>1){
-    if (pbdMPI::allreduce(desca[9], op='max')==1)
-      desca[9] <- mxa
+    descvt[9L] <- mxvt
+  
+  if (desca[3L]>1){
+    if (pbdMPI::allreduce(desca[9L], op='max')==1)
+      desca[9L] <- mxa
   }
-  if (u@dim[1]>1){
-    if (pbdMPI::allreduce(descu[9], op='max')==1)
-      desca[9] <- mxu
+  if (descu[3L]>1){
+    if (pbdMPI::allreduce(descu[9L], op='max')==1)
+      desca[9L] <- mxu
   }
-  if (vt@dim[1]>1){
-    if (pbdMPI::allreduce(descvt[9], op='max')==1)
-      desca[9] <- mxvt
+  if (descvt[3L]>1){
+    if (pbdMPI::allreduce(descvt[9L], op='max')==1)
+      desca[9L] <- mxvt
   }
-
-  if (!is.double(x@Data))
-    storage.mode(x@Data) <- "double"
-
+  
+  if (!is.double(a))
+    storage.mode(a) <- "double"
+  
   # Call ScaLAPACK
   out <- .Call("R_PDGESVD", 
             as.integer(m), as.integer(n), as.integer(size),
-            x@Data, as.integer(desca), as.integer(x@ldim),
+            a, as.integer(desca), as.integer(aldim),
             as.integer(uldim), as.integer(descu),
             as.integer(vtldim), as.integer(descvt),
             as.character(jobu), as.character(jobvt),
-            PACKAGE="pbdBASE"
-          )
-
-  if (nu==0)
-    u <- NULL
-  else 
-    u@Data <- out$u
-  if (nv==0)
-    vt <- NULL
-  else
-    vt@Data <- out$vt
-
-  if (nu && nu < u@dim[2L])
-    u <- u[, 1L:nu]
-  if (nv && nv < vt@dim[1L])
-    vt <- vt[1L:nv, ]
-
-  if (out$info!=0)
-    warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
-
-  ret <- list( d=out$d, u=u, vt=vt )
-
-  return( ret )
-}
-
-# ------------------------------------------------
-# PDGETRF:  LU Decomposition
-# ------------------------------------------------
-
-base.rpdgetrf <- function(a)
-{
-  desca <- base.descinit(dim=a@dim, bldim=a@bldim, ldim=a@ldim, ICTXT=a@ICTXT)
-
-  m <- desca[3L]
-  n <- desca[4L]
-
-  lipiv <- base.maxdim(a@ldim)[1L] + a@bldim[1L]
-
-  if (!is.double(a@Data))
-    storage.mode(a@Data) <- "double"
-
-  # Call ScaLAPACK
-  out <- .Call("R_PDGETRF",
-               as.integer(m), as.integer(n),
-               a@Data, as.integer(dim(a@Data)), as.integer(desca),
-               as.integer(lipiv),
-               PACKAGE="pbdBASE"
-              )
+            PACKAGE="pbdBASE")
   
   if (out$info!=0)
     warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
-
-  a@Data <- out$A
-  return(a) 
+  
+  ret <- list( d=out$d, u=out$u, vt=out$vt )
+  
+  return( ret )
 }
+
 
 # ------------------------------------------------
 # PDPOTRF:  Cholesky Factorization
 # ------------------------------------------------
 
-base.rpdpotrf <- function(x)
+base.rpdpotrf <- function(uplo, n, a, desca)
 {
-  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=x@ICTXT)
-    
-  n <- desca[4L]
   
-  uplo <- "U"
-  
-  if (!is.double(x@Data))
-    storage.mode(x@Data) <- "double"
+  if (!is.double(a))
+    storage.mode(a) <- "double"
   
   # Call ScaLAPACK
-  out <- .Call("R_PDPOTRF",
-               as.integer(n),
-               x@Data, as.integer(x@ldim), as.integer(desca),
+  ret <- .Call("R_PDPOTRF",
+               as.integer(n), a, as.integer(dim(a)), as.integer(desca),
                as.character(uplo),
-               PACKAGE="pbdBASE"
-              )
+               PACKAGE="pbdBASE")
+  
+  if (ret$info!=0)
+    warning(paste("ScaLAPACK returned INFO=", ret$info, "; returned solution is likely invalid", sep=""))
+  
+  return( ret ) 
+}
+
+
+# ------------------------------------------------
+# PDGETRF:  LU Decomposition
+# ------------------------------------------------
+
+base.rpdgetrf <- function(m, n, a, desca)
+{
+  aldim <- dim(a)
+  lipiv <- base.maxdim(aldim)[1L] + desca[5L]
+  
+  if (!is.double(a))
+    storage.mode(a) <- "double"
+  
+  # Call ScaLAPACK
+  out <- .Call("R_PDGETRF",
+               as.integer(m), as.integer(n),
+               a, as.integer(aldim), as.integer(desca),
+               as.integer(lipiv),
+               PACKAGE="pbdBASE")
   
   if (out$info!=0)
     warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
   
-  ret <- new("ddmatrix", Data=out$A, dim=x@dim, ldim=x@ldim, bldim=x@bldim, ICTXT=x@ICTXT)
-  
-  ret <- base.tri2zero(dx=ret, 'L', 'N')
-  
-  return(ret) 
+  return( out$A ) 
 }
-
 
 
 # ################################################
@@ -281,106 +208,66 @@ numroc2 <- function(N, NB, IPROC, NPROCS)
 
 
 # matrix norms
-base.rpdlange <- function(x, type)
+base.rpdlange <- function(norm, m, n, a, desca)
 {
-  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=x@ICTXT)
+  if (length(norm)>1L)
+    norm <- norm[1L]
   
-  m <- x@dim[1L]
-  n <- x@dim[2L]
+  norm <- toupper(norm)
   
-  if (length(type)>1L)
-    type <- type[1L]
-  
-  type <- toupper(type)
-  
-#  if (type == "M" || type == "F")
-#    lwork <- 1L
-#  else {
-#    blacs_ <- base.blacs(ICTXT=x@ICTXT)
-#    ia <- ja <- 1L
-#    
-#    if (type == "O"){
-#      mb <- x@bldim[1L]
-#      npcol <- blacs_$NPCOL
-#      
-#      icoffa <- (ja-1L) %% mb
-#      iacol <- base.indxg2p(ja, mb, npcol)
-#      
-#      lwork <- numroc2(n+icoffa, mb, blacs_$MYCOL, npcol)
-#    }
-#    else if (type == "I"){
-#      nb <- x@bldim[2L]
-#      nprow <- blacs_$NPROW
-#      
-#      iroffa <- (ia-1L) %% nb
-#      iarow <- base.indxg2p(ia, nb, nprow)
-#      
-#      lwork <- numroc2(m+iroffa, nb, blacs_$MYROW, nprow)
-#    }
-#  }
-#  
-#  lwork <- max(lwork, 1L)
-  
-  if (!is.double(x@Data))
-    storage.mode(x@Data) <- "double"
+  if (!is.double(a))
+    storage.mode(a) <- "double"
   
   ret <- .Call("R_PDLANGE", 
-        as.character(type), as.integer(m), as.integer(n),
-        x@Data, as.integer(desca),
+        norm, as.integer(m), as.integer(n),
+        a, as.integer(desca),
         PACKAGE="pbdBASE")
   
   return( ret )
 }
 
 
-# Inverse condition number - general matrix
-base.rpdgecon <- function(x, type)
-{
-  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=x@ICTXT)
-  
-  m <- x@dim[1L]
-  n <- x@dim[2L]
-  
-  if (length(type)>1L)
-    type <- type[1L]
-  
-  type <- toupper(type)
-  
-  if (!is.double(x@Data))
-    storage.mode(x@Data) <- "double"
-  
-  ret <- .Call("R_PDGECON", 
-        as.character(type), as.integer(m), as.integer(n),
-        x@Data, as.integer(desca), as.integer(x@ldim),
-        PACKAGE="pbdBASE")
-  
-  if (ret[2] < 0)
-    warning(paste("INFO =", ret[2]))
-  
-  return( ret[1] )
-}
-
 
 # Inverse condition number - triangular matrix
-base.rpdtrcon <- function(x, type, uplo="L")
+base.rpdtrcon <- function(norm, uplo, diag, n, a, desca)
 {
-  desca <- base.descinit(dim=x@dim, bldim=x@bldim, ldim=x@ldim, ICTXT=x@ICTXT)
+  if (length(norm)>1L)
+    norm <- norm[1L]
   
-#  m <- x@dim[1L]
-  n <- x@dim[2L]
-  
-  if (length(type)>1L)
-    type <- type[1L]
-  
-  type <- toupper(type)
+  norm <- toupper(norm)
   uplo <- toupper(uplo)
+  diag <- toupper(diag)
   
-  if (!is.double(x@Data))
-    storage.mode(x@Data) <- "double"
+  if (!is.double(a))
+    storage.mode(a) <- "double"
   
   ret <- .Call("R_PDTRCON", 
-        as.character(type), as.character(uplo), 
-        as.integer(n), x@Data, as.integer(desca),
+        norm, uplo, diag, 
+        as.integer(n), a, as.integer(desca),
+        PACKAGE="pbdBASE")
+  
+  if (ret[2L] < 0)
+    warning(paste("INFO =", ret[2L]))
+  
+  return( ret[1L] )
+}
+
+
+
+# Inverse condition number - general matrix
+base.rpdgecon <- function(norm, m, n, a, desca)
+{
+  if (length(norm)>1L)
+    norm <- norm[1L]
+  
+  norm <- toupper(norm)
+  
+  if (!is.double(a))
+    storage.mode(a) <- "double"
+  
+  ret <- .Call("R_PDGECON", 
+        norm, as.integer(m), as.integer(n),
+        a, as.integer(desca), as.integer(dim(a)),
         PACKAGE="pbdBASE")
   
   if (ret[2] < 0)
@@ -388,7 +275,4 @@ base.rpdtrcon <- function(x, type, uplo="L")
   
   return( ret[1] )
 }
-
-
-
 

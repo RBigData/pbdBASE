@@ -7,30 +7,11 @@ export(
   .Last.lib    # For finalize blacs.
 )
 
-exportMethods(
-  "as.matrix", "as.vector", "as.ddmatrix",
-  "submatrix", "submatrix<-",
-  "[", "[<-", "na.exclude",
-  "nrow", "ncol", "dim", "ldim", "bldim", "ictxt", "submatrix",
-  "any", "all",
-  "summary",
-  "rbind", "cbind",
-  "print"
-)
-
 export(
   ### blacs
   init.grid, blacs, gridexit, pnum, pcoord, blacsexit,
   minctxt,
   
   ### utility
-  ddmatrix, 
-  numroc, ownany,
-  is.ddmatrix, is.na, is.nan, is.infinite, is.numeric,
-  head.ddmatrix, tail.ddmatrix,
-  
-  "[", "[<-",
-  
-  ### distribution
-  distribute, redistribute
+  numroc, ownany
 )

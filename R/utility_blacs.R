@@ -216,59 +216,6 @@ base.pcoord <- function(ICTXT, PNUM)
 pcoord <- base.pcoord
 
 
-# row/column sums of matrices via BLACS
-base.blacs.sum <- function(dx, SCOPE, na.rm=FALSE, means=FALSE, num=1) # SCOPE= 'Row', 'Col', 'All'
-{
-  dim <- dx@dim
-  ICTXT <- dx@ICTXT
-  
-  if (SCOPE=='Row')
-    f <- function(x, na.rm=na.rm) rowSums(x, na.rm=na.rm)
-  else if (SCOPE=='Col')
-    f <- function(x, na.rm=na.rm) colSums(x, na.rm=na.rm)
-  
-  if (!means)
-    num <- 1
-  
-  A <- f(x=dx@Data/num, na.rm=na.rm)
-  
-  # quick return if possible
-  if (SCOPE=='Row'){
-    if (dim[2L] <= dx@bldim[1L])
-      return(A)
-  }
-  else if (SCOPE=='Col'){
-    if (dim[1L] <= dx@bldim[2L])
-      return(A)
-  }
-  
-  
-  
-  M <- if(SCOPE=='Row') dim[1L] else dim[2L]
-  LDA <- length(A)
-  
-#  mxm <- pbdMPI::allreduce(M, op='max')
-#  if (!base.ownany(dim=dim, dx@bldim, ICTXT=ICTXT)){
-#    A <- numeric(mxm)
-#    M <- mxm
-#  }
-    
-  if (!is.double(A))
-    storage.mode(A) <- "double"
-  
-  out <- .Call("R_dgsum2d",
-               as.integer(ICTXT), as.character(SCOPE),
-               as.integer(M), A, as.integer(LDA),
-               PACKAGE="pbdBASE")
-  
-#  out <- out + 0
-  
-  return(out)
-}
-
-blacs.sum <- base.blacs.sum
-
-
 # exit the blacs grid
 base.blacsexit <- function(CONT=TRUE)
 {
