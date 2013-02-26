@@ -20,15 +20,16 @@ R_OBJS = \
   base_scalapack.o \
   base_scalapack_utility_fort.o \
   base_lm.o \
-  base_putil.o \
   variance.o \
   base_variance.o \
   auxil.o \
   bprnt_c.o \
-  putil.o \
-  plinalg.o \
-  pkg_tools.o \
-  other.o 
+  export_blacs/pkg_tools.o \
+  other.o \
+  secret/base_putil.o \
+  secret/putil.o \
+  secret/plinalg.o \
+  secret/base_plinalg.o
 OBJECTS = $(R_OBJS)
 
 ### For user configuration.

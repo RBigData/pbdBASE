@@ -65,7 +65,7 @@ base.pdsweep <- function(x, descx, vec, MARGIN, FUN)
     storage.mode(vec) <- "double"
   
   ret <- .Call("R_PDSWEEP", 
-               dx@Data, as.integer(dim(x)), as.integer(descx), vec, as.integer(length(vec)), as.integer(MARGIN), as.character(FUN),
+               x, as.integer(dim(x)), as.integer(descx), vec, as.integer(length(vec)), as.integer(MARGIN), as.character(FUN),
                PACKAGE="pbdBASE")
   
   return( ret )
