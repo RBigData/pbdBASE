@@ -133,6 +133,29 @@
       END 
 
 
+      SUBROUTINE PDCHTRI(X, IX, JX, DESCX, C, IC, JC, DESCC, INFO)
+      IMPLICIT NONE
+      ! IN/OUT
+      INTEGER             IX, JX, DESCX(9), IC, JC, DESCC(9), INFO
+      DOUBLE PRECISION    X( * ), C( * )
+      ! Parameter
+      DOUBLE PRECISION    ONE
+      PARAMETER ( ONE = 1.0D0 )
+      ! External
+      EXTERNAL            PDTRTRI, PDCROSSPROD
+      
+      
+      !!! computes A^{-1} when A=LU
+      
+      ! 1. compute R^{-1}
+      CALL PDTRTRI('U', 'N', DESCX(4), X, IX, JX, DESCX, INFO)
+      
+      ! 2. compute R^{-1} * t(R^{-1})
+      CALL PDCROSSPROD('T', ONE, X, IX, JX, DESCC, C, IC, JC, DESCC)
+      
+      RETURN
+      END 
+
 !!!! Matrix norm; wrapper for DLANGE.  Handles allocation, etc.
 !!!      SUBROUTINE DMATNORM(VALUE, NORM, M, N, X)
 !!!      IMPLICIT NONE
