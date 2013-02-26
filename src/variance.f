@@ -18,12 +18,12 @@
       ! Mean calculator
       ! --------------------------
       
-      DO 10 I = 1, LCN, 1
+      DO I = 1, LCN
         MN(I) = 0
-        DO 20 J = 1, LCM, 1
+        DO J = 1, LCM
           MN(I) = MN(I) + (X(J,I) / M)
-   20   CONTINUE
-   10 CONTINUE
+        END DO ! J
+      END DO ! I
       
       CALL DGSUM2D( ICTXT, 'Column', ' ', LCN, 1, MN, 1, -1, -1 )
       
@@ -57,20 +57,29 @@
       CALL DDMATMN( X, M, LCM, LCN, DESCX, MN)
       
       ! variance
-      DO 10 I = 1, LCN, 1
+      DO I = 1, LCN
         VAR(I) = 0
-        DO 20 J = 1, LCM, 1
+        DO J = 1, LCM, 1
           VAR(I) = VAR(I) + ( X(J,I) ** 2 ) / (M-1)
-   20   CONTINUE
-   10 CONTINUE
+        END DO
+      END DO
       
       CALL DGSUM2D( ICTXT, 'Column', ' ', LCN, 1, VAR, 1, -1, -1 )
       
       SCL = 1.0D0 * M/(M-1)
 !      VAR = VAR - SCL * (MN ** 2) ! loses precision?
-      DO 30 I = 1, LCN, 1
+      DO I = 1, LCN, 1
         VAR(I) = VAR(I) - SCL * (MN(I)**2)
-   30 CONTINUE
+      END DO
       
       RETURN
       END
+
+
+
+
+
+
+
+
+
