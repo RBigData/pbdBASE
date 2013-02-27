@@ -17,3 +17,32 @@ SEXP R_PDCROSSPROD(SEXP TRANS, SEXP A, SEXP DESCA, SEXP CLDIM, SEXP DESCC)
   return(C);
 }
 
+
+SEXP R_PDCHTRI(SEXP A, SEXP ALDIM, SEXP DESCA, SEXP CLDIM, SEXP DESCC)
+{
+  const int IJ = 1;
+  const int m = INTEGER(ALDIM)[0], n = INTEGER(ALDIM)[1];
+  double *CPA;
+  
+  SEXP C, INFO;
+  PROTECT(C = allocMatrix(REALSXP, INTEGER(CLDIM)[0], INTEGER(CLDIM)[1]));
+  PROTECT(INFO = allocVector(INTSXP, 1));
+  
+  CPA = R_alloc(m*n, sizeof(double));
+  memcpy(CPA, REAL(A), m*n*sizeof(double));
+  
+  INTEGER(INFO)[0] = 0;
+  
+  pdchtri_(CPA, &IJ, &IJ, INTEGER(DESCA), REAL(C), &IJ, &IJ,
+    INTEGER(DESCC), INTEGER(INFO));
+  
+  if (INTEGER(INFO)[0] != 0)
+    Rprintf("INFO = %d\n", INTEGER(INFO)[0]);
+  
+  UNPROTECT(2);
+  return(C);
+}
+
+
+
+

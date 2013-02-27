@@ -1,97 +1,5 @@
 ! Copyright 2013, Schmidt
 
-!!!! Distance D_METHOD(X,Y)
-!!!! Methods:  'E' - Euclidean
-!!!!           'S' - Supremum (infinity)
-!!!!           'I' - Infimum (-infinity)
-!!!!           'H' - Manhattan
-!!!!           'C' - Canberra
-!!!!           'K' - Minkowski
-!!!      DOUBLE PRECISION FUNCTION DDIST(METHOD, N, X, INCX, Y, INCY, P)
-!!!      IMPLICIT NONE
-!!!      ! IN/OUT
-!!!      INTEGER             N, P, INCX, INCY
-!!!      DOUBLE PRECISION    X( * ), Y( * )
-!!!      CHARACTER*1         METHOD
-!!!      ! Local
-!!!      INTEGER             I
-!!!      DOUBLE PRECISION, ALLOCATABLE :: WORK(:)
-!!!      ! Parameter
-!!!      DOUBLE PRECISION    ONE
-!!!      PARAMETER ( ONE = 1.0D0 )
-!!!      ! Functions
-!!!      EXTERNAL            DCOPY, DAXPY
-!!!      INTEGER             IDAMAX, IDAMIN
-!!!      DOUBLE PRECISION    DASUM, DNRM2, DNRM3
-!!!      
-!!!      ALLOCATE(WORK(N))
-!!!      
-!!!      ! ! WORK = X - Y
-!!!      CALL DCOPY(N, X, INCX, WORK, INCY)
-!!!      
-!!!      CALL DAXPY(N, ONE, WORK, 1, Y, INCY)
-!!!      
-!!!      IF (METHOD.EQ.'E') THEN
-!!!        DDIST = DNRM2(N, WORK, 1)
-!!!      ELSE IF (METHOD.EQ.'S') THEN
-!!!        DDIST = X( IDAMAX(N, X, INCX) )
-!!!      ELSE IF (METHOD.EQ.'I') THEN
-!!!        DDIST = X( IDAMIN(N, X, INCX) )
-!!!      ELSE IF (METHOD.EQ.'H') THEN
-!!!        DDIST = DASUM(N, WORK, 1)
-!!!      ELSE IF (METHOD.EQ.'C') THEN
-!!!        DDIST = 0
-!!!        DO I = 1, N
-!!!          DDIST = ABS(WORK(I)) / 
-!!!     $       (ABS(X((I-1)*INCX + 1)) + ABS(Y((I-1)*INCY + 1)))
-!!!        END DO
-!!!      ELSE IF (METHOD.EQ.'K') THEN
-!!!        DDIST = DNRM3(N, WORK, 1, P)
-!!!      END IF
-!!!      DEALLOCATE(WORK)
-!!!      
-!!!      RETURN
-!!!      END
-
-
-!!!! Mahalanobis distance d_M(X,Y)
-!!!      DOUBLE PRECISION FUNCTION PDMAHAL(N, X, IX, JX, DESCX, INCX,
-!!!     $                                  Y, IY, JY, DESCY, INCY,
-!!!     $                                  MN, COVINV)
-!!!      IMPLICIT NONE
-!!!      ! IN/OUT
-!!!      INTEGER             N, IX, JX, INCX, IY, JY, INCY,
-!!!     $                    DESCX( 9 ), DESCY( 9 )
-!!!      DOUBLE PRECISION    X( * ), Y( * ), MN( * ), COVINV( * )
-!!!      ! Local
-!!!      INTEGER             I
-!!!      DOUBLE PRECISION, ALLOCATABLE :: WORK1(:)
-!!!      DOUBLE PRECISION, ALLOCATABLE :: WORK2(:)
-!!!      ! Parameter
-!!!      DOUBLE PRECISION    ZERO, ONE
-!!!      PARAMETER ( ZERO = 0.0D0, ONE = 1.0D0 )
-!!!      ! External
-!!!      EXTERNAL            DCOPY, DAXPY, DGEMV
-!!!      DOUBLE PRECISION    DDOT
-!!!      
-!!!      ALLOCATE(WORK1(N))
-!!!      ALLOCATE(WORK2(N))
-!!!      
-!!!      ! WORK1 = X - Y
-!!!      CALL PDCOPY(N, X, IX, JX, DESCX, INCX, WORK1, IX, JX, DESCX, 1)
-!!!      
-!!!      CALL PDAXPY(N, ONE, WORK1, IX, JX, DESCX, 1, Y, IY, JY, DESCY, 
-!!!     $            INCY)
-!!!      
-!!!      ! DMAHAL = WORK1^T * COVINV * WORK2
-!!!      CALL DGEMV('N', N, N, ONE, COVINV, N, WORK1, 1, ZERO, WORK2, 1)
-!!!      CALL PDGEMV('N', N, N, ONE, COVINV, ia, ja, desca, x, ix, jx, descx, incx, beta, y, iy, jy, descy, incy)
-!!!      
-!!!      DMAHAL = SQRT(DDOT(N, WORK1, 1, WORK2, 1))
-!!!      
-!!!      RETURN
-!!!      END
-
 
 ! X^T * X or X * X^T
 ! TRANS = 'T' :  X^T*X, TRANS = 'N' : X*X^T
@@ -133,96 +41,28 @@
       END 
 
 
-!!!! Matrix norm; wrapper for DLANGE.  Handles allocation, etc.
-!!!      SUBROUTINE DMATNORM(VALUE, NORM, M, N, X)
-!!!      IMPLICIT NONE
-!!!      ! In/Out
-!!!      CHARACTER*1         NORM
-!!!      INTEGER             M, N
-!!!      DOUBLE PRECISION    VALUE, X( * )
-!!!      ! Local
-!!!      INTEGER             LWORK
-!!!      DOUBLE PRECISION    LDX
-!!!      DOUBLE PRECISION, ALLOCATABLE :: WORK(:)
-!!!      ! Functions
-!!!      DOUBLE PRECISION    DLANGE
-!!!      
-!!!      IF (NORM.EQ."I") THEN
-!!!        LWORK = M
-!!!      ELSE 
-!!!        LWORK = 0
-!!!      END IF
-!!!      
-!!!      LDX = MAX(1, M)
-!!!      
-!!!      ALLOCATE (WORK(LWORK))
-!!!      
-!!!      VALUE = DLANGE(NORM, M, N, X, LDX, WORK)
-!!!      
-!!!      DEALLOCATE (WORK)
-!!!      
-!!!      RETURN
-!!!      END
-
-
-!!!!     Condition number estimator for general matrix
-!!!!       Step 1:  get matrix norm of X
-!!!!       Step 2:  factor X=L
-!!!!       Step 3:  Call dgecon
-!!!      SUBROUTINE DCONDNUM(NORM, M, N, X, RCOND, INFO)
-!!!      IMPLICIT NONE
-!!!      ! #######################################################################
-!!!      ! In/Out
-!!!      CHARACTER           NORM
-!!!      INTEGER             M, N, LDIM1, INFO
-!!!      DOUBLE PRECISION    RCOND, X( * )
-!!!      ! Local
-!!!      INTEGER             LWORK, LIPIV
-!!!      DOUBLE PRECISION    XNORM, TMP, LDX
-!!!      ! Parameters
-!!!      INTEGER             IN1
-!!!      PARAMETER ( IN1 = -1 )
-!!!      ! Dynamic
-!!!      DOUBLE PRECISION, ALLOCATABLE :: WORK(:)
-!!!      INTEGER, ALLOCATABLE :: IWORK(:), IPIV(:)
-!!!      ! Functions
-!!!      EXTERNAL            MATNORM, DGETRF, DGECON
-!!!      ! #######################################################################
-!!!      
-!!!      ! Step 1:  get matrix norm of A
-!!!      CALL DMATNORM(XNORM, NORM, N, N, X)
-!!!      
-!!!      ! Step 2:  factor A=LU
-!!!      LIPIV = MAX(1, MIN(M, N))
-!!!      ALLOCATE (IPIV(LIPIV))
-!!!      
-!!!      LDX = MAX(1, M)
-!!!      
-!!!      CALL DGETRF(M, N, X, LDX, INFO)
-!!!      
-!!!      IF (INFO.NE.0) THEN
-!!!        RETURN
-!!!      END IF
-!!!      
-!!!      LDX = MAX(1, N)
-!!!      
-!!!      ! Step 3:  Call pdgecon
-!!!      CALL DGECON(NORM, N, X, LDX, XNORM, RCOND, TMP,
-!!!     $            N, INFO)
-!!!      
-!!!      LWORK = INT(TMP)
-!!!      ALLOCATE (WORK(LWORK))
-!!!      ALLOCATE (IWORK(N))
-!!!      
-!!!      CALL DGECON(NORM, N, X, LDX, XNORM, RCOND, WORK,
-!!!     $             IWORK, INFO)
-!!!      
-!!!      DEALLOCATE (IPIV)
-!!!      DEALLOCATE (IWORK)
-!!!      DEALLOCATE (WORK)
-!!!      
-!!!      RETURN
-!!!      END
+! compute inverse of a cholesky
+      SUBROUTINE PDCHTRI(X, IX, JX, DESCX, C, IC, JC, DESCC, INFO)
+      IMPLICIT NONE
+      ! IN/OUT
+      INTEGER             IX, JX, DESCX(9), IC, JC, DESCC(9), INFO
+      DOUBLE PRECISION    X( * ), C( * )
+      ! Parameter
+      DOUBLE PRECISION    ONE
+      PARAMETER ( ONE = 1.0D0 )
+      ! External
+      EXTERNAL            PDTRTRI, PDCROSSPROD
+      
+      
+      CALL PTRI2ZERO('L', 'N', X, DESCX)
+      
+      CALL PDTRTRI('U', 'N', DESCX(4), X, IX, JX, DESCX, INFO)
+!      CALL PDPOTRI('U', DESCX(4), X, IX, JX, DESCX, INFO)
+      
+      CALL PDCROSSPROD('T', ONE, X, IX, JX, DESCC, C, IC, JC, DESCC)
+      
+      RETURN
+      END 
 
 
 ! Compute matrix inverse without having to understand ScaLAPACK peculiarities
