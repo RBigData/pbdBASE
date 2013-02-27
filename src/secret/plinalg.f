@@ -145,12 +145,9 @@
       EXTERNAL            PDTRTRI, PDCROSSPROD
       
       
-      !!! computes A^{-1} when A=LU
-      
-      ! 1. compute R^{-1}
       CALL PDTRTRI('U', 'N', DESCX(4), X, IX, JX, DESCX, INFO)
+!      CALL PDPOTRI('U', DESCX(4), X, IX, JX, DESCX, INFO)
       
-      ! 2. compute R^{-1} * t(R^{-1})
       CALL PDCROSSPROD('T', ONE, X, IX, JX, DESCC, C, IC, JC, DESCC)
       
       RETURN
