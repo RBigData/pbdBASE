@@ -1,17 +1,18 @@
 # R version of ScaLAPACK tool DESCINIT
 # Creates ScaLAPACK descriptor array for distributed matrix
+# This array is identical to 
 base.descinit <- function(dim, bldim, ldim, ICTXT=0)
 {
   desc <- integer(9)
-  desc[1] <- 1L       # matrix type --- 1 for dense
-  desc[2] <- ICTXT    # CTXT_A
-  desc[3] <- dim[1]   # M_A
-  desc[4] <- dim[2]   # N_A
-  desc[5] <- bldim[1] # MB_A
-  desc[6] <- bldim[2] # NB_A
-  desc[7] <- 0L       # RSRC_A
-  desc[8] <- 0L       # CSRC_A
-  desc[9] <- ldim[1]  # LLD_A
+  desc[1L] <- 1L                    # matrix type
+  desc[2L] <- ICTXT                 # CTXT_A
+  desc[3L] <- dim[1L]               # M_A
+  desc[4L] <- dim[2L]               # N_A
+  desc[5L] <- bldim[1L]             # MB_A
+  desc[6L] <- bldim[2L]             # NB_A
+  desc[7L] <- 0L                    # RSRC_A
+  desc[8L] <- 0L                    # CSRC_A
+  desc[9L] <- max(1L, ldim[1L])     # LLD_A
   
   return(desc)
 }
@@ -27,12 +28,12 @@ base.numroc <- function(dim, bldim, ICTXT=0, fixme=TRUE)
   
   MYP <- c(blacs_$MYROW, blacs_$MYCOL)
   PROCS <- c(blacs_$NPROW, blacs_$NPCOL)
-
+  
   ISRCPROC <- 0
   
   ldim <- numeric(2)
   for (i in 1:2){
-    MYDIST <- (PROCS[i] + MYP[i] -  ISRCPROC) %% PROCS[i]
+    MYDIST <- (PROCS[i] + MYP[i] - ISRCPROC) %% PROCS[i]
     NBLOCKS <- floor(dim[i] / bldim[i])
     ldim[i] <- floor(NBLOCKS / PROCS[i]) * bldim[i]
     EXTRABLKS <- NBLOCKS %% PROCS[i]
@@ -48,8 +49,8 @@ base.numroc <- function(dim, bldim, ICTXT=0, fixme=TRUE)
 
   if (fixme){
     if (any(is.na(ldim)))
-      ldim[which(is.na(ldim))] <- 0
-    if (any(ldim<1)) ldim <- c(1,1) # FIXME
+      ldim[which(is.na(ldim))] <- 0L
+    if (any(ldim<1)) ldim <- c(1L, 1L) # FIXME
   }
 
   return(ldim)
@@ -72,20 +73,6 @@ base.ownany <- function(dim, bldim, ICTXT=0)
     return(FALSE)
   else
     return(TRUE)
-}
-
-ownany <- function(x, ..., dim, bldim, ICTXT=0)
-{
-  if (!missing(bldim) && length(bldim)==1)
-    bldim <- rep(bldim, 2)
-  if (!missing(x) && is.ddmatrix(x))
-    return( base.ownany(dim=x@dim, bldim=x@bldim, ICTXT=x@ICTXT) )
-  else if (!missing(dim) && !missing(bldim) && missing(x) && is.numeric(dim) && is.numeric(bldim))
-    return( base.ownany(dim=dim, bldim=bldim, ICTXT=ICTXT) )
-  else{
-    print("Error: bad input(s) in ownany()")
-    stop("")
-  }
 }
 
 

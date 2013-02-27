@@ -87,50 +87,61 @@ base.rl2blas <- function(x, descx, vec, FUN)
   return(ret)
 }
 
-
-base.rl2insert <- function(dx, vec, i, j)
+# matrix-vector insertion
+base.rl2insert <- function(x, descx, vec, i, j)
 {
-  ldim <- dx@ldim
+  dim <- descx[3L:4L]
   
-  descx <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=ldim, ICTXT=dx@ICTXT)
-  
-  if (all(i<0)){
-    new <- 1:dx@dim[1]
+  if (i[2L] < 0){
+    new <- 1L:dim[1L]
     i <- new[-which(new %in% abs(i))] # FIXME make this less stupid
   }
   
-  if (all(j<0)){
-    new <- 1:dx@dim[2]
+  if (j[1L] < 0){
+    new <- 1L:dim[2L]
     j <- new[-which(new %in% abs(j))] # FIXME make this less stupid
   }
   
-  if (!is.double(dx@Data))
-    storage.mode(dx@Data) <- "double"
+  if (!is.double(x))
+    storage.mode(x) <- "double"
   
   if (!is.double(vec))
     storage.mode(vec) <- "double"
   
   ret <- .Call("R_RL2INSERT", 
-               dx@Data, as.integer(ldim), as.integer(descx), vec, as.integer(length(vec)), as.integer(i), as.integer(length(i)), as.integer(j), as.integer(length(j)),
+               x, as.integer(dim(x)), as.integer(descx), vec, as.integer(length(vec)), as.integer(i), as.integer(length(i)), as.integer(j), as.integer(length(j)),
                PACKAGE="pbdBASE")
   
-  dx@Data <- ret
-  
-  return(dx)
+  return( ret )
 }
 
 
-base.ddiagtk <- function(dx)
+base.ddiagtk <- function(x, descx, reduce=FALSE, proc.dest='all')
 {
-  ldim <- dx@ldim
+  if (!is.double(x))
+    storage.mode(x) <- "double"
   
-  descx <- base.descinit(dim=dx@dim, bldim=dx@bldim, ldim=ldim, ICTXT=dx@ICTXT)
-  
-  if (!is.double(dx@Data))
-    storage.mode(dx@Data) <- "double"
+  if (reduce){
+    rd <- 'Y'
+    
+    if (proc.dest[1L] == 'all')
+      rdest <- cdest <- -1
+    else {
+      if (length(proc.dest)==1){
+        src <- base.pcoord(ICTXT=descx[2L], PNUM=proc.dest)
+        rsrc <- src[[1L]]
+        csrc <- src[[2L]]
+      }
+    }
+  }
+  else {
+    rd <- 'N'
+    rdest <- cdest <- -1
+  }
   
   ret <- .Call("R_PDDIAGTK", 
-               dx@Data, as.integer(ldim), as.integer(descx), as.integer(min(dx@dim)),
+               x, as.integer(dim(x)), as.integer(descx), as.integer(min(dx@dim)),
+               rd, as.integer(rdest), as.integer(cdest),
                PACKAGE="pbdBASE")
   
   return( ret )
