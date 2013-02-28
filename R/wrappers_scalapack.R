@@ -22,7 +22,7 @@ base.rpdgetri <- function(n, a, desca)
               )
   
   if (out$info!=0)
-    warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
+    comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
   
   return( out$A )
 }
@@ -52,7 +52,7 @@ base.rpdgesv <- function(n, nrhs, a, desca, b, descb)
                PACKAGE="pbdBASE")
   
   if (out$info!=0)
-    warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
+    comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
   
   return( out$B ) 
 }
@@ -112,7 +112,7 @@ base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt)
             PACKAGE="pbdBASE")
   
   if (out$info!=0)
-    warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
+    comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
   
   ret <- list( d=out$d, u=out$u, vt=out$vt )
   
@@ -137,7 +137,7 @@ base.rpdpotrf <- function(uplo, n, a, desca)
                PACKAGE="pbdBASE")
   
   if (ret$info!=0)
-    warning(paste("ScaLAPACK returned INFO=", ret$info, "; returned solution is likely invalid", sep=""))
+    comm.warning(paste("ScaLAPACK returned INFO=", ret$info, "; returned solution is likely invalid", sep=""))
   
   return( ret ) 
 }
@@ -163,7 +163,7 @@ base.rpdgetrf <- function(m, n, a, desca)
                PACKAGE="pbdBASE")
   
   if (out$info!=0)
-    warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
+    comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
   
   return( out$A ) 
 }
@@ -247,7 +247,7 @@ base.rpdtrcon <- function(norm, uplo, diag, n, a, desca)
         PACKAGE="pbdBASE")
   
   if (ret[2L] < 0)
-    warning(paste("INFO =", ret[2L]))
+    comm.warning(paste("INFO =", ret[2L]))
   
   return( ret[1L] )
 }
@@ -271,7 +271,7 @@ base.rpdgecon <- function(norm, m, n, a, desca)
         PACKAGE="pbdBASE")
   
   if (ret[2] < 0)
-    warning(paste("INFO =", ret[2]))
+    comm.warning(paste("INFO =", ret[2]))
   
   return( ret[1] )
 }

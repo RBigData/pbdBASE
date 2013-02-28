@@ -13,20 +13,14 @@ procgrid <- base.procgrid
 base.valid_context <- function(ICTXT, ..., override=FALSE)
 {
   if (!override)
-    if (ICTXT==0 || ICTXT==1 || ICTXT==2) {
-      comm.print(paste("Context", ICTXT, "is protected"))
-      stop("")
-     }
-  else if (ICTXT < 0) {
-    comm.print("Negative BLACS context is not allowed")
-    stop("")
-  }
-  else if (as.integer(ICTXT)!=ICTXT) {
-    comm.print("Non-integer BLACS contexts are not permitted")
-    stop("")
-  }
+    if (ICTXT==0 || ICTXT==1 || ICTXT==2) 
+      comm.stop(paste("Context", ICTXT, "is protected"))
+  else if (ICTXT < 0) 
+    comm.stop("Negative BLACS context is not allowed")
+  else if (as.integer(ICTXT)!=ICTXT) 
+    comm.stop("Non-integer BLACS contexts are not permitted")
   else if (!exists(paste(".__blacs_gridinfo_", ICTXT, sep=""))){
-    warning(paste("Context", ICTXT, "does not exist"))
+    comm.warning(paste("Context", ICTXT, "does not exist"))
     return( invisible(1) )
   } 
 }
@@ -37,10 +31,8 @@ valid_context <- base.valid_context
 # finding the minimum avaliable BLACS context
 base.minctxt <- function(after=0)
 {
-  if (after < 0){
-    comm.print("Error : contexts must be positive")
-    stop("")
-  }
+  if (after < 0)
+    comm.stop("Error : contexts must be positive")
   
   after <- after+1
   
@@ -66,39 +58,31 @@ base.init.grid <- function(nprow, npcol, ICTXT)
   
   if (missing(ICTXT)){
     if (exists(".__blacs_gridinfo_0")){
-      warning("Context 0 is already initialized. No new grid created")
+      comm.warning("Context 0 is already initialized. No new grid created")
       return(invisible(1))
     } else {
       ICTXT <- 0
     }
-  } else if (ICTXT==0 || ICTXT==1 || ICTXT==2) {
-    comm.print("Contexts 0, 1, and 2 are reserved; use 3 or above.")
-    stop("")
-  } else if (ICTXT < 0){
-    comm.print("Context must be at least 3")
-    stop("")
-  } else if (ICTXT - as.integer(ICTXT) > 0) {
-    comm.print("Context must be an integer")
-    stop("")
   }
+  else if (ICTXT==0 || ICTXT==1 || ICTXT==2) 
+    comm.stop("Contexts 0, 1, and 2 are reserved; use 3 or above.")
+  else if (ICTXT < 0)
+    comm.stop("Context must be at least 3")
+  else if (ICTXT - as.integer(ICTXT) > 0) 
+    comm.stop("Context must be an integer")
   
   # optimal size grid if parameters are missing
   if (missing(nprow) && missing(npcol)){
     procs <- base.procgrid(nprocs=nprocs)
     nprow <- procs$nprow
     npcol <- procs$npcol
-  } else if (missing(nprow) && !missing(npcol)) {
-    comm.print("You must also provide a value for 'nprow'")
-    stop("")
-  }
-  else if (!missing(nprow) && missing(npcol)) {
-    comm.print("You must also provide a value for 'npcol'")
-    stop("")
-  }
-  else if (nprow*npcol > nprocs) {
-    comm.print(paste("Error: grid size of ", nprow, "*", npcol, " is not possible with ", nprocs, " processes", sep=""))
-    stop("")
-  }
+  } 
+  else if (missing(nprow) && !missing(npcol))
+    comm.stop("You must also provide a value for 'nprow'")
+  else if (!missing(nprow) && missing(npcol)) 
+    comm.stop("You must also provide a value for 'npcol'")
+  else if (nprow*npcol > nprocs) 
+    comm.stop(paste("Error: grid size of ", nprow, "*", npcol, " is not possible with ", nprocs, " processes", sep=""))
   
   # Informing the user of creation
   if (ICTXT==0)

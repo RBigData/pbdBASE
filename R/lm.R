@@ -30,8 +30,7 @@ base.rpdgels <- function(tol, m, n, nrhs, a, desca, b, descb)
             PACKAGE="pbdBASE")
   
   if (ret$INFO!=0)
-    warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
-  
+    comm.warning(paste("ScaLAPACK returned INFO=", ret$INFO, "; returned solution is likely invalid", sep=""))
   
   return( ret )
 }
@@ -51,7 +50,7 @@ base.rpdgeqpf <- function(tol, m, n, x, descx)
                PACKAGE="pbdBASE")
   
   if (ret$INFO!=0)
-    warning(paste("ScaLAPACK returned INFO=", ret$INFO, "; returned solution is likely invalid", sep=""))
+    comm.warning(paste("ScaLAPACK returned INFO=", ret$INFO, "; returned solution is likely invalid", sep=""))
   
   
   return( ret )
@@ -76,7 +75,7 @@ base.rpdorgqr <- function(m, n, k, qr, descqr, tau)
             PACKAGE="pbdBASE")
   
   if (out$INFO!=0)
-    warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
+    comm.warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
   
   ret <- out$A
   
@@ -113,7 +112,7 @@ base.rpdormqr <- function(side, trans, m, n, k, qr, descqr, tau, c, descc)
             PACKAGE="pbdBASE")
   
   if (out$INFO!=0)
-    warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
+    comm.warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
   
   return( out$B )
 }

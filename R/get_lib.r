@@ -15,7 +15,7 @@ get.lib <- function(arg, arch, package = "pbdSLAP"){
                    system.file(lib.file, package = package))
     cat(file.path)
   } else{
-    stop("The arg is not found.")
+    comm.stop("The arg is not found.")
   }
 
   invisible()

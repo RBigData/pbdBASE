@@ -12,7 +12,7 @@ get.conf <- function(arg, arch, package = "pbdMPI"){
   if(length(id) > 0){
     cat(gsub(paste("^", arg, " = (.*)", sep = ""), "\\1", ret[id[1]]))
   } else{
-    stop("The arg is not found.")
+    comm.stop("The arg is not found.")
   }
 
   invisible()

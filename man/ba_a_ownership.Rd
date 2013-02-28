@@ -10,12 +10,10 @@
   aa
 }
 \usage{
-  ownany(x, ..., dim, bldim, CTXT = 0)
+  base.ownany(dim, bldim, CTXT = 0)
   numroc(dim, bldim, ICTXT = 0, fixme = TRUE)
 }
 \arguments{
-  \item{x}{distributed matrix}
-  \item{...}{optional extra arguments}
   \item{dim}{global dimension}
   \item{bldim}{blocking dimension}
   \item{ICTXT, CTXT}{BLACS context}
