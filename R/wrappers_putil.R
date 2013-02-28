@@ -198,7 +198,7 @@ base.rrowcpy <- function(dx, dy, xrow, yrow)
     storage.mode(dy@Data) <- "double"
   
   ret <- .Call("R_RROWCPY", 
-               dx@Data, as.integer(ldim), as.integer(descx), as.integer(xcol), dy@Data, as.integer(descy), as.integer(ycol), as.integer(length(ycol)),
+               dx@Data, as.integer(ldim), as.integer(descx), as.integer(xrow), dy@Data, as.integer(descy), as.integer(yrow), as.integer(length(yrow)),
                PACKAGE="pbdBASE")
   
   dx@Data <- ret

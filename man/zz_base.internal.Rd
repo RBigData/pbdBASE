@@ -7,14 +7,15 @@
 \alias{base.ddiagmk}
 \alias{base.ddiagtk}
 \alias{base.descinit}
+\alias{base.dim0}
 \alias{base.gridexit}
 \alias{base.indxg2p}
 \alias{base.init.grid}
+\alias{base.maxdim}
 \alias{base.minctxt}
 \alias{base.mkgblmat}
 \alias{base.mksubmat}
 \alias{base.numroc}
-\alias{base.ownany}
 \alias{base.pcoord}
 \alias{base.pdchtri}
 \alias{base.pdsweep}
@@ -41,6 +42,21 @@
 \alias{base.rrowcpy}
 \alias{base.tri2zero}
 \alias{base.valid_context}
+
+
+\alias{base.dgamn2d}
+\alias{base.dgamx2d}
+\alias{base.dgerv2d}
+\alias{base.dgesd2d}
+\alias{base.dgsum2d}
+\alias{base.g2l_coord}
+\alias{base.igamn2d}
+\alias{base.igamx2d}
+\alias{base.igsum2d}
+\alias{base.l2g_coord}
+\alias{base.pdclvar}
+\alias{base.rpdgemr2d}
+
 
 
 \alias{.conflicts.OK}

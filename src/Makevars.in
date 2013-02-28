@@ -20,8 +20,8 @@ R_OBJS = \
   base_scalapack.o \
   base_scalapack_utility_fort.o \
   base_lm.o \
-  variance.o \
-  base_variance.o \
+  secret/variance.o \
+  secret/base_variance.o \
   auxil.o \
   bprnt_c.o \
   export_blacs/pkg_tools.o \

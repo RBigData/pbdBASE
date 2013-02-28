@@ -276,3 +276,39 @@ base.rpdgecon <- function(norm, m, n, a, desca)
   return( ret[1] )
 }
 
+
+
+# ################################################
+# ------------------------------------------------
+# Utility
+# ------------------------------------------------
+# ################################################
+
+# ------------------------------------------------
+# PDGEMR2D:  BC redistributions
+# ------------------------------------------------
+
+base.rpdgemr2d <- function(x, descx, descy)
+{
+  ldimy <- base.numroc(dim=descy[3L:4L], bldim=descy[5L:6L], ICTXT=descy[2L])
+  
+  m <- descx[3L]
+  n <- descx[4L]
+  
+  if (!is.double(x))
+    storage.mode(x) <- "double"
+  
+  ret <- .Call("R_PDGEMR2D",
+               as.integer(m), as.integer(n),
+               x, as.integer(descx),
+               as.integer(ldimy), as.integer(descy),
+               as.integer(0), # context 0 is always passed since pdgemr2d 
+               # requires the grids to have at least 1 processor in common
+               PACKAGE="pbdBASE")
+  
+  return( ret )
+}
+
+
+
+

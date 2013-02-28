@@ -1,7 +1,7 @@
 \name{OwnerShip}
 \alias{Ownership}
 
-\alias{ownany}
+\alias{base.ownany}
 
 \alias{numroc}
 
@@ -10,13 +10,13 @@
   aa
 }
 \usage{
-  base.ownany(dim, bldim, CTXT = 0)
+  base.ownany(dim, bldim, ICTXT = 0)
   numroc(dim, bldim, ICTXT = 0, fixme = TRUE)
 }
 \arguments{
   \item{dim}{global dimension}
   \item{bldim}{blocking dimension}
-  \item{ICTXT, CTXT}{BLACS context}
+  \item{ICTXT}{BLACS context}
   \item{fixme}{logical, controls correction of local dimension return}
 }
 \details{
@@ -54,19 +54,8 @@
 library(pbdBASE, quiet = TRUE)
 init.grid()
 
-# don't do this in production code
-x <- matrix(1:16, ncol=4)
-dx <- as.ddmatrix(x, bldim=2) 
-
-iown <- ownany(dx)
-comm.print(iown, all.rank=T)
-
 iown <- ownany(dim=c(4, 4), bldim=c(2, 2), CTXT=0)
 comm.print(iown, all.rank=T)
-
-# but NOT
-# ownany(c(4,4), c(2,2), 0)
-# ^this will produce an error
 
 finalize()
 }

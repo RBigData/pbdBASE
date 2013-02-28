@@ -60,7 +60,7 @@
   section.
 }
 \seealso{
-  \code{\link{as.ddmatrix}, \link{BLACS}, \link{Distribute}}
+  \link{BLACS}
 }
 \examples{
 \dontrun{

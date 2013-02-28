@@ -84,8 +84,8 @@ base.rpdlaprnt <- function(m, n, a, desca)
   
   .Call("R_PDLAPRNT", 
         as.integer(m), as.integer(n),
-        dx@Data, as.integer(desca),
-        as.character(deparse(substitute(dx))),
+        a, as.integer(desca),
+        as.character(deparse(substitute(a))),
         6L,  #WCC: 0 for stderr, 6 for stdout. Both are disabled.
         PACKAGE="pbdBASE"
         )
@@ -100,7 +100,7 @@ base.maxdim <- function(dim)
   mdim[1] <- pbdMPI::allreduce(dim[1], op='max')
   mdim[2] <- pbdMPI::allreduce(dim[2], op='max')
   
-  return(mdim)
+  return( mdim )
 }
 
 # Compute dimensions on process MYROW=MYCOL=0
@@ -126,3 +126,52 @@ base.dim0 <- function(dim, ICTXT=0)
     return( c(mx01, mx02) )
 }
 
+
+
+# l2g and g2l
+base.g2l_coord <- function(ind, dim, bldim, ICTXT=0)
+{
+  blacs_ <- base.blacs(ICTXT=ICTXT)
+  procs <- c(blacs_$NPROW, blacs_$NPCOL)
+  src <- c(0,0)
+  
+  out <- .Call("g2l_coords", 
+                ind=as.integer(ind), dim=as.integer(dim), bldim=as.integer(bldim),
+                procs=as.integer(procs), src=as.integer(src),
+                PACKAGE="pbdBASE"
+               )
+  
+#  out[5:6] <- out[5:6] + 1
+  
+  if (out[3]!=blacs_$MYROW || out[4]!=blacs_$MYCOL)
+    out <- rep(NA, 6)
+  
+  # out is a 'triple of pairs' stored as a length-6 vector, consisting of:
+    # block position
+    # process grid block
+    # local coordinates
+  # out will be a length 6 vector of NA when that global coord is not
+  # relevant to the local storage
+  
+  return(out)
+}
+
+g2l_coord <- base.g2l_coord
+
+
+base.l2g_coord <- function(ind, dim, bldim, ICTXT=0)
+{
+  blacs_ <- base.blacs(ICTXT=ICTXT)
+  procs <- c(blacs_$NPROW, blacs_$NPCOL)
+  myproc <- c(blacs_$MYROW, blacs_$MYCOL)
+  
+  out <- .Call("l2g_coords", 
+                ind=as.integer(ind), dim=as.integer(dim), bldim=as.integer(bldim),
+                procs=as.integer(procs), src=as.integer(myproc),
+                PACKAGE="pbdBASE"
+               )
+  
+  return(out)
+}
+
+l2g_coord <- base.l2g_coord
