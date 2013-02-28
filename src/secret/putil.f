@@ -867,7 +867,7 @@
   ! DESCX = Descriptor array for X
 ! OUTPUTS
   ! DIAG = Diagonal of the global matrix for which X is the submatrix.
-      SUBROUTINE PDDIAGTK(X, IX, JX, DESCX, DIAG, REDUCE, RDEST, CDEST)
+      SUBROUTINE PDGDGTK(X, IX, JX, DESCX, DIAG, RDEST, CDEST)
       IMPLICIT NONE
       ! IN/OUT
       INTEGER             IX, JX, DESCX(9), RDEST, CDEST
@@ -889,11 +889,7 @@
       M = LDM(1)
       N = LDM(2)
       
-      IF (REDUCE.EQ.'Y') THEN
-        K = MIN(DESCX(3), DESCX(4))
-      ELSE 
-        K = MIN(M, N)
-      END IF
+      K = MIN(DESCX(3), DESCX(4))
       
       DIAG(1:K) = ZERO
       
@@ -906,9 +902,7 @@
         END DO
       END DO
       
-      IF (REDUCE.EQ.'Y') THEN
-        CALL DGSUM2D(DESCX(2), 'All', ' ', K, 1, DIAG, K, RDEST, CDEST)
-      END IF
+      CALL DGSUM2D(DESCX(2), 'All', ' ', K, 1, DIAG, K, RDEST, CDEST)
       
       RETURN
       END

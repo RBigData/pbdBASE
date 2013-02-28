@@ -92,7 +92,7 @@ base.rl2insert <- function(x, descx, vec, i, j)
 {
   dim <- descx[3L:4L]
   
-  if (i[2L] < 0){
+  if (i[1L] < 0){
     new <- 1L:dim[1L]
     i <- new[-which(new %in% abs(i))] # FIXME make this less stupid
   }
@@ -116,32 +116,27 @@ base.rl2insert <- function(x, descx, vec, i, j)
 }
 
 
-base.ddiagtk <- function(x, descx, reduce=FALSE, proc.dest='all')
+base.ddiagtk <- function(x, descx, proc.dest='all')
 {
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  if (reduce){
-    rd <- 'Y'
-    
-    if (proc.dest[1L] == 'all')
-      rdest <- cdest <- -1
-    else {
-      if (length(proc.dest)==1){
-        src <- base.pcoord(ICTXT=descx[2L], PNUM=proc.dest)
-        rsrc <- src[[1L]]
-        csrc <- src[[2L]]
-      }
+  if (proc.dest[1L] == 'all')
+    rdest <- cdest <- -1
+  else {
+    if (length(proc.dest)==1){
+      src <- base.pcoord(ICTXT=descx[2L], PNUM=proc.dest)
+      rsrc <- src[[1L]]
+      csrc <- src[[2L]]
     }
   }
-  else {
-    rd <- 'N'
-    rdest <- cdest <- -1
-  }
   
-  ret <- .Call("R_PDDIAGTK", 
-               x, as.integer(dim(x)), as.integer(descx), as.integer(min(dx@dim)),
-               rd, as.integer(rdest), as.integer(cdest),
+  
+  ldiag <- min(descx[3L:4L])
+  
+  ret <- .Call("R_PDGDGTK", 
+               x, as.integer(dim(x)), as.integer(descx), as.integer(ldiag),
+               as.integer(rdest), as.integer(cdest),
                PACKAGE="pbdBASE")
   
   return( ret )
