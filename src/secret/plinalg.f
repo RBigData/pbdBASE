@@ -3,13 +3,13 @@
 
 ! X^T * X or X * X^T
 ! TRANS = 'T' :  X^T*X, TRANS = 'N' : X*X^T
-      SUBROUTINE PDCROSSPROD(TRANS, ALPHA, X, IX, JX,
+      SUBROUTINE PDCROSSPROD(UPLO, TRANS, ALPHA, X, IX, JX,
      $                       DESCX, C, IC, JC, DESCC)
       IMPLICIT NONE
       ! IN/OUT
       INTEGER             IX, JX, DESCX(9), IC, JC, DESCC(9)
       DOUBLE PRECISION    X( * ), C( * ), ALPHA
-      CHARACTER*1         TRANS
+      CHARACTER*1         UPLO, TRANS
       ! Local
       INTEGER             LDX, LDC
       CHARACTER*1         NST
@@ -31,35 +31,50 @@
       END IF
       
       ! Compute upper triangle of X^T*X or X^T*X
-      CALL PDSYRK('U', NST, LDC, LDX, ALPHA, X, IX, JX, DESCX,
+      CALL PDSYRK(UPLO, NST, LDC, LDX, ALPHA, X, IX, JX, DESCX,
      $            ZERO, C, IC, JC, DESCC)
       
       ! Fill lower triangle (make symmetric)
-      CALL PDMKSYM('U', C, IC, JC, DESCC)
+      CALL PDMKSYM(UPLO, C, IC, JC, DESCC)
       
       RETURN
       END 
 
 
 ! compute inverse of a cholesky
-      SUBROUTINE PDCHTRI(X, IX, JX, DESCX, C, IC, JC, DESCC, INFO)
+      SUBROUTINE PDCHTRI(UPLO, X, IX, JX, DESCX, C, IC, JC, DESCC, INFO)
       IMPLICIT NONE
       ! IN/OUT
       INTEGER             IX, JX, DESCX(9), IC, JC, DESCC(9), INFO
       DOUBLE PRECISION    X( * ), C( * )
+      CHARACTER*1         UPLO
+      ! Local
+      CHARACTER*1         LOUP
       ! Parameter
       DOUBLE PRECISION    ONE
       PARAMETER ( ONE = 1.0D0 )
       ! External
-      EXTERNAL            PDTRTRI, PDCROSSPROD
+      EXTERNAL            PTRI2ZERO, PDTRTRI, PDCROSSPROD
       
       
-      CALL PTRI2ZERO('L', 'N', X, DESCX)
+      IF (UPLO.EQ.'L') THEN
+        LOUP = 'U'
+      ELSE IF (UPLO.EQ.'U') THEN
+        LOUP = 'L'
+      ELSE 
+        INFO = -1
+        RETURN
+      END IF
       
-      CALL PDTRTRI('U', 'N', DESCX(4), X, IX, JX, DESCX, INFO)
-!      CALL PDPOTRI('U', DESCX(4), X, IX, JX, DESCX, INFO)
+      ! Zero triangle opposite UPLO
+      CALL PTRI2ZERO(LOUP, 'N', X, DESCX)
       
-      CALL PDCROSSPROD('T', ONE, X, IX, JX, DESCC, C, IC, JC, DESCC)
+      ! Invert the UPLO triangle
+      CALL PDTRTRI(UPLO, 'N', DESCX(4), X, IX, JX, DESCX, INFO)
+      
+      ! 
+      CALL PDCROSSPROD(UPLO, 'T', ONE, X, IX, JX, DESCC, 
+     $                 C, IC, JC, DESCC)
       
       RETURN
       END 

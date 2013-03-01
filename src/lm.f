@@ -1,3 +1,6 @@
+!! Copyright 2013, Schmidt
+
+
 !     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !     RPDORMQR:  Modified PDORMQR to be compatible with 
 !     RPDGEQPF.

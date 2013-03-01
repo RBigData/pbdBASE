@@ -9,8 +9,11 @@
 # PDTRAN:  Matrix transpose
 # ------------------------------------------------
 
-base.rpdtran <- function(m, n, a, desca, descc)
+base.rpdtran <- function(a, desca, descc)
 {
+  m <- desca[3L]
+  n <- desca[4L]
+  
   if (!is.double(a))
     storage.mode(a) <- "double"
   
@@ -30,10 +33,14 @@ base.rpdtran <- function(m, n, a, desca, descc)
 # PDGEMM:  Matrix-Matrix multiplication
 # ------------------------------------------------
 
-base.rpdgemm <- function(transx, transy, m, n, k, x, descx, y, descy, descc)
+base.rpdgemm <- function(transx, transy, x, descx, y, descy, descc)
 {
   transx <- toupper(transx)
   transy <- toupper(transy)
+  
+  m <- descx[3L]
+  n <- descy[4L]
+  k <- descy[3L]
   
   cldim <- base.numroc(descc[3:4], descc[5:6], ICTXT=descc[2])
   

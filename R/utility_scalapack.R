@@ -1,17 +1,18 @@
 # R version of ScaLAPACK tool DESCINIT
 # Creates ScaLAPACK descriptor array for distributed matrix
+# This array is identical to 
 base.descinit <- function(dim, bldim, ldim, ICTXT=0)
 {
   desc <- integer(9)
-  desc[1] <- 1L       # matrix type --- 1 for dense
-  desc[2] <- ICTXT    # CTXT_A
-  desc[3] <- dim[1]   # M_A
-  desc[4] <- dim[2]   # N_A
-  desc[5] <- bldim[1] # MB_A
-  desc[6] <- bldim[2] # NB_A
-  desc[7] <- 0L       # RSRC_A
-  desc[8] <- 0L       # CSRC_A
-  desc[9] <- ldim[1]  # LLD_A
+  desc[1L] <- 1L                    # matrix type
+  desc[2L] <- ICTXT                 # CTXT_A
+  desc[3L] <- dim[1L]               # M_A
+  desc[4L] <- dim[2L]               # N_A
+  desc[5L] <- bldim[1L]             # MB_A
+  desc[6L] <- bldim[2L]             # NB_A
+  desc[7L] <- 0L                    # RSRC_A
+  desc[8L] <- 0L                    # CSRC_A
+  desc[9L] <- max(1L, ldim[1L])     # LLD_A
   
   return(desc)
 }
@@ -27,12 +28,12 @@ base.numroc <- function(dim, bldim, ICTXT=0, fixme=TRUE)
   
   MYP <- c(blacs_$MYROW, blacs_$MYCOL)
   PROCS <- c(blacs_$NPROW, blacs_$NPCOL)
-
+  
   ISRCPROC <- 0
   
   ldim <- numeric(2)
   for (i in 1:2){
-    MYDIST <- (PROCS[i] + MYP[i] -  ISRCPROC) %% PROCS[i]
+    MYDIST <- (PROCS[i] + MYP[i] - ISRCPROC) %% PROCS[i]
     NBLOCKS <- floor(dim[i] / bldim[i])
     ldim[i] <- floor(NBLOCKS / PROCS[i]) * bldim[i]
     EXTRABLKS <- NBLOCKS %% PROCS[i]
@@ -48,8 +49,8 @@ base.numroc <- function(dim, bldim, ICTXT=0, fixme=TRUE)
 
   if (fixme){
     if (any(is.na(ldim)))
-      ldim[which(is.na(ldim))] <- 0
-    if (any(ldim<1)) ldim <- c(1,1) # FIXME
+      ldim[which(is.na(ldim))] <- 0L
+    if (any(ldim<1)) ldim <- c(1L, 1L) # FIXME
   }
 
   return(ldim)
@@ -74,20 +75,6 @@ base.ownany <- function(dim, bldim, ICTXT=0)
     return(TRUE)
 }
 
-ownany <- function(x, ..., dim, bldim, ICTXT=0)
-{
-  if (!missing(bldim) && length(bldim)==1)
-    bldim <- rep(bldim, 2)
-  if (!missing(x) && is.ddmatrix(x))
-    return( base.ownany(dim=x@dim, bldim=x@bldim, ICTXT=x@ICTXT) )
-  else if (!missing(dim) && !missing(bldim) && missing(x) && is.numeric(dim) && is.numeric(bldim))
-    return( base.ownany(dim=dim, bldim=bldim, ICTXT=ICTXT) )
-  else{
-    print("Error: bad input(s) in ownany()")
-    stop("")
-  }
-}
-
 
 # Hook into ScaLAPACK tool PDLAPRNT
 base.rpdlaprnt <- function(m, n, a, desca)
@@ -97,8 +84,8 @@ base.rpdlaprnt <- function(m, n, a, desca)
   
   .Call("R_PDLAPRNT", 
         as.integer(m), as.integer(n),
-        dx@Data, as.integer(desca),
-        as.character(deparse(substitute(dx))),
+        a, as.integer(desca),
+        as.character(deparse(substitute(a))),
         6L,  #WCC: 0 for stderr, 6 for stdout. Both are disabled.
         PACKAGE="pbdBASE"
         )
@@ -106,3 +93,85 @@ base.rpdlaprnt <- function(m, n, a, desca)
   return( invisible(0) )
 }
 
+# Compute maximum dimension across all nodes
+base.maxdim <- function(dim)
+{
+  mdim <- numeric(2)
+  mdim[1] <- pbdMPI::allreduce(dim[1], op='max')
+  mdim[2] <- pbdMPI::allreduce(dim[2], op='max')
+  
+  return( mdim )
+}
+
+# Compute dimensions on process MYROW=MYCOL=0
+base.dim0 <- function(dim, ICTXT=0)
+{
+  blacs_ <- base.blacs(ICTXT=ICTXT)
+  MYROW <- blacs_$MYROW
+  MYCOL <- blacs_$MYCOL
+  
+  if (MYROW == 0 && MYCOL == 0){
+    mx01 <- dim[1]
+    mx02 <- dim[2]
+  }
+  
+  mx01 <- pbdMPI::bcast(mx01)
+  mx02 <- pbdMPI::bcast(mx02)
+  
+#  pbdMPI::barrier()
+  
+  if (MYROW==0 && MYCOL==0)
+    return( dim )
+  else
+    return( c(mx01, mx02) )
+}
+
+
+
+# l2g and g2l
+base.g2l_coord <- function(ind, dim, bldim, ICTXT=0)
+{
+  blacs_ <- base.blacs(ICTXT=ICTXT)
+  procs <- c(blacs_$NPROW, blacs_$NPCOL)
+  src <- c(0,0)
+  
+  out <- .Call("g2l_coords", 
+                ind=as.integer(ind), dim=as.integer(dim), bldim=as.integer(bldim),
+                procs=as.integer(procs), src=as.integer(src),
+                PACKAGE="pbdBASE"
+               )
+  
+#  out[5:6] <- out[5:6] + 1
+  
+  if (out[3]!=blacs_$MYROW || out[4]!=blacs_$MYCOL)
+    out <- rep(NA, 6)
+  
+  # out is a 'triple of pairs' stored as a length-6 vector, consisting of:
+    # block position
+    # process grid block
+    # local coordinates
+  # out will be a length 6 vector of NA when that global coord is not
+  # relevant to the local storage
+  
+  return(out)
+}
+
+g2l_coord <- base.g2l_coord
+
+
+base.l2g_coord <- function(ind, dim, bldim, ICTXT=0)
+{
+  blacs_ <- base.blacs(ICTXT=ICTXT)
+  procs <- c(blacs_$NPROW, blacs_$NPCOL)
+  myproc <- c(blacs_$MYROW, blacs_$MYCOL)
+  
+  out <- .Call("l2g_coords", 
+                ind=as.integer(ind), dim=as.integer(dim), bldim=as.integer(bldim),
+                procs=as.integer(procs), src=as.integer(myproc),
+                PACKAGE="pbdBASE"
+               )
+  
+  return(out)
+}
+
+l2g_coord <- base.l2g_coord

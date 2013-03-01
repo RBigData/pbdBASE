@@ -1,3 +1,6 @@
+!! Copyright 2013, Schmidt
+
+
 !     PDLANGE subroutine wrapper for use with F77_CALL in C
 !     Also handles allocation of work vector
       SUBROUTINE MATNORM(VALUE, NORM, M, N, A, IA, JA, DESCA)

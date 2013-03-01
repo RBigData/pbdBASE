@@ -867,11 +867,12 @@
   ! DESCX = Descriptor array for X
 ! OUTPUTS
   ! DIAG = Diagonal of the global matrix for which X is the submatrix.
-      SUBROUTINE PDDIAGTK(X, IX, JX, DESCX, DIAG)
+      SUBROUTINE PDGDGTK(X, IX, JX, DESCX, DIAG, RDEST, CDEST)
       IMPLICIT NONE
       ! IN/OUT
-      INTEGER             IX, JX, DESCX(9)
+      INTEGER             IX, JX, DESCX(9), RDEST, CDEST
       DOUBLE PRECISION    X(DESCX(9), *), DIAG( * )
+      CHARACTER*1         REDUCE
       ! Local
       INTEGER             K, M, N, I, J, GI, GJ, LDM(2), 
      $                    BLACS(5), DESC(9)
@@ -882,15 +883,15 @@
       EXTERNAL            PDIMS, DALLREDUCE
       
       
-      K = MIN(DESCX(3), DESCX(4))
-      
-      DIAG(1:K) = ZERO
-      
       ! Get local and proc grid info
       CALL PDIMS(DESCX, LDM, BLACS)
       
       M = LDM(1)
       N = LDM(2)
+      
+      K = MIN(DESCX(3), DESCX(4))
+      
+      DIAG(1:K) = ZERO
       
       DO J = 1, N
         DO I = 1, M
@@ -901,7 +902,7 @@
         END DO
       END DO
       
-      CALL DGSUM2D(DESCX(2), 'All', ' ', K, 1, DIAG, 1,-1,-1)
+      CALL DGSUM2D(DESCX(2), 'All', ' ', K, 1, DIAG, K, RDEST, CDEST)
       
       RETURN
       END
