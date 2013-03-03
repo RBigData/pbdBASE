@@ -57,6 +57,7 @@
 \alias{base.pdclvar}
 \alias{base.rpdgemr2d}
 
+\alias{base.nbd}
 
 
 \alias{.conflicts.OK}
