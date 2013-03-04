@@ -1,19 +1,34 @@
 \name{InitGrid}
 \alias{InitGrid}
+
 \alias{init.grid}
+\alias{blacs_gridinit}
+
 \title{ Initialize Process Grid }
 \description{
   Manages the creation of BLACS context grids.
 }
 \usage{
-  init.grid(nprow, npcol, ICTXT)
+  init.grid(NPROW, NPCOL, ICTXT, ..., quiet = FALSE)
+  blacs_gridinit(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
 }
 \arguments{
-  \item{nprow}{number of process rows.}
-  \item{npcol}{number of process columns.}
+  \item{NPROW}{number of process rows. Can be missing; see details.}
+  \item{NPCOL}{number of process columns. Can be missing; see details.}
   \item{ICTXT}{BLACS context number.}
+  \item{...}{additional arguments.}
+  \item{quiet}{logical; controls whether or not information about grid
+  size should be printed.}
 }
 \details{
+  \code{blacs_gridinit()} is for experienced users only.  It is a shallow
+  wrapper of the BLACS routine \code{BLACS_GRIDINIT}, with the addition 
+  of creating the \code{.__blacs_gridinfo_ICTXT} objects, as described
+  below.
+  
+  
+  The remainder of this section applies only to \code{init.grid()}.
+  
   If \code{ICTXT} is missing, three variables will be created in the
   \code{.pbdBASEEnv} environment:
   
@@ -31,10 +46,10 @@
   Contexts 0, 1, 2, and 3 are reserved. Additional custom contexts
   are possible to create, but they must be integers > 3.
   
-  Context 0 is the ``full'' process grid of \code{nprow} by \code{npcol} 
+  Context 0 is the ``full'' process grid of \code{NPROW} by \code{NPCOL} 
   processes; contexts 1 is the process grid consisting of 1 process row and 
-  \code{nprow}*\code{npcol} processes columns; context 2 is the process grid
-  consisting of \code{nprow}*\code{npcol} processes rows and 1 process column. 
+  \code{NPROW}*\code{NPCOL} processes columns; context 2 is the process grid
+  consisting of \code{NPROW}*\code{NPCOL} processes rows and 1 process column. 
   These contexts can be redundant depending on the number of prcesses available.
   
   BLACS contexts have important internal use, and advanced users familiar with 
@@ -42,7 +57,7 @@
   grids. Most users should not need to directly manage BLACS contexts, in this 
   function or elsewhere.
   
-  If the \code{nprow} and \code{npcol} values are missing, then a best process
+  If the \code{NPROW} and \code{NPCOL} values are missing, then a best process
   grid will be chosen for the user based on the total available number of
   processes. Here ``best'' means as close to a square grid as possible.
   

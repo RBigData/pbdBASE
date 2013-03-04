@@ -58,6 +58,7 @@
 \alias{base.rpdgemr2d}
 
 \alias{base.nbd}
+\alias{base.blacs_gridinit}
 
 
 \alias{.conflicts.OK}
