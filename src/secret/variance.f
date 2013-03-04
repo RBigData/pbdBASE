@@ -7,7 +7,7 @@
       INTEGER             DESCX( 9 )
       DOUBLE PRECISION    X(DESCX(9), *), MN(*)
       ! Local
-      INTEGER             M, N, I, J, LDM(2), BLACS(5)
+      INTEGER             M, N, I, J, LDM(2), BLACS(5), NN
       DOUBLE PRECISION    DENOM
       !External
       EXTERNAL            PDIMS, DGSUM2D
@@ -21,14 +21,17 @@
       DENOM = DBLE(DESCX(3))
       
       DO J = 1, N
-        MN(J) = 0
+        MN(J) = 0.0D0
         DO I = 1, M
           MN(J) = MN(J) + X(I,J)
         END DO
         MN(J) = MN(J) / DENOM
       END DO
       
-      CALL DGSUM2D(DESCX(2), 'Column', ' ', N, 1, MN, N, -1, -1)
+      NN = N
+      CALL IGAMX2D(DESCX(2), 'Col', ' ', 1, 1, NN,1,-1,-1,-1,-1,-1)
+      
+      CALL DGSUM2D(DESCX(2), 'Col', ' ', NN, 1, MN, NN, -1, -1)
       
       RETURN
       END
@@ -41,11 +44,14 @@
       INTEGER             DESCX( 9 )
       DOUBLE PRECISION    X(DESCX(9), *), VAR(*)
       ! Local
-      INTEGER             M, N, I, J, LDM(2), BLACS(5), ALLOCERR
-      DOUBLE PRECISION    SCL, DENOM, WORK(2)
-      DOUBLE PRECISION, ALLOCATABLE :: MN(:)
+      INTEGER             M, N, I, J, LDM(2), BLACS(5), ALLOCERR, NN
+      DOUBLE PRECISION    SCL, DENOM
+      DOUBLE PRECISION, ALLOCATABLE :: MN(:), WORK(:,:)
+      ! Parameter
+      DOUBLE PRECISION    ZERO
+      PARAMETER ( ZERO = 0.0D0 )
       !External
-      EXTERNAL            PDIMS, PDCLMN, DGSUM2D
+      EXTERNAL            PDIMS, PDCLMN, IGAMX2D, DGSUM2D
       DOUBLE PRECISION    PDVAR
       
       
@@ -56,22 +62,35 @@
       
       DENOM = DBLE(DESCX(3))
       
-      ALLOCATE(MN(N), STAT=ALLOCERR)
+      NN = N
+      CALL IGAMX2D(DESCX(2), 'Col', ' ', 1, 1, NN,1,-1,-1,-1,-1,-1)
+      
+      ALLOCERR = 0
+      ALLOCATE(MN(NN), STAT=ALLOCERR)
+      IF (ALLOCERR.NE.0) RETURN ! STOP "Out of memory"
+      ALLOCATE(WORK(2, NN), STAT=ALLOCERR)
       IF (ALLOCERR.NE.0) RETURN ! STOP "Out of memory"
       
+      MN(1:N) = ZERO
       CALL PDCLMN(X, DESCX, MN)
       
+      WORK(1:2, 1:NN) = ZERO
+      
       DO J = 1, N
-        WORK(1:2) = 0.0D0
         DO I = 1, M
-          WORK(1) = WORK(1) + (X(I,J) - MN(J))**2
-          WORK(2) = WORK(2) + X(I,J) - MN(J)
+          WORK(1, J) = WORK(1, J) + (X(I,J) - MN(J))**2
+          WORK(2, J) = WORK(2, J) + X(I,J) - MN(J)
         END DO
-        CALL DGSUM2D(DESCX(2), 'Col', ' ', 2, 1, WORK, 2, -1, -1)
-        VAR(J) = (WORK(1) - (WORK(2)**2)/DENOM) / (DENOM - 1)
+      END DO
+      
+      CALL DGSUM2D(DESCX(2), 'Col', ' ', 2*NN, 1, WORK, 2*NN, -1, -1)
+      
+      DO J = 1, N
+        VAR(J) = (WORK(1, J) - (WORK(2, J)**2)/DENOM) / (DENOM - 1)
       END DO
       
       DEALLOCATE(MN)
+      DEALLOCATE(WORK)
       
       RETURN
       END

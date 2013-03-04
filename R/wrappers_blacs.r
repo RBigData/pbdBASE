@@ -17,6 +17,38 @@ procgrid <- base.procgrid
 
 
 #Initialize Process Grid
+base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL)
+{
+  if (ICTXT == 0)
+    ICTXT <- 0L
+  
+  if (!is.integer(ICTXT))
+    comm.stop("ICTXT must be an integer")
+  else if (!is.numeric(NPROW) || !is.numeric(NPCOL))
+    comm.stop("'NPROW' and 'NPCOL' must be numeric")
+  else {
+    nm <- paste(".__blacs_gridinfo_", ICTXT, sep="")
+    
+    if (exists(nm)){
+      comm.warning("Context", ICTXT, "is already in use. No new grid created")
+      return(invisible(1))
+    }
+  }
+  
+  value <- .Fortran("mpi_blacs_initialize", 
+                    NPROW=as.integer(NPROW), NPCOL=as.integer(NPCOL), 
+                    ICTXT=as.integer(ICTXT), MYROW=as.integer(0), MYCOL=as.integer(0),
+                    PACKAGE="pbdBASE")
+  
+  assign(x=nm, value=value, envir=.pbdBASEEnv )
+  
+  if (!exists(".__blacs_initialized"))
+    assign(x=".__blacs_initialized", value=TRUE, envir=.pbdBASEEnv)
+  
+  invisible( 0 )
+}
+
+
 base.init.grid <- function(nprow, npcol, ICTXT)
 {
   pbdMPI::init() # initialize pbdMPI communicator
@@ -41,8 +73,8 @@ base.init.grid <- function(nprow, npcol, ICTXT)
   # optimal size grid if parameters are missing
   if (missing(nprow) && missing(npcol)){
     procs <- base.procgrid(nprocs=nprocs)
-    nprow <- procs$nprow
-    npcol <- procs$npcol
+    nprow <- as.integer(procs$nprow)
+    npcol <- as.integer(procs$npcol)
   } 
   else if (missing(nprow) && !missing(npcol))
     comm.stop("You must also provide a value for 'nprow'")
@@ -57,38 +89,11 @@ base.init.grid <- function(nprow, npcol, ICTXT)
   else
     pbdMPI::comm.cat(sprintf("%s", paste("Grid ICTXT=", ICTXT, " of size ", nprow, "x", npcol, " successfully created\n\n", sep="")), quiet=TRUE)
   
-  value <- .Fortran("mpi_blacs_initialize", 
-                  NPROW=as.integer(nprow), 
-                  NPCOL=as.integer(npcol), 
-                  ICTXT=as.integer(0), 
-                  MYROW=as.integer(0), 
-                  MYCOL=as.integer(0),
-                  PACKAGE="pbdBASE"
-                )
+  base.blacs_gridinit(ICTXT=ICTXT, NPROW=nprow, NPCOL=npcol)
   
   if (ICTXT==0){
-    # Full context
-    assign(x=".__blacs_gridinfo_0", value=value, envir=.pbdBASEEnv)
-    # Row context
-#    if (.__blacs_gridinfo_0$NPROW==1)
-#      assign(x=".__blacs_gridinfo_1", 
-#       value=value, 
-#       envir=.pbdBASEEnv
-#      )
-#    else
-      assign(x=".__blacs_gridinfo_1", 
-             value=.Fortran("mpi_blacs_initialize", 
-                    NPROW=as.integer(1), NPCOL=as.integer(nprow*npcol), 
-                    ICTXT=as.integer(1), MYROW=as.integer(0), 
-                    MYCOL=as.integer(0) ),
-             envir=.pbdBASEEnv )
-    # Col context
-      assign(x=".__blacs_gridinfo_2", 
-             value=.Fortran("mpi_blacs_initialize", 
-                    NPROW=as.integer(nprow*npcol), NPCOL=as.integer(1), 
-                    ICTXT=as.integer(2), MYROW=as.integer(0), 
-                    MYCOL=as.integer(0) ),
-             envir=.pbdBASEEnv )
+    base.blacs_gridinit(ICTXT=1L, NPROW=1, NPCOL=nprow*npcol)
+    base.blacs_gridinit(ICTXT=2L, NPROW=nprow*npcol, NPCOL=1)
   }
   else
     assign(x=paste(".__blacs_gridinfo_", ICTXT, sep=""), value=value, envir=.pbdBASEEnv)

@@ -18,7 +18,7 @@ R_OBJS = \
   base_mpi_blac.o \
   base_pblas_level3.o \
   base_scalapack.o \
-  base_scalapack_utility_fort.o \
+  base_scalapack_utility.o \
   base_lm.o \
   secret/variance.o \
   secret/base_variance.o \

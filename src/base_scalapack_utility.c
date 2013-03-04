@@ -31,3 +31,28 @@ SEXP R_PDGEMR2D(SEXP M, SEXP N, SEXP X, SEXP DESCX, SEXP CLDIM, SEXP DESCB, SEXP
   return(B);
 } /* End of R_PDGEMR2D(). */
 
+
+
+// next best divisor function
+SEXP R_nbd(SEXP N, SEXP D)
+{
+  int i, test;
+  
+  SEXP RET;
+  PROTECT(RET = allocVector(INTSXP, 1));
+  INTEGER(RET)[0] = INTEGER(D)[0];
+  
+  for (i=INTEGER(RET)[0]; i<=INTEGER(N)[0]; i++){
+    test = INTEGER(N)[0] % i;
+    if (test == 0){
+      INTEGER(RET)[0] = i;
+      break;
+    }
+  }
+  
+  UNPROTECT(1);
+  return RET;
+}
+
+
+
