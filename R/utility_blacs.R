@@ -27,8 +27,8 @@ base.minctxt <- function(after=0)
   after <- after+1
   
   while(TRUE){
-    x <- try( blacs(after), silent=T )
-    if (inherits(x=x, what="try-error"))
+    nm <- paste(".__blacs_gridinfo_", after, sep="")
+    if (!exists(nm, envir = .pbdBASEEnv))
       break
     after <- after+1
   }

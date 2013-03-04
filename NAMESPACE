@@ -9,9 +9,7 @@ export(
 
 export(
   ### blacs
-  init.grid, blacs, gridexit, pnum, pcoord, blacsexit,
-  minctxt,
-  
+  blacs_gridinit, init.grid, blacs, gridexit, pnum, pcoord, blacsexit, minctxt,
   ### utility
   numroc
 )

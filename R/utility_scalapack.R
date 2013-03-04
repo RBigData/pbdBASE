@@ -138,8 +138,7 @@ base.g2l_coord <- function(ind, dim, bldim, ICTXT=0)
   out <- .Call("g2l_coords", 
                 ind=as.integer(ind), dim=as.integer(dim), bldim=as.integer(bldim),
                 procs=as.integer(procs), src=as.integer(src),
-                PACKAGE="pbdBASE"
-               )
+                PACKAGE="pbdBASE")
   
 #  out[5:6] <- out[5:6] + 1
   
@@ -168,8 +167,7 @@ base.l2g_coord <- function(ind, dim, bldim, ICTXT=0)
   out <- .Call("l2g_coords", 
                 ind=as.integer(ind), dim=as.integer(dim), bldim=as.integer(bldim),
                 procs=as.integer(procs), src=as.integer(myproc),
-                PACKAGE="pbdBASE"
-               )
+                PACKAGE="pbdBASE")
   
   return(out)
 }

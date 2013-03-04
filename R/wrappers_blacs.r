@@ -16,23 +16,50 @@ procgrid <- base.procgrid
 
 
 
-#Initialize Process Grid
-base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL)
+# Initialize Process Grid --- these functions have side effects and no return
+isint <- function(x){
+  if (is.numeric(x)){
+    if (x-as.integer(x) == 0)
+      return( TRUE )
+    else
+      return( FALSE )
+  }
+  else
+    return( FALSE )
+}
+
+
+base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
 {
-  if (ICTXT == 0)
-    ICTXT <- 0L
+  if (missing(ICTXT))
+    ICTXT <- base.minctxt()
+  else if (!isint(x=ICTXT) || ICTXT < 0)
+    comm.stop("ICTXT must be a non-negative integer")
   
-  if (!is.integer(ICTXT))
-    comm.stop("ICTXT must be an integer")
-  else if (!is.numeric(NPROW) || !is.numeric(NPCOL))
-    comm.stop("'NPROW' and 'NPCOL' must be numeric")
-  else {
-    nm <- paste(".__blacs_gridinfo_", ICTXT, sep="")
-    
-    if (exists(nm)){
-      comm.warning("Context", ICTXT, "is already in use. No new grid created")
-      return(invisible(1))
-    }
+  
+  pbdMPI::init() # initialize pbdMPI communicator
+  nprocs <- pbdMPI::comm.size()
+  
+  if (missing(NPROW) && missing(NPCOL)){
+    procs <- base.procgrid(nprocs=nprocs)
+    NPROW <- as.integer(procs$nprow)
+    NPCOL <- as.integer(procs$npcol)
+  } 
+  else if (missing(NPROW) && !missing(NPCOL))
+    comm.stop("You must also provide a value for 'NPROW'")
+  else if (!missing(NPROW) && missing(NPCOL)) 
+    comm.stop("You must also provide a value for 'NPCOL'")
+  else if (!isint(x=NPROW) || !isint(x=NPCOL))
+    comm.stop("'NPROW' and 'NPCOL' must be integers")
+  else if (NPROW*NPCOL > nprocs) 
+    comm.stop(paste("Error: grid size of ", NPROW, "*", NPCOL, " is not possible with ", nprocs, " processes", sep=""))
+  
+  
+  nm <- paste(".__blacs_gridinfo_", ICTXT, sep="")
+  
+  if (exists(nm)){
+    comm.warning("Context", ICTXT, "is already in use. No new grid created")
+    return( invisible(1) )
   }
   
   value <- .Fortran("mpi_blacs_initialize", 
@@ -42,64 +69,59 @@ base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL)
   
   assign(x=nm, value=value, envir=.pbdBASEEnv )
   
+  if (ICTXT==0 && !quiet)
+    pbdMPI::comm.cat(sprintf("%s", paste("Using ", NPROW, "x", NPCOL, " for the default grid size\n\n", sep="")), quiet=TRUE)
+  else if (ICTXT > 0 && !quiet)
+    pbdMPI::comm.cat(sprintf("%s", paste("Grid ICTXT=", ICTXT, " of size ", NPROW, "x", NPCOL, " successfully created\n", sep="")), quiet=TRUE)
+  
   if (!exists(".__blacs_initialized"))
     assign(x=".__blacs_initialized", value=TRUE, envir=.pbdBASEEnv)
   
   invisible( 0 )
 }
 
+blacs_gridinit <- base.blacs_gridinit
 
-base.init.grid <- function(nprow, npcol, ICTXT)
+
+
+base.init.grid <- function(NPROW, NPCOL, ICTXT, ..., quiet = FALSE)
 {
   pbdMPI::init() # initialize pbdMPI communicator
   
-  nprocs <- pbdMPI::comm.size()
-  
   if (missing(ICTXT)){
-    if (exists(".__blacs_gridinfo_0")){
-      comm.warning("Context 0 is already initialized. No new grid created")
-      return(invisible(1))
-    } else {
-      ICTXT <- 0
+    if (missing(NPROW) && missing(NPCOL)){
+      if (exists(".__blacs_gridinfo_0")){
+        comm.warning("Context 0 is already initialized. No new grid created")
+        return( invisible(1) )
+      } else {
+        ICTXT <- 0L
+      }
+    }
+    else {
+      ICTXT <- base.minctxt()
     }
   }
   else if (ICTXT==0 || ICTXT==1 || ICTXT==2) 
     comm.stop("Contexts 0, 1, and 2 are reserved; use 3 or above.")
-  else if (ICTXT < 0)
-    comm.stop("Context must be at least 3")
-  else if (ICTXT - as.integer(ICTXT) > 0) 
-    comm.stop("Context must be an integer")
-  
-  # optimal size grid if parameters are missing
-  if (missing(nprow) && missing(npcol)){
-    procs <- base.procgrid(nprocs=nprocs)
-    nprow <- as.integer(procs$nprow)
-    npcol <- as.integer(procs$npcol)
-  } 
-  else if (missing(nprow) && !missing(npcol))
-    comm.stop("You must also provide a value for 'nprow'")
-  else if (!missing(nprow) && missing(npcol)) 
-    comm.stop("You must also provide a value for 'npcol'")
-  else if (nprow*npcol > nprocs) 
-    comm.stop(paste("Error: grid size of ", nprow, "*", npcol, " is not possible with ", nprocs, " processes", sep=""))
   
   # Informing the user of creation
-  if (ICTXT==0)
-    pbdMPI::comm.cat(sprintf("%s", paste("Using ", nprow, "x", npcol, " for the default grid size\n\n", sep="")), quiet=TRUE)
-  else
-    pbdMPI::comm.cat(sprintf("%s", paste("Grid ICTXT=", ICTXT, " of size ", nprow, "x", npcol, " successfully created\n\n", sep="")), quiet=TRUE)
   
-  base.blacs_gridinit(ICTXT=ICTXT, NPROW=nprow, NPCOL=npcol)
+  base.blacs_gridinit(ICTXT=ICTXT, NPROW=NPROW, NPCOL=NPCOL, quiet=quiet)
   
   if (ICTXT==0){
-    base.blacs_gridinit(ICTXT=1L, NPROW=1, NPCOL=nprow*npcol)
-    base.blacs_gridinit(ICTXT=2L, NPROW=nprow*npcol, NPCOL=1)
+    if (missing(NPROW) && missing(NPCOL)){
+      pbdMPI::init() # initialize pbdMPI communicator
+      nprocs <- pbdMPI::comm.size()
+      
+      procs <- base.procgrid(nprocs=nprocs)
+      NPROW <- as.integer(procs$nprow)
+      NPCOL <- as.integer(procs$npcol)
+    } 
+    
+    base.blacs_gridinit(ICTXT=1L, NPROW=1, NPCOL=NPROW*NPCOL, quiet=TRUE)
+    base.blacs_gridinit(ICTXT=2L, NPROW=NPROW*NPCOL, NPCOL=1, quiet=TRUE)
   }
-  else
-    assign(x=paste(".__blacs_gridinfo_", ICTXT, sep=""), value=value, envir=.pbdBASEEnv)
-
-  if (!exists(".__blacs_initialized"))
-    assign(x=".__blacs_initialized", value=TRUE, envir=.pbdBASEEnv)
+  
   invisible(0) # quiet return
 }
 

@@ -11,13 +11,13 @@
 
 base.rpdtran <- function(a, desca, descc)
 {
-  m <- desca[3L]
-  n <- desca[4L]
+  m <- descc[3L]
+  n <- descc[4L]
   
   if (!is.double(a))
     storage.mode(a) <- "double"
   
-  cldim <- base.numroc(descc[3:4], descc[5:6], ICTXT=descc[2])
+  cldim <- base.numroc(descc[3L:4L], descc[5L:6L], ICTXT=descc[2L])
   
   ret <- .Call("R_PDTRAN",
                 as.integer(m), as.integer(n),

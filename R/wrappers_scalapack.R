@@ -147,10 +147,16 @@ base.rpdpotrf <- function(uplo, n, a, desca)
 # PDGETRF:  LU Decomposition
 # ------------------------------------------------
 
-base.rpdgetrf <- function(m, n, a, desca)
+base.rpdgetrf <- function(a, desca)
 {
+  m <- desca[3L]
+  n <- desca[4L]
+  
   aldim <- dim(a)
-  lipiv <- base.maxdim(aldim)[1L] + desca[5L]
+  
+  mxrow <- base.igamx2d(ICTXT=desca[2L], SCOPE='Row', m=1L, n=1L, x=aldim[1L], lda=1L, RDEST=-1L, CDEST=-1L)
+  lipiv <- mxrow + desca[5L]
+#  lipiv <- base.maxdim(aldim)[1L] + desca[5L]
   
   if (!is.double(a))
     storage.mode(a) <- "double"
