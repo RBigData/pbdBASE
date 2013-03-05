@@ -1224,98 +1224,8 @@
 
 
 
-!!! Column YCOL of Y is copied onto column XCOL of X.  Obvious assumptions are made.
-!!      SUBROUTINE RCOLCPY(X, DESCX, XCOLS, Y, DESCY, YCOLS, LCOLS)
-!!      IMPLICIT NONE
-!!      ! IN/OUT
-!!      INTEGER             DESCX(9), DESCY(9), LCOLS, XCOLS(LCOLS), 
-!!     $                    YCOLS(LCOLS)
-!!      DOUBLE PRECISION    X(DESCX(9), *), Y(DESCY(9), *)
-!!      ! Local
-!!      LOGICAL             IHAVE, INEED
-!!      INTEGER             I, J, GI, GJ, MX, NX, MY, NY, GM, GN,
-!!     $                    RBL, CBL, LDM(2), BLACS(5), 
-!!     $                    LXCOL, LYCOL, XCOL, YCOL, COL,
-!!     $                    RSRC, CSRC, RDEST, CDEST,
-!!     $                    RXLEN, RYLEN, RXTOP, RYTOP
-!!      ! External
-!!      EXTERNAL            PDIMS, INDXG2L, INDXL2G
-!!      ! Function
-!!      INTEGER             INDXG2L, INDXL2G
-!!      ! ################################################################
-!!      
-!!      
-!!      GM = DESCX(3)
-!!      GN = DESCX(4)
-!!      
-!!      IF (GM.NE.DESCY(3)) RETURN
-!!      
-!!      RBL = DESCX(5)
-!!      CBL = DESCX(6)
-!!      
-!!      ! Get local and proc grid info
-!!      CALL PDIMS(DESCY, LDM, BLACS)
-!!      MY = LDM(1)
-!!      NY = LDM(2)
-!!      
-!!      CALL PDIMS(DESCX, LDM, BLACS)
-!!      
-!!      MX = LDM(1)
-!!      NX = LDM(2)
-!!      
-!!      DO COL = 1, LCOLS, 1
-!!        XCOL = XCOLS(COL)
-!!        YCOL = YCOLS(COL)
-!!        
-!!        LXCOL = INDXG2L(XCOL, DESCX(6), 1, 1, BLACS(3))
-!!        LYCOL = INDXG2L(YCOL, DESCY(6), 1, 1, BLACS(3))
-!!        DO GI = 1, GM, RBL
-!!          ! Index juggling
-!!          I = INDXG2L(GI, RBL, 1, 1, BLACS(2))
-!!          
-!!          RXTOP = MIN(I+RBL-1, MX)
-!!          RXLEN = RXTOP - I + 1
-!!          
-!!          RYTOP = MIN(I+RBL-1, MY)
-!!          RYLEN = RYTOP - I + 1
-!!          
-!!          ! Row and column (processor) source
-!!          RSRC = MOD( (GI-1)/RBL, BLACS(2) )
-!!          CSRC = MOD( (YCOL-1)/CBL, BLACS(3) )
-!!          
-!!          IHAVE = ( RSRC.EQ.BLACS(4) .AND. CSRC.EQ.BLACS(5) )
-!!          
-!!          ! Row and column (processor) destination
-!!          RDEST = MOD( (GI-1)/RBL, BLACS(2) )
-!!          CDEST = MOD( (XCOL-1)/CBL, BLACS(3) )
-!!          
-!!          INEED = ( RDEST.EQ.BLACS(4) .AND. CDEST.EQ.BLACS(5) )
-!!          
-!!          ! Copy
-!!          IF (IHAVE) THEN ! Check if need to SEND
-!!            IF (INEED) THEN ! Easy case
-!!              X(I:RXTOP, LXCOL) = Y(I:RYTOP, LYCOL)
-!!            ELSE ! Otherwise SEND
-!!              ! Send
-!!              CALL DGESD2D(DESCX(2), RYLEN, 1, Y(I, LYCOL), RYLEN, 
-!!     $                     RDEST, CDEST)
-!!            END IF
-!!          ELSE IF (INEED) THEN ! Otherwise check if need to RECEIVE
-!!            ! Receive
-!!            CALL DGERV2D(DESCX(2), RXLEN, 1, X(I, LXCOL), RXLEN, 
-!!     $                   RSRC, CSRC)
-!!          END IF
-!!        
-!!        END DO ! GI
-!!      END DO ! COL
-!!      
-!!      RETURN
-!!      END
-
-
-
-! Columns YCOLS of Y are copied onto columns XCOLS of X.  
-! Obvious assumptions are made.
+! Column YCOL of Y is copied onto column XCOL of X.  
+! LCOLS = number of entries in XCOLS and YCOLS
       SUBROUTINE RCOLCPY(X, DESCX, XCOLS, Y, DESCY, YCOLS, LCOLS)
       IMPLICIT NONE
       ! IN/OUT
@@ -1354,16 +1264,12 @@
       MX = LDM(1)
       NX = LDM(2)
       
-      ! The work
       DO COL = 1, LCOLS, 1
         XCOL = XCOLS(COL)
         YCOL = YCOLS(COL)
         
         LXCOL = INDXG2L(XCOL, DESCX(6), 1, 1, BLACS(3))
         LYCOL = INDXG2L(YCOL, DESCY(6), 1, 1, BLACS(3))
-        
-        J = INDXG2L(GJ, CBL, 1, 1, BLACS(3))
-        
         DO GI = 1, GM, RBL
           ! Index juggling
           I = INDXG2L(GI, RBL, 1, 1, BLACS(2))
@@ -1407,6 +1313,36 @@
       RETURN
       END
 
+
+
+! Column YCOL of Y is copied onto column XCOL of X. 
+! LXCOLS is allowed to be an integer multiple of LYCOLS
+      SUBROUTINE RCOLCPY2(X, DESCX, XCOLS, LXCOLS, Y, DESCY, YCOLS, 
+     $                    LYCOLS)
+      IMPLICIT NONE
+      ! IN/OUT
+      INTEGER             DESCX(9), DESCY(9), LXCOLS, XCOLS(LXCOLS),
+     $                    LYCOLS, YCOLS(LYCOLS)
+      DOUBLE PRECISION    X(DESCX(9), *), Y(DESCY(9), *)
+      ! Local
+      INTEGER             COL
+      ! External
+      EXTERNAL            RCOLCPY
+      ! ################################################################
+      
+      
+      IF (MOD(LXCOLS, LYCOLS).NE.0) THEN
+        RETURN
+      END IF
+      
+      DO COL = 1, LXCOLS, LYCOLS
+        CALL RCOLCPY(X, DESCX, XCOLS(COL), Y, DESCY, YCOLS, LYCOLS)
+      END DO
+      
+      RETURN
+      END
+
+
 ! Rows YROWS of Y are copied onto rows XROWS of X.  
 ! Obvious assumptions are made.
       SUBROUTINE RROWCPY(X, DESCX, XROWS, Y, DESCY, YROWS, LROWS)
@@ -1432,7 +1368,7 @@
       GM = DESCX(3)
       GN = DESCX(4)
       
-      IF (GM.NE.DESCY(3)) RETURN
+      IF (GN.NE.DESCY(4)) RETURN
       
       RBL = DESCX(5)
       CBL = DESCX(6)
@@ -1500,49 +1436,32 @@
       RETURN
       END
 
-
-
-
-
-
-!! Column YCOL of Y is copied onto column XCOL of X.  Obvious assumptions are made.
-!      SUBROUTINE RCOLCPY(X, DESCX, XCOL, Y, DESCY, YCOL)
-!      IMPLICIT NONE
-!      ! IN/OUT
-!      INTEGER             DESCX(9), DESCY(9), XCOL, YCOL
-!      DOUBLE PRECISION    X(DESCX(9), *), Y(DESCY(9), *)
-!      ! Local
-!      LOGICAL             IHAVE, INEED
-!      INTEGER             K, M, N, POS, I, J, TI, TJ, GI, GJ, 
-!     $                    LDM(2), BLACS(5), LM, LN, RTOP, CTOP,
-!     $                    RLEN, CLEN, LXCOL, LYCOL, DESC(9),
-!     $                    RSRC, CSRC, RDEST, CDEST, RBL, CBL, GM, GN
-!      ! Parameter
-!      DOUBLE PRECISION    ZERO, ONE
-!      PARAMETER ( ZERO = 0.0D0, ONE = 1.0D0 )
-!      ! External
-!      EXTERNAL            PDIMS, G2LPAIR
-!      ! Function
-!      INTEGER             INDXG2L, INDXL2G
-!      ! ################################################################
-!      
-!      
-!      ! Get local and proc grid info
-!      CALL PDIMS(DESCX, LDM, BLACS)
-!      
-!      LXCOL = INDXG2L(XCOL, DESCX(6), 1, 1, BLACS(3))
-!      LYCOL = INDXG2L(YCOL, DESCX(6), 1, 1, BLACS(3))
-!      
-!      WRITE (*,*) "YCOL=",YCOL,"LYCOL=",LYCOL
-!      
-!      DESCX(8) = 1
-!      
-!      CALL PDCOPY(DESCX(3), Y(1, LYCOL), 1, 1, DESCX, 1, 
-!     $                      X(1, LXCOL), 1, 1, DESCX, 1)
-!      
-!      RETURN
-!      END
-
+! Rows YROWS of Y are copied onto rows XROWS of X.  
+! LXROWS is allowed to be an integer multiple of LYROWS
+      SUBROUTINE RROWCPY2(X, DESCX, XROWS, LXROWS, Y, DESCY, YROWS, 
+     $                    LYROWS)
+      IMPLICIT NONE
+      ! IN/OUT
+      INTEGER             DESCX(9), DESCY(9), LXROWS, XROWS(LXROWS),
+     $                    LYROWS, YROWS(LYROWS)
+      DOUBLE PRECISION    X(DESCX(9), *), Y(DESCY(9), *)
+      ! Local
+      INTEGER             ROW
+      ! External
+      EXTERNAL            RROWCPY
+      ! ################################################################
+      
+      
+      IF (MOD(LXROWS, LYROWS).NE.0) THEN
+        RETURN
+      END IF
+      
+      DO ROW = 1, LXROWS, LYROWS
+        CALL RROWCPY(X, DESCX, XROWS(ROW), Y, DESCY, YROWS, LYROWS)
+      END DO
+      
+      RETURN
+      END
 
 
 
