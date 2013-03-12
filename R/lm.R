@@ -52,6 +52,12 @@ base.rpdgeqpf <- function(tol, m, n, x, descx)
   if (ret$INFO!=0)
     comm.warning(paste("ScaLAPACK returned INFO=", ret$INFO, "; returned solution is likely invalid", sep=""))
   
+  if (descx[5L] > m || descx[6L] > n){
+    if (comm.rank()>0)
+      ret$rank <- 0L
+    
+    ret$rank <- pbdMPI::allreduce(ret$rank)
+  }
   
   return( ret )
 }
