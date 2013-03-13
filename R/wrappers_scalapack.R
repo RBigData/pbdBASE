@@ -67,7 +67,7 @@ base.rpdgesv <- function(n, nrhs, a, desca, b, descb)
 # PDGESVD:  SVD of x
 # ------------------------------------------------
 
-base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt)
+base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt, ..., inplace=FALSE)
 {
   size <- min(m, n)
   
@@ -102,13 +102,18 @@ base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt)
   if (!is.double(a))
     storage.mode(a) <- "double"
   
+  if (inplace)
+    inplace <- 'Y'
+  else
+    inplace <- 'N'
+  
   # Call ScaLAPACK
   out <- .Call("R_PDGESVD", 
             as.integer(m), as.integer(n), as.integer(size),
             a, as.integer(desca), as.integer(aldim),
             as.integer(uldim), as.integer(descu),
             as.integer(vtldim), as.integer(descvt),
-            as.character(jobu), as.character(jobvt),
+            as.character(jobu), as.character(jobvt), inplace,
             PACKAGE="pbdBASE")
   
   if (out$info!=0)

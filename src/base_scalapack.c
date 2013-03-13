@@ -137,7 +137,8 @@ SEXP R_PDGETRI(SEXP A, SEXP CLDIM, SEXP DESCA, SEXP N)
 
 /* SVD */
 SEXP R_PDGESVD(SEXP M, SEXP N, SEXP ASIZE, SEXP A, SEXP DESCA, SEXP ALDIM, 
-  SEXP ULDIM, SEXP DESCU, SEXP VTLDIM, SEXP DESCVT, SEXP JOBU, SEXP JOBVT)
+  SEXP ULDIM, SEXP DESCU, SEXP VTLDIM, SEXP DESCVT, SEXP JOBU, SEXP JOBVT, 
+  SEXP INPLACE)
 {
   int i, *pt_ALDIM = INTEGER(ALDIM);
   double *A_OUT;
@@ -148,6 +149,8 @@ SEXP R_PDGESVD(SEXP M, SEXP N, SEXP ASIZE, SEXP A, SEXP DESCA, SEXP ALDIM,
   double temp_A = 0, temp_work = 0, *WORK;
 
   /* Protect R objects. */
+  PROTECT(A);
+  
   PROTECT(RET = allocVector(VECSXP, 4));
   PROTECT(RET_NAMES = allocVector(STRSXP, 4));
   
@@ -167,11 +170,7 @@ SEXP R_PDGESVD(SEXP M, SEXP N, SEXP ASIZE, SEXP A, SEXP DESCA, SEXP ALDIM,
   SET_STRING_ELT(RET_NAMES, 2, mkChar("u")); 
   SET_STRING_ELT(RET_NAMES, 3, mkChar("vt")); 
   setAttrib(RET, R_NamesSymbol, RET_NAMES);
-
-  /* Make copy of original data, since pdgesvd destroys it */
-  i = pt_ALDIM[0] * pt_ALDIM[1];
-  A_OUT = (double *) R_alloc(i, sizeof(double));
-  memcpy(A_OUT, REAL(A), i * sizeof(double));
+  
   
   /* Query size of workspace */
   INTEGER(INFO)[0] = 0;
@@ -189,16 +188,32 @@ SEXP R_PDGESVD(SEXP M, SEXP N, SEXP ASIZE, SEXP A, SEXP DESCA, SEXP ALDIM,
   WORK = (double *) R_alloc(temp_lwork, sizeof(double));
   
   INTEGER(INFO)[0] = 0;
-  F77_CALL(pdgesvd)(CHARPT(JOBU, 0), CHARPT(JOBVT, 0),
-    INTEGER(M), INTEGER(N),
-    A_OUT, &temp_IJ, &temp_IJ, INTEGER(DESCA),
-    REAL(D), REAL(U), &temp_IJ, &temp_IJ, INTEGER(DESCU),
-    REAL(VT), &temp_IJ, &temp_IJ, INTEGER(DESCVT),
-    WORK, &temp_lwork, INTEGER(INFO));
-
+  
+  if (CHARPT(INPLACE, 0) == 'N'){
+    /* Make copy of original data, since pdgesvd destroys it */
+    i = pt_ALDIM[0] * pt_ALDIM[1];
+    A_OUT = (double *) R_alloc(i, sizeof(double));
+    memcpy(A_OUT, REAL(A), i * sizeof(double));
+    
+    F77_CALL(pdgesvd)(CHARPT(JOBU, 0), CHARPT(JOBVT, 0),
+      INTEGER(M), INTEGER(N),
+      A_OUT, &temp_IJ, &temp_IJ, INTEGER(DESCA),
+      REAL(D), REAL(U), &temp_IJ, &temp_IJ, INTEGER(DESCU),
+      REAL(VT), &temp_IJ, &temp_IJ, INTEGER(DESCVT),
+      WORK, &temp_lwork, INTEGER(INFO));
+  }
+  else {
+    F77_CALL(pdgesvd)(CHARPT(JOBU, 0), CHARPT(JOBVT, 0),
+      INTEGER(M), INTEGER(N),
+      REAL(A), &temp_IJ, &temp_IJ, INTEGER(DESCA),
+      REAL(D), REAL(U), &temp_IJ, &temp_IJ, INTEGER(DESCU),
+      REAL(VT), &temp_IJ, &temp_IJ, INTEGER(DESCVT),
+      WORK, &temp_lwork, INTEGER(INFO));
+  }
+  
   /* Return. */
-  UNPROTECT(6);
-
+  UNPROTECT(7);
+  
   return(RET);
 } /* End of R_PDGESVD(). */
 
