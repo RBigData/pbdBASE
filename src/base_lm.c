@@ -96,6 +96,7 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
   
   /* allocate work vector and compute LLS solution */
   lwork = (int) work;
+  lwork = nonzero(lwork);
   p_work = (double *) R_alloc(lwork, sizeof(double));
   
   INTEGER(INFO)[0] = 0;
@@ -171,17 +172,18 @@ SEXP R_PDGEQPF(SEXP TOL, SEXP M, SEXP N,
   
   /* workspace query */
   INTEGER(INFO)[0] = 0;
-  F77_CALL(rpdgeqpf)(REAL(TOL), INTEGER(M), INTEGER(N),
+  rpdgeqpf_(REAL(TOL), INTEGER(M), INTEGER(N),
     &tmp, &IJ, &IJ, INTEGER(DESCA), 
     &IJ, &tmp,
     &work, &lwork, &IJ, INTEGER(INFO));
   
   /* allocate work vector and factor A=QR */
   lwork = (int) work;
+  lwork = nonzero(lwork);
   p_work = (double *) R_alloc(lwork, sizeof(double));
   
   INTEGER(INFO)[0] = 0;
-  F77_CALL(rpdgeqpf)(REAL(TOL), INTEGER(M), INTEGER(N),
+  rpdgeqpf_(REAL(TOL), INTEGER(M), INTEGER(N),
     REAL(A_OUT), &IJ, &IJ, INTEGER(DESCA), 
     INTEGER(IPIV), REAL(TAU),
     p_work, &lwork, INTEGER(RANK), INTEGER(INFO));
@@ -253,6 +255,7 @@ SEXP R_PDORMQR(SEXP SIDE, SEXP TRANS, SEXP M, SEXP N, SEXP K,
   
   /* allocate work vector and compute Q*y or Q^T*y */
   lwork = (int) work;
+  lwork = nonzero(lwork);
   p_work = (double *) R_alloc(lwork, sizeof(double));
   
   INTEGER(INFO)[0] = 0;
@@ -322,6 +325,7 @@ SEXP R_PDORGQR(SEXP M, SEXP N, SEXP K,
   
   /* allocate work vector and recover Q */
   lwork = (int) work;
+  lwork = nonzero(lwork);
   p_work = (double *) R_alloc(lwork, sizeof(double));
   
   INTEGER(INFO)[0] = 0;

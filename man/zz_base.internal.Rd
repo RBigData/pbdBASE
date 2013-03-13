@@ -60,6 +60,8 @@
 \alias{base.nbd}
 \alias{base.blacs_gridinit}
 
+\alias{base.rcolcpy2}
+\alias{base.rrowcpy2}
 
 \alias{.conflicts.OK}
 
