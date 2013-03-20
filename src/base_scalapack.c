@@ -131,7 +131,7 @@ SEXP R_PDGETRI(SEXP A, SEXP CLDIM, SEXP DESCA, SEXP N)
 
 
 // -------------------------------------------------------- 
-// Auxillary 
+// Factorizations 
 // -------------------------------------------------------- 
 
 
@@ -211,12 +211,66 @@ SEXP R_PDGESVD(SEXP M, SEXP N, SEXP ASIZE, SEXP A, SEXP DESCA, SEXP ALDIM,
       WORK, &temp_lwork, INTEGER(INFO));
   }
   
-  /* Return. */
   UNPROTECT(7);
   
   return(RET);
-} /* End of R_PDGESVD(). */
+} 
 
+
+/* Eigen */
+SEXP R_PDSYEV(SEXP JOBZ, SEXP UPLO, SEXP N, SEXP A, SEXP DESCA, SEXP ALDIM, SEXP ZLDIM, SEXP DESCZ)
+{
+  int i, *pt_ALDIM = INTEGER(ALDIM);
+  double *A_OUT;
+  SEXP RET, RET_NAMES, INFO, W, Z;
+  
+  /* Extra needed. */
+  int temp_IJ = 1, temp_lwork = -1;
+  double temp_A = 0, temp_work = 0, *WORK;
+  
+  /* Protect R objects. */
+  PROTECT(A);
+  
+  PROTECT(RET = allocVector(VECSXP, 3));
+  PROTECT(RET_NAMES = allocVector(STRSXP, 3));
+  
+  PROTECT(W = allocVector(REALSXP, INTEGER(N)[0]));
+  PROTECT(Z = allocMatrix(REALSXP, INTEGER(ZLDIM)[0], INTEGER(ZLDIM)[1]));
+  PROTECT(INFO = allocVector(INTSXP, 1));
+  
+  SET_VECTOR_ELT(RET, 0, W);
+  SET_VECTOR_ELT(RET, 1, Z);
+  SET_VECTOR_ELT(RET, 2, INFO);
+  
+  SET_STRING_ELT(RET_NAMES, 0, mkChar("values")); 
+  SET_STRING_ELT(RET_NAMES, 1, mkChar("vectors")); 
+  SET_STRING_ELT(RET_NAMES, 2, mkChar("info")); 
+  setAttrib(RET, R_NamesSymbol, RET_NAMES);
+  
+  /* Query size of workspace */
+  INTEGER(INFO)[0] = 0;
+  pdsyev_(CHARPT(JOBZ, 0), CHARPT(UPLO, 0), INTEGER(N),
+    &temp_A, &temp_IJ, &temp_IJ, INTEGER(DESCA),
+    &temp_A, &temp_A, &temp_IJ, &temp_IJ, INTEGER(DESCZ),
+    &temp_work, &temp_lwork, INTEGER(INFO));
+    
+  /* Allocate work vector and calculate svd */
+  temp_lwork = (int) temp_work;
+  temp_lwork = nonzero(temp_lwork);
+  
+  WORK = (double *) R_alloc(temp_lwork, sizeof(double));
+  
+  INTEGER(INFO)[0] = 0;
+  
+  pdsyev_(CHARPT(JOBZ, 0), CHARPT(UPLO, 0), INTEGER(N),
+    REAL(A), &temp_IJ, &temp_IJ, INTEGER(DESCA),
+    REAL(W), REAL(Z), &temp_IJ, &temp_IJ, INTEGER(DESCZ),
+    WORK, &temp_lwork, INTEGER(INFO));
+  
+  UNPROTECT(6);
+  
+  return(RET);
+} 
 
 
 /* LU factorization */

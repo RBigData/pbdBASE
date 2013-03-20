@@ -136,7 +136,7 @@
       SUBROUTINE PDINV(X, IX, JX, DESCX, INV, INFO)
       IMPLICIT NONE
       ! IN/OUT
-      INTEGER             IX, JX, DESCX, INFO
+      INTEGER             IX, JX, DESCX(9), INFO
       DOUBLE PRECISION    X( * ), INV( * )
       ! External
       EXTERNAL           PDLACPY, PDINVIP
