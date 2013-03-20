@@ -126,6 +126,43 @@ base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt, ..., inpla
 
 
 # ------------------------------------------------
+# PDSYEV:  Eigen
+# ------------------------------------------------
+
+base.rpdsyev <- function(jobz, uplo, n, a, desca, descz)
+{
+  aldim <- dim(a)
+  zldim <- base.numroc(descz[3:4], descz[5:6], ICTXT=descz[2])
+  
+  mxa <- pbdMPI::allreduce(max(aldim), op='max')
+  mxz <- pbdMPI::allreduce(max(zldim), op='max')
+  
+  if (all(aldim==1))
+    desca[9L] <- mxa
+  if (all(zldim==1))
+    descz[9L] <- mxz
+  
+  if (!is.double(a))
+    storage.mode(a) <- "double"
+  
+  # Call ScaLAPACK
+  out <- .Call("R_PDSYEV", 
+            as.character(jobz), as.character(uplo),
+            as.integer(n), a, as.integer(desca), as.integer(aldim),
+            as.integer(zldim), as.integer(descz),
+            PACKAGE="pbdBASE")
+  
+  if (out$info!=0)
+    comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
+  
+  out$values <- rev(out$values)
+  out$info <- NULL
+  
+  return( out )
+}
+
+
+# ------------------------------------------------
 # PDPOTRF:  Cholesky Factorization
 # ------------------------------------------------
 
