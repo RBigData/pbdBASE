@@ -1,6 +1,6 @@
 /* WCC: These functions are to export and access pointers in R.
  *
- * Wei-Chen Chen, Jan 2013.
+ * Wei-Chen Chen, Mar 2013.
  */
 
 #include "pkg_global.h"
@@ -40,6 +40,8 @@ void set_BLACS_APTS_in_R(){
 		REprintf("  %s (v): %d %d.\n", __FILE__, *BI_SysContxts,
 			*BI_Stats);
 */
+		REprintf("  %s (v): %d %d %d.\n", __FILE__, BI_AuxBuff.Len,
+			BI_AuxBuff.nAops, BI_AuxBuff.N);
 		REprintf("  %s (a): %x %x %x %x %x.\n", __FILE__, &BI_MaxNCtxt,
 			&BI_MaxNSysCtxt, &BI_Iam, &BI_Np, &BI_AuxBuff);
 		REprintf("  %s (a): %x %x %x %x.\n", __FILE__, BI_ReadyB,
@@ -73,7 +75,18 @@ void get_BLACS_APTS_from_R(){
 	BI_Np = (int) *BLACS_APTS_ptr->BI_Np;
 	BI_ReadyB = (BLACBUFF*) BLACS_APTS_ptr->BI_ReadyB;
 	BI_ActiveQ = (BLACBUFF*) BLACS_APTS_ptr->BI_ActiveQ;
-	BI_AuxBuff = (BLACBUFF) *BLACS_APTS_ptr->BI_AuxBuff;
+
+	/* This is wrong, and SUNCC doesn't like this. */
+	// BI_AuxBuff = (BLACBUFF) *BLACS_APTS_ptr->BI_AuxBuff;
+	BI_AuxBuff.Buff = (char*) BLACS_APTS_ptr->BI_AuxBuff->Buff;
+	BI_AuxBuff.Len = (int) BLACS_APTS_ptr->BI_AuxBuff->Len;
+	BI_AuxBuff.nAops = (int) BLACS_APTS_ptr->BI_AuxBuff->nAops;
+	BI_AuxBuff.Aops = (MPI_Request*) BLACS_APTS_ptr->BI_AuxBuff->Aops;
+	BI_AuxBuff.dtype = (MPI_Datatype) BLACS_APTS_ptr->BI_AuxBuff->dtype;
+	BI_AuxBuff.N = (int) BLACS_APTS_ptr->BI_AuxBuff->N;
+	BI_AuxBuff.prev = (BLACBUFF*) BLACS_APTS_ptr->BI_AuxBuff->prev;
+	BI_AuxBuff.next = (BLACBUFF*) BLACS_APTS_ptr->BI_AuxBuff->next;
+
 	BI_MyContxts = (BLACSCONTEXT**) BLACS_APTS_ptr->BI_MyContxts;
 	BI_SysContxts = (MPI_Comm*) BLACS_APTS_ptr->BI_SysContxts;
 	BI_COMM_WORLD = (int*) BLACS_APTS_ptr->BI_COMM_WORLD;
@@ -91,6 +104,8 @@ void get_BLACS_APTS_from_R(){
 		REprintf("  %s (v): %d %d.\n", __FILE__, *BI_SysContxts,
 			*BI_Stats);
 */
+		REprintf("  %s (v): %d %d %d.\n", __FILE__, BI_AuxBuff.Len,
+			BI_AuxBuff.nAops, BI_AuxBuff.N);
 		REprintf("  %s (a): %x %x %x %x %x.\n", __FILE__, &BI_MaxNCtxt,
 			&BI_MaxNSysCtxt, &BI_Iam, &BI_Np, &BI_AuxBuff);
 		REprintf("  %s (a): %x %x %x %x.\n", __FILE__, BI_ReadyB,

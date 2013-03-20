@@ -49,4 +49,5 @@ $(SHLIB): $(OBJECTS)
 
 clean:
 	@rm -rf *.o *.d *.rc *.so *.dylib *.dll *.a *.lib \
-                Makedeps Makevars $(USER_CONF) $(SHLIB) $(OBJECTS)
+                Makedeps Makevars $(USER_CONF) $(SHLIB) $(OBJECTS) \
+                export_blacs/*.o secret/*.o

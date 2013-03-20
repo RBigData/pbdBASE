@@ -20,8 +20,8 @@ PKG_LIBS = "$(SLAP_LDFLAGS)" $(LAPACK_LIBS) $(BLAS_LIBS) \
            $(FLIBS) -L"$(MPI_LIB)" -lmpi
 
 ### Setup R source code and objects.
-R_SRCS_C = $(wildcard *.c)
-R_SRCS_F = $(wildcard *.f)
+R_SRCS_C = $(wildcard *.c) $(wildcard export_blacs/*.c) $(wildcard secret/*.c)
+R_SRCS_F = $(wildcard *.f) $(wildcard secret/*.f)
 R_OBJS = $(R_SRCS_C:.c=.o) $(R_SRCS_F:.f=.o)
 OBJECTS = $(R_OBJS)
 
@@ -42,4 +42,6 @@ $(SHLIB): $(OBJECTS)
 
 clean:
 	@rm -rf *.o *.d *.rc *.so *.dll *.dylib *.a *.lib \
-                Makedeps Makevars $(USER_CONF) $(SHLIB) $(OBJECTS)
+                Makedeps Makevars $(USER_CONF) $(SHLIB) $(OBJECTS) \
+                export_blacs/*.o secret/*.o
+
