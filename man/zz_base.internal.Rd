@@ -63,6 +63,8 @@
 \alias{base.rcolcpy2}
 \alias{base.rrowcpy2}
 
+\alias{base.rpdsyev}
+
 \alias{.conflicts.OK}
 
 \title{ All pbdPASE Internal Functions and Data }
