@@ -112,6 +112,7 @@ Oak Ridge, TN, USA \\
 
 \input{./pbdBASE-include/00-zzz-abstract}
 \input{./pbdBASE-include/01-introduction}
+\input{./pbdBASE-include/02-use}
 
 \newpage
 \phantomsection

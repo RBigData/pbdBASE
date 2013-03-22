@@ -2,6 +2,67 @@
 #include <Rinternals.h>
 #include "base_global.h"
 
+
+SEXP R_optimal_grid(SEXP NPROCS)
+{
+  SEXP NPROW, NPCOL, RET, RET_NAMES;
+  
+  PROTECT(RET = allocVector(VECSXP, 5));
+  PROTECT(RET_NAMES = allocVector(STRSXP, 5));
+  
+  PROTECT(NPROW = allocVector(INTSXP, 1));
+  PROTECT(NPCOL = allocVector(INTSXP, 1));
+  
+  SET_VECTOR_ELT(RET, 0, NPROW);
+  SET_VECTOR_ELT(RET, 1, NPCOL);
+  
+  SET_STRING_ELT(RET_NAMES, 0, mkChar("nprow")); 
+  SET_STRING_ELT(RET_NAMES, 1, mkChar("npcol")); 
+  
+  setAttrib(RET, R_NamesSymbol, RET_NAMES);
+  
+  optimalgrid_(INTEGER(NPROCS), INTEGER(NPROW), INTEGER(NPCOL));
+  
+  UNPROTECT(4);
+  return(RET);
+}
+
+SEXP R_blacs_init(SEXP NPROW, SEXP NPCOL, SEXP ICTXT)
+{
+  SEXP MYROW, MYCOL, RET, RET_NAMES;
+  
+  PROTECT(RET = allocVector(VECSXP, 5));
+  PROTECT(RET_NAMES = allocVector(STRSXP, 5));
+  
+  PROTECT(MYROW = allocVector(INTSXP, 1));
+  PROTECT(MYCOL = allocVector(INTSXP, 1));
+  
+  SET_VECTOR_ELT(RET, 0, NPROW);
+  SET_VECTOR_ELT(RET, 1, NPCOL);
+  SET_VECTOR_ELT(RET, 2, ICTXT);
+  SET_VECTOR_ELT(RET, 3, MYROW);
+  SET_VECTOR_ELT(RET, 4, MYCOL);
+  
+  SET_STRING_ELT(RET_NAMES, 0, mkChar("NPROW")); 
+  SET_STRING_ELT(RET_NAMES, 1, mkChar("NPCOL")); 
+  SET_STRING_ELT(RET_NAMES, 2, mkChar("ICTXT")); 
+  SET_STRING_ELT(RET_NAMES, 3, mkChar("MYROW")); 
+  SET_STRING_ELT(RET_NAMES, 4, mkChar("MYCOL")); 
+  
+  setAttrib(RET, R_NamesSymbol, RET_NAMES);
+  
+  /* initialize */
+  sl_init_(INTEGER(ICTXT), INTEGER(NPROW), INTEGER(NPCOL));
+  blacs_gridinfo_(INTEGER(ICTXT), INTEGER(NPROW), INTEGER(NPCOL), 
+    INTEGER(MYROW), INTEGER(MYCOL));
+  
+  UNPROTECT(4);
+  return(RET);
+}
+
+
+/* Reductions */
+
 SEXP R_igsum2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST)
 {
   int i;

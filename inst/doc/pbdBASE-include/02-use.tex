@@ -1,0 +1,39 @@
+\section{Using pbdBASE}
+\addcontentsline{toc}{section}{\thesection. Using pbdBASE}
+
+% The use of the package falls into two separate cases:  beginners who are unfamiliar with ScaLAPACK, and those already familiar with ScaLAPACK.
+
+\subsection{BLACS Communicators}
+\addcontentsline{toc}{subsection}{\thesubsection. BLACS Communicators}
+
+Briefly, distributed matrix computations using ScaLAPACK require specialized MPI communicators, via the BLACS library.  As with any MPI communicator, you must initialize it before getting started with communications, and you must terminate it when you are finished with communications.  For most users, this will amount to calling
+
+\begin{lstlisting}[language=rr]
+library(pbdBASE, quiet = TRUE)
+init.grid() # initialize
+
+# ...
+
+finalize() # terminate
+\end{lstlisting}
+
+This special communicator may be used with \pkg{pbdMPI} communicator(s) without causing problems, and by default one \code{finalize()} call will terminate all communicators, whether they be from \pkg{pbdMPI} or \pkg{pbdBASE} (see the \pkg{pbdBASE} reference manual for more details and options).  
+
+However, BLACS communicators are not identical to \pkg{pbdMPI} communicators.  Indeed, while a \pkg{pbdMPI} communicator is a one-dimensional array of processors, BLACS communicators are two-dimensional (row-major) grids.  These values are simply referred to as the number of processor rows and the number of processor columns, as a communicator really is thought of as a matrix of processors.  When a grid is initialized with \code{init.grid()} and no arguments are passed, then three communicators are created.  These grids are referenced by their ``integer context'' value, or \code{ICTXT}.  These grids are numbered 0, 1, and 2.  Context 0 tries to be the ``best possible'' context (see \citep{slug}).  Here we make 2 choices:
+\begin{enumerate}
+  \item Grids are always as close to square as possible.  
+  \item In the event a grid can not be made to be square, the larger value is used for the number of processor rows.
+\end{enumerate}
+
+So for example, if we have 4 processors, then by default this would create a $2\times 2$ grid for context 0.  However, if we have 6 processors, then by default this will create a $3\times 2$ grid of processors.
+
+On the other hand, context 1 is always a $1\times n$ grid, where $n$ is the total number of processors.  Likewise, context 2 is always a $n\times 1$ grid of processors.  These can be extremely valuable, especially for performing data movement operations.
+
+
+
+
+\subsection{Advanced Users}
+\addcontentsline{toc}{subsection}{\thesubsection. Advanced Users}
+
+
+This section assumes that you are familiar with the various paradigms of the BLACS, PBLAS, and ScaLAPACK libraries.  

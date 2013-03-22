@@ -2,11 +2,9 @@
 \label{sec:introduction}
 \addcontentsline{toc}{section}{\thesection. Introduction}
 
-The Programming with Big Data:  BASE system, the \proglang{R}~\citep{Rcore} package \pkg{pbdBASE}~\citep{Schmidt2012pbdBASEpackage}, is a (mostly) implicitly parallel foundational infrastructure to support higher level pbd packages, such as \pkg{pbdDMAT}~\citep{Schmidt2012pbdDMATpackage}.  Much of what it does is meant to live behind the scenes of packages further up the chain of the pbd ecosystem, and is largely targeted at developers.  However, it does offer some essential functionality for all users.
+The Programming with Big Data in R~\citep{pbdr2012}, abbreviated pbdR or just pbd, is a project which seeks to elevate the \proglang{R} language to supercomputers.  This package, \pkg{pbdBASE}~\citep{Schmidt2012pbdBASEpackage}, contains a set of wrappers of the high performance libraries BLACS, PBLAS, and ScaLAPACK~\citep{slug}, and also a host of new subroutines for performing distributed matrix computations in \proglang{R}.  The package is a dependency of \pkg{pbdDMAT}~\citep{Schmidt2012pbdDMATpackage}, which is meant to greatly simplify the \pkg{pbdBASE} system into something that intimately resembles the \proglang{R} language.  Since these two packages ultimately rely on the ScaLAPACK library, the data type used with each is the block-cyclic distributed matrix.  See the \pkg{pbdDMAT} vignette for more details.
 \np
-In many ways, the \pkg{pbdBASE} package serves the pbd project in much the same way as \proglang{R}'s \pkg{base} package serves it.  The principal goal of the \pkg{pbdBASE} package is to provide distributed classes (presently, a distributed dense matrix class), and many low-level functions for interacting with these classes.  Many of these functions are wrappers of and for the distributed matrix algebra libraries BLACS, PBLAS, and ScaLAPACK.~\citep{slug}  A set of S4 methods for \proglang{R}'s linear algebra functions using these wrappers is provided by a separate package, \pkg{pbdDMAT}.
-\np
-Updates and bug releases for this and other \pkg{pbd} projects may, especially while in infancy, be much more frequent than \href{http://cran.r-project.org/}{CRAN} releases.  So for up to date packages, as well as evolving information about the \pkg{pbd} project,  see the website ``Programming with Big Data in R'' at \href{http://r-pbd.org/}{http://r-pbd.org/}.
+Updates and bug releases for this and other \pkg{pbd} projects may, especially while in infancy, be much more frequent than \href{http://cran.r-project.org/}{CRAN} releases.  So for up to date packages, as well as evolving information about the \pkg{pbd} project,  see the pbdR project's github \url{http://code.r-pbd.org} or our website \href{http://r-pbd.org/}{http://r-pbd.org/}.
 
 
 \subsection[]{Installation}
@@ -25,21 +23,15 @@ This assumes only that you have MPI installed and properly configured on your sy
 \label{sec:more_examples}
 \addcontentsline{toc}{subsection}{\thesubsection. Indented Audience}
 
-The \pkg{pbdBASE} package is a dependency of \pkg{pbdDMAT}, and so anyone who wishes to use the latter package must first install \pkg{pbdBASE}.  However, much of the use of \pkg{pbdBASE} is intended only for extremely advanced users and developers.
+The \pkg{pbdBASE} package is a dependency of \pkg{pbdDMAT}, and so anyone who wishes to use the latter package must first install \pkg{pbdBASE}.  However, much of the direct use of \pkg{pbdBASE} is intended only for extremely advanced users and developers.  A few exceptions are the \code{init.grid()} and \code{finalize()} functions, which will be outlined in the sections to follow.  The overwhelming majority of the remaining functions are either internal or for people deeply familiar with ScaLAPACK.
 
 
 
 
 
-\subsection[]{Terminology}
+\subsection{Terminology}
+\addcontentsline{toc}{subsection}{\thesubsection. Terminology}
 % \label{sec:installation}
 Before beginning, we will make frequent use of concepts from the Single Program/Multiple Data (SPMD) paradigm.  If you are entirely unfamiliar with this approach to parallelism, or if you are unfamiliar with the \pkg{pbdMPI} package, then you are strongly encouraged to read the vignette~\citep{Chen2012pbdMPIvignette} contained in the \pkg{pbdMPI} package, as well as examine and digest its many examples in order to better understand what follows.
 \np
 A concise explanation of SPMD is that it is an approach to parallel, distributed programming in which one program is written, and each processor runs that same program, though that program locally will often be interacting with different data.  This, in contrast to the manager/worker paradigm where one processor, the manager, is in charge of its workers, each of whom swear fealty to the manager.  So in SPMD, each processor believes itself to be the manager, the one in charge.  As a colleague, Dr. Russell Zaretzki put it, ``it's like academia.''
-\np
-Throughout the remainder, we will be discussing distributed data objects such as matrices, and wish to do so with some standardized terminology.  A matrix is of course a rectangular collection of numbers.  A \emph{distributed matrix} then is just a matrix which has been decomposed in some fashion so that each processor only owns a piece of the ``whole'' matrix.  The ``whole'' matrix (which need not ever actually exist, except theoretically, at any time), rather than pieces of it distributed among the processors, will be referred to as a/the \emph{global} matrix.  Loosely speaking, the global matrix is what we are really thinking of when we deal with the distributed matrix.  
-\np
-In the SPMD paradigm, each processor, though only owning a piece of the whole (henceforth referred to as the \emph{local matrix} or \emph{submatrix}, relative to that processor), will call functions on that matrix exactly as one would with an ordinary, non-distributed matrix on a single processor.  The difference for the user is minimal; all the ``heavy lifting'' which explicitly handles the distributed nature of the object is performed in the background.
-\np
-Matrices, distributed or otherwise, have dimensions --- that is, lengths of the number of rows and the number of columns in the rectangle.  The global matrix has a \emph{global dimension}, and this is a global value, i.e., this value does not vary from processor to processor.  Every processor agrees as to the size of the ``full'' matrix, otherwise we would have anarchy.  However, the local matrices, in practice, will differ from processor to processor, and so too should their \emph{local dimensions}.  A local dimension, as the name implies, is the dimension of the submatrix, relative to a particular processor.
-
