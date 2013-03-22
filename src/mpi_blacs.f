@@ -12,7 +12,7 @@
       
       CALL SL_INIT( ICTXT, NPROW, NPCOL )
       CALL BLACS_GRIDINFO( ICTXT, NPROW, NPCOL, MYROW, MYCOL )
-
+      
       RETURN
       END
 

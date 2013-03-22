@@ -131,7 +131,6 @@ base.ddiagtk <- function(x, descx, proc.dest='all')
     }
   }
   
-  
   ldiag <- min(descx[3L:4L])
   
   ret <- .Call("R_PDGDGTK", 
@@ -143,12 +142,9 @@ base.ddiagtk <- function(x, descx, proc.dest='all')
 }
 
 
-base.ddiagmk <- function(diag, nrow, ncol, bldim, ICTXT=0)
+base.ddiagmk <- function(diag, descx)
 {
-  dim <- c(nrow, ncol)
-  ldim <- base.numroc(dim=dim, bldim=bldim, ICTXT=ICTXT)
-  
-  descx <- base.descinit(dim=dim, bldim=bldim, ldim=ldim, ICTXT=ICTXT)
+  ldim <- base.numroc(dim=descx[3L:4L], bldim=descx[5L:6L], ICTXT=descx[2L])
   
   if (!is.double(diag))
     storage.mode(diag) <- "double"
@@ -157,9 +153,7 @@ base.ddiagmk <- function(diag, nrow, ncol, bldim, ICTXT=0)
                as.integer(ldim), as.integer(descx), diag, as.integer(length(diag)),
                PACKAGE="pbdBASE")
   
-  ret <- new("ddmatrix", Data=out, dim=dim, ldim=ldim, bldim=bldim, ICTXT=ICTXT)
-  
-  return( ret )
+  return( out )
 }
 
 

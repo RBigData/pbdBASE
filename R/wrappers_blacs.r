@@ -7,9 +7,10 @@
 # "Optimal" process grid when nprow and npcol are empty
 base.procgrid <- function(nprocs)
 {
-  out <- .Fortran("OPTIMALGRID", as.integer(nprocs), integer(1), integer(1))
-  out[[1L]] <- NULL
-  return(list(nprow=out[[2L]], npcol=out[[1L]]))
+#  out <- .Fortran("OPTIMALGRID", as.integer(nprocs), integer(1), integer(1))
+#  out[[1L]] <- NULL
+#  return(list(nprow=out[[2L]], npcol=out[[1L]]))
+  .Call("R_optimal_grid", as.integer(nprocs), PACKAGE="pbdBASE")
 }
 
 procgrid <- base.procgrid
@@ -62,10 +63,9 @@ base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
     return( invisible(1) )
   }
   
-  value <- .Fortran("mpi_blacs_initialize", 
-                    NPROW=as.integer(NPROW), NPCOL=as.integer(NPCOL), 
-                    ICTXT=as.integer(ICTXT), MYROW=as.integer(0), MYCOL=as.integer(0),
-                    PACKAGE="pbdBASE")
+  value <- .Call("R_blacs_init", 
+                 as.integer(NPROW), as.integer(NPCOL), as.integer(ICTXT),
+                 PACKAGE = "pbdBASE")
   
   assign(x=nm, value=value, envir=.pbdBASEEnv )
   
