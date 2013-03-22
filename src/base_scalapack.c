@@ -189,27 +189,27 @@ SEXP R_PDGESVD(SEXP M, SEXP N, SEXP ASIZE, SEXP A, SEXP DESCA, SEXP ALDIM,
   
   INTEGER(INFO)[0] = 0;
   
-  if (CHARPT(INPLACE, 0) == 'N'){
+/*  if (CHARPT(INPLACE, 0)[0] == 'N'){*/
     /* Make copy of original data, since pdgesvd destroys it */
     i = pt_ALDIM[0] * pt_ALDIM[1];
     A_OUT = (double *) R_alloc(i, sizeof(double));
     memcpy(A_OUT, REAL(A), i * sizeof(double));
     
-    F77_CALL(pdgesvd)(CHARPT(JOBU, 0), CHARPT(JOBVT, 0),
+    pdgesvd_(CHARPT(JOBU, 0), CHARPT(JOBVT, 0),
       INTEGER(M), INTEGER(N),
       A_OUT, &temp_IJ, &temp_IJ, INTEGER(DESCA),
       REAL(D), REAL(U), &temp_IJ, &temp_IJ, INTEGER(DESCU),
       REAL(VT), &temp_IJ, &temp_IJ, INTEGER(DESCVT),
       WORK, &temp_lwork, INTEGER(INFO));
-  }
-  else {
-    F77_CALL(pdgesvd)(CHARPT(JOBU, 0), CHARPT(JOBVT, 0),
-      INTEGER(M), INTEGER(N),
-      REAL(A), &temp_IJ, &temp_IJ, INTEGER(DESCA),
-      REAL(D), REAL(U), &temp_IJ, &temp_IJ, INTEGER(DESCU),
-      REAL(VT), &temp_IJ, &temp_IJ, INTEGER(DESCVT),
-      WORK, &temp_lwork, INTEGER(INFO));
-  }
+/*  }*/
+/*  else {*/
+/*    pdgesvd_(CHARPT(JOBU, 0), CHARPT(JOBVT, 0),*/
+/*      INTEGER(M), INTEGER(N),*/
+/*      REAL(A), &temp_IJ, &temp_IJ, INTEGER(DESCA),*/
+/*      REAL(D), REAL(U), &temp_IJ, &temp_IJ, INTEGER(DESCU),*/
+/*      REAL(VT), &temp_IJ, &temp_IJ, INTEGER(DESCVT),*/
+/*      WORK, &temp_lwork, INTEGER(INFO));*/
+/*  }*/
   
   UNPROTECT(7);
   
