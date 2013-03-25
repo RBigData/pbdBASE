@@ -70,7 +70,7 @@ Oak Ridge, TN, USA \\
 %\\
 %\today
 }
-\title{A Quick Guide for the \pkg{pbdBASE} Package\\{\large Version 2.0}\\[.4cm]}
+\title{Guide to the \pkg{pbdBASE} Package\\{\large Version 2.0}\\[.4cm]}
 
 %% for pretty printing and a nice hypersummary also set:
 \Plainauthor{Drew Schmidt, Wei-Chen Chen, George Ostrouchov, Pragneshkumar Patel} %% comma-separated
