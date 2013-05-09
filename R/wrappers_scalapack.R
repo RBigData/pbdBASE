@@ -354,6 +354,9 @@ base.rpdgemr2d <- function(x, descx, descy)
                # requires the grids to have at least 1 processor in common
                PACKAGE="pbdBASE")
   
+  if (!base.ownany(dim=c(m, n), bldim=descy[5L:6L], ICTXT=descy[2L]))
+    ret <- matrix(0.0, 1L, 1L)
+  
   return( ret )
 }
 

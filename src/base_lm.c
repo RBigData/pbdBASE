@@ -2,7 +2,7 @@
 #include <Rinternals.h>
 #include "base_global.h"
 
-/* For computing LLS solution, either over or under-determined. */
+/* For computing LLS solution, either over or  under-determined. */
 /* In the case that A is rank deficient, the 'limited pivoting  */
 /* strategy from R's dqrls.f is used. I don't think this is     */
 /* numerically stable, but it's the cost of preserving the      */
