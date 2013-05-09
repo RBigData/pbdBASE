@@ -1,15 +1,24 @@
 useDynLib(pbdBASE)
+
 import(methods, rlecuyer, pbdMPI, pbdSLAP)
 
 # All internal functions
 exportPattern("^base\\.[[:alpha:]]+")
-export(
-  .Last.lib    # For finalize blacs.
-)
 
 export(
   ### blacs
-  blacs_gridinit, init.grid, blacs, gridexit, pnum, pcoord, blacsexit, minctxt,
+  blacs_gridinit, 
+  init.grid, 
+  blacs, 
+  gridexit, 
+  pnum, 
+  pcoord, 
+  blacsexit, 
+  minctxt,
   ### utility
   numroc
+)
+
+export(
+  .Last.lib    # For finalize blacs.
 )
