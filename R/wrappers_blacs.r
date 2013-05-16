@@ -110,7 +110,6 @@ base.init.grid <- function(NPROW, NPCOL, ICTXT, ..., quiet = FALSE)
   
   if (ICTXT==0){
     if (missing(NPROW) && missing(NPCOL)){
-      pbdMPI::init() # initialize pbdMPI communicator
       nprocs <- pbdMPI::comm.size()
       
       procs <- base.procgrid(nprocs=nprocs)
