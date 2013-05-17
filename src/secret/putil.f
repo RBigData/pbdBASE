@@ -20,12 +20,12 @@
       N = INT(SQRT(REAL(NPROCS)))
       
       DO I = 0, N-1
-        NROWS = N - I
-        NCOLS = INT(MOD(NPROCS, NROWS))
-        IF (NCOLS.EQ.0) EXIT
+        NCOLS = N - I
+        NROWS = INT(MOD(NPROCS, NCOLS))
+        IF (NROWS.EQ.0) EXIT
       END DO
       
-      NCOLS = NPROCS / NROWS
+      NROWS = NPROCS / NCOLS
       
       RETURN
       END
@@ -1307,6 +1307,8 @@
      $                   RSRC, CSRC)
           END IF
         
+        CALL BLACS_BARRIER(DESCX(2), 'A') 
+        
         END DO ! GI
       END DO ! COL
       
@@ -1429,6 +1431,8 @@
             CALL DGERV2D(DESCX(2), 1, CXLEN, X(LXROW, J), CXLEN, 
      $                   RSRC, CSRC)
           END IF
+        
+        CALL BLACS_BARRIER(DESCX(2), 'A') 
         
         END DO ! GI
       END DO ! ROW
