@@ -1,3 +1,11 @@
+2013-5-24:
+  * Added experimental methods for level 2 distributed R-like BLAS.
+
+2013-5-9:
+  * Fixed initialization bug in pdgemr2d.
+
+pbdBASE 0.2-1 (2013-3-25) --------------------------------------------------
+
 2013-3-20:
   * Added PDSYEV wrappers.
 

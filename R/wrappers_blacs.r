@@ -17,7 +17,6 @@ procgrid <- base.procgrid
 
 
 
-# Initialize Process Grid --- these functions have side effects and no return
 isint <- function(x){
   if (is.numeric(x)){
     if (x-as.integer(x) == 0)
@@ -30,6 +29,7 @@ isint <- function(x){
 }
 
 
+# Initialize Process Grid --- these functions have side effects and no return
 base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
 {
   if (missing(ICTXT))

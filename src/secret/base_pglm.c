@@ -1,6 +1,6 @@
 #include <R.h>
 #include <Rinternals.h>
-#include "base_global.h"
+#include "../base_global.h"
 
 SEXP R_PGLM_FIT(SEXP FAMILY, SEXP LINK, SEXP INCPT, SEXP STOPRULE,
   SEXP X, SEXP DESCX, SEXP MAXITER, SEXP TOL)

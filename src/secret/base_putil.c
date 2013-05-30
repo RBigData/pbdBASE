@@ -209,3 +209,19 @@ SEXP R_RROWCPY2(SEXP X, SEXP LDIM, SEXP DESCX, SEXP XROW, SEXP LXROWS, SEXP Y, S
   return CPX;
 }
 
+
+SEXP R_PDMVSUM(SEXP X, SEXP LDIM, SEXP DESCX, SEXP Y, SEXP DESCY)
+{
+  const int m = INTEGER(LDIM)[0], n = INTEGER(LDIM)[1];
+  
+  SEXP CPX;
+  PROTECT(CPX = allocMatrix(REALSXP, m, n));
+  
+  memcpy(REAL(CPX), REAL(X), m*n*sizeof(double));
+  
+  pdmvsum_(REAL(CPX), INTEGER(DESCX), REAL(Y), INTEGER(DESCY));
+  
+  UNPROTECT(1);
+  return CPX;
+}
+

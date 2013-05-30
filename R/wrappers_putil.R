@@ -214,3 +214,19 @@ base.rrowcpy2 <- function(x, descx, y, descy, xrow, yrow)
   return( ret )
 }
 
+
+base.pdmvsum <- function(x, descx, y, descy)
+{
+  if (!is.double(x))
+    storage.mode(x) <- "double"
+  
+  if (!is.double(y))
+    storage.mode(y) <- "double"
+  
+  ret <- .Call("R_PDMVSUM", 
+               x, as.integer(dim(x)), as.integer(descx), y, as.integer(descy),
+               PACKAGE="pbdBASE")
+  
+  return(ret)
+}
+
