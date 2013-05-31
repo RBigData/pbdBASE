@@ -41,6 +41,7 @@
       DOUBLE PRECISION    X(DESCX(9), *), VEC(LVEC)
       ! Local
       INTEGER             K, M, N, POS, I, J, GI, GJ, LDM(2), BLACS(5)
+      INTEGER             L
       ! Parameter
       DOUBLE PRECISION    ZERO, ONE
       PARAMETER ( ZERO = 0.0D0, ONE = 1.0D0 )
@@ -56,7 +57,9 @@
       
       M = LDM(1)
       N = LDM(2)
-      K = DESCX(4)
+      
+      K = DESCX(3)
+      
       
       ! Resorting to magic numbers because C strings are just too kludgy and terrible
       ! This is all very ad hoc anyway so I don't think I give a shit.
@@ -565,64 +568,64 @@
         END DO
         
       ! General case
-      ELSE
-        
-        DO J = 1, NX!, CBL
-          DO I = 1, MX!, RBL
-            CALL L2GPAIR(I, J, GI, GJ, DESC, BLACS)
-            POS = IND(GI + GN*(GJ-1), LVEC)
-            
-  !          X(I, J) = X(I, J) + VEC(POS)
-            
-            
-            
-            I = INDXG2L(GI, RBL, 1, 1, BLACS(2))
-            
-            RXTOP = MIN(I+RBL-1, MX)
-            RXLEN = RXTOP - I + 1
-            
-            RYTOP = MIN(I+RBL-1, MY)
-            RYLEN = RYTOP - I + 1
-            
-            ! Row and column (processor) source
-            RSRC = MOD( (GI-1)/RBL, BLACS(2) )
-            CSRC = MOD( (YCOL-1)/CBL, BLACS(3) )
-            
-            IHAVE = ( RSRC.EQ.BLACS(4) .AND. CSRC.EQ.BLACS(5) )
-            
-            ! Row and column (processor) destination
-            RDEST = MOD( (GI-1)/RBL, BLACS(2) )
-            CDEST = MOD( (XCOL-1)/CBL, BLACS(3) )
-            
-            INEED = ( RDEST.EQ.BLACS(4) .AND. CDEST.EQ.BLACS(5) )
-            
-            ! Copy
-            IF (IHAVE) THEN ! Check if need to SEND
-              IF (INEED) THEN ! Easy case
-                X(I:RXTOP, LXCOL) = Y(I:RYTOP, LYCOL)
-              ELSE ! Otherwise SEND
-                ! Send
-                CALL DGESD2D(DESCX(2), RYLEN, 1, Y(I, LYCOL), RYLEN, 
-     $                       RDEST, CDEST)
-              END IF
-            ELSE IF (INEED) THEN ! Otherwise check if need to RECEIVE
-              ! Receive
-              CALL DGERV2D(DESCX(2), RXLEN, 1, X(I, LXCOL), RXLEN, 
-     $                     RSRC, CSRC)
-            END IF
-          
-            CALL BLACS_BARRIER(DESCX(2), 'A') 
-            
-            
-            
-            
-            
-            
-          END DO
-        END DO
-      
-      
-      
+!!!      ELSE
+!!!        
+!!!        DO J = 1, NX!, CBL
+!!!          DO I = 1, MX!, RBL
+!!!            CALL L2GPAIR(I, J, GI, GJ, DESC, BLACS)
+!!!            POS = IND(GI + GN*(GJ-1), LVEC)
+!!!            
+!!!  !          X(I, J) = X(I, J) + VEC(POS)
+!!!            
+!!!            
+!!!            
+!!!            I = INDXG2L(GI, RBL, 1, 1, BLACS(2))
+!!!            
+!!!            RXTOP = MIN(I+RBL-1, MX)
+!!!            RXLEN = RXTOP - I + 1
+!!!            
+!!!            RYTOP = MIN(I+RBL-1, MY)
+!!!            RYLEN = RYTOP - I + 1
+!!!            
+!!!            ! Row and column (processor) source
+!!!            RSRC = MOD( (GI-1)/RBL, BLACS(2) )
+!!!            CSRC = MOD( (YCOL-1)/CBL, BLACS(3) )
+!!!            
+!!!            IHAVE = ( RSRC.EQ.BLACS(4) .AND. CSRC.EQ.BLACS(5) )
+!!!            
+!!!            ! Row and column (processor) destination
+!!!            RDEST = MOD( (GI-1)/RBL, BLACS(2) )
+!!!            CDEST = MOD( (XCOL-1)/CBL, BLACS(3) )
+!!!            
+!!!            INEED = ( RDEST.EQ.BLACS(4) .AND. CDEST.EQ.BLACS(5) )
+!!!            
+!!!            ! Copy
+!!!            IF (IHAVE) THEN ! Check if need to SEND
+!!!              IF (INEED) THEN ! Easy case
+!!!                X(I:RXTOP, LXCOL) = Y(I:RYTOP, LYCOL)
+!!!              ELSE ! Otherwise SEND
+!!!                ! Send
+!!!                CALL DGESD2D(DESCX(2), RYLEN, 1, Y(I, LYCOL), RYLEN, 
+!!!     $                       RDEST, CDEST)
+!!!              END IF
+!!!            ELSE IF (INEED) THEN ! Otherwise check if need to RECEIVE
+!!!              ! Receive
+!!!              CALL DGERV2D(DESCX(2), RXLEN, 1, X(I, LXCOL), RXLEN, 
+!!!     $                     RSRC, CSRC)
+!!!            END IF
+!!!          
+!!!            CALL BLACS_BARRIER(DESCX(2), 'A') 
+!!!            
+!!!            
+!!!            
+!!!            
+!!!            
+!!!            
+!!!          END DO
+!!!        END DO
+!!!      
+!!!      
+!!!      
       
       END IF
       

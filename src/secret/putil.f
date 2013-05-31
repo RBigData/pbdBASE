@@ -696,7 +696,8 @@
   ! M = Modulus
       INTEGER FUNCTION IND(I, M)
       IMPLICIT NONE
-      INTEGER I, M
+      INTEGER             I, M
+      
       
       IND = MOD(I, M)
       IF (IND.EQ.0) THEN
@@ -705,6 +706,51 @@
       
       RETURN
       END
+
+
+! Convert matrix indexing to vector indexing, or vice versa
+!      SUBROUTINE INDMAT2VEC(STORAGE, M, N, I, J, K)
+!      IMPLICIT NONE
+!      CHARACTER*1         STORAGE
+!      INTEGER             M, N, I, J, K
+!      ! Function
+!      INTEGER             IND
+!      
+!      
+!      IF (STORAGE .EQ. 'C') THEN
+!        
+!      ELSE IF (STORAGE .EQ. 'R') THEN
+!        
+!      ELSE
+!        IND = -1
+!      END IF
+!      
+!      RETURN
+!      END
+
+
+!      SUBROUTINE INDVEC2MAT(STORAGE, M, N, I, J, K)
+!      IMPLICIT NONE
+!      CHARACTER*1         STORAGE
+!      INTEGER             M, N, I, J, K
+!      ! Function
+!      INTEGER             IND
+!      
+!      
+!      IF (STORAGE .EQ. 'C') THEN
+!        I = IND(K, M)
+!        J = K/M + 1
+!      ELSE IF (STORAGE .EQ. 'R') THEN
+!        I = IND(K, N)
+!        J = K/N + 1
+!      ELSE
+!        I = -1
+!        J = -1
+!      END IF
+!      
+!      RETURN
+!      END
+
 
 
 ! SWEEP array out of distributed matrix

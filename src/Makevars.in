@@ -27,6 +27,8 @@ R_OBJS = \
   other.o \
   secret/base_putil.o \
   secret/putil.o \
+  secret/base_prblas.o \
+  secret/prblas.o \
   secret/plinalg.o \
   secret/base_plinalg.o
 OBJECTS = $(R_OBJS)
