@@ -1,5 +1,8 @@
+2013-6-7:
+  * Bugfix for changing between BLACS and MPI process numbering.
+
 2013-5-24:
-  * Added experimental methods for level 2 distributed R-like BLAS.
+  * Added experimental methods for level 2 distributed-distributed R-like BLAS.
 
 2013-5-9:
   * Fixed initialization bug in pdgemr2d.

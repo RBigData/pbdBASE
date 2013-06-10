@@ -57,10 +57,13 @@ blacs <- base.blacs
 base.pnum <- function(ICTXT, PROW, PCOL)
 {
   blacs_ <- base.blacs(ICTXT=ICTXT)
-  nprows <- blacs_$NPROW
+#  nprows <- blacs_$NPROW
+#  
+#  PNUM <- PROW * nprows + PCOL
+#  
+  NPCOL <- blacs_$NPCOL
   
-  PNUM <- PROW * nprows + PCOL
-  
+  PNUM <- PROW * NPCOL + PCOL
   return( PNUM )
 }
 
