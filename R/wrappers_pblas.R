@@ -48,7 +48,7 @@ base.rpdgemm <- function(transx, transy, x, descx, y, descy, descc)
     storage.mode(x) <- "double"
   if (!is.double(y))
     storage.mode(y) <- "double"
-    
+  
   ret <- .Call("R_PDGEMM",
                 transx, transy,
                 as.integer(m), as.integer(n), as.integer(k),

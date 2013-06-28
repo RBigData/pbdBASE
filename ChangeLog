@@ -1,3 +1,6 @@
+2013-6-28:
+  * Nasty init.grid() bugfix.
+
 2013-6-7:
   * Bugfix for changing between BLACS and MPI process numbering.
 

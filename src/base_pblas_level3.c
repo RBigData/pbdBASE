@@ -31,7 +31,7 @@ SEXP R_PDGEMM(SEXP TRANSA, SEXP TRANSB, SEXP M, SEXP N, SEXP K,
   const double beta = 0.0;
   const int IJ = 1;
   
-  F77_CALL(pdgemm)(CHARPT(TRANSA, 0), CHARPT(TRANSB, 0),
+  pdgemm_(CHARPT(TRANSA, 0), CHARPT(TRANSB, 0),
     INTEGER(M), INTEGER(N), INTEGER(K), &alpha, 
     REAL(A), &IJ, &IJ, INTEGER(DESCA),
     REAL(B), &IJ, &IJ, INTEGER(DESCB), &beta,

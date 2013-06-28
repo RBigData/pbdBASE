@@ -33,12 +33,12 @@ isint <- function(x){
 base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
 {
   if (missing(ICTXT))
-    ICTXT <- base.minctxt()
+    ICTXT <- base.minctxt(after=-1)
   else if (!isint(x=ICTXT) || ICTXT < 0)
     comm.stop("ICTXT must be a non-negative integer")
   
   
-  pbdMPI::init() # initialize pbdMPI communicator
+#  pbdMPI::init() # initialize pbdMPI communicator
   nprocs <- pbdMPI::comm.size()
   
   if (missing(NPROW) && missing(NPCOL)){
@@ -53,13 +53,13 @@ base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
   else if (!isint(x=NPROW) || !isint(x=NPCOL))
     comm.stop("'NPROW' and 'NPCOL' must be integers")
   else if (NPROW*NPCOL > nprocs) 
-    comm.stop(paste("Error: grid size of ", NPROW, "*", NPCOL, " is not possible with ", nprocs, " processes", sep=""))
+    comm.stop(paste("Error: grid size of ", NPROW, "x", NPCOL, " is not possible with ", nprocs, " processes", sep=""))
   
   
   nm <- paste(".__blacs_gridinfo_", ICTXT, sep="")
   
-  if (exists(nm)){
-    comm.warning("Context", ICTXT, "is already in use. No new grid created")
+  if (exists(nm, envir=.pbdBASEEnv)){
+    comm.warning(paste("Context", ICTXT, "is already in use. No new grid created"))
     return( invisible(1) )
   }
   
@@ -74,7 +74,7 @@ base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
   else if (ICTXT > 0 && !quiet)
     pbdMPI::comm.cat(sprintf("%s", paste("Grid ICTXT=", ICTXT, " of size ", NPROW, "x", NPCOL, " successfully created\n", sep="")), quiet=TRUE)
   
-  if (!exists(".__blacs_initialized"))
+  if (!exists(".__blacs_initialized", envir=.pbdBASEEnv))
     assign(x=".__blacs_initialized", value=TRUE, envir=.pbdBASEEnv)
   
   invisible( 0 )
@@ -86,27 +86,29 @@ blacs_gridinit <- base.blacs_gridinit
 
 base.init.grid <- function(NPROW, NPCOL, ICTXT, ..., quiet = FALSE)
 {
-  pbdMPI::init() # initialize pbdMPI communicator
+  # initialize pbdMPI communicator
+  pbdMPI::init() 
   
+  # determine the ICTXT if it is missing
   if (missing(ICTXT)){
-    if (missing(NPROW) && missing(NPCOL)){
-      if (exists(".__blacs_gridinfo_0")){
-        comm.warning("Context 0 is already initialized. No new grid created")
-        return( invisible(1) )
-      } else {
-        ICTXT <- 0L
-      }
-    }
-    else {
-      ICTXT <- base.minctxt()
-    }
+    ICTXT <- base.minctxt(after=-1)
+  } else if (ICTXT==0 || ICTXT==1 || ICTXT==2){
+      comm.stop("Contexts 0, 1, and 2 are reserved; use 3 or above.")
   }
-  else if (ICTXT==0 || ICTXT==1 || ICTXT==2) 
-    comm.stop("Contexts 0, 1, and 2 are reserved; use 3 or above.")
   
-  # Informing the user of creation
+  # determine number processor rows/columns
+  if (missing(NPROW) && missing(NPCOL)){
+    if (exists(".__blacs_gridinfo_0")){
+      comm.warning("Context 0 is already initialized. No new grid created")
+      return( invisible(1) )
+    }
+  } else if (missing(NPROW) || missing(NPCOL)){
+    comm.stop("You must supply either both 'NPROW' and 'NPCOL' or neither.")
+  }
   
+  # initialize grid
   base.blacs_gridinit(ICTXT=ICTXT, NPROW=NPROW, NPCOL=NPCOL, quiet=quiet)
+  
   
   if (ICTXT==0){
     if (missing(NPROW) && missing(NPCOL)){
@@ -116,7 +118,6 @@ base.init.grid <- function(NPROW, NPCOL, ICTXT, ..., quiet = FALSE)
       NPROW <- as.integer(procs$nprow)
       NPCOL <- as.integer(procs$npcol)
     } 
-    
     base.blacs_gridinit(ICTXT=1L, NPROW=1, NPCOL=NPROW*NPCOL, quiet=TRUE)
     base.blacs_gridinit(ICTXT=2L, NPROW=NPROW*NPCOL, NPCOL=1, quiet=TRUE)
   }
