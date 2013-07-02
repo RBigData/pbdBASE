@@ -278,9 +278,7 @@ SEXP R_PDORMQR(SEXP SIDE, SEXP TRANS, SEXP M, SEXP N, SEXP K,
 
 
 /* recovering Q from a QR */
-SEXP R_PDORGQR(SEXP M, SEXP N, SEXP K,
-  SEXP A, SEXP ALDIM, SEXP DESCA, 
-  SEXP TAU)
+SEXP R_PDORGQR(SEXP M, SEXP N, SEXP K, SEXP A, SEXP ALDIM, SEXP DESCA, SEXP TAU)
 {
   int i, *pt_ALDIM = INTEGER(ALDIM);
   int lwork = -1;
@@ -318,7 +316,7 @@ SEXP R_PDORGQR(SEXP M, SEXP N, SEXP K,
   
   /* workspace query */
   INTEGER(INFO)[0] = 0;
-  F77_CALL(pdorgqr)(INTEGER(M), INTEGER(N), INTEGER(K), 
+  pdorgqr_(INTEGER(M), INTEGER(N), INTEGER(K), 
     &tmp, &IJ, &IJ, INTEGER(DESCA), 
     &tmp,
     &work, &lwork, INTEGER(INFO));
@@ -329,7 +327,7 @@ SEXP R_PDORGQR(SEXP M, SEXP N, SEXP K,
   p_work = (double *) R_alloc(lwork, sizeof(double));
   
   INTEGER(INFO)[0] = 0;
-  F77_CALL(pdorgqr)(INTEGER(M), INTEGER(N), INTEGER(K), 
+  pdorgqr_(INTEGER(M), INTEGER(N), INTEGER(K), 
     REAL(A_OUT), &IJ, &IJ, INTEGER(DESCA), 
     REAL(TAU),
     p_work, &lwork, INTEGER(INFO));
