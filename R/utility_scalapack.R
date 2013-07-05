@@ -3,16 +3,20 @@
 # This array is identical to 
 base.descinit <- function(dim, bldim, ldim, ICTXT=0)
 {
+  grid <- base.blacs(ICTXT)
+  
   desc <- integer(9)
+  
   desc[1L] <- 1L                    # matrix type
   desc[2L] <- ICTXT                 # CTXT_A
-  desc[3L] <- dim[1L]               # M_A
-  desc[4L] <- dim[2L]               # N_A
-  desc[5L] <- bldim[1L]             # MB_A
-  desc[6L] <- bldim[2L]             # NB_A
+  desc[3L] <- max(0, dim[1L])       # M_A
+  desc[4L] <- max(0, dim[2L])       # N_A
+  desc[5L] <- max(1, bldim[1L])     # MB_A
+  desc[6L] <- max(1, bldim[2L])     # NB_A
   desc[7L] <- 0L                    # RSRC_A
   desc[8L] <- 0L                    # CSRC_A
-  desc[9L] <- max(1L, ldim[1L])     # LLD_A
+#  desc[9L] <- max(1L, ldim[1L])     # LLD_A
+  desc[9L] <- max(ldim[1L], max(1L, NUMROC(dim[1L], bldim[1L], grid$MYROW, grid$NPROW)))
   
   return(desc)
 }
@@ -59,15 +63,43 @@ base.numroc <- function(dim, bldim, ICTXT=0, fixme=TRUE)
 numroc <- base.numroc
 
 
+NUMROC <- function(N, NB, IPROC, NPROCS)
+{
+   ret <- .Call("R_NUMROC", 
+                as.integer(N), as.integer(NB), as.integer(IPROC), as.integer(NPROCS),
+                PACKAGE="pbdBASE")
+  
+  return( ret )
+}
+
+
 # For use with local arithmetic; basically does nothing if the 
 # local storage is just filler to make scalapack happy
 # return is logical answer to the question:  'do I own anything?', 
 # and not a C-style return
+#base.ownany <- function(dim, bldim, ICTXT=0)
+#{
+#  if (length(bldim)==1)
+#    bldim <- rep(bldim, 2)
+#  
+#  check <- base.numroc(dim=dim, bldim=bldim, ICTXT=ICTXT, fixme=FALSE)
+#  
+#  if (any(check<1))
+#    return(FALSE)
+#  else
+#    return(TRUE)
+#}
 base.ownany <- function(dim, bldim, ICTXT=0)
 {
   if (length(bldim)==1)
     bldim <- rep(bldim, 2)
-  check <- base.numroc(dim=dim, bldim=bldim, ICTXT=ICTXT, fixme=FALSE)
+  
+  grid <- base.blacs(ICTXT=ICTXT)
+  
+  check <- integer(2)
+  
+  check[1L] <- NUMROC(dim[1L], bldim[1L], grid$MYROW, grid$NPROW)
+  check[2L] <- NUMROC(dim[2L], bldim[2L], grid$MYCOL, grid$NPROW)
   
   if (any(check<1))
     return(FALSE)

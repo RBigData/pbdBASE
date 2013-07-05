@@ -3,6 +3,18 @@
 #include "base_global.h"
 
 
+SEXP R_NUMROC(SEXP N, SEXP NB, SEXP IPROC, SEXP NPROCS)
+{
+  SEXP NUM;
+  PROTECT(NUM = allocVector(INTSXP, 1));
+  
+  numrocwrap_(INTEGER(N), INTEGER(NB), INTEGER(IPROC), INTEGER(NPROCS), INTEGER(NUM));
+  
+  UNPROTECT(1);
+  return NUM;
+}
+
+
 // -------------------------------------------------------- 
 // Linear equations 
 // -------------------------------------------------------- 

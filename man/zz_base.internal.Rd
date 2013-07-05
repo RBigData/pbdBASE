@@ -56,6 +56,7 @@
 \alias{base.l2g_coord}
 \alias{base.pdclvar}
 \alias{base.rpdgemr2d}
+\alias{base.pdmvsum}
 
 \alias{base.nbd}
 \alias{base.blacs_gridinit}

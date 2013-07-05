@@ -29,6 +29,14 @@ base.rpdgels <- function(tol, m, n, nrhs, a, desca, b, descb)
             LTAU=ltau,
             PACKAGE="pbdBASE")
   
+  # Sometimes R mistakenly frees these matrices...
+  if (!base.ownany(dim=desca[5L:6L], bldim=desca[5L:6L], ICTXT=desca[2L]))
+    ret$A <- matrix(0.0, 1L, 1L)
+  
+  if (!base.ownany(dim=descb[5L:6L], bldim=descb[5L:6L], ICTXT=descb[2L]))
+    ret$EFF <- ret$RSD <- ret$FT <- matrix(0.0, 1L, 1L)
+  
+  
   if (ret$INFO!=0)
     comm.warning(paste("ScaLAPACK returned INFO=", ret$INFO, "; returned solution is likely invalid", sep=""))
   
@@ -49,15 +57,15 @@ base.rpdgeqpf <- function(tol, m, n, x, descx)
                as.integer(min(m, n)),
                PACKAGE="pbdBASE")
   
+  if (comm.rank()!=0)
+    rank <- 0L
+  else
+    rank <- ret$rank
+    
+  rank <- pbdMPI::allreduce(rank)
+  
   if (ret$INFO!=0)
     comm.warning(paste("ScaLAPACK returned INFO=", ret$INFO, "; returned solution is likely invalid", sep=""))
-  
-#  if (descx[5L] > m || descx[6L] > n){
-#    if (comm.rank()>0)
-#      ret$rank <- 0L
-#    
-#    ret$rank <- pbdMPI::allreduce(ret$rank)
-#  }
   
   return( ret )
 }

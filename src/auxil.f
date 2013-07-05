@@ -108,3 +108,17 @@
       END
 
 
+! Subroutine wrapper for NUMROC
+      SUBROUTINE NUMROCWRAP(N, NB, IPROC, NPROCS, NUM)
+      ! IN/OUT
+      INTEGER             N, NB, IPROC, NPROCS, NUM
+      ! Functions
+      INTEGER             NUMROC
+      
+      
+      NUM = NUMROC(N, NB, IPROC, 0, NPROCS)
+      
+      RETURN
+      END
+
+

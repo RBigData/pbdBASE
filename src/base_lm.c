@@ -17,14 +17,13 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
   int lwork = -1;
   const int IJ = 1;
   
-  double *pt_ORG, *pt_COPY, *pt_FT, *p_work;
+  double *pt_ORG, *pt_COPY, *pt_EFF, *pt_FT, *pt_RSD, *p_work;
   const double tmp = 0;
   double work = 0;
   
   char trans = 'N'; // If trans='T', expect all hell to break loose
   
-  SEXP RET, RET_NAMES, INFO, A_OUT, B_OUT, 
-       EFF, FT, RSD, TAU, IPIV, RANK;
+  SEXP RET, RET_NAMES, INFO, A_OUT, B_OUT, EFF, FT, RSD, TAU, IPIV, RANK;
   
   /* set up return */
   PROTECT(RET = allocVector(VECSXP, 9));
@@ -62,31 +61,42 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
   
   setAttrib(RET, R_NamesSymbol, RET_NAMES);
   
+  
   /* Copy A and B since pdgels writes in place, also initialize */
-  /* FT = 0 */
   pt_ORG = REAL(A);
   pt_COPY = REAL(A_OUT);
+  
   for(i = 0; i < pt_ALDIM[0] * pt_ALDIM[1]; i++){
     *pt_COPY = *pt_ORG;
+    
     pt_ORG++;
     pt_COPY++;
   }
   
+  /* Set FT, RSD, and EFF to 0 */
   pt_ORG = REAL(B);
   pt_COPY = REAL(B_OUT);
+  pt_EFF = REAL(EFF);
   pt_FT = REAL(FT);
+  pt_RSD = REAL(RSD);
   
   for(i = 0; i < pt_BLDIM[0] * pt_BLDIM[1]; i++){
     *pt_COPY = *pt_ORG;
     *pt_FT = 0;
+    *pt_RSD = 0;
+    
+    pt_EFF++;
     pt_FT++;
+    pt_RSD++;
+    
     pt_ORG++;
     pt_COPY++;
   }
   
+  
   /* workspace query */
   INTEGER(INFO)[0] = 0;
-  F77_CALL(rpdgels)(REAL(TOL), &trans, 
+  rpdgels_(REAL(TOL), &trans, 
     INTEGER(M), INTEGER(N), INTEGER(NRHS),
     &tmp, &IJ, &IJ, INTEGER(DESCA),
     &tmp, &IJ, &IJ, INTEGER(DESCB),
@@ -94,19 +104,23 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
     &tmp, &work, &lwork, 
     &IJ, &IJ, INTEGER(INFO));
   
-  /* allocate work vector and compute LLS solution */
+  
+  /* allocate work vector */
   lwork = (int) work;
   lwork = nonzero(lwork);
   p_work = (double *) R_alloc(lwork, sizeof(double));
   
+  
+  /*  and compute LLS solution */
   INTEGER(INFO)[0] = 0;
-  F77_CALL(rpdgels)(REAL(TOL), &trans, 
+  rpdgels_(REAL(TOL), &trans, 
     INTEGER(M), INTEGER(N), INTEGER(NRHS),
     REAL(A_OUT), &IJ, &IJ, INTEGER(DESCA),
     REAL(B_OUT), &IJ, &IJ, INTEGER(DESCB),
     REAL(EFF), REAL(FT), REAL(RSD),
     REAL(TAU), p_work, &lwork, 
     INTEGER(IPIV), INTEGER(RANK), INTEGER(INFO));
+  
   
   /* Return. */
   UNPROTECT(11);
