@@ -229,7 +229,7 @@ SEXP R_PDGESVD(SEXP M, SEXP N, SEXP ASIZE, SEXP A, SEXP DESCA, SEXP ALDIM,
 } 
 
 
-/* Eigen */
+/* Symmetric Eigen */
 SEXP R_PDSYEV(SEXP JOBZ, SEXP UPLO, SEXP N, SEXP A, SEXP DESCA, SEXP ALDIM, SEXP ZLDIM, SEXP DESCZ)
 {
   int i, *pt_ALDIM = INTEGER(ALDIM);
@@ -283,6 +283,10 @@ SEXP R_PDSYEV(SEXP JOBZ, SEXP UPLO, SEXP N, SEXP A, SEXP DESCA, SEXP ALDIM, SEXP
   
   return(RET);
 } 
+
+
+/* Non-Symmetric Eigen */
+
 
 
 /* LU factorization */

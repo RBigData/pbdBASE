@@ -51,5 +51,15 @@ base.pdclvar <- function(x, descx)
 }
 
 
-
+base.pdgeeig <- function(x, descx)
+{
+  if (!is.double(x))
+    storage.mode(x) <- "double"
+  
+  ret <- .Call("R_PDGEEIG", 
+                x, as.integer(descx), dim(x),
+                PACKAGE="pbdBASE")
+  
+  return( ret )
+}
 

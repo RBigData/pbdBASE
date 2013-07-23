@@ -151,3 +151,79 @@
       END
 
 
+
+
+! Eigenvalues for non-symmetric matrix
+! See http://www.netlib.org/lapack/lug/node50.html for explanation
+      SUBROUTINE PDGEEIG(X, IX, JX, DESCX, WR, WI, INFO)
+      IMPLICIT NONE
+      ! IN/OUT
+      INTEGER             IX, JX, DESCX(9), INFO
+      DOUBLE PRECISION    X(*), WR(*), WI(*)
+      ! Local
+      INTEGER             N, LTAU, LWORK, ALLOCERR
+      DOUBLE PRECISION    TMP
+      DOUBLE PRECISION, ALLOCATABLE :: WORK(:)
+      DOUBLE PRECISION, ALLOCATABLE :: TAU(:)
+      ! External
+      EXTERNAL           PDGEHRD, PDLAHQR
+      
+      
+      ! Quick return if possible
+      N = DESCX(3)
+      IF (N .NE. DESCX(4)) THEN
+        INFO = -4
+        RETURN
+      END IF
+      
+      ALLOCERR = 0
+      
+      LTAU = MAX(1, JX+N-2)
+      
+      ALLOCATE(TAU(LTAU), STAT=ALLOCERR)
+      IF (ALLOCERR.NE.0) STOP "Out of memory"
+      
+      !!! Reduce to upper Hessenberg
+      ! Workspace query
+      CALL PDGEHRD(N, 1, 1, X, IX, JX, DESCX, TAU, TMP, -1, INFO)
+      
+      ! Allocate workspace
+      LWORK = INT(TMP)
+      
+      ALLOCATE(WORK(LWORK), STAT=ALLOCERR)
+      IF (ALLOCERR.NE.0) STOP "Out of memory"
+      
+      ! Reduce
+      CALL PDGEHRD(N, 1, 1, X, IX, JX, DESCX, TAU, WORK, LWORK, INFO)
+      
+      IF (INFO .NE. 0) GOTO 1
+      
+      
+      !!! Compute eigenvalues
+      ! Workspace query
+      CALL PDLAHQR(.FALSE., .FALSE., N, 1, N, X, DESCX, WR, WI, 0, 0, 
+     $             0.0D0, DESCX, TMP, -1, 0, 0, INFO)
+      
+      ! Reallocate workspace as needed
+      IF (INT(TMP) .GT. LWORK) THEN
+        DEALLOCATE(WORK)
+        LWORK = INT(TMP)
+        ALLOCATE(WORK(LWORK), STAT=ALLOCERR)
+        IF (ALLOCERR.NE.0) STOP "Out of memory"
+      END IF
+      
+      ! Compute
+      CALL PDLAHQR(.FALSE., .FALSE., N, 1, N, X, DESCX, WR, WI, 0, 0, 
+     $             0.0D0, DESCX, WORK, LWORK, 0, 0, INFO)
+      
+      
+    1 CONTINUE
+      DEALLOCATE(WORK)
+      DEALLOCATE(TAU)
+      
+      RETURN
+      END
+
+
+
+
