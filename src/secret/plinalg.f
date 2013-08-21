@@ -152,7 +152,6 @@
 
 
 
-
 ! Eigenvalues for non-symmetric matrix
 ! See http://www.netlib.org/lapack/lug/node50.html for explanation
       SUBROUTINE PDGEEIG(X, IX, JX, DESCX, WR, WI, INFO)
@@ -217,13 +216,12 @@
      $             0.0D0, DESCX, WORK, LWORK, 0, 0, INFO)
       
       
+      !!! Deallocate workspace and exit
     1 CONTINUE
       DEALLOCATE(WORK)
       DEALLOCATE(TAU)
       
       RETURN
       END
-
-
 
 

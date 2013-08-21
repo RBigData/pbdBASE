@@ -971,4 +971,61 @@
       END
 
 
+! Companion matrix constructor
+! COEF = (C_0, C_1, ..., C_{n-1}) where the C_i come from the polynomial:
+! x^n + C_{n-1}x^{n-1} + ... + C_1 x + C_0
+! COEF is a global coefficients vector owned by all processors
+      SUBROUTINE PDMKCPN1(X, DESCX, COEF)
+      ! IN/OUT
+      INTEGER             DESCX(9)
+      DOUBLE PRECISION    X(DESCX(9), *), COEF(*)
+      ! Local
+      INTEGER             I, J, M, N, GI, GJ, LDM(2), BLACS(5)
+      ! Parameters
+      DOUBLE PRECISION    ZERO
+      PARAMETER( ZERO = 0.0D0 )
+      
+      
+      ! Get local and proc grid info
+      CALL PDIMS(DESCX, LDM, BLACS)
+      
+      M = LDM(1)
+      N = LDM(2)
+      
+      ! Fill first row
+      DO J = 1, N
+        X(1, J) = ZERO
+      END DO
+      
+      CALL L2GPAIR(1, N, GI, GJ, DESCX, BLACS)
+      IF (GJ.EQ.DESCX(4)) THEN
+        X(1, N) = -COEF(1)
+      END IF
+      
+      ! Fill identity submatrix
+      DO J = 1, N
+        DO I = 1, M
+          CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+          IF (GI.EQ.GJ+1) THEN
+            X(I,J) = 1
+          ELSE 
+            X(I,J) = ZERO
+          END IF
+        END DO
+      END DO
+      
+      ! Fill last column
+      DO I = 1, M
+        CALL L2GPAIR(I, N, GI, GJ, DESCX, BLACS)
+        IF (GJ.EQ.DESCX(4)) THEN
+          X(I, N) = -COEF(GI)
+        END IF
+      END DO
+      
+      
+      RETURN
+      END
+
+
+
 

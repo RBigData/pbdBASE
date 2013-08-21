@@ -106,3 +106,19 @@ SEXP R_PDDIAGMK(SEXP LDIM, SEXP DESCX, SEXP DIAG, SEXP LDIAG)
   return X;
 }
 
+
+
+SEXP R_PDMKCPN1(SEXP LDIM, SEXP DESCX, SEXP COEF)
+{
+  const int m = INTEGER(LDIM)[0], n = INTEGER(LDIM)[1];
+  
+  SEXP X;
+  PROTECT(X = allocMatrix(REALSXP, m, n));
+  
+  pdmkcpn1_(REAL(X), INTEGER(DESCX), REAL(COEF));
+  
+  UNPROTECT(1);
+  return X;
+}
+
+

@@ -230,3 +230,20 @@ base.pdmvsum <- function(x, descx, y, descy)
   return(ret)
 }
 
+
+base.pdmkcpn1 <- function(coef, descx)
+{
+  ldim <- base.numroc(dim=descx[3L:4L], bldim=descx[5L:6L], ICTXT=descx[2L])
+  
+  if (!is.double(coef))
+    storage.mode(coef) <- "double"
+  
+  out <- .Call("R_PDMKCPN1", 
+               as.integer(ldim), as.integer(descx), coef,
+               PACKAGE="pbdBASE")
+  
+  return( out )
+}
+
+
+
