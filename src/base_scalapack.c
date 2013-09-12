@@ -397,8 +397,7 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
     double *w, *z, *gap;
     double *a;
     
-    
-    SEXP RET, RET_NAMES, W, Z, IFAIL;
+    SEXP RET, RET_NAMES, W, Z, IFAIL, M;
     
     
     // grid and local information
@@ -478,7 +477,9 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
         PROTECT(RET_NAMES = allocVector(STRSXP, 1));
         
         SET_VECTOR_ELT(RET, 0, W);
-        SET_STRING_ELT(RET_NAMES, 0, mkChar("W")); 
+        
+        SET_STRING_ELT(RET_NAMES, 0, mkChar("values")); 
+        
         setAttrib(RET, R_NamesSymbol, RET_NAMES);
         
         unpt = 4;
@@ -489,16 +490,23 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
         for (i=0; i<ldm[0]*ldm[1]; i++)
             REAL(Z)[i] = z[i];
         
-        PROTECT(RET = allocVector(VECSXP, 2));
-        PROTECT(RET_NAMES = allocVector(STRSXP, 2));
+        PROTECT(M = allocVector(INTSXP, 1));
+        INTEGER(M)[0] = m;
+        
+        PROTECT(RET = allocVector(VECSXP, 3));
+        PROTECT(RET_NAMES = allocVector(STRSXP, 3));
         
         SET_VECTOR_ELT(RET, 0, W);
         SET_VECTOR_ELT(RET, 1, Z);
-        SET_STRING_ELT(RET_NAMES, 0, mkChar("W")); 
-        SET_STRING_ELT(RET_NAMES, 1, mkChar("Z")); 
+        SET_VECTOR_ELT(RET, 2, M);
+        
+        SET_STRING_ELT(RET_NAMES, 0, mkChar("values")); 
+        SET_STRING_ELT(RET_NAMES, 1, mkChar("vectors")); 
+        SET_STRING_ELT(RET_NAMES, 2, mkChar("m")); 
+        
         setAttrib(RET, R_NamesSymbol, RET_NAMES);
         
-        unpt = 5;
+        unpt = 6;
     }
     
     
