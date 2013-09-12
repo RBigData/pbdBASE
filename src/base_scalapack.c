@@ -389,12 +389,14 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
     int descz[9], ldm[2], blacs[5];
     int tmp_liwork;
     int ownany;
+    int unpt;
     int *iwork, *ifail, *iclustr;
     
     double tmp_lwork;
     double *work;
     double *w, *z, *gap;
     double *a;
+    
     
     SEXP RET, RET_NAMES, W, Z, IFAIL;
     
@@ -455,36 +457,52 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
         REAL(VL), REAL(VU), INTEGER(IL), INTEGER(IU), 
         REAL(ABSTOL), &m, &nz, w, 
         REAL(ORFAC), z, &IJ, &IJ, descz, 
-        work, &lwork, liwork, &liwork, 
+        work, &lwork, iwork, &liwork, 
         ifail, iclustr, gap, &info);
     
     
-    // Allocate return
     PROTECT(W = allocVector(REALSXP, m));
     for (i=0; i<m; i++)
         REAL(W)[i] = w[i];
     
-/*    PROTECT(Z = allocMatrix(REALSXP, ldm[0], ldm[1]));*/
-/*    for (i=0; i<ldm[0]*ldm[1]; i++)*/
-/*        REAL(Z)[i] = z[i];*/
     
 /*    PROTECT(IFAIL = allocVector(INTSXP, m));*/
 /*    for (i=0; i<m; i++)*/
 /*        INTEGER(IFAIL)[0] = ifail[i];*/
     
     
-    PROTECT(RET = allocVector(VECSXP, 2));
-    PROTECT(RET_NAMES = allocVector(STRSXP, 2));
+    // Manage the return
+    if (CHARPT(JOBZ, 0)[0] == 'N') // Only eigenvalues are computed
+    {
+        PROTECT(RET = allocVector(VECSXP, 1));
+        PROTECT(RET_NAMES = allocVector(STRSXP, 1));
+        
+        SET_VECTOR_ELT(RET, 0, W);
+        SET_STRING_ELT(RET_NAMES, 0, mkChar("W")); 
+        setAttrib(RET, R_NamesSymbol, RET_NAMES);
+        
+        unpt = 4;
+    }
+    else // eigenvalues + eigenvectors
+    {
+        PROTECT(Z = allocMatrix(REALSXP, ldm[0], ldm[1]));
+        for (i=0; i<ldm[0]*ldm[1]; i++)
+            REAL(Z)[i] = z[i];
+        
+        PROTECT(RET = allocVector(VECSXP, 2));
+        PROTECT(RET_NAMES = allocVector(STRSXP, 2));
+        
+        SET_VECTOR_ELT(RET, 0, W);
+        SET_VECTOR_ELT(RET, 1, Z);
+        SET_STRING_ELT(RET_NAMES, 0, mkChar("W")); 
+        SET_STRING_ELT(RET_NAMES, 1, mkChar("Z")); 
+        setAttrib(RET, R_NamesSymbol, RET_NAMES);
+        
+        unpt = 5;
+    }
     
-    // Set return
-    SET_VECTOR_ELT(RET, 0, W);
-    SET_VECTOR_ELT(RET, 1, W); // FIXME
-    SET_STRING_ELT(RET_NAMES, 0, mkChar("W")); 
-    SET_STRING_ELT(RET_NAMES, 1, mkChar("Z")); 
-    setAttrib(RET, R_NamesSymbol, RET_NAMES);
     
-    
-    UNPROTECT(5);
+    UNPROTECT(unpt);
     return RET;
 }
 
