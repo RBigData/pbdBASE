@@ -12,25 +12,25 @@ PKG_LIBS = $(SLAP_LDFLAGS) $(FLIBS) $(SPMD_LDFLAGS)
 
 ### Setup R source code and objects.
 R_OBJS = \
-  bprnt.o \
-  lm.o \
-  base_mpi_blac.o \
-  base_pblas_level3.o \
-  base_scalapack.o \
-  base_scalapack_utility.o \
-  base_lm.o \
-  secret/variance.o \
-  secret/base_variance.o \
-  auxil.o \
-  bprnt_c.o \
-  export_blacs/pkg_tools.o \
-  other.o \
-  secret/base_putil.o \
-  secret/putil.o \
-  secret/base_prblas.o \
-  secret/prblas.o \
-  secret/plinalg.o \
-  secret/base_plinalg.o
+base/auxil.o \
+base/bprnt.o \
+base/lm.o \
+base/plinalg.o \
+base/prblas.o \
+base/putil.o \
+base/variance.o \
+base_lm.o \
+base_mpi_blac.o \
+base_pblas_level3.o \
+base_plinalg.o \
+base_prblas.o \
+base_putil.o \
+base_scalapack.o \
+base_scalapack_utility.o \
+base_variance.o \
+export_blacs/pkg_tools.o \
+bprnt_c.o \
+other.o 
 OBJECTS = $(R_OBJS)
 
 ### For user configuration.

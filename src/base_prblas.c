@@ -1,6 +1,6 @@
 #include <R.h>
 #include <Rinternals.h>
-#include "../base_global.h"
+#include "base_global.h"
 
 
 SEXP R_RL2BLAS(SEXP X, SEXP LDIM, SEXP DESCX, SEXP VEC, SEXP LVEC, SEXP FUN)

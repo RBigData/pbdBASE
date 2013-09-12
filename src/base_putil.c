@@ -1,6 +1,6 @@
 #include <R.h>
 #include <Rinternals.h>
-#include "../base_global.h"
+#include "base_global.h"
 
 SEXP R_MKSUBMAT(SEXP GBLX, SEXP LDIM, SEXP DESCX)
 {
