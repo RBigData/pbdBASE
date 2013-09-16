@@ -43,7 +43,7 @@
       SUBROUTINE PDIMS(DESC, LDM, BLACS)
       IMPLICIT NONE
       ! IN/OUT
-      INTEGER             DESC( 9 ), LDM( 2 ), BLACS( 5 )
+      INTEGER             DESC(9), LDM(2), BLACS(5)
       ! Functions
       INTEGER             NUMROC
       ! External

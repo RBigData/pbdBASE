@@ -14,10 +14,10 @@ PKG_LIBS = $(SLAP_LDFLAGS) $(FLIBS) $(SPMD_LDFLAGS)
 R_OBJS = \
 base/auxil.o \
 base/bprnt.o \
-base/lm.o \
 base/plinalg.o \
 base/prblas.o \
 base/putil.o \
+base/R_plm.o \
 base/variance.o \
 base_lm.o \
 base_mpi_blac.o \
