@@ -1,4 +1,9 @@
+! This Source Code Form is subject to the terms of the Mozilla Public
+! License, v. 2.0. If a copy of the MPL was not distributed with this
+! file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 ! Copyright 2013, Schmidt
+
 
 ! Logistic regression using IRLS.
 !
@@ -28,12 +33,14 @@
       CHARACTER*1         INCPT, STOPRULE
       CHARACTER*8         FAMILY, LINK
       INTEGER             N, P, MAXITER, INFO
-      DOUBLE PRECISION    X(N,P), Y(N), BETA(P), WT(N), RESIDS(N), 
-     $                    TOL
-      DOUBLE PRECISION    DEV_OLD
+      INTEGER             DESCX(9), DESCY(9), DESCBETA(9)
+      DOUBLE PRECISION    TOL, DEV_OLD
+      DOUBLE PRECISION    X(DESCX(9),*), Y(DESCY(9)), BETA(DESCBETA(9)), 
+     $                    WT(DESCY(9)), RESIDS(DESCY(9)), 
       ! Local
       INTEGER             CONVERGED, I, J, ITER, ALLOCERR, 
      $                    RANK, LWORK
+      INTEGER             LN, LP, NX, NY, PBETA, PX
       INTEGER             LDM(2), BLACS(5)
       DOUBLE PRECISION    AIC, DEV, NULLDEV, TMP
       DOUBLE PRECISION, ALLOCATABLE :: BETA_OLD(:)
@@ -47,7 +54,7 @@
       DOUBLE PRECISION    ZERO, ONE
       PARAMETER ( ZERO = 0.0D0, ONE = 1.0D0 )
       ! External
-      INTEGER             GLM_CONVERGENCE, CHECK_FAM_LINK, 
+      INTEGER             GLM_CONVERGENCE, GLM_CHECK_FAM_LINK, 
      $                    PGLM_CHECK_RESPONSE, PGLM_CHECK_MU
       DOUBLE PRECISION    GLM_LOGLIK, GLM_DEVIANCE
       EXTERNAL            PDIMS
@@ -64,7 +71,7 @@
       END IF
       
       
-      INFO = CHECK_FAM_LINK(FAMILY, LINK)
+      INFO = GLM_CHECK_FAM_LINK(FAMILY, LINK)
       IF (INFO.LT.0) RETURN
       
       INFO = PGLM_CHECK_RESPONSE(N, Y)
@@ -76,11 +83,9 @@
       NX = LDM(1)
       PX = LDM(2)
       
-      CALL PDIMS(DESCY, LDM, BLACS)
       NY = LDM(1)
       
-      CALL PDIMS(DESCBETA, LDM, BLACS)
-      PBETA = LDM(1)
+      PBETA = DESCBETA(9)
       
       LN = MAX(1, NX)
       LP = MAX(1, PX)
@@ -103,6 +108,7 @@
       IF (ALLOCERR.NE.0) RETURN
       ALLOCATE(Z(LN), STAT=ALLOCERR)
       IF (ALLOCERR.NE.0) RETURN
+      
       
       ! Allocate workspace for linear models
       CALL PDGELS('N', N, P, 1, X, 1, 1, DESCX, Y, 1, 1, DESCY, 
@@ -134,19 +140,19 @@
         
         ! Compute MU = INVERSE_LINK( ETA )
         IF (ITER.EQ.1) THEN
-          CALL GLM_INITIAL_MU(FAMILY, N, Y, WT, MU)
+          CALL GLM_INITIAL_MU(FAMILY, NY, Y, WT, MU)
         ELSE 
-          CALL GLM_LINKINV(LINK, N, ETA, MU)
+          CALL GLM_LINKINV(LINK, NY, ETA, MU)
         END IF
         
         
         ! check for bad fit in the MU's
-        INFO = GLM_CHECK_MU(FAMILY, N, MU, TOL, INFO)
+        INFO = PGLM_CHECK_MU(FAMILY, NY, MU, TOL, INFO)
         IF (INFO.NE.0) GOTO 1
         
         
         ! Update WT = MU*(1-MU)
-        CALL GLM_VARIANCE(FAMILY, N, MU, WT)
+        CALL GLM_VARIANCE(FAMILY, NY, MU, WT)
         
         DO I = 1, NY
           SQWT(I) = DSQRT(WT(I))

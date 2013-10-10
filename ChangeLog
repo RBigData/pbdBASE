@@ -1,3 +1,6 @@
+2013-8-14:
+  * Added experimental pdsyevx wrapper.
+
 2013-7-20:
   * Added driver for (non-symmetric) eigenvalue calculator.
 

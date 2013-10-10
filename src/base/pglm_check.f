@@ -1,5 +1,12 @@
+! This Source Code Form is subject to the terms of the Mozilla Public
+! License, v. 2.0. If a copy of the MPL was not distributed with this
+! file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+! Copyright 2013, Schmidt
+
+
 ! Check for valid MU (as appropriate)
-      INTEGER FUNCTION GLM_CHECK_MU(FAMILY, N, MU, TOL)
+      INTEGER FUNCTION PGLM_CHECK_MU(FAMILY, N, MU, TOL)
       IMPLICIT NONE
       ! IN/OUT
       CHARACTER*8         FAMILY
@@ -17,7 +24,7 @@
         TMP = ONE-TOL
         DO I = 1, N
           IF (MU(I).GT.TMP .OR. MU(I).LT.TOL) THEN
-            GLM_CHECK_MU = -101
+            PGLM_CHECK_MU = -101
             RETURN
           END IF
         END DO
@@ -25,7 +32,7 @@
       ELSE IF (FAMILY.EQ.'POISSON' .OR. FAMILY.EQ.'GAMMA') THEN
         DO I = 1, N
           IF (MU(I).LT.TOL) THEN
-            GLM_CHECK_MU = -101
+            PGLM_CHECK_MU = -101
             RETURN
           END IF
         END DO

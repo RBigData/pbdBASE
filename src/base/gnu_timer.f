@@ -1,5 +1,6 @@
 ! This will not compile with ifortran, or probably anything else that isn't
-! gfortran.  Used internally for profiling.
+! gfortran.  Used for profiling; you have no reason to ever use this.
+!
 ! Call once with ONOFF = 1 to start, then call again with ONOFF = 0 to 
 ! halt and print the wallclock runtime.
   ! If ONOFF = 1, then TIME is input
