@@ -108,6 +108,34 @@ SEXP R_PDDIAGMK(SEXP LDIM, SEXP DESCX, SEXP DIAG, SEXP LDIAG)
 
 
 
+SEXP R_DHILBMK(SEXP N)
+{
+  const int n = INTEGER(N)[0];
+  
+  SEXP X;
+  PROTECT(X = allocMatrix(REALSXP, n, n));
+  
+  dhilbmk_(&n, REAL(X));
+  
+  UNPROTECT(1);
+  return X;
+}
+
+
+
+SEXP R_PDHILBMK(SEXP LDIM, SEXP DESCX)
+{
+  SEXP X;
+  PROTECT(X = allocMatrix(REALSXP, INTEGER(LDIM)[0], INTEGER(LDIM)[1]));
+  
+  pdhilbmk_(REAL(X), INTEGER(DESCX));
+  
+  UNPROTECT(1);
+  return X;
+}
+
+
+
 SEXP R_PDMKCPN1(SEXP LDIM, SEXP DESCX, SEXP COEF)
 {
   const int m = INTEGER(LDIM)[0], n = INTEGER(LDIM)[1];

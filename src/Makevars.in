@@ -22,10 +22,6 @@ base/variance.o \
 base_lm.o \
 base_mpi_blac.o \
 base_pblas_level3.o \
-base/pglm.o \
-base/glm_check.o \
-base/pglm_check.o \
-base/pglm_util.o \
 base_plinalg.o \
 base_prblas.o \
 base_putil.o \
@@ -35,6 +31,11 @@ base_variance.o \
 export_blacs/pkg_tools.o \
 bprnt_c.o \
 other.o 
+#base/pglm.o \
+#base/glm_check.o \
+#base/pglm_check.o \
+#base/pglm_util.o \
+
 OBJECTS = $(R_OBJS)
 
 ### For user configuration.

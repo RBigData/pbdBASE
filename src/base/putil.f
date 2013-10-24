@@ -975,6 +975,56 @@
       END
 
 
+
+! Construct Hilbert matrices
+      SUBROUTINE DHILBMK(N, X)
+      IMPLICIT NONE
+      ! IN/OUT
+      INTEGER             N
+      DOUBLE PRECISION    X(N, N)
+      ! Local
+      INTEGER             I, J
+      
+      
+      DO J = 1, N
+        DO I = 1, N
+          X(I, J) = 1.0D0/DBLE(I+J-1)
+        END DO
+      END DO
+      
+      RETURN
+      END
+
+
+      SUBROUTINE PDHILBMK(X, DESCX)
+      IMPLICIT NONE
+      ! IN/OUT
+      INTEGER             DESCX(9)
+      DOUBLE PRECISION    X(DESCX(9), *)
+      ! Local
+      INTEGER             M, N, I, J, GI, GJ, LDM(2), BLACS(5)
+      ! External
+      EXTERNAL            PDIMS
+      
+      
+      ! Get local and proc grid info
+      CALL PDIMS(DESCX, LDM, BLACS)
+      
+      M = LDM(1)
+      N = LDM(2)
+      
+      DO J = 1, N
+        DO I = 1, M
+          CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+          X(I,J) = 1.0D0/DBLE(GI+GJ-1)
+        END DO
+      END DO
+      
+      RETURN
+      END
+
+
+
 ! Companion matrix constructor
 ! COEF = (C_0, C_1, ..., C_{n-1}) where the C_i come from the polynomial:
 ! x^n + C_{n-1}x^{n-1} + ... + C_1 x + C_0

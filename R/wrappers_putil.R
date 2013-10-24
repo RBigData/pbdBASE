@@ -231,6 +231,33 @@ base.pdmvsum <- function(x, descx, y, descy)
 }
 
 
+base.dhilbmk <- function(n)
+{
+  n <- as.integer(n)
+  
+  ret <- .Call("R_DHILBMK", 
+               n,
+               PACKAGE="pbdBASE")
+  
+  return( ret )
+}
+
+
+
+base.pdhilbmk <- function(descx)
+{
+  descx <- as.integer(descx)
+  ldim <- as.integer(base.numroc(dim=descx[3L:4L], bldim=descx[5L:6L], ICTXT=descx[2L], fixme=TRUE))
+  
+  ret <- .Call("R_PDHILBMK", 
+               ldim, descx,
+               PACKAGE="pbdBASE")
+  
+  return( ret )
+}
+
+
+
 base.pdmkcpn1 <- function(coef, descx)
 {
   ldim <- base.numroc(dim=descx[3L:4L], bldim=descx[5L:6L], ICTXT=descx[2L])
