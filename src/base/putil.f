@@ -321,7 +321,7 @@
       INTEGER             DESCX(9), RSRC, CSRC
       DOUBLE PRECISION    GBLX(DESCX(3), DESCX(4)), SUBX(DESCX(9), *)
       ! Local
-      INTEGER             M, N, I, J, GI, GJ, 
+      INTEGER             M, N, I, J, GI, GJ, RBL, CBL, TI, TJ,
      $                    LDM(2), BLACS(5)
       ! External
       EXTERNAL            PDIMS, L2GPAIR
@@ -333,12 +333,24 @@
       M = LDM(1)
       N = LDM(2)
       
-      ! Only do work if we own any local pieces
+      RBL = DESCX(5)
+      CBL = DESCX(6)
+      
       IF (M.GT.0 .AND. N.GT.0) THEN
-        DO J = 1, N
-          DO I = 1, M
+        DO J = 1, N, CBL
+          DO I = 1, M, RBL
             CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
-            SUBX(I,J) = GBLX(GI,GJ)
+            
+            RBL = MIN(RBL, M-I+1)
+            CBL = MIN(CBL, N-J+1)
+            
+            !$omp do simd
+            DO TJ = 0, CBL-1
+              DO TI = 0, RBL-1
+                SUBX(I+TI, J+TJ) = GBLX(GI+TI, GJ+TJ)
+              END DO
+            END DO
+            !$omp end do simd
           END DO 
         END DO
       END IF
@@ -363,7 +375,7 @@
       INTEGER             DESCX(9), RDEST, CDEST, PROC
       DOUBLE PRECISION    GBLX(DESCX(3), DESCX(4)), SUBX(DESCX(9), *)
       ! Local
-      INTEGER             M, N, I, J, GI, GJ, 
+      INTEGER             M, N, I, J, GI, GJ, RBL, CBL, TI, TJ,
      $                    LDM(2), BLACS(5)
       ! Parameter
       DOUBLE PRECISION    ZERO
@@ -380,12 +392,34 @@
       
       GBLX = ZERO
       
-      DO J = 1, N
-        DO I = 1, M
-          CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
-          GBLX(GI,GJ) = SUBX(I,J)
-        END DO 
-      END DO
+      RBL = DESCX(5)
+      CBL = DESCX(6)
+      
+      IF (M.GT.0 .AND. N.GT.0) THEN
+        DO J = 1, N, CBL
+          DO I = 1, M, RBL
+            CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+            
+            RBL = MIN(RBL, M-I+1)
+            CBL = MIN(CBL, N-J+1)
+            
+            !$omp do simd
+            DO TJ = 0, CBL-1
+              DO TI = 0, RBL-1
+                GBLX(GI+TI, GJ+TJ) = SUBX(I+TI, J+TJ)
+              END DO
+            END DO
+            !$omp end do simd
+          END DO 
+        END DO
+      END IF
+      
+!      DO J = 1, N
+!        DO I = 1, M
+!          CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
+!          GBLX(GI,GJ) = SUBX(I,J)
+!        END DO 
+!      END DO
       
       IF (RDEST.EQ.-1) THEN
         CALL DALLREDUCE(GBLX, DESCX, 'S', 'All')
