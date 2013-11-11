@@ -344,13 +344,13 @@
             RBL = MIN(RBL, M-I+1)
             CBL = MIN(CBL, N-J+1)
             
-            !$omp do simd
             DO TJ = 0, CBL-1
+              !$omp do simd
               DO TI = 0, RBL-1
                 SUBX(I+TI, J+TJ) = GBLX(GI+TI, GJ+TJ)
               END DO
+              !$omp end do simd
             END DO
-            !$omp end do simd
           END DO 
         END DO
       END IF
@@ -403,23 +403,16 @@
             RBL = MIN(RBL, M-I+1)
             CBL = MIN(CBL, N-J+1)
             
-            !$omp do simd
             DO TJ = 0, CBL-1
+              !$omp do simd
               DO TI = 0, RBL-1
                 GBLX(GI+TI, GJ+TJ) = SUBX(I+TI, J+TJ)
               END DO
+              !$omp end do simd
             END DO
-            !$omp end do simd
           END DO 
         END DO
       END IF
-      
-!      DO J = 1, N
-!        DO I = 1, M
-!          CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
-!          GBLX(GI,GJ) = SUBX(I,J)
-!        END DO 
-!      END DO
       
       IF (RDEST.EQ.-1) THEN
         CALL DALLREDUCE(GBLX, DESCX, 'S', 'All')
