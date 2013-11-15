@@ -12,16 +12,26 @@ PKG_LIBS = $(SLAP_LDFLAGS) $(FLIBS) $(SPMD_LDFLAGS)
 
 ### Setup R source code and objects.
 R_OBJS = \
-base/auxil.o \
 base/bprnt.o \
+base/pdnep.o \
 base/plinalg.o \
 base/prblas.o \
-base/putil.o \
 base/R_plm.o \
 base/variance.o \
+base/expm/matexp.o \
+base/expm/p_matexp.o \
+base/util/auxil.o \
+base/util/blacs_util.o \
+base/util/dmat_make.o \
+base/util/dmat_redist.o \
+base/util/indices.o \
+base/util/putil.o \
+base/util/scale.o \
+base/util/special.o \
 base_lm.o \
 base_mpi_blac.o \
 base_pblas_level3.o \
+base_pdnep.o \
 base_plinalg.o \
 base_prblas.o \
 base_putil.o \
@@ -31,10 +41,7 @@ base_variance.o \
 export_blacs/pkg_tools.o \
 bprnt_c.o \
 other.o 
-#base/pglm.o \
-#base/glm_check.o \
-#base/pglm_check.o \
-#base/pglm_util.o \
+
 
 OBJECTS = $(R_OBJS)
 
@@ -56,4 +63,8 @@ $(SHLIB): $(OBJECTS)
 clean:
 	@rm -rf *.o *.d *.rc *.so *.dylib *.dll *.a *.lib \
                 Makedeps Makevars $(USER_CONF) $(SHLIB) $(OBJECTS) \
-                export_blacs/*.o secret/*.o
+                export_blacs/*.o \
+                base/*.o \
+                base/expm/*.o \
+                base/glm/*.o \
+                base/util/*.o

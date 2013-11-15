@@ -2,7 +2,7 @@ Package: pbdBASE
 Title: Programming with Big Data -- Base Wrappers for Distributed Matrices 
 Version: 0.2-3
 Date: 2013-3-4
-Depends: R (>= 2.14.0), methods, rlecuyer, pbdMPI (>= 0.1-8), 
+Depends: R (>= 2.14.0), methods, rlecuyer, pbdMPI (>= 0.2-1), 
         pbdSLAP (>= 0.1-6)
 LazyLoad: yes
 LazyData: yes
@@ -12,8 +12,8 @@ Authors@R: c(person("Drew", "Schmidt", role = c("aut", "cre"), email =
         person("Pragneshkumar", "Patel", role = "aut"))
 Description: pbdBASE gives higher packages, like pbdDMAT, access to 
         low-level scalable Fortran routines. The package consists of a
-		set of ScaLAPACK wrappers, as well as a host of new C and 
-		Fortran code.  
+        set of ScaLAPACK wrappers, as well as a host of new C and 
+        Fortran code.  
 SystemRequirements: OpenMPI (>= 1.5.4) on Solaris, Linux and Mac,
         MPICH2 (>= 1.4.1p1) on Windows
 License: Mozilla Public License 2.0
