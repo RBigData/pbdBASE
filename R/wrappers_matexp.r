@@ -5,7 +5,7 @@ matexp_pade <- function(A)
   if (!is.double(A))
     storage.mode(A) <- "double"
   
-  out <- .Call("R_matexp_pade", n, A, PACKAGE="pbdDMAT")
+  out <- .Call("R_matexp_pade", n, A, PACKAGE="pbdBASE")
   
   N <- out$N
   D <- out$D
@@ -23,7 +23,7 @@ matpow_by_squaring <- function(A, b=1)
   if (!is.double(A))
     storage.mode(A) <- "double"
   
-  ret <- .Call("R_matpow_by_squaring", n, A, b, PACKAGE="pbdDMAT")
+  ret <- .Call("R_matpow_by_squaring", n, A, b, PACKAGE="pbdBASE")
   
   return( ret )
 }

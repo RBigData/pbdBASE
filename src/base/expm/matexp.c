@@ -16,7 +16,7 @@ static inline void matprod(const unsigned int n, double *a, double *b, double *c
 {
   char trans = 'N';
   const double one = 1.0, zero = 0.0;
-  
+
   dgemm_(&trans, &trans, &n, &n, &n, &one, a, &n, b, &n, &zero, c, &n);
 }
 
@@ -24,7 +24,7 @@ static inline void matprod(const unsigned int n, double *a, double *b, double *c
 static inline void matcopy(const unsigned int n, double *A, double *B)
 {
   int i;
-  
+
   #pragma omp for simd
   {
     for (i=0; i<n*n; i++)
@@ -32,24 +32,35 @@ static inline void matcopy(const unsigned int n, double *A, double *B)
   }
 }
 
-// Identity matrix
-static inline void mateye(const unsigned int n, double *a)
+// Zero matrix
+static inline void matzero(const unsigned int n, double *a)
 {
-  int i, j;
-  
+  int i;
+
   #pragma omp for simd
   {
     for (i=0; i<n*n; i++)
       a[i] = 0.0;
-    
+  }
+}
+
+// Identity matrix
+static inline void mateye(const unsigned int n, double *a)
+{
+  int i, j;
+
+  #pragma omp for simd
+  {
+    matzero(n, a);
+
     // Fill diagonal with 1
     j = 0;
     for (i=0; i<n*n; i+=n)
     {
       i += j;
-      
+
       a[i] = 1.0;
-      
+
       j = 1.0;
     }
   }
@@ -58,7 +69,7 @@ static inline void mateye(const unsigned int n, double *a)
 
 /* r_m(x) = p_m(x) / q_m(x), where
    p_m(x) = sum_{j=0}^m (2m-j)!m!/(2m)!/(m-j)!/j! * x^j
-  
+
    and q_m(x) = p_m(-x)
 */
 
@@ -99,10 +110,10 @@ void matexp_pade(const unsigned int n, double *A, double *N, double *D)
   int itmp;
   double tmp, tmpj;
   double *B, *C;
-  
+
   B = malloc(n*n*sizeof(double));
   C = malloc(n*n*sizeof(double));
-  
+
   // Initialize
   #pragma omp for simd
   {
@@ -111,20 +122,20 @@ void matexp_pade(const unsigned int n, double *A, double *N, double *D)
       N[i] = 0.0;
       D[i] = 0.0;
     }
-    
+
     // Fill diagonal with 1
     j = 0;
     for (i=0; i<n*n; i+=n)
     {
       i += j;
-      
+
       N[i] = 1;
       D[i] = 1;
-      
+
       j = 1;
     }
   }
-  
+
   // Fill N and D
   for (i=1; i<=13; i++)
   {
@@ -139,22 +150,19 @@ void matexp_pade(const unsigned int n, double *A, double *N, double *D)
           C[j] = A[j];
       }
     }
-    
+
     #pragma omp for simd
     {
-      // B = C
-      for (j=0; j<n*n; j++)
-        B[j] = C[j];
-      
       // N = pade_coef[i] * C
       // D = (-1)^j * pade_coef[i] * C
       tmp = dmat_pade_coefs[i];
       itmp = EXPSGN(-1, i);
-      
+
       if (itmp == 1)
       {
         for (j=0; j<n*n; j++)
         {
+          B[j] = C[j];
           tmpj = tmp * C[j];
           N[j] += tmpj;
           D[j] += tmpj;
@@ -164,6 +172,7 @@ void matexp_pade(const unsigned int n, double *A, double *N, double *D)
       {
         for (j=0; j<n*n; j++)
         {
+          B[j] = C[j];
           tmpj = tmp * C[j];
           N[j] += tmpj;
           D[j] -= tmpj;
@@ -171,7 +180,7 @@ void matexp_pade(const unsigned int n, double *A, double *N, double *D)
       }
     }
   }
-  
+
   free(B);
   free(C);
 }
@@ -186,24 +195,24 @@ void matpow_by_squaring(double *A, int n, int b, double *P)
   int itmp;
   double tmp, tmpj;
   double *TMP;
-  
+
   mateye(n, P);
-  
-  
+
+
   // Trivial cases
   if (b == 0)
     return;
-  
+
   if (b == 1)
   {
     matcopy(n, A, P);
     return;
   }
-  
-  
+
+
   // General case
   TMP = malloc(n*n*sizeof(double));
-  
+
   while (b)
   {
     if (b&1)
@@ -211,12 +220,12 @@ void matpow_by_squaring(double *A, int n, int b, double *P)
       matprod(n, P, A, TMP);
       matcopy(n, TMP, P);
     }
-    
+
     b >>=1;
     matprod(n, A, A, TMP);
     matcopy(n, TMP, A);
   }
-  
+
   free(TMP);
 }
 

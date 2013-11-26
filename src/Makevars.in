@@ -13,6 +13,7 @@ PKG_LIBS = $(SLAP_LDFLAGS) $(FLIBS) $(SPMD_LDFLAGS)
 ### Setup R source code and objects.
 R_OBJS = \
 base/bprnt.o \
+base/bprnt_c.o \
 base/pdnep.o \
 base/plinalg.o \
 base/prblas.o \
@@ -33,13 +34,13 @@ base_mpi_blac.o \
 base_pblas_level3.o \
 base_pdnep.o \
 base_plinalg.o \
+base_p_matexp.o \
 base_prblas.o \
 base_putil.o \
 base_scalapack.o \
 base_scalapack_utility.o \
 base_variance.o \
 export_blacs/pkg_tools.o \
-bprnt_c.o \
 other.o 
 
 

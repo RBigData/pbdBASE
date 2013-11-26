@@ -31,35 +31,31 @@
 /*}*/
 
 
-/*SEXP R_matpow_by_squaring(SEXP n, SEXP A, SEXP b)*/
-/*{*/
-/*  double *cpA;*/
-/*  const int N = INT(n,0);*/
-/*  */
-/*  SEXP P;*/
-/*  PROTECT(P = allocMatrix(REALSXP, N, N));*/
-/*  */
+SEXP R_matpow_by_squaring(SEXP A, SEXP desca, SEXP ldim, SEXP b)
+{
+  double *cpA;
+  
+  SEXP P;
+  PROTECT(P = allocMatrix(REALSXP, INT(ldim, 0), INT(ldim, 1)));
+  
 /*  cpA = malloc(N*N*sizeof(double));*/
 /*  memcpy(cpA, REAL(A), N*N*sizeof(double));*/
-/*  */
-/*  matpow_by_squaring(cpA, INT(n,0), INT(b,0), REAL(P));*/
-/*  */
+  
+  p_matpow_by_squaring(REAL(A), INTEGER(desca), INT(b, 0), REAL(P));
+  
 /*  free(cpA);*/
-/*  */
-/*  UNPROTECT(1);*/
-/*  return(P);*/
-/*}*/
+  
+  UNPROTECT(1);
+  return(P);
+}
 
 
 
 
-
-
-SEXP R_p_mateye(SEXP desca)
+SEXP R_p_mateye(SEXP desca, SEXP ldim)
 {
-  const int n = INT(desca, 2);
   SEXP RET;
-  PROTECT(RET = allocMatrix(REALSXP, n, n));
+  PROTECT(RET = allocMatrix(REALSXP, INT(ldim, 0), INT(ldim, 1)));
   
   p_mateye(REAL(RET), INTEGER(desca));
   

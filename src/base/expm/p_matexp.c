@@ -47,6 +47,13 @@ static inline void p_matcopy(double *a, int *desca, double *b, int *descb)
 /*static inline */
 void p_mateye(double *a, int *desca)
 {
+  const int ij = 1;
+  double diag = 1.0;
+  int ldiag = 1;
+  pddiagmk_(a, &ij, &ij, desca, &diag, &ldiag);
+}
+#if defined FIXTHISMESSLATERPLEASE
+{
   int i, j, gi, gj, ti, tj;
   int mb_a, nb_a, minb_a;
   int ldm[2];
@@ -64,44 +71,50 @@ void p_mateye(double *a, int *desca)
   mb_a = desca[4];
   nb_a = desca[5];
   
-  minb_a = mb_a<=nb_a?mb_a:nb_a;
+  mb_a = MIN(mb_a, gm);
+  nb_a = MIN(nb_a, gm);
   
   // Initialize
   for (i=0; i<m*n; i++)
     a[i] = 0.0;
   
   // Fill diagonal with 1's
-  for (j=0; j<n; j+=mb_a)
+  for (j=0; j<n; j++)//+=nb_a)
   {
-    for (i=0; i<m; i+=mb_a)
+    for (i=0; i<m; i++)//+=mb_a)
     {
       l2gpair_(&i, &j, &gi, &gj, desca, blacs);
       
-      mb_a = MIN(mb_a, m-i+1);
-      nb_a = MIN(nb_a, n-j+1);
+/*      if (m-i+1 > 0)*/
+        mb_a = MIN(mb_a, m-i+1);
+/*      if (n-j+1 > 0)*/
+        nb_a = MIN(nb_a, n-j+1);
       
+      
+      
+      minb_a = mb_a<=nb_a?mb_a:nb_a;
+      
+      if (gi == gj)
+        a[i + m*j] = 1.0;
       // only try if a diagonal entry is in this sub-block
-      if (abs(gi-gj) < minb_a)
-      {
-        for (tj=0; tj<=nb_a-1; tj++)
-        {
-          #pragma omp for simd
-          {
-            for (ti=0; ti<=mb_a-1; ti++)
-            {
-              if (gi+ti == gj+tj)
-              {
-                a[i+ti + gm*(j+tj)] = 1.0;
-              }
-            }
-          }
-        }
-      }
+/*      if (abs(gi-gj) <= minb_a)*/
+/*      {*/
+/*        for (tj=0; tj<nb_a; tj++)*/
+/*        {*/
+/*          for (ti=0; ti<mb_a; ti++)*/
+/*          {*/
+/*            if (gi+ti == gj+tj)*/
+/*            {*/
+/*              a[i+ti + m*(j+tj)] = 1.0;*/
+/*            }*/
+/*          }*/
+/*        }*/
+/*      }*/
     }
   }
   
 }
-
+#endif
 
 
 /*// Matrix exponentiation using Pade' approximations*/
@@ -191,55 +204,55 @@ void p_mateye(double *a, int *desca)
 
 
 
-/*// Exponentiation by squaring*/
-/*// P = A^b*/
-/*void p_matpow_by_squaring(double *A, int *desca, int b, double *P)*/
-/*{*/
-/*  int n, m;*/
-/*  int ldm[2];*/
-/*  int blacs[5];*/
-/*  int i, j;*/
-/*  int itmp;*/
-/*  double tmp, tmpj;*/
-/*  double *TMP;*/
-/*  */
-/*  p_mateye(P, desca);*/
-/*  */
-/*  */
-/*  // Trivial cases*/
-/*  if (b == 0)*/
-/*    return;*/
-/*  */
-/*  if (b == 1)*/
-/*  {*/
-/*    p_matcopy(A, desca, P, desca);*/
-/*    return;*/
-/*  }*/
-/*  */
-/*  */
-/*  // Get local dim and context grid info*/
-/*  pdims_(int *desc, int *ldm, int *blacs);*/
-/*  */
-/*  m = ldm[0];*/
-/*  n = ldm[1];*/
-/*  */
-/*  */
-/*  // General case*/
-/*  TMP = malloc(m*n*sizeof(double));*/
-/*  */
-/*  while (b)*/
-/*  {*/
-/*    if (b&1)*/
-/*    {*/
-/*      matprod(P, desca, A, desca, TMP, desca);*/
-/*      p_matcopy(TMP, desca, P, desca);*/
-/*    }*/
-/*    */
-/*    b >>=1;*/
-/*    p_matprod(A, desca, A, desca, TMP, desca);*/
-/*    p_matcopy(TMP, desca, A, desca);*/
-/*  }*/
-/*  */
-/*  free(TMP);*/
-/*}*/
+// Exponentiation by squaring
+// P = A^b
+void p_matpow_by_squaring(double *A, int *desca, int b, double *P)
+{
+  int n, m;
+  int ldm[2];
+  int blacs[5];
+  int i, j;
+  int itmp;
+  double tmp, tmpj;
+  double *TMP;
+  
+  p_mateye(P, desca);
+  
+  
+  // Trivial cases
+  if (b == 0)
+    return;
+  
+  if (b == 1)
+  {
+    p_matcopy(A, desca, P, desca);
+    return;
+  }
+  
+  
+  // Get local dim and context grid info
+  pdims_(desca, ldm, blacs);
+  
+  m = ldm[0];
+  n = ldm[1];
+  
+  
+  // General case
+  TMP = malloc(m*n*sizeof(double));
+  
+  while (b)
+  {
+    if (b&1)
+    {
+      p_matprod(P, desca, A, desca, TMP, desca);
+      p_matcopy(TMP, desca, P, desca);
+    }
+    
+    b >>=1;
+    p_matprod(A, desca, A, desca, TMP, desca);
+    p_matcopy(TMP, desca, A, desca);
+  }
+  
+  free(TMP);
+}
 
