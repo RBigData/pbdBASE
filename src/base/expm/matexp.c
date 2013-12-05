@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define EXPSGN(x,pow) (x==0?(pow==0?1:0):(x>0?1:(pow%2==0?1:(-1))))
+#include "matexp.h"
 
 void dgemm_(char *transa, char *transb, int *m, int *n, int *k, double *alpha, double *a, int *lda, double *b, int *ldb, double *beta, double *c, int *ldc);
 
@@ -74,113 +74,71 @@ static inline void mateye(const unsigned int n, double *a)
 */
 
 
-// Generated from bc via:
-// scale=50
-// define f(x) {
-// if (x <= 1) return (1);
-// return (x*f(x-1));
-// }
-// m=13
-// for(j=0; j<=m; j++) {f(2*m-j)*f(m)/f(2*m)/f(m-j)/f(j);}
-const double dmat_pade_coefs[14] =
-{
-  1.0,
-  0.5,
-  0.12,
-  1.833333333333333333333e-2,
-  1.992753623188405797101e-3,
-  1.630434782608695652174e-4,
-  1.035196687370600414079e-5,
-  5.175983436853002070393e-7,
-  2.043151356652500817261e-8,
-  6.306022705717595115002e-10,
-  1.483770048404140027059e-11,
-  2.529153491597965955215e-13,
-  2.810170546219962172461e-15,
-  1.544049750670308885967e-17
-};
-
-
-
 // Matrix exponentiation using Pade' approximations
 // p==q==13
 void matexp_pade(const unsigned int n, double *A, double *N, double *D)
 {
   int i, j;
-  int itmp;
+  int sign;
   double tmp, tmpj;
   double *B, *C;
 
-  B = malloc(n*n*sizeof(double));
-  C = malloc(n*n*sizeof(double));
+  B = calloc(n*n, sizeof(double));
+  C = calloc(n*n, sizeof(double));
 
   // Initialize
   #pragma omp for simd
   {
-    for (i=0; i<n*n; i++)
-    {
-      N[i] = 0.0;
-      D[i] = 0.0;
-    }
-
     // Fill diagonal with 1
     j = 0;
     for (i=0; i<n*n; i+=n)
     {
       i += j;
-
+      
       N[i] = 1;
       D[i] = 1;
-
+      
       j = 1;
     }
   }
-
+  
   // Fill N and D
   for (i=1; i<=13; i++)
   {
     // C = A*B
-    if (i>1)
-      matprod(n, A, B, C);
+    if (i == 1)
+      matcopy(n, A, C);
     else
+      matprod(n, A, B, C);
+    
+    
+    // N = pade_coef[i] * C
+    // D = (-1)^j * pade_coef[i] * C
+    tmp = matexp_pade_coefs[i];
+    sign = SGNEXP(-1, i);
+    
+    if (sign == 1)
     {
-      #pragma omp for simd
+      for (j=0; j<n*n; j++)
       {
-        for (j=0; j<n*n; j++)
-          C[j] = A[j];
+        B[j] = C[j];
+        tmpj = tmp * C[j];
+        N[j] += tmpj;
+        D[j] += tmpj;
       }
     }
-
-    #pragma omp for simd
+    else
     {
-      // N = pade_coef[i] * C
-      // D = (-1)^j * pade_coef[i] * C
-      tmp = dmat_pade_coefs[i];
-      itmp = EXPSGN(-1, i);
-
-      if (itmp == 1)
+      for (j=0; j<n*n; j++)
       {
-        for (j=0; j<n*n; j++)
-        {
-          B[j] = C[j];
-          tmpj = tmp * C[j];
-          N[j] += tmpj;
-          D[j] += tmpj;
-        }
-      }
-      else
-      {
-        for (j=0; j<n*n; j++)
-        {
-          B[j] = C[j];
-          tmpj = tmp * C[j];
-          N[j] += tmpj;
-          D[j] -= tmpj;
-        }
+        B[j] = C[j];
+        tmpj = tmp * C[j];
+        N[j] += tmpj;
+        D[j] -= tmpj;
       }
     }
   }
-
+  
   free(B);
   free(C);
 }
@@ -192,17 +150,16 @@ void matexp_pade(const unsigned int n, double *A, double *N, double *D)
 void matpow_by_squaring(double *A, int n, int b, double *P)
 {
   int i, j;
-  int itmp;
   double tmp, tmpj;
   double *TMP;
-
+  
   mateye(n, P);
-
-
+  
+  
   // Trivial cases
   if (b == 0)
     return;
-
+  
   if (b == 1)
   {
     matcopy(n, A, P);
@@ -212,7 +169,7 @@ void matpow_by_squaring(double *A, int n, int b, double *P)
 
   // General case
   TMP = malloc(n*n*sizeof(double));
-
+  
   while (b)
   {
     if (b&1)
@@ -220,12 +177,12 @@ void matpow_by_squaring(double *A, int n, int b, double *P)
       matprod(n, P, A, TMP);
       matcopy(n, TMP, P);
     }
-
+    
     b >>=1;
     matprod(n, A, A, TMP);
     matcopy(n, TMP, A);
   }
-
+  
   free(TMP);
 }
 

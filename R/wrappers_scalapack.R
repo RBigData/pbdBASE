@@ -15,11 +15,7 @@ base.rpdgetri <- function(n, a, desca)
     if (!is.double(a))
         storage.mode(a) <- "double"
     
-    out <- .Call("R_PDGETRI",
-                             a, as.integer(aldim), 
-                             as.integer(desca), as.integer(n),
-                             PACKAGE="pbdBASE"
-                            )
+    out <- .Call("R_PDGETRI", a, as.integer(desca), PACKAGE="pbdBASE")
     
     if (out$info!=0)
         comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))

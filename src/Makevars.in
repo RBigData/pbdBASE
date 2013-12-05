@@ -19,6 +19,7 @@ base/plinalg.o \
 base/prblas.o \
 base/R_plm.o \
 base/variance.o \
+base/expm/pade_coefs.o \
 base/expm/matexp.o \
 base/expm/p_matexp.o \
 base/util/auxil.o \
@@ -34,6 +35,7 @@ base_mpi_blac.o \
 base_pblas_level3.o \
 base_pdnep.o \
 base_plinalg.o \
+base_matexp.o \
 base_p_matexp.o \
 base_prblas.o \
 base_putil.o \

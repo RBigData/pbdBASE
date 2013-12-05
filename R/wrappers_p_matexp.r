@@ -15,7 +15,7 @@ p_mateye <- function(n, bldim=.BLDIM, ICTXT=.ICTXT)
 
 
 
-matpow_by_squaring <- function(A, b=1)
+p_matpow_by_squaring <- function(A, b=1)
 {
   b <- as.integer(b)
   
@@ -24,9 +24,29 @@ matpow_by_squaring <- function(A, b=1)
   
   desca <- base.descinit(dim=A@dim, bldim=A@bldim, ldim=A@ldim, ICTXT=A@ICTXT)
   
-  out <- .Call("R_matpow_by_squaring", A@Data, as.integer(desca), as.integer(A@ldim), b, PACKAGE="pbdBASE")
+  out <- .Call("R_p_matpow_by_squaring", A@Data, as.integer(desca), b, PACKAGE="pbdBASE")
   
   ret <- new("ddmatrix", Data=out, dim=A@dim, ldim=A@ldim, bldim=A@bldim, ICTXT=A@ICTXT)
   
   return( ret )
 }
+
+
+
+p_matexp_pade <- function(A)
+{
+  if (!is.double(A@Data))
+    storage.mode(A@Data) <- "double"
+  
+  desca <- base.descinit(dim=A@dim, bldim=A@bldim, ldim=A@ldim, ICTXT=A@ICTXT)
+  
+  out <- .Call("R_p_matexp_pade", A@Data, as.integer(desca), PACKAGE="pbdBASE")
+  
+  N <- new("ddmatrix", Data=out$N, dim=A@dim, ldim=A@ldim, bldim=A@bldim, ICTXT=A@ICTXT)
+  D <- new("ddmatrix", Data=out$D, dim=A@dim, ldim=A@ldim, bldim=A@bldim, ICTXT=A@ICTXT)
+  
+  R <- pbdDMAT::solve(D) %*% N
+  
+  return( R )
+}
+

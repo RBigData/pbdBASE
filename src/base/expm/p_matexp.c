@@ -7,28 +7,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <assert.h>
 
-#define EXPSGN(x,pow) (x==0?(pow==0?1:0):(x>0?1:(pow%2==0?1:(-1))))
-#define MIN(a,b) (a<b?a:b)
-
-// ScaLAPACK functions
-void pdgemm_(char *transa, char *transb, int *m, int *n, int *k, double *alpha, double *a, int *ia, int *ja, int *desca, double *b, int *ib, int *jb, int *descb, double *beta, double *c, int *ic, int *jc, int *descc);
-void pdlacpy_(char *uplo, int *m, int *n, double *a, int *ia, int *ja, int *desca, double *b, int *ib, int *jb, int *descb);
-
-// pbdBASE functions
-pdims_(int *desc, int *ldm, int *blacs);
-l2gpair_(int *i, int *j, int *gi, int *gj, int *desc, int *blacs);
+#include "matexp.h"
 
 
-// c = a * b for square matrices
+
+// c = a * b
 static inline void p_matprod(double *a, int *desca, double *b, int *descb, double *c, int *descc)
 {
   const char trans = 'N';
   const int ij = 1;
-  const int n = desca[2];
   const double one = 1.0, zero = 0.0;
+  int m, n, k;
   
-  pdgemm_(&trans, &trans, &n, &n, &n, &one, a, &ij, &ij, desca, b, &ij, &ij, descb, &zero, c, &ij, &ij, descc);
+  
+  m = desca[2];
+  n = descb[3];
+  k = desca[3];
+  
+  
+  pdgemm_(&trans, &trans, &m, &n, &k, &one, a, &ij, &ij, desca, b, &ij, &ij, descb, &zero, c, &ij, &ij, descc);
 }
 
 
@@ -52,7 +51,8 @@ void p_mateye(double *a, int *desca)
   int ldiag = 1;
   pddiagmk_(a, &ij, &ij, desca, &diag, &ldiag);
 }
-#if defined FIXTHISMESSLATERPLEASE
+// Fix this later, this is so stupid
+#if 0
 {
   int i, j, gi, gj, ti, tj;
   int mb_a, nb_a, minb_a;
@@ -117,90 +117,79 @@ void p_mateye(double *a, int *desca)
 #endif
 
 
-/*// Matrix exponentiation using Pade' approximations*/
-/*// p==q==13*/
-/*void p_matexp_pade(const unsigned int n, double *A, double *N, double *D)*/
-/*{*/
-/*  int i, j;*/
-/*  int itmp;*/
-/*  double tmp, tmpj;*/
-/*  double *B, *C;*/
-/*  */
-/*  B = malloc(n*n*sizeof(double));*/
-/*  C = malloc(n*n*sizeof(double));*/
-/*  */
-/*  // Initialize*/
-/*  #pragma omp for simd*/
-/*  {*/
-/*    for (i=0; i<n*n; i++)*/
-/*    {*/
-/*      N[i] = 0.0;*/
-/*      D[i] = 0.0;*/
-/*    }*/
-/*    */
-/*    // Fill diagonal with 1*/
-/*    j = 0;*/
-/*    for (i=0; i<n*n; i+=n)*/
-/*    {*/
-/*      i += j;*/
-/*      */
-/*      N[i] = 1;*/
-/*      D[i] = 1;*/
-/*      */
-/*      j = 1;*/
-/*    }*/
-/*  }*/
-/*  */
-/*  // Fill N and D*/
-/*  for (i=1; i<=13; i++)*/
-/*  {*/
-/*    // C = A*B*/
-/*    if (i>1)*/
-/*      matprod(n, A, B, C);*/
-/*    else*/
-/*    {*/
-/*      #pragma omp for simd*/
-/*      {*/
-/*        for (j=0; j<n*n; j++)*/
-/*          C[j] = A[j];*/
-/*      }*/
-/*    }*/
-/*    */
-/*    #pragma omp for simd*/
-/*    {*/
-/*      // B = C*/
-/*      for (j=0; j<n*n; j++)*/
-/*        B[j] = C[j];*/
-/*      */
-/*      // N = pade_coef[i] * C*/
-/*      // D = (-1)^j * pade_coef[i] * C*/
-/*      tmp = dmat_pade_coefs[i];*/
-/*      itmp = EXPSGN(-1, i);*/
-/*      */
-/*      if (itmp == 1)*/
-/*      {*/
-/*        for (j=0; j<n*n; j++)*/
-/*        {*/
-/*          tmpj = tmp * C[j];*/
-/*          N[j] += tmpj;*/
-/*          D[j] += tmpj;*/
-/*        }*/
-/*      }*/
-/*      else*/
-/*      {*/
-/*        for (j=0; j<n*n; j++)*/
-/*        {*/
-/*          tmpj = tmp * C[j];*/
-/*          N[j] += tmpj;*/
-/*          D[j] -= tmpj;*/
-/*        }*/
-/*      }*/
-/*    }*/
-/*  }*/
-/*  */
-/*  free(B);*/
-/*  free(C);*/
-/*}*/
+// Matrix exponentiation using Pade' approximations
+// p==q==13
+void p_matexp_pade(double *A, int *desca, double *N, double *D)
+{
+  int m, n;
+  int i, j;
+  int ldm[2], blacs[5];
+  int sign;
+  double tmp, tmpj;
+  double *B, *C;
+  
+  // Get local dim and context grid info
+  pdims_(desca, ldm, blacs);
+  
+  m = ldm[0];
+  n = ldm[1];
+  
+  m = m?m:1;
+  n = n?n:1;
+  
+  // Power of A
+/*  B = malloc(m*n*sizeof(double));*/
+  B = calloc(m*n, sizeof(double));
+  // Temporary storage for matrix multiplication
+  C = malloc(m*n*sizeof(double));
+  
+  assert(B != NULL);
+  assert(C != NULL);
+  
+  // Initialize
+  p_mateye(D, desca);
+  memcpy(N, D, m*n*sizeof(double));
+  
+  p_matcopy(A, desca, C, desca);
+  
+  // Fill N and D
+  for (i=1; i<=13; i++)
+  {
+    // C = A*B
+    if (i > 1)
+      p_matprod(A, desca, B, desca, C, desca);
+    
+    
+    // N = pade_coef[i] * C
+    // D = (-1)^j * pade_coef[i] * C
+    tmp = matexp_pade_coefs[i];
+    sign = SGNEXP(-1, i);
+    
+    if (sign == 1)
+    {
+      for (j=0; j<m*n; j++)
+      {
+        B[j] = C[j];
+        tmpj = tmp * C[j];
+        N[j] += tmpj;
+        D[j] += tmpj;
+      }
+    }
+    else
+    {
+      for (j=0; j<m*n; j++)
+      {
+        B[j] = C[j];
+        tmpj = tmp * C[j];
+        N[j] += tmpj;
+        D[j] -= tmpj;
+      }
+    }
+  }
+  
+  free(B);
+  free(C);
+}
 
 
 
@@ -212,7 +201,6 @@ void p_matpow_by_squaring(double *A, int *desca, int b, double *P)
   int ldm[2];
   int blacs[5];
   int i, j;
-  int itmp;
   double tmp, tmpj;
   double *TMP;
   

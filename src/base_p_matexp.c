@@ -1,43 +1,15 @@
 #include "base_global.h"
 #include "base/expm/matexp.h"
 
-/*SEXP R_matexp_pade(SEXP n, SEXP A)*/
-/*{*/
-/*  SEXP N, D;*/
-/*  SEXP RET, RET_NAMES;*/
-/*  */
-/*  // Allocate N and D*/
-/*  PROTECT(N = allocMatrix(REALSXP, INT(n,0), INT(n,0)));*/
-/*  PROTECT(D = allocMatrix(REALSXP, INT(n,0), INT(n,0)));*/
-/*  */
-/*  // Compute N and D*/
-/*  matexp_pade(INT(n,0), REAL(A), REAL(N), REAL(D));*/
-/*  */
-/*  // Wrangle the return*/
-/*  PROTECT(RET = allocVector(VECSXP, 2));*/
-/*  PROTECT(RET_NAMES = allocVector(STRSXP, 2));*/
-/*  */
-/*  SET_VECTOR_ELT(RET, 0, N);*/
-/*  SET_VECTOR_ELT(RET, 1, D);*/
-/*  */
-/*  SET_STRING_ELT(RET_NAMES, 0, mkChar("N")); */
-/*  SET_STRING_ELT(RET_NAMES, 1, mkChar("D")); */
-/*  */
-/*  setAttrib(RET, R_NamesSymbol, RET_NAMES);*/
-/*  */
-/*  */
-/*  UNPROTECT(4);*/
-/*  return(RET);*/
-/*}*/
 
-
-SEXP R_matpow_by_squaring(SEXP A, SEXP desca, SEXP ldim, SEXP b)
+SEXP R_p_matpow_by_squaring(SEXP A, SEXP desca, SEXP b)
 {
   double *cpA;
   
   SEXP P;
-  PROTECT(P = allocMatrix(REALSXP, INT(ldim, 0), INT(ldim, 1)));
+  PROTECT(P = allocMatrix(REALSXP, nrows(A), ncols(A)));
   
+  // Why did I make a copy ... ?
 /*  cpA = malloc(N*N*sizeof(double));*/
 /*  memcpy(cpA, REAL(A), N*N*sizeof(double));*/
   
@@ -63,3 +35,39 @@ SEXP R_p_mateye(SEXP desca, SEXP ldim)
   return RET;
 }
 
+
+
+
+SEXP R_p_matexp_pade(SEXP A, SEXP desca)
+{
+  int m, n;
+  SEXP N, D;
+  SEXP RET, RET_NAMES;
+  
+  m = nrows(A);
+  n = ncols(A);
+  
+  // Allocate N and D
+  PROTECT(N = allocMatrix(REALSXP, m, n));
+  PROTECT(D = allocMatrix(REALSXP, m, n));
+  
+  // Compute N and D
+  p_matexp_pade(REAL(A), INTEGER(desca), REAL(N), REAL(D));
+  
+  
+  // Wrangle the return
+  PROTECT(RET = allocVector(VECSXP, 2));
+  PROTECT(RET_NAMES = allocVector(STRSXP, 2));
+  
+  SET_VECTOR_ELT(RET, 0, N);
+  SET_VECTOR_ELT(RET, 1, D);
+  
+  SET_STRING_ELT(RET_NAMES, 0, mkChar("N")); 
+  SET_STRING_ELT(RET_NAMES, 1, mkChar("D")); 
+  
+  setAttrib(RET, R_NamesSymbol, RET_NAMES);
+  
+  
+  UNPROTECT(4);
+  return(RET);
+}

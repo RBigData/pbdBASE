@@ -79,66 +79,31 @@ SEXP R_PDGESV(SEXP N, SEXP NRHS, SEXP MXLDIMS, SEXP A, SEXP ALDIM, SEXP DESCA,
 
 
 /* Matrix inverse */
-SEXP R_PDGETRI(SEXP A, SEXP CLDIM, SEXP DESCA, SEXP N)
+SEXP R_PDGETRI(SEXP A, SEXP DESCA)
 {
-    int *pt_CLDIM = INTEGER(CLDIM), *ipiv, *iwork;
-    int i, lwork, liwork;
-    double *pt_A, *pt_C, *work;
-    
-    const int query = -1, IJ = 1;
-    double tmp_A = 0, tmp1 = 0;
+    const int ij = 1;
     
     /* R objects. */
-    SEXP RET, RET_NAMES, INFO, C;
+    SEXP RET, RET_NAMES, INFO, INV;
     
     PROTECT(RET = allocVector(VECSXP, 2));
     PROTECT(RET_NAMES = allocVector(STRSXP, 2));
     PROTECT(INFO = allocVector(INTSXP, 1));
-    PROTECT(C = allocMatrix(REALSXP, pt_CLDIM[0], pt_CLDIM[1]));
+    PROTECT(INV = allocMatrix(REALSXP, nrows(A), ncols(A)));
     
-    SET_VECTOR_ELT(RET, 0, INFO);
-    SET_VECTOR_ELT(RET, 1, C);
-    SET_STRING_ELT(RET_NAMES, 0, mkChar("info")); 
-    SET_STRING_ELT(RET_NAMES, 1, mkChar("A")); 
     setAttrib(RET, R_NamesSymbol, RET_NAMES);
     
-    /* Copy A -> C and set INFO and return R objects. */
-    INTEGER(INFO)[0] = 0;
-    pt_A = REAL(A);
-    pt_C = REAL(C);
-    for(i = 0; i < pt_CLDIM[0] * pt_CLDIM[1]; i++){
-        *pt_C = *pt_A;
-        pt_A++;
-        pt_C++;
-    }
     
-    /* IPIV ( N + DESCA(6) ) */
-    ipiv = (int *) R_alloc(INTEGER(N)[0] + INTEGER(DESCA)[5], sizeof(int));
+    // Compute inverse
+    pdinv_(REAL(A), &ij, &ij, INTEGER(DESCA), REAL(INV), INTEGER(INFO));
     
-    /* LU decomposition */
-    INTEGER(INFO)[0] = 0;
-    F77_CALL(pdgetrf)(INTEGER(N), INTEGER(N), REAL(C), &IJ, &IJ, 
-        INTEGER(DESCA), ipiv, INTEGER(INFO));
     
-    /* workspace query for inverse */
-    INTEGER(INFO)[0] = 0;
-    F77_CALL(pdgetri)(INTEGER(N), &tmp_A, &IJ, &IJ, INTEGER(DESCA),
-        &IJ, &tmp1, &query, &liwork, &query, INTEGER(INFO));
+    // Return
+    SET_VECTOR_ELT(RET, 0, INFO);
+    SET_VECTOR_ELT(RET, 1, INV);
+    SET_STRING_ELT(RET_NAMES, 0, mkChar("info")); 
+    SET_STRING_ELT(RET_NAMES, 1, mkChar("A")); 
     
-    /* allocate work arrays and invert A */
-    lwork = (int) tmp1;
-    lwork = nonzero(lwork);
-    
-    work = (double *) R_alloc(lwork, sizeof(double));
-    
-    liwork = nonzero(liwork);
-    iwork = (int *) R_alloc(liwork, sizeof(int));
-    
-    INTEGER(INFO)[0] = 0;
-    F77_CALL(pdgetri)(INTEGER(N), REAL(C), &IJ, &IJ, INTEGER(DESCA),
-        ipiv, work, &lwork, iwork, &liwork, INTEGER(INFO));
-    
-    /* Return. */
     UNPROTECT(4);
     return(RET);
 } /* End of R_PDGETRI(). */
@@ -289,7 +254,7 @@ SEXP R_PDSYEV(SEXP JOBZ, SEXP UPLO, SEXP N, SEXP A, SEXP DESCA, SEXP ALDIM, SEXP
 
 
 /* Non-Symmetric Eigen */
-
+// :[
 
 
 /* LU factorization */
