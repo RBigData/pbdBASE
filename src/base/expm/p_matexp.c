@@ -117,80 +117,6 @@ void p_mateye(double *a, int *desca)
 #endif
 
 
-// Matrix exponentiation using Pade' approximations
-// p==q==13
-void p_matexp_pade(double *A, int *desca, double *N, double *D)
-{
-  int m, n;
-  int i, j;
-  int ldm[2], blacs[5];
-  int sign;
-  double tmp, tmpj;
-  double *B, *C;
-  
-  // Get local dim and context grid info
-  pdims_(desca, ldm, blacs);
-  
-  m = ldm[0];
-  n = ldm[1];
-  
-  m = m?m:1;
-  n = n?n:1;
-  
-  // Power of A
-/*  B = malloc(m*n*sizeof(double));*/
-  B = calloc(m*n, sizeof(double));
-  // Temporary storage for matrix multiplication
-  C = malloc(m*n*sizeof(double));
-  
-  assert(B != NULL);
-  assert(C != NULL);
-  
-  // Initialize
-  p_mateye(D, desca);
-  memcpy(N, D, m*n*sizeof(double));
-  
-  p_matcopy(A, desca, C, desca);
-  
-  // Fill N and D
-  for (i=1; i<=13; i++)
-  {
-    // C = A*B
-    if (i > 1)
-      p_matprod(A, desca, B, desca, C, desca);
-    
-    
-    // N = pade_coef[i] * C
-    // D = (-1)^j * pade_coef[i] * C
-    tmp = matexp_pade_coefs[i];
-    sign = SGNEXP(-1, i);
-    
-    if (sign == 1)
-    {
-      for (j=0; j<m*n; j++)
-      {
-        B[j] = C[j];
-        tmpj = tmp * C[j];
-        N[j] += tmpj;
-        D[j] += tmpj;
-      }
-    }
-    else
-    {
-      for (j=0; j<m*n; j++)
-      {
-        B[j] = C[j];
-        tmpj = tmp * C[j];
-        N[j] += tmpj;
-        D[j] -= tmpj;
-      }
-    }
-  }
-  
-  free(B);
-  free(C);
-}
-
 
 
 // Exponentiation by squaring
@@ -243,4 +169,57 @@ void p_matpow_by_squaring(double *A, int *desca, int b, double *P)
   
   free(TMP);
 }
+
+
+
+
+// Matrix exponentiation using Pade' approximations
+// p==q==13
+void matexp_pade_fillmats(const unsigned int m, const unsigned int n, const unsigned int i, double *N, double *D, double *B, double *C);
+
+void p_matexp_pade(double *A, int *desca, double *N, double *D)
+{
+  int m, n;
+  int i;
+  int ldm[2], blacs[5];
+  double *B, *C;
+  
+  // Get local dim and context grid info
+  pdims_(desca, ldm, blacs);
+  
+  m = ldm[0];
+  n = ldm[1];
+  
+  m = m?m:1;
+  n = n?n:1;
+  
+  // Power of A
+  B = calloc(m*n, sizeof(double));
+  // Temporary storage for matrix multiplication
+  C = malloc(m*n*sizeof(double));
+  
+  assert(B != NULL);
+  assert(C != NULL);
+  
+  p_matcopy(A, desca, C, desca);
+  
+  // Initialize
+  p_mateye(D, desca);
+  memcpy(N, D, m*n*sizeof(double));
+  
+  // Fill N and D
+  for (i=1; i<=13; i++)
+  {
+    // C = A*B
+    if (i > 1)
+      p_matprod(A, desca, B, desca, C, desca);
+    
+    // Update matrices
+    matexp_pade_fillmats(m, n, i, N, D, B, C);
+  }
+  
+  free(B);
+  free(C);
+}
+
 

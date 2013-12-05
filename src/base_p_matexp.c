@@ -4,35 +4,22 @@
 
 SEXP R_p_matpow_by_squaring(SEXP A, SEXP desca, SEXP b)
 {
+  const int m = nrows(A), n = ncols(A);
   double *cpA;
   
   SEXP P;
   PROTECT(P = allocMatrix(REALSXP, nrows(A), ncols(A)));
   
-  // Why did I make a copy ... ?
-/*  cpA = malloc(N*N*sizeof(double));*/
-/*  memcpy(cpA, REAL(A), N*N*sizeof(double));*/
+  // Why did I make a copy ... ? // Oh now I remember
+  cpA = malloc(m*n*sizeof(double));
+  memcpy(cpA, REAL(A), m*n*sizeof(double));
   
-  p_matpow_by_squaring(REAL(A), INTEGER(desca), INT(b, 0), REAL(P));
+  p_matpow_by_squaring(cpA, INTEGER(desca), INT(b, 0), REAL(P));
   
-/*  free(cpA);*/
+  free(cpA);
   
   UNPROTECT(1);
   return(P);
-}
-
-
-
-
-SEXP R_p_mateye(SEXP desca, SEXP ldim)
-{
-  SEXP RET;
-  PROTECT(RET = allocMatrix(REALSXP, INT(ldim, 0), INT(ldim, 1)));
-  
-  p_mateye(REAL(RET), INTEGER(desca));
-  
-  UNPROTECT(1);
-  return RET;
 }
 
 
