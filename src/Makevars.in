@@ -15,7 +15,6 @@ R_OBJS = \
 Rtools/tools.o \
 base/bprnt.o \
 base/bprnt_c.o \
-base/pdnep.o \
 base/plinalg.o \
 base/prblas.o \
 base/R_plm.o \
@@ -34,7 +33,6 @@ base/util/special.o \
 base_lm.o \
 base_mpi_blac.o \
 base_pblas_level3.o \
-base_pdnep.o \
 base_plinalg.o \
 base_matexp.o \
 base_p_matexp.o \
@@ -70,5 +68,4 @@ clean:
                 export_blacs/*.o \
                 base/*.o \
                 base/expm/*.o \
-                base/glm/*.o \
                 base/util/*.o
