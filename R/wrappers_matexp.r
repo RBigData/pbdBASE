@@ -28,26 +28,3 @@ base.matexp_pade <- function(A)
 }
 
 
-
-matpow <- function(A, n)
-{
-  m <- nrow(A)
-  
-#  if (n==0)
-#    return(diag(1, m))
-#  else if (n==1)
-#    return(A)
-#  
-#  if (n >= 2^8)
-#  {
-#    E <- eigen(A)
-#    B <- E$vectors %*% diag(E$values^n) %*% solve(E$vectors)
-#    
-#    return( B )
-#  }
-  
-  B <- matexp_by_squaring(A, n)
-  
-  return(B)
-}
-

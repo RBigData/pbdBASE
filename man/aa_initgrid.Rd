@@ -43,8 +43,8 @@
   invoke \code{init.grid()} in this fashion, namely with ICTXT missing, and only
   do so once.
   
-  Contexts 0, 1, 2, and 3 are reserved. Additional custom contexts
-  are possible to create, but they must be integers > 3.
+  Contexts 0, 1, and 2 are reserved. Additional custom contexts
+  are possible to create, but they must be integers >= 3.
   
   Context 0 is the ``full'' process grid of \code{NPROW} by \code{NPCOL} 
   processes; contexts 1 is the process grid consisting of 1 process row and 

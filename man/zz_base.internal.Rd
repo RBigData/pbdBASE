@@ -64,9 +64,27 @@
 \alias{base.rcolcpy2}
 \alias{base.rrowcpy2}
 
+
+\alias{base.dhilbmk}
+\alias{base.matexp_pade}
+\alias{base.matpow_by_squaring}
+
+\alias{base.p_matexp_pade_wrap}
+\alias{base.p_matpow_by_squaring_wrap}
+
+\alias{base.pdhilbmk}
+\alias{base.pdmkcpn1}
+\alias{base.pdnep}
+\alias{base.rpdsyevx}
+
+
+
+
 \alias{base.rpdsyev}
 
 \alias{.conflicts.OK}
+
+
 
 \title{ All pbdPASE Internal Functions and Data }
 \description{ All pbdBASE internal functions }

@@ -37,28 +37,6 @@ SEXP R_matexp_pade(SEXP A)
   // Compute N and D
   matexp_pade(n, REAL(A), REAL(N), REAL(D));
   
-  for (int i=0; i<5; i++)
-    printf("%f ", REAL(N)[i]);
-  printf("\n");
-  
-  matexp_pade(n, REAL(A), REAL(N), REAL(D));
-  
-  for (int i=0; i<5; i++)
-    printf("%f ", REAL(N)[i]);
-  printf("\n");
-  
-  matexp_pade(n, REAL(A), REAL(N), REAL(D));
-  
-  for (int i=0; i<5; i++)
-    printf("%f ", REAL(N)[i]);
-  printf("\n");
-  
-  matexp_pade(n, REAL(A), REAL(N), REAL(D));
-  
-  for (int i=0; i<5; i++)
-    printf("%f ", REAL(N)[i]);
-  printf("\n");
-  
   // Wrangle the return
   PROTECT(RET = allocVector(VECSXP, 2));
   PROTECT(RET_NAMES = allocVector(STRSXP, 2));

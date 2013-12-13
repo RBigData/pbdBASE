@@ -18,7 +18,7 @@ static inline void matprod(const unsigned int n, double *a, double *b, double *c
 {
   char trans = 'N';
   const double one = 1.0, zero = 0.0;
-  
+
   dgemm_(&trans, &trans, &n, &n, &n, &one, a, &n, b, &n, &zero, c, &n);
 }
 
@@ -26,7 +26,7 @@ static inline void matprod(const unsigned int n, double *a, double *b, double *c
 static inline void matcopy(const unsigned int n, double *A, double *B)
 {
   const char uplo = 'A';
-  
+
   dlacpy_(&uplo, &n, &n, A, &n, B, &n);
 }
 
@@ -46,18 +46,17 @@ static inline void matzero(const unsigned int n, double *a)
 static inline void mateye(const unsigned int n, double *a)
 {
   int i, j;
-  
+
   #pragma omp for simd
   {
     matzero(n, a);
-    
+
     // Fill diagonal with 1
     i = 0;
     while (i < n*n)
     {
-      N[i] = 1.0;
-      D[i] = 1.0;
-      
+      a[i] = 1.0;
+
       i += n+1;
     }
   }
@@ -73,24 +72,24 @@ void matpow_by_squaring(double *A, int n, int b, double *P)
   int i, j;
   double tmp, tmpj;
   double *TMP;
-  
+
+
   mateye(n, P);
-  
-  
+
   // Trivial cases
   if (b == 0)
     return;
-  
+
   if (b == 1)
   {
     matcopy(n, A, P);
     return;
   }
-  
-  
+
+
   // General case
   TMP = malloc(n*n*sizeof(double));
-  
+
   while (b)
   {
     if (b&1)
@@ -98,12 +97,12 @@ void matpow_by_squaring(double *A, int n, int b, double *P)
       matprod(n, P, A, TMP);
       matcopy(n, TMP, P);
     }
-    
+
     b >>=1;
     matprod(n, A, A, TMP);
     matcopy(n, TMP, A);
   }
-  
+
   free(TMP);
 }
 
@@ -113,7 +112,7 @@ void matpow_by_squaring(double *A, int n, int b, double *P)
 
 /* r_m(x) = p_m(x) / q_m(x), where
    p_m(x) = sum_{j=0}^m (2m-j)!m!/(2m)!/(m-j)!/j! * x^j
-    
+
    and q_m(x) = p_m(-x)
 */
 
@@ -126,8 +125,8 @@ void matexp_pade_fillmats(const unsigned int m, const unsigned int n, const unsi
   int j;
   const double tmp = matexp_pade_coefs[i];
   double tmpj;
-  
-  
+
+
   if (SGNEXP(-1, i) == 1)
   {
     for (j=0; j<m*n; j++)
@@ -135,7 +134,7 @@ void matexp_pade_fillmats(const unsigned int m, const unsigned int n, const unsi
       // B = C
       tmpj = C[j];
       B[j] = tmpj;
-      
+
       tmpj *= tmp;
       // N = pade_coef[i] * C
       N[j] += tmpj;
@@ -150,7 +149,7 @@ void matexp_pade_fillmats(const unsigned int m, const unsigned int n, const unsi
       // B = C
       tmpj = C[j];
       B[j] = tmpj;
-      
+
       tmpj *= tmp;
       // N = pade_coef[i] * C
       N[j] += tmpj;
@@ -164,23 +163,23 @@ void matexp_pade(const unsigned int n, double *A, double *N, double *D)
 {
   int i;
   double *B, *C;
-  
+
   // Power of A
   B = calloc(n*n, sizeof(double));
   // Temporary storage for matrix multiplication
   C = malloc(n*n * sizeof(double));
-  
+
   assert(B != NULL);
   assert(C != NULL);
-  
+
   matcopy(n, A, C);
-  
+
   for (i=0; i<n*n; i++)
   {
     N[i] = 0.0;
     D[i] = 0.0;
   }
-  
+
   // Initialize N and D
   #pragma omp for simd
   {
@@ -190,23 +189,23 @@ void matexp_pade(const unsigned int n, double *A, double *N, double *D)
     {
       N[i] = 1.0;
       D[i] = 1.0;
-      
+
       i += n+1;
     }
   }
-  
-  
+
+
   // Fill N and D
   for (i=1; i<=13; i++)
   {
     // C = A*B
     if (i > 1)
       matprod(n, A, B, C);
-    
+
     // Update matrices
     matexp_pade_fillmats(n, n, i, N, D, B, C);
   }
-  
+
   free(B);
   free(C);
 }

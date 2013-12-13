@@ -12,6 +12,7 @@ PKG_LIBS = $(SLAP_LDFLAGS) $(FLIBS) $(SPMD_LDFLAGS)
 
 ### Setup R source code and objects.
 R_OBJS = \
+Rtools/tools.o \
 base/bprnt.o \
 base/bprnt_c.o \
 base/pdnep.o \
