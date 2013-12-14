@@ -77,7 +77,7 @@
 \alias{base.pdnep}
 \alias{base.rpdsyevx}
 
-
+\alias{base.finalize}
 
 
 \alias{base.rpdsyev}

@@ -7,7 +7,7 @@
 
 .Last.lib <- function(libpath){
   ### To free all BLACS points.
-  pbdBASE:::finalize(mpi.finalize = FALSE)
+  base.finalize(mpi.finalize = FALSE)
 } # End of .Last.lib().
 
 .onLoad <- function(libname, pkgname){

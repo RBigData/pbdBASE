@@ -162,7 +162,7 @@ blacsexit <- base.blacsexit
 
 
 # replacement for pbdMPI::finalize() that automatically shuts BLACS down
-finalize <- function(mpi.finalize=.SPMD.CT$mpi.finalize)
+base.finalize <- function(mpi.finalize=.SPMD.CT$mpi.finalize)
 {
   if (exists(".__blacs_initialized", envir = .pbdBASEEnv)){
     base.blacsexit(CONT=TRUE)
@@ -172,6 +172,7 @@ finalize <- function(mpi.finalize=.SPMD.CT$mpi.finalize)
   pbdMPI::finalize(mpi.finalize=mpi.finalize)
 }
 
+finalize <- base.finalize
 
 # ################################################
 # ------------------------------------------------
