@@ -6,7 +6,10 @@
 
 #include <R.h>
 #include <Rinternals.h>
+
 #include "base_global.h"
+#include "Rtools/Rtools.h"
+
 
 /* For computing LLS solution, either over or    under-determined. */
 /* In the case that A is rank deficient, the 'limited pivoting    */
@@ -15,124 +18,96 @@
 /* order of the model matrix, which has important interpretive    */
 /* value sometimes.                                                                                         */
 SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
-    SEXP A, SEXP ALDIM, SEXP DESCA,
-    SEXP B, SEXP BLDIM, SEXP DESCB,
+    SEXP A, SEXP DESCA, SEXP B, SEXP DESCB,
     SEXP LTAU)
 {
-    int i, *pt_ALDIM = INTEGER(ALDIM), *pt_BLDIM = INTEGER(BLDIM);
+    int ptct = 0;
     int lwork = -1;
     const int IJ = 1;
-
+    int i;
     double *pt_ORG, *pt_COPY, *pt_EFF, *pt_FT, *pt_RSD, *p_work;
     const double tmp = 0.0;
     double work = 0.0;
-
+    
     char trans = 'N'; // If trans='T', expect all hell to break loose
-
+    
     SEXP RET, RET_NAMES, INFO, A_OUT, B_OUT, EFF, FT, RSD, TAU, IPIV, RANK;
-
+    
     /* set up return */
-    PROTECT(RET = allocVector(VECSXP, 9));
-    PROTECT(RET_NAMES = allocVector(STRSXP, 9));
-
-    PROTECT(INFO = allocVector(INTSXP, 1));
-    PROTECT(A_OUT = allocMatrix(REALSXP, pt_ALDIM[0], pt_ALDIM[1]));
-    PROTECT(B_OUT = allocMatrix(REALSXP, pt_BLDIM[0], pt_BLDIM[1]));
-    PROTECT(EFF = allocMatrix(REALSXP, pt_BLDIM[0], pt_BLDIM[1]));
-    PROTECT(FT = allocMatrix(REALSXP, pt_BLDIM[0], pt_BLDIM[1]));
-    PROTECT(RSD = allocMatrix(REALSXP, pt_BLDIM[0], pt_BLDIM[1]));
-    PROTECT(TAU = allocVector(REALSXP, INTEGER(LTAU)[0]));
-    PROTECT(IPIV = allocVector(INTSXP, pt_ALDIM[1]));
-    PROTECT(RANK = allocVector(INTSXP, 1));
-
-    SET_VECTOR_ELT(RET, 0, INFO);
-    SET_VECTOR_ELT(RET, 1, A_OUT);
-    SET_VECTOR_ELT(RET, 2, B_OUT);
-    SET_VECTOR_ELT(RET, 3, EFF);
-    SET_VECTOR_ELT(RET, 4, FT);
-    SET_VECTOR_ELT(RET, 5, RSD);
-    SET_VECTOR_ELT(RET, 6, TAU);
-    SET_VECTOR_ELT(RET, 7, IPIV);
-    SET_VECTOR_ELT(RET, 8, RANK);
-
-    SET_STRING_ELT(RET_NAMES, 0, mkChar("INFO"));
-    SET_STRING_ELT(RET_NAMES, 1, mkChar("A"));
-    SET_STRING_ELT(RET_NAMES, 2, mkChar("B"));
-    SET_STRING_ELT(RET_NAMES, 3, mkChar("EFF"));
-    SET_STRING_ELT(RET_NAMES, 4, mkChar("FT"));
-    SET_STRING_ELT(RET_NAMES, 5, mkChar("RSD"));
-    SET_STRING_ELT(RET_NAMES, 6, mkChar("TAU"));
-    SET_STRING_ELT(RET_NAMES, 7, mkChar("IPIV"));
-    SET_STRING_ELT(RET_NAMES, 8, mkChar("RANK"));
-
-    setAttrib(RET, R_NamesSymbol, RET_NAMES);
-
-
+    PT(RET = allocVector(VECSXP, 9), ptct);
+    PT(RET_NAMES = allocVector(STRSXP, 9), ptct);
+    
+    PT(INFO = allocVector(INTSXP, 1), ptct);
+    PT(A_OUT = allocMatrix(REALSXP, nrows(A), ncols(A)), ptct);
+    PT(B_OUT = allocMatrix(REALSXP, nrows(B), ncols(B)), ptct);
+    PT(EFF = allocMatrix(REALSXP, nrows(B), ncols(B)), ptct);
+    PT(FT = allocMatrix(REALSXP, nrows(B), ncols(B)), ptct);
+    PT(RSD = allocMatrix(REALSXP, nrows(B), ncols(B)), ptct);
+    PT(TAU = allocVector(REALSXP, INT(LTAU, 0)), ptct);
+    PT(IPIV = allocVector(INTSXP, ncols(A)), ptct);
+    PT(RANK = allocVector(INTSXP, 1), ptct);
+    
+    
     /* Copy A and B since pdgels writes in place, also initialize */
-    pt_ORG = REAL(A);
-    pt_COPY = REAL(A_OUT);
-
-    for(i = 0; i < pt_ALDIM[0] * pt_ALDIM[1]; i++){
-        *pt_COPY = *pt_ORG;
-
-        pt_ORG++;
-        pt_COPY++;
-    }
-
+    memcpy(DBLP(A_OUT), DBLP(A), nrows(A)*ncols(A)*sizeof(double));
+    
     /* Set FT, RSD, and EFF to 0 */
     pt_ORG = REAL(B);
     pt_COPY = REAL(B_OUT);
     pt_EFF = REAL(EFF);
     pt_FT = REAL(FT);
     pt_RSD = REAL(RSD);
-
-    for(i = 0; i < pt_BLDIM[0] * pt_BLDIM[1]; i++){
+    
+    for(i = 0; i < nrows(B)*ncols(B); i++){
         *pt_COPY = *pt_ORG;
         *pt_FT = 0.0;
         *pt_RSD = 0.0;
-
+        
         pt_EFF++;
         pt_FT++;
         pt_RSD++;
-
+        
         pt_ORG++;
         pt_COPY++;
     }
-
-
+    
+    
     /* workspace query */
-    INTEGER(INFO)[0] = 0;
+    INT(INFO, 0) = 0;
+    
     rpdgels_(REAL(TOL), &trans,
-        INTEGER(M), INTEGER(N), INTEGER(NRHS),
-        &tmp, &IJ, &IJ, INTEGER(DESCA),
-        &tmp, &IJ, &IJ, INTEGER(DESCB),
+        INTP(M), INTP(N), INTP(NRHS),
+        &tmp, &IJ, &IJ, INTP(DESCA),
+        &tmp, &IJ, &IJ, INTP(DESCB),
         &tmp, &tmp, &tmp,
         &tmp, &work, &lwork,
-        &IJ, &IJ, INTEGER(INFO));
-
-
+        &IJ, &IJ, INTP(INFO));
+    
+    
     /* allocate work vector */
     lwork = (int) work;
     lwork = nonzero(lwork);
     p_work = (double *) R_alloc(lwork, sizeof(double));
-
-
+    
+    
+    
     /*    and compute LLS solution */
-    INTEGER(INFO)[0] = 0;
     rpdgels_(REAL(TOL), &trans,
-        INTEGER(M), INTEGER(N), INTEGER(NRHS),
-        REAL(A_OUT), &IJ, &IJ, INTEGER(DESCA),
-        REAL(B_OUT), &IJ, &IJ, INTEGER(DESCB),
+        INTP(M), INTP(N), INTP(NRHS),
+        REAL(A_OUT), &IJ, &IJ, INTP(DESCA),
+        REAL(B_OUT), &IJ, &IJ, INTP(DESCB),
         REAL(EFF), REAL(FT), REAL(RSD),
         REAL(TAU), p_work, &lwork,
-        INTEGER(IPIV), INTEGER(RANK), INTEGER(INFO));
-
-
-    /* Return. */
-    UNPROTECT(11);
+        INTP(IPIV), INTP(RANK), INTP(INFO));
+    
+    
+    // Manage return
+    RET_NAMES = make_list_names(9, "INFO", "A", "B", "EFF", "FT", "RSD", "TAU", "IPIV", "RANK");
+    RET = make_list(RET_NAMES, INFO, A_OUT, B_OUT, EFF, FT, RSD, TAU, IPIV, RANK);
+    
+    UNPT(ptct);
     return(RET);
 }
-
 
 
 /* ----------------------------------------------------- */
