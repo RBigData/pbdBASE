@@ -34,7 +34,7 @@ SEXP R_PDGESV(SEXP N, SEXP NRHS, SEXP MXLDIMS, SEXP A, SEXP DESCA, SEXP B, SEXP 
     int i;
     const int IJ = 1;
     int * ipiv;
-    double *pt_ORG, *pt_COPY, *A_OUT;
+    double *A_cp;
     
     SEXP RET, RET_NAMES, INFO, B_OUT;
     
@@ -43,22 +43,22 @@ SEXP R_PDGESV(SEXP N, SEXP NRHS, SEXP MXLDIMS, SEXP A, SEXP DESCA, SEXP B, SEXP 
     PT(INFO = Rvecalloc(1, "int"), ptct);
     PT(B_OUT = Rmatalloc(nrows(B), ncols(B), "dbl"), ptct);
     
-    
     // Copy A and B since pdgesv writes in place
-    A_OUT = (double *) R_alloc(nrows(A)*ncols(A), sizeof(double));
+    A_cp = (double *) R_alloc(nrows(A)*ncols(A), sizeof(double));
     
-    memcpy(A_OUT, REAL(A), nrows(A)*ncols(A)*sizeof(double));
-    memcpy(REAL(B_OUT), REAL(B), nrows(A)*ncols(A)*sizeof(double));
-    
+    memcpy(A_cp, DBLP(A), nrows(A)*ncols(A)*sizeof(double));
+    memcpy(DBLP(B_OUT), DBLP(B), nrows(B)*ncols(B)*sizeof(double));
     
     // Call pdgesv
-    ipiv = (int *) R_alloc(INT(MXLDIMS, 0) + INT(DESCA, 5), sizeof(int));
+/*    ipiv = (int *) R_alloc(INT(MXLDIMS, 0) + INT(DESCA, 5), sizeof(int));*/
+    ipiv = (int *) R_alloc(nrows(B) + INT(DESCA, 5), sizeof(int));
+    
     
     INT(INFO, 0) = 0;
     
     pdgesv_(INTP(N), INTP(NRHS),
-        A_OUT, &IJ, &IJ, INTP(DESCA), ipiv,
-        REAL(B_OUT), &IJ, &IJ, INTP(DESCB), INTP(INFO));
+            A_cp, &IJ, &IJ, INTP(DESCA), ipiv,
+            DBLP(B_OUT), &IJ, &IJ, INTP(DESCB), INTP(INFO));
     
     
     // Manage return
