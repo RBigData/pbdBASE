@@ -1,6 +1,9 @@
 #include <R.h>
 #include <Rinternals.h>
+
 #include "base_global.h"
+#include "Rtools/Rtools.h"
+
 
 #define TRUE 1
 #define FALSE 0
@@ -8,12 +11,13 @@
 
 SEXP R_NUMROC(SEXP N, SEXP NB, SEXP IPROC, SEXP NPROCS)
 {
+    int ptct = 0;
     SEXP NUM;
-    PROTECT(NUM = allocVector(INTSXP, 1));
+    PT(NUM = Rvecalloc(1, "int"), ptct);
     
-    numrocwrap_(INTEGER(N), INTEGER(NB), INTEGER(IPROC), INTEGER(NPROCS), INTEGER(NUM));
+    numrocwrap_(INTP(N), INTP(NB), INTP(IPROC), INTP(NPROCS), INTP(NUM));
     
-    UNPROTECT(1);
+    UNPT(ptct);
     return NUM;
 }
 
@@ -24,89 +28,73 @@ SEXP R_NUMROC(SEXP N, SEXP NB, SEXP IPROC, SEXP NPROCS)
 
 
 /* Solving systems of linear equations */
-SEXP R_PDGESV(SEXP N, SEXP NRHS, SEXP MXLDIMS, SEXP A, SEXP ALDIM, SEXP DESCA,
-    SEXP B, SEXP BLDIM, SEXP DESCB)
+SEXP R_PDGESV(SEXP N, SEXP NRHS, SEXP MXLDIMS, SEXP A, SEXP DESCA, SEXP B, SEXP DESCB)
 {
-    int i, *pt_ALDIM = INTEGER(ALDIM), *pt_BLDIM = INTEGER(BLDIM);
-    double *pt_ORG, *pt_COPY, *A_OUT;
-    SEXP RET, RET_NAMES, INFO, B_OUT;
-    
-    /* Protect R objects. */
-    PROTECT(RET = allocVector(VECSXP, 2));
-    PROTECT(RET_NAMES = allocVector(STRSXP, 2));
-    PROTECT(INFO = allocVector(INTSXP, 1));
-    PROTECT(B_OUT = allocMatrix(REALSXP, pt_BLDIM[0], pt_BLDIM[1]));
-    
-    SET_VECTOR_ELT(RET, 0, INFO);
-    SET_VECTOR_ELT(RET, 1, B_OUT);
-    SET_STRING_ELT(RET_NAMES, 0, mkChar("info")); 
-    SET_STRING_ELT(RET_NAMES, 1, mkChar("B")); 
-    setAttrib(RET, R_NamesSymbol, RET_NAMES);
-    
-    /* Copy A and B since pdgesv writes in place */
-    A_OUT = (double *) R_alloc(pt_ALDIM[0] * pt_ALDIM[1], sizeof(double));
-    pt_ORG = REAL(A);
-    pt_COPY = A_OUT;
-    for(i = 0; i < pt_ALDIM[0] * pt_ALDIM[1]; i++){
-        *pt_COPY = *pt_ORG;
-        pt_ORG++;
-        pt_COPY++;
-    }
-    
-    pt_ORG = REAL(B);
-    pt_COPY = REAL(B_OUT);
-    for(i = 0; i < pt_BLDIM[0] * pt_BLDIM[1]; i++){
-        *pt_COPY = *pt_ORG;
-        pt_ORG++;
-        pt_COPY++;
-    }
-    
+    int ptct = 0;
+    int i;
     const int IJ = 1;
     int * ipiv;
-    ipiv = (int *) R_alloc(INTEGER(MXLDIMS)[0] + INTEGER(DESCA)[5], sizeof(int));
+    double *pt_ORG, *pt_COPY, *A_OUT;
     
-    /* Set info */
-    INTEGER(INFO)[0] = 0;
+    SEXP RET, RET_NAMES, INFO, B_OUT;
     
-    F77_CALL(pdgesv)(INTEGER(N), INTEGER(NRHS),
-        A_OUT, &IJ, &IJ, INTEGER(DESCA), ipiv,
-        REAL(B_OUT), &IJ, &IJ, INTEGER(DESCB), INTEGER(INFO));
+    PT(RET = Rvecalloc(2, "vec"), ptct);
+    PT(RET_NAMES = Rvecalloc(2, "str"), ptct);
+    PT(INFO = Rvecalloc(1, "int"), ptct);
+    PT(B_OUT = Rmatalloc(nrows(B), ncols(B), "dbl"), ptct);
     
-    /* Return. */
-    UNPROTECT(4);
+    
+    // Copy A and B since pdgesv writes in place
+    A_OUT = (double *) R_alloc(nrows(A)*ncols(A), sizeof(double));
+    
+    memcpy(A_OUT, REAL(A), nrows(A)*ncols(A)*sizeof(double));
+    memcpy(REAL(B_OUT), REAL(B), nrows(A)*ncols(A)*sizeof(double));
+    
+    
+    // Call pdgesv
+    ipiv = (int *) R_alloc(INT(MXLDIMS, 0) + INT(DESCA, 5), sizeof(int));
+    
+    INT(INFO, 0) = 0;
+    
+    pdgesv_(INTP(N), INTP(NRHS),
+        A_OUT, &IJ, &IJ, INTP(DESCA), ipiv,
+        REAL(B_OUT), &IJ, &IJ, INTP(DESCB), INTP(INFO));
+    
+    
+    // Manage return
+    RET_NAMES = make_list_names(2, "info", "B");
+    RET = make_list(RET_NAMES, INFO, B_OUT);
+    
+    UNPT(ptct);
     return(RET);
-} /* End of R_PDGESV(). */
+}
 
 
 /* Matrix inverse */
 SEXP R_PDGETRI(SEXP A, SEXP DESCA)
 {
+    int ptct = 0;
     const int ij = 1;
     
-    /* R objects. */
     SEXP RET, RET_NAMES, INFO, INV;
     
-    PROTECT(RET = allocVector(VECSXP, 2));
-    PROTECT(RET_NAMES = allocVector(STRSXP, 2));
-    PROTECT(INFO = allocVector(INTSXP, 1));
-    PROTECT(INV = allocMatrix(REALSXP, nrows(A), ncols(A)));
-    
-    setAttrib(RET, R_NamesSymbol, RET_NAMES);
+    PT(RET = Rvecalloc(2, "vec"), ptct);
+    PT(RET_NAMES = Rvecalloc(2, "str"), ptct);
+    PT(INFO = Rvecalloc(1, "int"), ptct);
+    PT(INV = Rmatalloc(nrows(A), ncols(A), "dbl"), ptct);
     
     
     // Compute inverse
-    pdinv_(REAL(A), &ij, &ij, INTEGER(DESCA), REAL(INV), INTEGER(INFO));
+    pdinv_(DBLP(A), &ij, &ij, INTP(DESCA), DBLP(INV), INTP(INFO));
     
     
-    // Return
-    SET_VECTOR_ELT(RET, 0, INFO);
-    SET_VECTOR_ELT(RET, 1, INV);
-    SET_STRING_ELT(RET_NAMES, 0, mkChar("info")); 
-    SET_STRING_ELT(RET_NAMES, 1, mkChar("A")); 
+    // Manage return
+    RET_NAMES = make_list_names(2, "info", "A");
+    RET = make_list(RET_NAMES, INFO, INV);
     
-    UNPROTECT(4);
+    UNPT(ptct);
     return(RET);
-} /* End of R_PDGETRI(). */
+}
 
 
 
@@ -116,123 +104,89 @@ SEXP R_PDGETRI(SEXP A, SEXP DESCA)
 
 
 /* SVD */
-SEXP R_PDGESVD(SEXP M, SEXP N, SEXP ASIZE, SEXP A, SEXP DESCA, SEXP ALDIM, 
+SEXP R_PDGESVD(SEXP M, SEXP N, SEXP ASIZE, SEXP A, SEXP DESCA, 
     SEXP ULDIM, SEXP DESCU, SEXP VTLDIM, SEXP DESCVT, SEXP JOBU, SEXP JOBVT, 
     SEXP INPLACE)
 {
-    int i, *pt_ALDIM = INTEGER(ALDIM);
+    int ptct = 0;
     double *A_OUT;
-    SEXP RET, RET_NAMES, INFO, D, U, VT;
-
-    /* Extra needed. */
     int temp_IJ = 1, temp_lwork = -1;
     double temp_A = 0, temp_work = 0, *WORK;
-
-    /* Protect R objects. */
-    PROTECT(A);
+    SEXP RET, RET_NAMES, INFO, D, U, VT;
     
-    PROTECT(RET = allocVector(VECSXP, 4));
-    PROTECT(RET_NAMES = allocVector(STRSXP, 4));
+    PT(A, ptct);
     
-    PROTECT(INFO = allocVector(INTSXP, 1));
-    PROTECT(D = allocVector(REALSXP, INTEGER(ASIZE)[0]));
-    PROTECT(U = allocMatrix(REALSXP, INTEGER(ULDIM)[0], INTEGER(ULDIM)[1]));
-    PROTECT(VT = allocMatrix(REALSXP,
-            INTEGER(VTLDIM)[0], INTEGER(VTLDIM)[1]));
+    PT(RET = allocVector(VECSXP, 4), ptct);
+    PT(RET_NAMES = allocVector(STRSXP, 4), ptct);
     
-    SET_VECTOR_ELT(RET, 0, INFO);
-    SET_VECTOR_ELT(RET, 1, D);
-    SET_VECTOR_ELT(RET, 2, U);
-    SET_VECTOR_ELT(RET, 3, VT);
-    
-    SET_STRING_ELT(RET_NAMES, 0, mkChar("info")); 
-    SET_STRING_ELT(RET_NAMES, 1, mkChar("d")); 
-    SET_STRING_ELT(RET_NAMES, 2, mkChar("u")); 
-    SET_STRING_ELT(RET_NAMES, 3, mkChar("vt")); 
-    setAttrib(RET, R_NamesSymbol, RET_NAMES);
+    PT(INFO = Rvecalloc(1, "int"), ptct);
+    PT(D = Rvecalloc(INT(ASIZE, 0), "dbl"), ptct);
+    PT(U = Rmatalloc(INT(ULDIM, 0), INT(ULDIM, 1), "dbl"), ptct);
+    PT(VT = Rmatalloc(INT(VTLDIM, 0), INT(VTLDIM, 1), "dbl"), ptct);
     
     
-    /* Query size of workspace */
-    INTEGER(INFO)[0] = 0;
-    F77_CALL(pdgesvd)(CHARPT(JOBU, 0), CHARPT(JOBVT, 0),
-        INTEGER(M), INTEGER(N),
-        &temp_A, &temp_IJ, &temp_IJ, INTEGER(DESCA),
-        &temp_A, &temp_A, &temp_IJ, &temp_IJ, INTEGER(DESCU),
-        &temp_A, &temp_IJ, &temp_IJ, INTEGER(DESCVT),
-        &temp_work, &temp_lwork, INTEGER(INFO));
+    // Query size of workspace
+    INT(INFO, 0) = 0;
+    
+    pdgesvd_(CHARPT(JOBU, 0), CHARPT(JOBVT, 0),
+        INTP(M), INTP(N),
+        &temp_A, &temp_IJ, &temp_IJ, INTP(DESCA),
+        &temp_A, &temp_A, &temp_IJ, &temp_IJ, INTP(DESCU),
+        &temp_A, &temp_IJ, &temp_IJ, INTP(DESCVT),
+        &temp_work, &temp_lwork, INTP(INFO));
         
-    /* Allocate work vector and calculate svd */
+    // Allocate work vector and calculate svd
     temp_lwork = (int) temp_work;
     temp_lwork = nonzero(temp_lwork);
     
     WORK = (double *) R_alloc(temp_lwork, sizeof(double));
     
-    INTEGER(INFO)[0] = 0;
+    A_OUT = (double *) R_alloc(nrows(A)*ncols(A), sizeof(double));
+    memcpy(A_OUT, REAL(A), nrows(A)*ncols(A)*sizeof(double));
     
-/*    if (CHARPT(INPLACE, 0)[0] == 'N'){*/
-        /* Make copy of original data, since pdgesvd destroys it */
-        i = pt_ALDIM[0] * pt_ALDIM[1];
-        A_OUT = (double *) R_alloc(i, sizeof(double));
-        memcpy(A_OUT, REAL(A), i * sizeof(double));
-        
-        pdgesvd_(CHARPT(JOBU, 0), CHARPT(JOBVT, 0),
-            INTEGER(M), INTEGER(N),
-            A_OUT, &temp_IJ, &temp_IJ, INTEGER(DESCA),
-            REAL(D), REAL(U), &temp_IJ, &temp_IJ, INTEGER(DESCU),
-            REAL(VT), &temp_IJ, &temp_IJ, INTEGER(DESCVT),
-            WORK, &temp_lwork, INTEGER(INFO));
-/*    }*/
-/*    else {*/
-/*        pdgesvd_(CHARPT(JOBU, 0), CHARPT(JOBVT, 0),*/
-/*            INTEGER(M), INTEGER(N),*/
-/*            REAL(A), &temp_IJ, &temp_IJ, INTEGER(DESCA),*/
-/*            REAL(D), REAL(U), &temp_IJ, &temp_IJ, INTEGER(DESCU),*/
-/*            REAL(VT), &temp_IJ, &temp_IJ, INTEGER(DESCVT),*/
-/*            WORK, &temp_lwork, INTEGER(INFO));*/
-/*    }*/
+    pdgesvd_(CHARPT(JOBU, 0), CHARPT(JOBVT, 0),
+        INTP(M), INTP(N),
+        A_OUT, &temp_IJ, &temp_IJ, INTP(DESCA),
+        REAL(D), REAL(U), &temp_IJ, &temp_IJ, INTP(DESCU),
+        REAL(VT), &temp_IJ, &temp_IJ, INTP(DESCVT),
+        WORK, &temp_lwork, INTP(INFO));
     
-    UNPROTECT(7);
+    // Manage return
+    RET_NAMES = make_list_names(4, "info", "d", "u", "vt");
+    RET = make_list(RET_NAMES, INFO, D, U, VT);
+    
+    UNPT(ptct);
     
     return(RET);
 } 
 
 
 /* Symmetric Eigen */
-SEXP R_PDSYEV(SEXP JOBZ, SEXP UPLO, SEXP N, SEXP A, SEXP DESCA, SEXP ALDIM, SEXP ZLDIM, SEXP DESCZ)
+SEXP R_PDSYEV(SEXP JOBZ, SEXP UPLO, SEXP N, SEXP A, SEXP DESCA, SEXP ZLDIM, SEXP DESCZ)
 {
-    int i, *pt_ALDIM = INTEGER(ALDIM);
+    int ptct = 0;
     double *A_OUT;
     SEXP RET, RET_NAMES, INFO, W, Z;
-    
-    /* Extra needed. */
     int temp_IJ = 1, temp_lwork = -1;
     double temp_A = 0, temp_work = 0, *WORK;
     
-    /* Protect R objects. */
-    PROTECT(A);
+    PT(A, ptct);
     
-    PROTECT(RET = allocVector(VECSXP, 3));
-    PROTECT(RET_NAMES = allocVector(STRSXP, 3));
+    PT(RET = Rvecalloc(3, "vec"), ptct);
+    PT(RET_NAMES = Rvecalloc(3, "str"), ptct);
     
-    PROTECT(W = allocVector(REALSXP, INTEGER(N)[0]));
-    PROTECT(Z = allocMatrix(REALSXP, INTEGER(ZLDIM)[0], INTEGER(ZLDIM)[1]));
-    PROTECT(INFO = allocVector(INTSXP, 1));
+    PT(W = Rvecalloc(INT(N, 0), "dbl"), ptct);
+    PT(Z = Rmatalloc(INT(ZLDIM, 0), INT(ZLDIM, 1), "dbl"), ptct);
+    PT(INFO = Rvecalloc(1, "int"), ptct);
     
-    SET_VECTOR_ELT(RET, 0, W);
-    SET_VECTOR_ELT(RET, 1, Z);
-    SET_VECTOR_ELT(RET, 2, INFO);
-    
-    SET_STRING_ELT(RET_NAMES, 0, mkChar("values")); 
-    SET_STRING_ELT(RET_NAMES, 1, mkChar("vectors")); 
-    SET_STRING_ELT(RET_NAMES, 2, mkChar("info")); 
-    setAttrib(RET, R_NamesSymbol, RET_NAMES);
     
     /* Query size of workspace */
-    INTEGER(INFO)[0] = 0;
-    pdsyev_(CHARPT(JOBZ, 0), CHARPT(UPLO, 0), INTEGER(N),
-        &temp_A, &temp_IJ, &temp_IJ, INTEGER(DESCA),
-        &temp_A, &temp_A, &temp_IJ, &temp_IJ, INTEGER(DESCZ),
-        &temp_work, &temp_lwork, INTEGER(INFO));
+    INT(INFO, 0) = 0;
+    
+    pdsyev_(CHARPT(JOBZ, 0), CHARPT(UPLO, 0), INTP(N),
+        &temp_A, &temp_IJ, &temp_IJ, INTP(DESCA),
+        &temp_A, &temp_A, &temp_IJ, &temp_IJ, INTP(DESCZ),
+        &temp_work, &temp_lwork, INTP(INFO));
         
     /* Allocate work vector and calculate svd */
     temp_lwork = (int) temp_work;
@@ -240,14 +194,17 @@ SEXP R_PDSYEV(SEXP JOBZ, SEXP UPLO, SEXP N, SEXP A, SEXP DESCA, SEXP ALDIM, SEXP
     
     WORK = (double *) R_alloc(temp_lwork, sizeof(double));
     
-    INTEGER(INFO)[0] = 0;
+    pdsyev_(CHARPT(JOBZ, 0), CHARPT(UPLO, 0), INTP(N),
+        DBLP(A), &temp_IJ, &temp_IJ, INTP(DESCA),
+        DBLP(W), DBLP(Z), &temp_IJ, &temp_IJ, INTP(DESCZ),
+        WORK, &temp_lwork, INTP(INFO));
     
-    pdsyev_(CHARPT(JOBZ, 0), CHARPT(UPLO, 0), INTEGER(N),
-        REAL(A), &temp_IJ, &temp_IJ, INTEGER(DESCA),
-        REAL(W), REAL(Z), &temp_IJ, &temp_IJ, INTEGER(DESCZ),
-        WORK, &temp_lwork, INTEGER(INFO));
     
-    UNPROTECT(6);
+    // Manage return
+    RET_NAMES = make_list_names(3, "values", "vectors", "info");
+    RET = make_list(RET_NAMES, W, Z, INFO);
+    
+    UNPT(ptct);
     
     return(RET);
 } 
@@ -260,84 +217,66 @@ SEXP R_PDSYEV(SEXP JOBZ, SEXP UPLO, SEXP N, SEXP A, SEXP DESCA, SEXP ALDIM, SEXP
 /* LU factorization */
 SEXP R_PDGETRF(SEXP M, SEXP N, SEXP A, SEXP CLDIM, SEXP DESCA, SEXP LIPIV)
 {
-    int i, *pt_CLDIM = INTEGER(CLDIM), *ipiv;
-    double *pt_A, *pt_C;
+    int ptct = 0;
+    int *ipiv;
     const int IJ = 1;
     SEXP RET, RET_NAMES, INFO, C;
     
-    /* Protect R objects. */
-    PROTECT(RET = allocVector(VECSXP, 2));
-    PROTECT(RET_NAMES = allocVector(STRSXP, 2));
-    PROTECT(INFO = allocVector(INTSXP, 1));
-    PROTECT(C = allocMatrix(REALSXP, pt_CLDIM[0], pt_CLDIM[1]));
+    PT(RET = Rvecalloc(2, "vec"), ptct);
+    PT(RET_NAMES = Rvecalloc(2, "str"), ptct);
     
-    SET_VECTOR_ELT(RET, 0, INFO);
-    SET_VECTOR_ELT(RET, 1, C);
-    SET_STRING_ELT(RET_NAMES, 0, mkChar("info")); 
-    SET_STRING_ELT(RET_NAMES, 1, mkChar("A")); 
-    setAttrib(RET, R_NamesSymbol, RET_NAMES);
+    PT(INFO = Rvecalloc(1, "int"), ptct);
+    PT(C = Rmatalloc(INT(CLDIM, 0), INT(CLDIM, 1), "dbl"), ptct);
     
-    /* Set INFO and Copy A -> C. */
-    INTEGER(INFO)[0] = 0;
-    pt_A = REAL(A);
-    pt_C = REAL(C);
-    for(i = 0; i < pt_CLDIM[0] * pt_CLDIM[1]; i++){
-        *pt_C = *pt_A;
-        pt_A++;
-        pt_C++;
-    }
+    
+    // A = LU
+    memcpy(DBLP(C), DBLP(A), nrows(A)*ncols(A)*sizeof(double));
+    
+    INT(INFO, 0) = 0;
     
     LIPIV = nonzero(LIPIV);
-    ipiv = (int *) R_alloc(INTEGER(LIPIV), sizeof(int));
+    ipiv = (int *) R_alloc(INTP(LIPIV), sizeof(int));
     
-    INTEGER(INFO)[0] = 0;
-    F77_CALL(pdgetrf)(INTEGER(M), INTEGER(N), REAL(C), 
-        &IJ, &IJ, INTEGER(DESCA), ipiv, INTEGER(INFO));
+    pdgetrf_(INTP(M), INTP(N), DBLP(C), &IJ, &IJ, INTP(DESCA), ipiv, INTP(INFO));
     
-    /* Return. */
-    UNPROTECT(4);
+    
+    // Manage return
+    RET_NAMES = make_list_names(2, "info", "A");
+    RET = make_list(RET_NAMES, INFO, C);
+    
+    UNPT(ptct);
     return(RET);
-} /* End of R_PDGETRF(). */
+}
 
 
 
 /* Cholesky */
-SEXP R_PDPOTRF(SEXP N, SEXP A, SEXP CLDIM, SEXP DESCA, SEXP UPLO)
+SEXP R_PDPOTRF(SEXP N, SEXP A, SEXP DESCA, SEXP UPLO)
 {
-    int i, *pt_CLDIM = INTEGER(CLDIM);
+    int ptct = 0;
     const int IJ = 1;
     double *pt_A, *pt_C;
     SEXP RET, RET_NAMES, INFO, C;
     
     /* Protect R objects. */
-    PROTECT(RET = allocVector(VECSXP, 2));
-    PROTECT(RET_NAMES = allocVector(STRSXP, 2));
-    PROTECT(INFO = allocVector(INTSXP, 1));
-    PROTECT(C = allocMatrix(REALSXP, pt_CLDIM[0], pt_CLDIM[1]));
+    PT(RET = Rvecalloc(2, "vec"), ptct);
+    PT(RET_NAMES = Rvecalloc(2, "str"), ptct);
+    PT(INFO = Rvecalloc(1, "int"), ptct);
+    PT(C = Rmatalloc(nrows(A), ncols(A), "dbl"), ptct);
     
-    SET_VECTOR_ELT(RET, 0, INFO);
-    SET_VECTOR_ELT(RET, 1, C);
-    SET_STRING_ELT(RET_NAMES, 0, mkChar("info")); 
-    SET_STRING_ELT(RET_NAMES, 1, mkChar("A")); 
-    setAttrib(RET, R_NamesSymbol, RET_NAMES);
+    // Compute chol
+    memcpy(DBLP(C), DBLP(A), nrows(A)*ncols(A)*sizeof(double));
     
-    /* Copy A -> C and set INFO and return R objects. */
-    INTEGER(INFO)[0] = 0;
-    pt_A = REAL(A);
-    pt_C = REAL(C);
-    for(i = 0; i < pt_CLDIM[0] * pt_CLDIM[1]; i++){
-        *pt_C = *pt_A;
-        pt_A++;
-        pt_C++;
-    }
+    INT(INFO, 0) = 0;
     
-    // Call Fortran.
-    F77_CALL(pdpotrf)(CHARPT(UPLO, 0), INTEGER(N),
-        REAL(C), &IJ, &IJ, INTEGER(DESCA), INTEGER(INFO));
+    pdpotrf_(CHARPT(UPLO, 0), INTP(N), DBLP(C), &IJ, &IJ, INTP(DESCA), INTP(INFO));
     
-    // Return. 
-    UNPROTECT(4);
-                return(RET);
+    // Manage return
+    RET_NAMES = make_list_names(2, "info", "A");
+    RET = make_list(RET_NAMES, INFO, C);
+    
+    UNPT(ptct);
+    return(RET);
 }
 
 
@@ -346,7 +285,7 @@ SEXP R_PDPOTRF(SEXP N, SEXP A, SEXP CLDIM, SEXP DESCA, SEXP UPLO)
 SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP VU, SEXP IL, SEXP IU, SEXP ABSTOL, SEXP ORFAC)
 {
     char uplo = 'U';
-    
+    int ptct = 0;
     const int IJ = 1;
     int i, j;
     int m, nz;
@@ -372,24 +311,24 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
     else
         ownany = TRUE;
     
-    ldm[0] = nonzero(ldm[0]);
-    ldm[1] = nonzero(ldm[1]);
+    ldm[0] = nrows(A);//nonzero(ldm[0]);
+    ldm[1] = ncols(A);//nonzero(ldm[1]);
     
     
     // Setup for the setup
     for (i=0; i<9; i++)
-        descz[i] = INTEGER(DESCA)[i];
+        descz[i] = INT(DESCA, i);
     
-    w = R_alloc(INTEGER(N)[0], sizeof(double));
+    w = R_alloc(INT(N, 0), sizeof(double));
     z = R_alloc(ldm[0]*ldm[1], sizeof(double));
     gap = R_alloc(blacs[1]*blacs[2], sizeof(double));
     
-    PROTECT(A);
+    PT(A, ptct);
     a = R_alloc(ldm[0]*ldm[1], sizeof(double));
-    for (i=0; i<ldm[0]*ldm[1]; i++)
-        a[i] = REAL(A)[i];
     
-    ifail = R_alloc(INTEGER(N)[0], sizeof(int));
+    memcpy(a, DBLP(A), nrows(A)*ncols(A)*sizeof(double));
+    
+    ifail = R_alloc(INT(N, 0), sizeof(int));
     iclustr = R_alloc(2*blacs[1]*blacs[2], sizeof(int));
     
     
@@ -399,10 +338,10 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
     info = 0;
     
     pdsyevx_(CHARPT(JOBZ, 0), CHARPT(RANGE, 0), &uplo, 
-        INTEGER(N), a, &IJ, &IJ, INTEGER(DESCA), 
-        REAL(VL), REAL(VU), INTEGER(IL), INTEGER(IU), 
-        REAL(ABSTOL), &m, &nz, w, 
-        REAL(ORFAC), z, &IJ, &IJ, descz, 
+        INTP(N), a, &IJ, &IJ, INTP(DESCA), 
+        DBLP(VL), DBLP(VU), INTP(IL), INTP(IU), 
+        DBLP(ABSTOL), &m, &nz, w, 
+        DBLP(ORFAC), z, &IJ, &IJ, descz, 
         &tmp_lwork, &lwork, &tmp_liwork, &liwork, 
         ifail, iclustr, gap, &info);
     
@@ -417,17 +356,17 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
     info = 0;
     
     pdsyevx_(CHARPT(JOBZ, 0), CHARPT(RANGE, 0), &uplo, 
-        INTEGER(N), a, &IJ, &IJ, INTEGER(DESCA), 
-        REAL(VL), REAL(VU), INTEGER(IL), INTEGER(IU), 
-        REAL(ABSTOL), &m, &nz, w, 
-        REAL(ORFAC), z, &IJ, &IJ, descz, 
+        INTP(N), a, &IJ, &IJ, INTP(DESCA), 
+        DBLP(VL), DBLP(VU), INTP(IL), INTP(IU), 
+        DBLP(ABSTOL), &m, &nz, w, 
+        DBLP(ORFAC), z, &IJ, &IJ, descz, 
         work, &lwork, iwork, &liwork, 
         ifail, iclustr, gap, &info);
     
     
-    PROTECT(W = allocVector(REALSXP, m));
+    PT(W = allocVector(REALSXP, m), ptct);
     for (i=0; i<m; i++)
-        REAL(W)[i] = w[i];
+        DBL(W, i) = w[i];
     
     
 /*    PROTECT(IFAIL = allocVector(INTSXP, m));*/
@@ -438,40 +377,26 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
     // Manage the return
     if (CHARPT(JOBZ, 0)[0] == 'N') // Only eigenvalues are computed
     {
-        PROTECT(RET = allocVector(VECSXP, 1));
-        PROTECT(RET_NAMES = allocVector(STRSXP, 1));
+        PT(RET = allocVector(VECSXP, 1), ptct);
+        PT(RET_NAMES = allocVector(STRSXP, 1), ptct);
         
-        SET_VECTOR_ELT(RET, 0, W);
-        
-        SET_STRING_ELT(RET_NAMES, 0, mkChar("values")); 
-        
-        setAttrib(RET, R_NamesSymbol, RET_NAMES);
-        
-        unpt = 4;
+        RET_NAMES = make_list_names(1, "values");
+        RET = make_list(RET_NAMES, W);
     }
     else // eigenvalues + eigenvectors
     {
-        PROTECT(Z = allocMatrix(REALSXP, ldm[0], ldm[1]));
+        PT(Z = allocMatrix(REALSXP, ldm[0], ldm[1]), ptct);
         for (i=0; i<ldm[0]*ldm[1]; i++)
-            REAL(Z)[i] = z[i];
+            DBL(Z, i) = z[i];
         
-        PROTECT(M = allocVector(INTSXP, 1));
-        INTEGER(M)[0] = m;
+        PT(M = allocVector(INTSXP, 1), ptct);
+        INT(M, 0) = m;
         
-        PROTECT(RET = allocVector(VECSXP, 3));
-        PROTECT(RET_NAMES = allocVector(STRSXP, 3));
+        PT(RET = allocVector(VECSXP, 3), ptct);
+        PT(RET_NAMES = allocVector(STRSXP, 3), ptct);
         
-        SET_VECTOR_ELT(RET, 0, W);
-        SET_VECTOR_ELT(RET, 1, Z);
-        SET_VECTOR_ELT(RET, 2, M);
-        
-        SET_STRING_ELT(RET_NAMES, 0, mkChar("values")); 
-        SET_STRING_ELT(RET_NAMES, 1, mkChar("vectors")); 
-        SET_STRING_ELT(RET_NAMES, 2, mkChar("m")); 
-        
-        setAttrib(RET, R_NamesSymbol, RET_NAMES);
-        
-        unpt = 6;
+        RET_NAMES = make_list_names(3, "values", "vectors", "m");
+        RET = make_list(RET_NAMES, W, Z, M);
     }
     
     
@@ -488,43 +413,42 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
 // Matrix norms
 SEXP R_PDLANGE(SEXP TYPE, SEXP M, SEXP N, SEXP A, SEXP DESCA)
 {
+    int ptct = 0;
     const int IJ = 1;
     double *work;
     
     SEXP VAL;
-    PROTECT(VAL = allocVector(REALSXP, 1));
+    PT(VAL = Rvecalloc(1, "dbl"), ptct);
     
-    F77_CALL(matnorm)(REAL(VAL), CHARPT(TYPE, 0), INTEGER(M),
-        INTEGER(N), REAL(A), &IJ, &IJ, INTEGER(DESCA));
+    matnorm_(DBLP(VAL), CHARPT(TYPE, 0), INTP(M), INTP(N), DBLP(A), &IJ, &IJ, INTP(DESCA));
     
-    UNPROTECT(1);
+    UNPT(ptct);
     return(VAL);
 }
 
 
 // Condition # estimator for general matrix
-SEXP R_PDGECON(SEXP TYPE, SEXP M, SEXP N, SEXP A, SEXP DESCA, SEXP ALDIM)
+SEXP R_PDGECON(SEXP TYPE, SEXP M, SEXP N, SEXP A, SEXP DESCA)
 {
+    int ptct = 0;
     const int IJ = 1;
     double* cpA;
-    int i, info = 0;
-    int* pt_ALDIM = INTEGER(ALDIM);
+    int info = 0;
     
     SEXP RET;
-    PROTECT(RET = allocVector(REALSXP, 2));
+    PT(RET = Rvecalloc(2, "dbl"), ptct);
     
     // Copy A
-    i = pt_ALDIM[0] * pt_ALDIM[1];
-    cpA = R_alloc(i, sizeof(double));
-    memcpy(cpA, REAL(A), i * sizeof(double));
+    cpA = R_alloc(nrows(A)*ncols(A), sizeof(double));
+    memcpy(cpA, REAL(A), nrows(A)*ncols(A)*sizeof(double));
     
     // compute inverse of condition number
-    F77_CALL(condnum)(CHARPT(TYPE, 0), INTEGER(M), INTEGER(N), cpA, 
-        &IJ, &IJ, INTEGER(DESCA), REAL(RET), &info);
+    condnum_(CHARPT(TYPE, 0), INTP(M), INTP(N), cpA, 
+        &IJ, &IJ, INTP(DESCA), DBLP(RET), &info);
     
-    REAL(RET)[1] = (double) info;
+    DBL(RET, 1) = (double) info;
     
-    UNPROTECT(1);
+    UNPROTECT(ptct);
     return(RET);
 }
 
@@ -533,19 +457,19 @@ SEXP R_PDGECON(SEXP TYPE, SEXP M, SEXP N, SEXP A, SEXP DESCA, SEXP ALDIM)
 // Condition # estimator for triangular matrix
 SEXP R_PDTRCON(SEXP TYPE, SEXP UPLO, SEXP DIAG, SEXP N, SEXP A, SEXP DESCA)
 {
+    int ptct = 0;
     double* work;
     double tmp;
     int* iwork;
     int i, lwork, liwork, info = 0;
-    // consts 
     const int IJ = 1, in1 = -1;
-    // R objects
+    
     SEXP RET;
-    PROTECT(RET = allocVector(REALSXP, 2));
+    PT(RET = Rvecalloc(2, "dbl"), ptct);
     
     // workspace query and allocate work vectors
-    F77_CALL(pdtrcon)(CHARPT(TYPE, 0), CHARPT(UPLO, 0), CHARPT(DIAG, 0),
-        INTEGER(N), REAL(A), &IJ, &IJ, INTEGER(DESCA), REAL(RET), 
+    pdtrcon_(CHARPT(TYPE, 0), CHARPT(UPLO, 0), CHARPT(DIAG, 0),
+        INTP(N), DBLP(A), &IJ, &IJ, INTP(DESCA), DBLP(RET), 
         &tmp, &in1, &liwork, &in1, &info);
     
     lwork = (int) tmp;
@@ -554,13 +478,13 @@ SEXP R_PDTRCON(SEXP TYPE, SEXP UPLO, SEXP DIAG, SEXP N, SEXP A, SEXP DESCA)
     
     // compute inverse of condition number
     info = 0;
-    F77_CALL(pdtrcon)(CHARPT(TYPE, 0), CHARPT(UPLO, 0), CHARPT(DIAG, 0),
-        INTEGER(N), REAL(A), &IJ, &IJ, INTEGER(DESCA), REAL(RET), 
+    pdtrcon_(CHARPT(TYPE, 0), CHARPT(UPLO, 0), CHARPT(DIAG, 0),
+        INTP(N), DBLP(A), &IJ, &IJ, INTP(DESCA), DBLP(RET), 
         work, &lwork, iwork, &liwork, &info);
     
-    REAL(RET)[1] = (double) info;
+    DBL(RET, 1) = (double) info;
     
-    UNPROTECT(1);
+    UNPT(ptct);
     return(RET);
 }
 

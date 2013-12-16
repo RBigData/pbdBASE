@@ -1,13 +1,14 @@
-#include <R.h>
-#include <Rinternals.h>
-#include <stdarg.h>
+// Copyright 2013, Schmidt
+
+#include "Rtools.h"
 
 
 // Build lists
 SEXP make_list_names(int n, ...)
 {
   int i;
-  SEXP tmp, R_list_names;
+  char *tmp;
+  SEXP R_list_names;
   va_list listPointer;
   
   PROTECT(R_list_names = allocVector(STRSXP, n));
@@ -38,7 +39,7 @@ SEXP make_list(SEXP R_list_names, ...)
   
   PROTECT(R_list = allocVector(VECSXP, n));
   
-  va_start(listPointer, n);
+  va_start(listPointer, R_list_names);
   
   for(i=0; i<n; i++)
   {
@@ -57,23 +58,26 @@ SEXP make_list(SEXP R_list_names, ...)
 
 
 
-// Example usage
-SEXP listtest()
+SEXP make_list_nonames(int n, ...)
 {
-  SEXP a, b;
-  SEXP R_list, R_list_names;
+  int i;
+  SEXP tmp, R_list;
+  va_list listPointer;
   
-  PROTECT(a = allocVector(INTSXP, 2));
-  PROTECT(b = allocVector(REALSXP, 1));
+  PROTECT(R_list = allocVector(VECSXP, n));
   
-  INTEGER(a)[0] = 1;
-  INTEGER(a)[1] = 2;
+  va_start(listPointer, n);
   
-  REAL(b)[0] = -10.10214;
+  for(i=0; i<n; i++)
+  {
+    tmp = va_arg(listPointer, SEXP);
+    
+    SET_VECTOR_ELT(R_list, i, tmp);
+  }
   
-  R_list_names = make_list_names(2, "a", "b");
-  R_list = make_list(R_list_names, a, b);
+  va_end(listPointer);
   
-  UNPROTECT(2);
+  UNPROTECT(1);
   return R_list;
 }
+

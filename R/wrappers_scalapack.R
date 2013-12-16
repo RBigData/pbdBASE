@@ -39,13 +39,12 @@ base.rpdgesv <- function(n, nrhs, a, desca, b, descb)
         storage.mode(a) <- "double"
     if (!is.double(b))
         storage.mode(b) <- "double"
-
+    
     # Call ScaLAPACK
     out <- .Call("R_PDGESV",
-                             as.integer(n), as.integer(nrhs), as.integer(mxldims),
-                             a, as.integer(aldim), as.integer(desca),
-                             b, as.integer(bldim), as.integer(descb),
-                             PACKAGE="pbdBASE")
+                 as.integer(n), as.integer(nrhs), as.integer(mxldims),
+                 a, as.integer(desca), b, as.integer(descb),
+                 PACKAGE="pbdBASE")
     
     if (out$info!=0)
         comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
@@ -98,6 +97,7 @@ base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt, ..., inpla
     if (!is.double(a))
         storage.mode(a) <- "double"
     
+    # FIXME currently does nothing
     if (inplace)
         inplace <- 'Y'
     else
@@ -106,7 +106,7 @@ base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt, ..., inpla
     # Call ScaLAPACK
     out <- .Call("R_PDGESVD", 
                         as.integer(m), as.integer(n), as.integer(size),
-                        a, as.integer(desca), as.integer(aldim),
+                        a, as.integer(desca), 
                         as.integer(uldim), as.integer(descu),
                         as.integer(vtldim), as.integer(descvt),
                         as.character(jobu), as.character(jobvt), inplace,
@@ -170,9 +170,9 @@ base.rpdpotrf <- function(uplo, n, a, desca)
     
     # Call ScaLAPACK
     ret <- .Call("R_PDPOTRF",
-                     as.integer(n), a, as.integer(dim(a)), as.integer(desca),
-                     as.character(uplo),
-                     PACKAGE="pbdBASE")
+                 as.integer(n), a, as.integer(desca),
+                 as.character(uplo),
+                 PACKAGE="pbdBASE")
     
     if (ret$info!=0)
         comm.warning(paste("ScaLAPACK returned INFO=", ret$info, "; returned solution is likely invalid", sep=""))
@@ -334,8 +334,7 @@ base.rpdgecon <- function(norm, m, n, a, desca)
         storage.mode(a) <- "double"
     
     ret <- .Call("R_PDGECON", 
-                norm, as.integer(m), as.integer(n),
-                a, as.integer(desca), as.integer(dim(a)),
+                norm, as.integer(m), as.integer(n), a, as.integer(desca),
                 PACKAGE="pbdBASE")
     
     if (ret[2] < 0)
