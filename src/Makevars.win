@@ -8,20 +8,24 @@ SLAP_LDFLAGS = $(shell ${R_SCMD} \
 ### Get MPI information from "pbdMPI". Note that Windows uses different FLAGS.
 MPI_ROOT = $(shell ${R_SCMD} \
   "source('../R/get_conf.r');get.conf('MPI_ROOT','"${R_ARCH}"')")
+MPI_INCLUDE = $(shell ${R_SCMD} \
+  "source('../R/get_conf.r');get.conf('MPI_INCLUDE','"${R_ARCH}"')")
 MPI_LIB = $(shell ${R_SCMD} \
   "source('../R/get_conf.r');get.conf('MPI_LIB','"${R_ARCH}"')")
 
 ### Setup R package flags and substitute by configure for ${MPI_...}.
-PKG_CPPFLAGS = -I"$(MPI_ROOT)/include"
+PKG_CPPFLAGS = -I"$(MPI_INCLUDE)"
 PKG_CFLAGS = -w
 PKG_FFLAGS = -w
 ### Order is matter.
-PKG_LIBS = "$(SLAP_LDFLAGS)" $(LAPACK_LIBS) $(BLAS_LIBS) \
-           $(FLIBS) -L"$(MPI_LIB)" -lmpi
+PKG_LIBS = "$(SLAP_LDFLAGS)" $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(MPI_LIB)
 
 ### Setup R source code and objects.
-R_SRCS_C = $(wildcard *.c) $(wildcard export_blacs/*.c) $(wildcard secret/*.c)
-R_SRCS_F = $(wildcard *.f) $(wildcard secret/*.f)
+R_SRCS_C = $(wildcard *.c) $(wildcard export_blacs/*.c) $(wildcard base/*.c) \
+           $(wildcard base/expm/*.c) $(wildcard base/util/*.c) \
+           $(wildcard Rtools/*.c)
+R_SRCS_F = $(wildcard *.f) $(wildcard base/*.f) \
+           $(wildcard base/util/*.f)
 R_OBJS = $(R_SRCS_C:.c=.o) $(R_SRCS_F:.f=.o)
 OBJECTS = $(R_OBJS)
 
@@ -32,6 +36,7 @@ USER_CONF = Makeconf
 all: $(SHLIB)
 	@$(ECHO) 'SLAP_LDFLAGS = $(SLAP_LDFLAGS)' > $(USER_CONF)
 	@$(ECHO) 'MPI_ROOT = $(MPI_ROOT)' >> $(USER_CONF)
+	@$(ECHO) 'MPI_INCLUDE = $(MPI_INCLUDE)' >> $(USER_CONF)
 	@$(ECHO) 'MPI_LIB = $(MPI_LIB)' >> $(USER_CONF)
 	@$(ECHO) 'PKG_CPPFLAGS = $(PKG_CPPFLAGS)' >> $(USER_CONF)
 	@$(ECHO) 'PKG_CFLAGS = $(PKG_CFLAGS)' >> $(USER_CONF)
