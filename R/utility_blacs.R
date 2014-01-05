@@ -21,8 +21,8 @@ valid_context <- base.valid_context
 # finding the minimum avaliable BLACS context
 base.minctxt <- function(after=0)
 {
-  if (after < 0)
-    comm.stop("Error : contexts must be positive")
+  if (after < -1)
+    comm.stop("Error : contexts must be non-negative")
   
   after <- after+1
   
@@ -44,7 +44,13 @@ minctxt <- base.minctxt
 base.blacs <- function(ICTXT=0)
 {
   ICTXT <- as.integer(ICTXT)
-  gridinfo <- get(paste(".__blacs_gridinfo_", ICTXT, sep=""), envir=.pbdBASEEnv)
+  
+  grid <- paste(".__blacs_gridinfo_", ICTXT, sep="")
+  
+  if (!exists(grid, envir=.pbdBASEEnv))
+    comm.stop(paste("Processor grid ICTXT=", ICTXT, " does not exist.  Make sure you called init.grid()", sep=""))
+  
+  gridinfo <- get(grid, envir=.pbdBASEEnv)
   
   return(gridinfo)
 }
@@ -57,10 +63,13 @@ blacs <- base.blacs
 base.pnum <- function(ICTXT, PROW, PCOL)
 {
   blacs_ <- base.blacs(ICTXT=ICTXT)
-  nprows <- blacs_$NPROW
+#  nprows <- blacs_$NPROW
+#  
+#  PNUM <- PROW * nprows + PCOL
+#  
+  NPCOL <- blacs_$NPCOL
   
-  PNUM <- PROW * nprows + PCOL
-  
+  PNUM <- PROW * NPCOL + PCOL
   return( PNUM )
 }
 

@@ -1,4 +1,8 @@
-!! Copyright 2013, Schmidt
+! This Source Code Form is subject to the terms of the Mozilla Public
+! License, v. 2.0. If a copy of the MPL was not distributed with this
+! file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+! Copyright 2013, Schmidt
 
 
 !     PDLANGE subroutine wrapper for use with F77_CALL in C
@@ -103,6 +107,20 @@
       DEALLOCATE (IPIV)
       DEALLOCATE (IWORK)
       DEALLOCATE (WORK)
+      
+      RETURN
+      END
+
+
+! Subroutine wrapper for NUMROC
+      SUBROUTINE NUMROCWRAP(N, NB, IPROC, NPROCS, NUM)
+      ! IN/OUT
+      INTEGER             N, NB, IPROC, NPROCS, NUM
+      ! Functions
+      INTEGER             NUMROC
+      
+      
+      NUM = NUMROC(N, NB, IPROC, 0, NPROCS)
       
       RETURN
       END

@@ -10,7 +10,7 @@
 \tabular{ll}{
   Package: \tab pbdBASE\cr
   Type: \tab Package\cr
-  License: \tab GPL\cr
+  License: \tab MPL\cr
   LazyLoad: \tab yes\cr
 }
   This package requires an MPI library (OpenMPI, MPICH2, or LAM/MPI).

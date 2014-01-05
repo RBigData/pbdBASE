@@ -1,6 +1,6 @@
 #include <R.h>
 #include <Rinternals.h>
-#include "../base_global.h"
+#include "base_global.h"
 
 SEXP R_PDCROSSPROD(SEXP UPLO, SEXP TRANS, SEXP A, SEXP DESCA, SEXP CLDIM, SEXP DESCC)
 {
@@ -44,7 +44,4 @@ SEXP R_PDCHTRI(SEXP UPLO, SEXP A, SEXP ALDIM, SEXP DESCA, SEXP CLDIM, SEXP DESCC
   UNPROTECT(2);
   return(C);
 }
-
-
-
 

@@ -51,5 +51,15 @@ base.pdclvar <- function(x, descx)
 }
 
 
-
+base.pdnep <- function(x, descx)
+{
+  if (!is.double(x))
+    storage.mode(x) <- "double"
+  
+  ret <- .Call("R_PDNEP", 
+                x, as.integer(descx), dim(x),
+                PACKAGE="pbdBASE")
+  
+  return( ret )
+}
 

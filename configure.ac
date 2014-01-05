@@ -24,8 +24,6 @@ dnl Report
 echo " "
 echo "****************** Results of pbdBASE package configure *****************"
 echo " "
-dnl echo ">> RCPP_CXXFLAGS = ${RCPP_CXXFLAGS}"
-dnl echo ">> RCPP_LDFLAGS = ${RCPP_LDFLAGS}"
 echo ">> EXT_LDFLAGS = ${EXT_LDFLAGS}"
 echo ">> R_SLAP = ${R_SLAP}"
 echo ">> SLAP_LDFLAGS = ${SLAP_LDFLAGS}"

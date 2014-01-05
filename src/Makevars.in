@@ -12,23 +12,41 @@ PKG_LIBS = $(SLAP_LDFLAGS) $(FLIBS) $(SPMD_LDFLAGS)
 
 ### Setup R source code and objects.
 R_OBJS = \
-  bprnt.o \
-  lm.o \
-  base_mpi_blac.o \
-  base_pblas_level3.o \
-  base_scalapack.o \
-  base_scalapack_utility.o \
-  base_lm.o \
-  secret/variance.o \
-  secret/base_variance.o \
-  auxil.o \
-  bprnt_c.o \
-  export_blacs/pkg_tools.o \
-  other.o \
-  secret/base_putil.o \
-  secret/putil.o \
-  secret/plinalg.o \
-  secret/base_plinalg.o
+Rtools/alloc.o \
+Rtools/printing.o \
+Rtools/structures_lists.o \
+base/bprnt.o \
+base/bprnt_c.o \
+base/plinalg.o \
+base/prblas.o \
+base/R_plm.o \
+base/variance.o \
+base/expm/pade_coefs.o \
+base/expm/matexp.o \
+base/expm/p_matexp.o \
+base/util/auxil.o \
+base/util/blacs_util.o \
+base/util/dmat_make.o \
+base/util/dmat_redist.o \
+base/util/indices.o \
+base/util/putil.o \
+base/util/scale.o \
+base/util/special.o \
+base_lm.o \
+base_mpi_blac.o \
+base_pblas_level3.o \
+base_plinalg.o \
+base_matexp.o \
+base_p_matexp.o \
+base_prblas.o \
+base_putil.o \
+base_scalapack.o \
+base_scalapack_utility.o \
+base_variance.o \
+export_blacs/pkg_tools.o \
+other.o 
+
+
 OBJECTS = $(R_OBJS)
 
 ### For user configuration.
@@ -49,4 +67,7 @@ $(SHLIB): $(OBJECTS)
 clean:
 	@rm -rf *.o *.d *.rc *.so *.dylib *.dll *.a *.lib \
                 Makedeps Makevars $(USER_CONF) $(SHLIB) $(OBJECTS) \
-                export_blacs/*.o secret/*.o
+                export_blacs/*.o \
+                base/*.o \
+                base/expm/*.o \
+                base/util/*.o
