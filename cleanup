@@ -18,5 +18,7 @@ rm -rf ./src/export_blacs/*.o
 rm -rf ./src/base/*.o
 rm -rf ./src/base/expm/*.o
 rm -rf ./src/base/util/*.o
+rm -rf ./src/Rtools/*.o
 rm -rf ./src-*
 rm -rf ./inst/etc*
+rm -rf ./man/*.pdf
