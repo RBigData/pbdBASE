@@ -1,6 +1,9 @@
 #include <R.h>
 #include <Rinternals.h>
+
 #include "base_global.h"
+#include "Rtools/Rtools.h"
+
 
 // PDTRAN
 SEXP R_PDTRAN(SEXP M, SEXP N, SEXP A, SEXP DESCA, SEXP CLDIM, SEXP DESCC)
@@ -12,7 +15,7 @@ SEXP R_PDTRAN(SEXP M, SEXP N, SEXP A, SEXP DESCA, SEXP CLDIM, SEXP DESCC)
     const double one = 1.0;
     const double zero = 0.0;
     
-    F77_CALL(pdtran)(INTEGER(M), INTEGER(N), &one, 
+    pdtran_(INTEGER(M), INTEGER(N), &one, 
             REAL(A), &IJ, &IJ, INTEGER(DESCA), &zero, 
             REAL(C), &IJ, &IJ, INTEGER(DESCC));
     

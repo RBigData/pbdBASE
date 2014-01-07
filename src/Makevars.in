@@ -70,4 +70,5 @@ clean:
                 export_blacs/*.o \
                 base/*.o \
                 base/expm/*.o \
-                base/util/*.o
+                base/util/*.o \
+                base/Rtools.o

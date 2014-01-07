@@ -7,8 +7,9 @@ Depends: R (>= 2.14.0), methods, rlecuyer, pbdMPI (>= 0.2-1),
 LazyLoad: yes
 LazyData: yes
 Authors@R: c(person("Drew", "Schmidt", role = c("aut", "cre"), email =
-        "schmidt@math.utk.edu"), person("Wei-Chen", "Chen", role =
-        "aut"), person("George", "Ostrouchov", role = "aut"),
+        "schmidt@math.utk.edu"), 
+        person("Wei-Chen", "Chen", role = "aut"), 
+        person("George", "Ostrouchov", role = "aut"),
         person("Pragneshkumar", "Patel", role = "aut"))
 Description: pbdBASE gives higher packages, like pbdDMAT, access to 
         low-level scalable Fortran routines. The package consists of a
@@ -23,8 +24,4 @@ BugReports: http://group.r-pbd.org/
 MailingList: Please send questions and comments regarding pbdR to
         RBigData@gmail.com
 Packaged: 2013-01-24 21:29:03 UTC; snoweye
-Author: Drew Schmidt [aut, cre],
-  Wei-Chen Chen [aut],
-  George Ostrouchov [aut],
-  Pragneshkumar Patel [aut]
 Maintainer: Drew Schmidt <schmidt@math.utk.edu>

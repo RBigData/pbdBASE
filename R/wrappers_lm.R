@@ -51,9 +51,7 @@ base.rpdgeqpf <- function(tol, m, n, x, descx)
     storage.mode(x) <- "double"
   
   ret <- .Call("R_PDGEQPF",
-               as.double(tol), as.integer(m), as.integer(n), 
-               x, as.integer(dim(x)), as.integer(descx),
-               as.integer(min(m, n)),
+               as.double(tol), as.integer(m), as.integer(n), x, as.integer(descx),
                PACKAGE="pbdBASE")
   
   if (comm.rank()!=0)

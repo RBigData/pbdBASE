@@ -8,6 +8,13 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#ifdef _OPENMP
+  #include <omp.h>
+  #if _OPENMP >= 201307
+    #define _OPENMP_SUPPORT_SIMD
+  #endif
+#endif
+
 #include "matexp.h"
 
 void dgemm_(char *transa, char *transb, int *m, int *n, int *k, double *alpha, double *a, int *lda, double *b, int *ldb, double *beta, double *c, int *ldc);
@@ -35,7 +42,9 @@ static inline void matzero(const unsigned int n, double *a)
 {
   int i;
 
+  #if defined( _OPENMP_SUPPORT_SIMD)
   #pragma omp for simd
+  #endif
   {
     for (i=0; i<n*n; i++)
       a[i] = 0.0;
@@ -47,7 +56,9 @@ static inline void mateye(const unsigned int n, double *a)
 {
   int i, j;
 
+  #if defined( _OPENMP_SUPPORT_SIMD)
   #pragma omp for simd
+  #endif
   {
     matzero(n, a);
 
@@ -181,7 +192,9 @@ void matexp_pade(const unsigned int n, double *A, double *N, double *D)
   }
 
   // Initialize N and D
+  #if defined( _OPENMP_SUPPORT_SIMD)
   #pragma omp for simd
+  #endif
   {
     // Fill diagonal with 1
     i = 0;
