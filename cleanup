@@ -21,3 +21,4 @@ rm -rf ./src/base/util/*.o
 rm -rf ./src/base/Rtools/*.o
 rm -rf ./src-*
 rm -rf ./inst/etc*
+rm -rf ./man/*.pdf
