@@ -1,3 +1,10 @@
+! This Source Code Form is subject to the terms of the Mozilla Public
+! License, v. 2.0. If a copy of the MPL was not distributed with this
+! file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+! File modified 2013, Chen
+
+
 *     This function is modified from PDLAPRNT in "pbdSLAP/src/TOOLS/pdlaprnt.f"
 *     and avoid the stdout/stderr of R.
 

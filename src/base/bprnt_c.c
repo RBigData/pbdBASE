@@ -1,3 +1,9 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+// Copyright 2013, Chen
+
 #include <R.h>
 
 void F77_SUB(bprnt_c)(const char *data_c, int *data_i, int *data_j,
