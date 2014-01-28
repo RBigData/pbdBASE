@@ -99,7 +99,7 @@ base.ownany <- function(dim, bldim, ICTXT=0)
   check <- integer(2)
   
   check[1L] <- NUMROC(dim[1L], bldim[1L], grid$MYROW, grid$NPROW)
-  check[2L] <- NUMROC(dim[2L], bldim[2L], grid$MYCOL, grid$NPROW)
+  check[2L] <- NUMROC(dim[2L], bldim[2L], grid$MYCOL, grid$NPCOL)
   
   if (any(check<1))
     return(FALSE)
