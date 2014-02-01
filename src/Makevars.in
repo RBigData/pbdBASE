@@ -1,56 +1,68 @@
-### Configurations.
-SLAP_LDFLAGS = @SLAP_LDFLAGS@
+#################################################################
+
+### SEXPtools
+SEXPTOOLS_CPPFLAGS = @SEXPTOOLS_CPPFLAGS@
+SEXPTOOLS_LDFLAGS = @SEXPTOOLS_LDFLAGS@
+
+
+### MPI+SLAP
 SPMD_CPPFLAGS = @SPMD_CPPFLAGS@
 SPMD_LDFLAGS = @SPMD_LDFLAGS@
 
-### Setup R package flags and substitute by configure for ${MPI_...}.
-PKG_CPPFLAGS = $(SPMD_CPPFLAGS)
+SLAP_LDFLAGS = @SLAP_LDFLAGS@
+
+
+### Package flags.
+PKG_CPPFLAGS = $(SPMD_CPPFLAGS) $(SEXPTOOLS_CPPFLAGS)
 PKG_CFLAGS = -w
-PKG_FFLAGS = $(SAFE_FFLAGS) -w 
-### Order is matter.
-PKG_LIBS = $(SLAP_LDFLAGS) $(FLIBS) $(SPMD_LDFLAGS)
+PKG_FFLAGS = $(SAFE_FFLAGS) -w -fopenmp
+
+PKG_LIBS = $(SLAP_LDFLAGS) $(FLIBS) $(SPMD_LDFLAGS) $(SEXPTOOLS_LDFLAGS)
+
 
 ### Setup R source code and objects.
 R_OBJS = \
-Rtools/alloc.o \
-Rtools/printing.o \
-Rtools/structures_lists.o \
-base/bprnt.o \
-base/bprnt_c.o \
-base/plinalg.o \
-base/prblas.o \
-base/R_plm.o \
-base/variance.o \
-base/expm/pade_coefs.o \
-base/expm/matexp.o \
-base/expm/p_matexp.o \
-base/util/auxil.o \
-base/util/blacs_util.o \
-base/util/dmat_make.o \
-base/util/dmat_redist.o \
-base/util/indices.o \
-base/util/putil.o \
-base/util/scale.o \
-base/util/special.o \
-base_lm.o \
-base_mpi_blac.o \
-base_pblas_level3.o \
-base_plinalg.o \
-base_matexp.o \
-base_p_matexp.o \
-base_prblas.o \
-base_putil.o \
-base_scalapack.o \
-base_scalapack_utility.o \
-base_variance.o \
-export_blacs/pkg_tools.o \
-other.o 
+    Rtools/alloc.o \
+    Rtools/printing.o \
+    Rtools/structures_lists.o \
+    base/bprnt.o \
+    base/bprnt_c.o \
+    base/plinalg.o \
+    base/prblas.o \
+    base/R_plm.o \
+    base/variance.o \
+    base/expm/pade_coefs.o \
+    base/expm/matexp.o \
+    base/expm/p_matexp.o \
+    base/util/auxil.o \
+    base/util/blacs_util.o \
+    base/util/dmat_make.o \
+    base/util/dmat_redist.o \
+    base/util/indices.o \
+    base/util/putil.o \
+    base/util/scale.o \
+    base/util/special.o \
+    base_lm.o \
+    base_mpi_blac.o \
+    base_pblas_level3.o \
+    base_plinalg.o \
+    base_matexp.o \
+    base_p_matexp.o \
+    base_prblas.o \
+    base_putil.o \
+    base_scalapack.o \
+    base_scalapack_utility.o \
+    base_variance.o \
+    export_blacs/pkg_tools.o \
+    other.o 
 
 
 OBJECTS = $(R_OBJS)
 
+
 ### For user configuration.
 USER_CONF = Makeconf
+
  
 ### Start making here.
 all: $(SHLIB)
@@ -72,3 +84,4 @@ clean:
                 base/expm/*.o \
                 base/util/*.o \
                 base/Rtools.o
+
