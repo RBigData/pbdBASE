@@ -43,13 +43,14 @@ R_OBJS = \
     base/util/scale.o \
     base/util/special.o \
     base_lm.o \
+    base_matexp.o \
     base_mpi_blac.o \
     base_pblas_level3.o \
     base_plinalg.o \
-    base_matexp.o \
     base_p_matexp.o \
     base_prblas.o \
     base_putil.o \
+    base_qr.o \
     base_scalapack.o \
     base_scalapack_utility.o \
     base_variance.o \
