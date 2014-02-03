@@ -6,8 +6,8 @@ void pdgemm_(char *transa, char *transb, int *m, int *n, int *k, double *alpha, 
 void pdlacpy_(char *uplo, int *m, int *n, double *a, int *ia, int *ja, int *desca, double *b, int *ib, int *jb, int *descb);
 
 // pbdBASE functions
-pdims_(int *desc, int *ldm, int *blacs);
-l2gpair_(int *i, int *j, int *gi, int *gj, int *desc, int *blacs);
+void pdims_(int *desc, int *ldm, int *blacs);
+void l2gpair_(int *i, int *j, int *gi, int *gj, int *desc, int *blacs);
 
 
 // Defines

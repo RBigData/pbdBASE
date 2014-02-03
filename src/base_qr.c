@@ -5,6 +5,7 @@
 // Copyright 2013, Schmidt
 
 #include <SEXPtools.h>
+#include "scalapack.h"
 
 #define MIN(a,b) (a<b?a:b)
 
@@ -125,10 +126,6 @@ SEXP R_PDORMQR(SEXP SIDE, SEXP TRANS, SEXP M, SEXP N, SEXP K,
   R_END;
   return RET;
 }
-
-
-
-
 
 
 

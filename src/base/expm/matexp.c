@@ -21,19 +21,19 @@ void dgemm_(char *transa, char *transb, int *m, int *n, int *k, double *alpha, d
 void dlacpy_(char *uplo, int *m, int *n, double *a, int *lda, double *b, int *ldb);
 
 // C = A * B for square matrices
-static inline void matprod(const unsigned int n, double *a, double *b, double *c)
+static inline void matprod(int n, double *a, double *b, double *c)
 {
   char trans = 'N';
-  const double one = 1.0, zero = 0.0;
-
+  double one = 1.0, zero = 0.0;
+  
   dgemm_(&trans, &trans, &n, &n, &n, &one, a, &n, b, &n, &zero, c, &n);
 }
 
 // Copy A ONTO B, i.e. B = A
-static inline void matcopy(const unsigned int n, double *A, double *B)
+static inline void matcopy(int n, double *A, double *B)
 {
-  const char uplo = 'A';
-
+  char uplo = 'A';
+  
   dlacpy_(&uplo, &n, &n, A, &n, B, &n);
 }
 
@@ -41,7 +41,7 @@ static inline void matcopy(const unsigned int n, double *A, double *B)
 static inline void matzero(const unsigned int n, double *a)
 {
   int i;
-
+  
   #if defined( _OPENMP_SUPPORT_SIMD)
   #pragma omp for simd
   #endif
@@ -54,20 +54,20 @@ static inline void matzero(const unsigned int n, double *a)
 // Identity matrix
 static inline void mateye(const unsigned int n, double *a)
 {
-  int i, j;
-
+  int i;
+  
   #if defined( _OPENMP_SUPPORT_SIMD)
   #pragma omp for simd
   #endif
   {
     matzero(n, a);
-
+    
     // Fill diagonal with 1
     i = 0;
     while (i < n*n)
     {
       a[i] = 1.0;
-
+      
       i += n+1;
     }
   }
@@ -80,27 +80,25 @@ static inline void mateye(const unsigned int n, double *a)
 // P = A^b
 void matpow_by_squaring(double *A, int n, int b, double *P)
 {
-  int i, j;
-  double tmp, tmpj;
   double *TMP;
-
-
+  
+  
   mateye(n, P);
-
+  
   // Trivial cases
   if (b == 0)
     return;
-
+  
   if (b == 1)
   {
     matcopy(n, A, P);
     return;
   }
-
-
+  
+  
   // General case
   TMP = malloc(n*n*sizeof(double));
-
+  
   while (b)
   {
     if (b&1)
@@ -108,12 +106,12 @@ void matpow_by_squaring(double *A, int n, int b, double *P)
       matprod(n, P, A, TMP);
       matcopy(n, TMP, P);
     }
-
+    
     b >>=1;
     matprod(n, A, A, TMP);
     matcopy(n, TMP, A);
   }
-
+  
   free(TMP);
 }
 

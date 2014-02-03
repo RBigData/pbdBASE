@@ -10,6 +10,8 @@
 #include "base_global.h"
 #include "Rtools/Rtools.h"
 
+#include "scalapack.h"
+
 
 #define TRUE 1
 #define FALSE 0
