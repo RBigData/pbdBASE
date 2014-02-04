@@ -38,7 +38,7 @@ integer function ind(i, m)
   end if
   
   return
-end subroutine
+end function
 
 
 ! convert matrix indexing to vector indexing, or vice versa

@@ -1,3 +1,14 @@
+2014-2-4:
+ * Updated vignette format.
+ * Fixed author affiliation in vignette.
+
+2014-2-2:
+ * Linked with SEXPtools.
+ * Rewrote internals to use SEXPtools.
+
+2014-1-31:
+ * ownany() bug fixed.
+
 2014-1-14:
   * Vignetted copyright updated.
 
