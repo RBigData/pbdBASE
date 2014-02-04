@@ -52,7 +52,7 @@ subroutine matnorm(value, norm, m, n, a, ia, ja, desca)
   deallocate (work)
   
   return
-end
+end subroutine
 
 
 
@@ -106,5 +106,5 @@ subroutine condnum(norm, m, n, a, ia, ja, desca, rcond, info)
   deallocate (work)
   
   return
-end 
+end subroutine
 

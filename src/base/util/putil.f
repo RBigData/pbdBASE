@@ -143,7 +143,7 @@
       END IF
       
       RETURN
-      END 
+      END SUBROUTINE
 
 
 ! Make the matrix symmetric via copying from one (global) triangle to the other.
@@ -212,7 +212,7 @@
       END IF
       
       RETURN
-      END
+      END SUBROUTINE
 
 
 !!! Does what pdlacpy SHOULD do, namely copies the triangle of a global 
@@ -293,7 +293,7 @@
 !!      END IF
 !!      
 !!      RETURN
-!!      END
+!!      END SUBROUTINE
 
 
 
@@ -342,7 +342,7 @@
       CALL DGSUM2D(DESCX(2), 'All', ' ', K, 1, DIAG, K, RDEST, CDEST)
       
       RETURN
-      END
+      END SUBROUTINE
 
 
 ! Construct matrix containing diagonal DIAG
@@ -388,6 +388,6 @@
       END DO
       
       RETURN
-      END
+      END SUBROUTINE
 
 

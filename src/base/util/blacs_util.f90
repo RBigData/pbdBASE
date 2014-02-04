@@ -32,7 +32,7 @@ subroutine optimalgrid(nprocs, nrows, ncols)
   nrows = nprocs / ncols
   
   return
-end 
+end subroutine
 
 
 
@@ -74,7 +74,7 @@ subroutine dallreduce(x, descx, op, scope)
   end if
   
   return 
-end
+end subroutine
 
 
 subroutine dreduce(x, descx, op, rdest, cdest, scope)
@@ -103,7 +103,7 @@ subroutine dreduce(x, descx, op, rdest, cdest, scope)
   end if
   
   return 
-end
+end subroutine
 
 
 subroutine iallreduce(x, descx, op, scope)
@@ -131,7 +131,7 @@ subroutine iallreduce(x, descx, op, scope)
   end if
   
   return 
-end
+end subroutine
 
 
 subroutine ireduce(x, descx, op, rdest, cdest, scope)
@@ -159,5 +159,5 @@ subroutine ireduce(x, descx, op, rdest, cdest, scope)
   end if
   
   return 
-end
+end subroutine
 

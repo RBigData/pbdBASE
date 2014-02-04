@@ -39,7 +39,7 @@ subroutine pdclmn(x, descx, mn)
   call dgsum2d(descx(2), 'col', ' ', nn, 1, mn, nn, -1, -1)
   
   return
-end
+end subroutine
 
 
 ! colvar
@@ -98,6 +98,6 @@ subroutine pdclvar(x, descx, var)
   deallocate(work)
   
   return
-end
+end subroutine
 
 

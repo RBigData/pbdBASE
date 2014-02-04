@@ -40,7 +40,7 @@ subroutine pdchtri(uplo, x, ix, jx, descx, c, ic, jc, descc, info)
   call pdcrossprod(uplo, 't', one, x, ix, jx, descc, c, ic, jc, descc)
   
   return
-end 
+end subroutine
 
 
 ! compute matrix inverse without having to understand scalapack peculiarities
@@ -90,7 +90,7 @@ subroutine pdinvip(x, ix, jx, descx, info)
   deallocate(iwork)
   
   return
-end
+end subroutine
 
 
 ! non-in-place version of matrix inverse (on return, inv = x^-1)
@@ -108,6 +108,6 @@ subroutine pdinv(x, ix, jx, descx, inv, info)
   call pdinvip(inv, ix, jx, descx, info)
   
   return
-end
+end subroutine
 
 

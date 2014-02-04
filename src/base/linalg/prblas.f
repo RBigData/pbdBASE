@@ -37,7 +37,7 @@
       END IF
       
       RETURN
-      END
+      END FUNCTION
 
 
 
@@ -205,7 +205,7 @@
       END IF
       
       RETURN
-      END
+      END SUBROUTINE
 
 
 
@@ -217,7 +217,7 @@
      $              MOD( (J-1)/DESC(6), BLACS(3) ) .EQ. BLACS(5) )
       
       RETURN
-      END
+      END FUNCTION
 
 
 ! R-style replacement.  (dist)Matrix-Vector and (dist)Matrix-(dist)Matrix (levels
@@ -273,7 +273,7 @@
       END IF
       
       RETURN
-      END
+      END SUBROUTINE
 
 
 
@@ -366,7 +366,7 @@
       END DO ! COL
       
       RETURN
-      END
+      END SUBROUTINE
 
 
 
@@ -395,7 +395,7 @@
       END DO
       
       RETURN
-      END
+      END SUBROUTINE
 
 
 ! Rows YROWS of Y are copied onto rows XROWS of X.  
@@ -491,7 +491,7 @@
       END DO ! ROW
       
       RETURN
-      END
+      END SUBROUTINE
 
 ! Rows YROWS of Y are copied onto rows XROWS of X.  
 ! LXROWS is allowed to be an integer multiple of LYROWS
@@ -518,7 +518,7 @@
       END DO
       
       RETURN
-      END
+      END SUBROUTINE
 
 
 
@@ -639,7 +639,7 @@
       
       
       RETURN
-      END
+      END SUBROUTINE
 
 
 

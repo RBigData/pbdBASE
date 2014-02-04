@@ -126,5 +126,5 @@ subroutine pdsweep(x, ix, jx, descx, vec, lvec, margin, fun)
   end if
   
   return
-end
+end subroutine
 

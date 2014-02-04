@@ -16,7 +16,7 @@ subroutine numrocwrap(n, nb, iproc, nprocs, num)
   num = numroc(n, nb, iproc, 0, nprocs)
   
   return
-end
+end subroutine
 
 
 
@@ -38,7 +38,7 @@ integer function ind(i, m)
   end if
   
   return
-end
+end subroutine
 
 
 ! convert matrix indexing to vector indexing, or vice versa
@@ -59,7 +59,7 @@ end
 !  end if
 !  
 !  return
-!end
+!end subroutine
 
 
 !subroutine indvec2mat(storage, m, n, i, j, k)
@@ -82,7 +82,7 @@ end
 !  end if
 !  
 !  return
-!end
+!end subroutine
 
 
 
@@ -122,7 +122,7 @@ subroutine pdims(desc, ldm, blacs)
   end if
   
   return
-end
+end subroutine
 
 
 ! local-to-global pair of indices; shorthand for calling indxl2g twice.
@@ -144,7 +144,7 @@ subroutine l2gpair(i, j, gi, gj, desc, blacs)
   gj = indxl2g(j, desc(6), blacs(5), 0, blacs(3))
   
   return
-end
+end subroutine
 
 
 
@@ -170,5 +170,5 @@ subroutine g2lpair(i, j, gi, gj, desc, blacs)
   j = indxg2l(gj, desc(6), dum, dum, blacs(3))
   
   return
-end
+end subroutine
 

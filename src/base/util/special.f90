@@ -22,7 +22,7 @@ subroutine dhilbmk(n, x)
   end do
   
   return
-end
+end subroutine
 
 
 subroutine pdhilbmk(x, descx)
@@ -50,7 +50,7 @@ subroutine pdhilbmk(x, descx)
   end do
   
   return
-end
+end subroutine
 
 
 
@@ -107,6 +107,6 @@ subroutine pdmkcpn1(x, descx, coef)
   
   
   return
-end
+end subroutine
 
 

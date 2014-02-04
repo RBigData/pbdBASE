@@ -54,7 +54,7 @@
 !!!     $              Y, IY, JY, DESCY, CMNCTXT)
 !!!      
 !!!      RETURN
-!!!      END
+!!!      END SUBROUTINE
 
 
 ! Construct local submatrix from global matrix
@@ -109,7 +109,7 @@
       END IF
       
       RETURN
-      END
+      END SUBROUTINE
 
 
 ! Construct global matrix from local submatrix.
@@ -174,5 +174,5 @@
       END IF
       
       RETURN
-      END
+      END SUBROUTINE
 

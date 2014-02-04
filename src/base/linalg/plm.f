@@ -267,7 +267,7 @@
 *
 *     End of PDORMQR
 *
-      END
+      END SUBROUTINE
 !
 !     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !     RPDGEQPF:  Modified PDGEQPF to use the 'limited 
@@ -711,7 +711,7 @@
 *
 *     End of PDGEQPF
 *
-      END
+      END SUBROUTINE
 !
 !     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !     RPDGELS:  Heavily modified PDGELS to use custom RPDGEQPF 
@@ -1052,4 +1052,4 @@
       WORK( 1 ) = DBLE( LWMIN )
 !*
       RETURN
-      END
+      END SUBROUTINE

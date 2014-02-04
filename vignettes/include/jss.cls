@@ -21,7 +21,7 @@
 %% same distribution. (The sources need not necessarily be
 %% in the same archive or directory.)
 \def\fileversion{2.0}
-\def\filename{pbdBASE-include/jss}
+\def\filename{pbdDEMO-include/jss}
 \def\filedate{2009/09/24}
 %%
 %% Package `jss' to use with LaTeX2e for JSS publications (http://www.jstatsoft.org/)
@@ -30,7 +30,7 @@
 %% Please report errors to Achim.Zeileis@R-project.org
 %%
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{pbdBASE-include/jss}[\filedate\space\fileversion\space jss class by Achim Zeileis]
+\ProvidesClass{pbdDEMO-include/jss}[\filedate\space\fileversion\space jss class by Achim Zeileis]
 %% options
 \newif\if@article
 \newif\if@codesnippet
@@ -78,7 +78,7 @@
   \usepackage[authoryear,round,longnamesfirst]{natbib}
 \fi
 \bibpunct{(}{)}{;}{a}{}{,}
-\bibliographystyle{pbdBASE-include/jss}
+\bibliographystyle{pbdDEMO-include/jss}
 %% paragraphs
 \setlength{\parskip}{0.7ex plus0.1ex minus0.1ex}
 \setlength{\parindent}{0em}

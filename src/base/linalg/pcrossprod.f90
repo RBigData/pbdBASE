@@ -40,5 +40,5 @@ subroutine pdcrossprod(uplo, trans, alpha, x, ix, jx, descx, c, ic, jc, descc)
   call pdmksym(uplo, c, ic, jc, descc)
   
   return
-end 
+end subroutine
 
