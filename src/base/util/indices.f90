@@ -5,6 +5,20 @@
 ! copyright 2013, schmidt
 
 
+! subroutine wrapper for numroc()
+subroutine numrocwrap(n, nb, iproc, nprocs, num)
+  ! in/out
+  integer             n, nb, iproc, nprocs, num
+  ! functions
+  integer             numroc
+  
+  
+  num = numroc(n, nb, iproc, 0, nprocs)
+  
+  return
+end
+
+
 
 ! in the case of matrix-vector operations where the vector is global and not
 ! necessarily of "appropriate" length, this is used to adjust which element

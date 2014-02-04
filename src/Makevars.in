@@ -27,14 +27,15 @@ R_OBJS = \
     Rtools/structures_lists.o \
     base/bprnt.o \
     base/bprnt_c.o \
-    base/plinalg.o \
-    base/prblas.o \
-    base/R_plm.o \
     base/variance.o \
     base/expm/pade_coefs.o \
     base/expm/matexp.o \
     base/expm/p_matexp.o \
-    base/util/auxil.o \
+    base/linalg/auxil.o \
+    base/linalg/pcrossprod.o \
+    base/linalg/pinverse.o \
+    base/linalg/prblas.o \
+    base/linalg/plm.o \
     base/util/blacs_util.o \
     base/util/dmat_make.o \
     base/util/dmat_redist.o \
