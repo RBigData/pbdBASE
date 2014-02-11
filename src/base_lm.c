@@ -16,8 +16,7 @@
 /* order of the model matrix, which has important interpretive    */
 /* value sometimes.                                                                                         */
 SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
-    SEXP A, SEXP DESCA, SEXP B, SEXP DESCB,
-    SEXP LTAU)
+    SEXP A, SEXP DESCA, SEXP B, SEXP DESCB, SEXP LTAU)
 {
   R_INIT;
   int lwork = -1;
@@ -38,7 +37,7 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
   newRmat(EFF, nrows(B), ncols(B), "dbl");
   newRmat(FT, nrows(B), ncols(B), "dbl");
   newRmat(RSD, nrows(B), ncols(B), "dbl");
-  newRvec(TAU, INT(LTAU, 0), "int");
+  newRvec(TAU, INT(LTAU, 0), "dbl");
   newRvec(IPIV, ncols(A), "int");
   newRvec(RANK, 1, "int");
   
@@ -69,12 +68,12 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
   
   /* workspace query */
   rpdgels_(REAL(TOL), &trans,
-      INTP(M), INTP(N), INTP(NRHS),
-      &tmp, &IJ, &IJ, INTP(DESCA),
-      &tmp, &IJ, &IJ, INTP(DESCB),
-      &tmp, &tmp, &tmp,
-      &tmp, &work, &lwork,
-      &IJ, &IJ, INTP(INFO));
+    INTP(M), INTP(N), INTP(NRHS),
+    &tmp, &IJ, &IJ, INTP(DESCA),
+    &tmp, &IJ, &IJ, INTP(DESCB),
+    &tmp, &tmp, &tmp,
+    &tmp, &work, &lwork,
+    &IJ, &IJ, INTP(INFO));
   
   
   /* allocate work vector */
@@ -86,12 +85,12 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
   
   /*    and compute LLS solution */
   rpdgels_(REAL(TOL), &trans,
-      INTP(M), INTP(N), INTP(NRHS),
-      REAL(A_OUT), &IJ, &IJ, INTP(DESCA),
-      REAL(B_OUT), &IJ, &IJ, INTP(DESCB),
-      REAL(EFF), REAL(FT), REAL(RSD),
-      REAL(TAU), p_work, &lwork,
-      INTP(IPIV), INTP(RANK), INTP(INFO));
+    INTP(M), INTP(N), INTP(NRHS),
+    REAL(A_OUT), &IJ, &IJ, INTP(DESCA),
+    REAL(B_OUT), &IJ, &IJ, INTP(DESCB),
+    REAL(EFF), REAL(FT), REAL(RSD),
+    REAL(TAU), p_work, &lwork,
+    INTP(IPIV), INTP(RANK), INTP(INFO));
   
   
   // Manage return

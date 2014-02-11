@@ -55,8 +55,8 @@ R_OBJS = \
     base_scalapack.o \
     base_scalapack_utility.o \
     base_variance.o \
-    export_blacs/pkg_tools.o \
-    other.o 
+    comm_utils.o \
+    export_blacs/pkg_tools.o
 
 
 OBJECTS = $(R_OBJS)

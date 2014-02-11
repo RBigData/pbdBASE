@@ -4,17 +4,21 @@
 
 // Copyright 2013, Schmidt
 
-#include <R.h>
-#include <Rinternals.h>
 #include "base_global.h"
+#include <SEXPtools.h>
+
 
 SEXP R_PDCLVAR(SEXP X, SEXP DESCX, SEXP LSD)
 {
+  R_INIT;
   SEXP VAR;
-  PROTECT(VAR = allocVector(REALSXP, INTEGER(LSD)[0]));
+  
+  newRvec(VAR, INT(LSD, 0), "dbl");
+  
   
   pdclvar_(REAL(X), INTEGER(DESCX), REAL(VAR));
   
-  UNPROTECT(1);
-  return(VAR);
+  
+  R_END;
+  return VAR;
 } 

@@ -21,23 +21,23 @@ subroutine pdchtri(uplo, x, ix, jx, descx, c, ic, jc, descc, info)
   external            ptri2zero, pdtrtri, pdcrossprod
   
   
-  if (uplo.eq.'l') then
-    loup = 'u'
-  else if (uplo.eq.'u') then
-    loup = 'l'
+  if (uplo .eq. 'L') then
+    loup = 'U'
+  else if (uplo .eq. 'U') then
+    loup = 'L'
   else 
     info = -1
     return
   end if
   
   ! zero triangle opposite uplo
-  call ptri2zero(loup, 'n', x, descx)
+  call ptri2zero(loup, 'N', x, descx)
   
   ! invert the uplo triangle
-  call pdtrtri(uplo, 'n', descx(4), x, ix, jx, descx, info)
+  call pdtrtri(uplo, 'N', descx(4), x, ix, jx, descx, info)
   
   ! 
-  call pdcrossprod(uplo, 't', one, x, ix, jx, descc, c, ic, jc, descc)
+  call pdcrossprod(uplo, 'T', one, x, ix, jx, descc, c, ic, jc, descc)
   
   return
 end subroutine
@@ -103,7 +103,7 @@ subroutine pdinv(x, ix, jx, descx, inv, info)
   external           pdlacpy, pdinvip
   
   ! inv = x
-  call pdlacpy('b', descx(3), descx(4), x, ix, jx, descx, inv, ix, jx, descx)
+  call pdlacpy('B', descx(3), descx(4), x, ix, jx, descx, inv, ix, jx, descx)
   
   call pdinvip(inv, ix, jx, descx, info)
   

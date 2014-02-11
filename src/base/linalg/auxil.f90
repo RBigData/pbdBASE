@@ -25,19 +25,19 @@ subroutine matnorm(value, norm, m, n, a, ia, ja, desca)
   integer             indxg2p, numroc
   
   
-  if (norm.eq."m" .or. norm.eq."f") then
+  if (norm .eq. "M" .or. norm .eq. "F") then
     lwork = i0
   else 
     call blacs_gridinfo(desca(2), nprow, npcol, myprow, mypcol)
     
-    if (norm.eq."o") then
+    if (norm .eq. "O") then
       bl = desca(5)
       ioffa = mod(ja-1, bl)
       
       iamar = indxg2p(ia, bl, mypcol, i0, npcol)
       
       lwork = numroc(n+ioffa, bl, mypcol, i0, npcol)
-    else if (norm.eq."i") then
+    else if (norm .eq. "I") then
       bl = desca(6)
       ioffa = mod(ia-1, bl)
       

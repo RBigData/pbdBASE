@@ -4,7 +4,7 @@
 
 2014-2-2:
  * Linked with SEXPtools.
- * Rewrote internals to use SEXPtools.
+ * Started rewriting internals to use SEXPtools.
 
 2014-1-31:
  * ownany() bug fixed.
