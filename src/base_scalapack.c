@@ -88,7 +88,7 @@ SEXP R_PDGETRI(SEXP A, SEXP DESCA)
   
   // Manage return
   RET_NAMES = make_list_names(2, "info", "A");
-  RET = make_list(RET_NAMES, 2, 2, INFO, INV);
+  RET = make_list(RET_NAMES, 2, INFO, INV);
   
   R_END;
   return RET;
