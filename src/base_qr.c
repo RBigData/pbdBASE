@@ -53,7 +53,7 @@ SEXP R_PDGEQPF(SEXP TOL, SEXP M, SEXP N,
   
   // Manage return
   RET_NAMES = make_list_names(5, "qr", "rank", "tau", "pivot", "INFO");
-  RET = make_list(RET_NAMES, A_OUT, RANK, TAU, IPIV, INFO);
+  RET = make_list(RET_NAMES, 5, A_OUT, RANK, TAU, IPIV, INFO);
   
   R_END;
   return RET;
@@ -121,7 +121,7 @@ SEXP R_PDORMQR(SEXP SIDE, SEXP TRANS, SEXP M, SEXP N, SEXP K,
   
   /* Return. */
   RET_NAMES = make_list_names(2, "INFO", "B");
-  RET = make_list(RET_NAMES, INFO, B_OUT);
+  RET = make_list(RET_NAMES, 2, INFO, B_OUT);
   
   R_END;
   return RET;
@@ -173,7 +173,7 @@ SEXP R_PDORGQR(SEXP M, SEXP N, SEXP K, SEXP A, SEXP ALDIM, SEXP DESCA, SEXP TAU)
   
   /* Return. */
   RET_NAMES = make_list_names(2, "INFO", "A");
-  RET = make_list(RET_NAMES, INFO, A_OUT);
+  RET = make_list(RET_NAMES, 2, INFO, A_OUT);
   
   R_END;
   return RET;

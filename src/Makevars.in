@@ -45,7 +45,8 @@ R_OBJS = \
     base/util/special.o \
     base_lm.o \
     base_matexp.o \
-    base_mpi_blac.o \
+    base_mpi_blacs.o \
+    base_mpi_blacs_reductions.o \
     base_pblas_level3.o \
     base_plinalg.o \
     base_p_matexp.o \

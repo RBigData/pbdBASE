@@ -8,48 +8,6 @@
 #include <SEXPtools.h>
 
 
-SEXP R_optimal_grid(SEXP NPROCS)
-{
-  R_INIT;
-  SEXP NPROW, NPCOL, RET, RET_NAMES;
-  
-  newRvec(NPROW, 1, "int");
-  newRvec(NPCOL, 1, "int");
-  
-  optimalgrid_(INTP(NPROCS), INTP(NPROW), INTP(NPCOL));
-  
-  RET_NAMES = make_list_names(2, "nprow", "npcol");
-  RET = make_list(RET_NAMES, NPROW, NPCOL);
-  
-  R_END;
-  return RET;
-}
-
-
-
-SEXP R_blacs_init(SEXP NPROW, SEXP NPCOL, SEXP ICTXT)
-{
-  R_INIT;
-  SEXP MYROW, MYCOL, RET, RET_NAMES;
-  
-  newRvec(MYROW, 1, "int");
-  newRvec(MYCOL, 1, "int");
-  
-  
-  sl_init_(INTEGER(ICTXT), INTEGER(NPROW), INTEGER(NPCOL));
-  blacs_gridinfo_(INTEGER(ICTXT), INTEGER(NPROW), INTEGER(NPCOL), 
-      INTEGER(MYROW), INTEGER(MYCOL));
-  
-  
-  RET_NAMES = make_list_names(5, "NPROW", "NPCOL", "ICTXT", "MYROW", "MYCOL");
-  RET = make_list(RET_NAMES, NPROW, NPCOL, ICTXT, MYROW, MYCOL);
-  
-  R_END;
-  return(RET);
-}
-
-
-
 /* Reductions */
 SEXP R_igsum2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST)
 {
@@ -61,10 +19,10 @@ SEXP R_igsum2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP R
   SEXP OUT;
   newRmat(OUT, m, n, "int");
   
-  memcpy(INTEGER(OUT), INTEGER(A), m*n*sizeof(int));
+  memcpy(INTP(OUT), INTP(A), m*n*sizeof(int));
   
-  Cigsum2d(INTEGER(ICTXT)[0], CHARPT(SCOPE, 0), &top, m, n, INTEGER(OUT), 
-      INTEGER(LDA)[0], INTEGER(RDEST)[0], INTEGER(CDEST)[0]);
+  Cigsum2d(INT(ICTXT, 0), STR(SCOPE, 0), &top, m, n, INTP(OUT), 
+      INTP(LDA)[0], INTP(RDEST)[0], INTP(CDEST)[0]);
   
   R_END;
   return(OUT);
@@ -75,7 +33,7 @@ SEXP R_igsum2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP R
 SEXP R_dgsum2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST)
 {
   int i;
-  const int m = INTEGER(M)[0], n = INTEGER(N)[0];
+  const int m = INT(M, 0), n = INT(N, 0);
   char top = ' ';
   
   SEXP OUT;
