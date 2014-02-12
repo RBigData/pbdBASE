@@ -50,12 +50,14 @@ STATS_OBJS = \
     base/stats/variance.o
 
 
+# Order matters
 UTILS = \
     utils/swap.o \
+    utils/fpmod.o \
     utils/quicksort.o \
     utils/signof.o \
     utils/sorts.o \
-    utils/strings.o
+    utils/strings.o 
 
 
 UTILS_OBJS = \
@@ -84,8 +86,10 @@ R_OBJS = \
     base_variance.o
 
 
-OBJECTS = $(R_OBJS) $(BASE_OBJS) $(EXPM_OBJS) $(LINALG_OBJS) \
-           $(MISC_OBJS) $(STATS_OBJS) $(UTILS) $(UTILS_OBJS)
+OBJECTS = $(UTILS) $(UTILS_OBJS) \
+          $(LINALG_OBJS) $(EXPM_OBJS) \
+          $(MISC_OBJS) $(STATS_OBJS) \
+          $(BASE_OBJS) $(R_OBJS)
 
 
 ### For user configuration.

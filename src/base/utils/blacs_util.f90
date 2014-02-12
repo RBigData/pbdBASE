@@ -26,7 +26,7 @@ subroutine optimalgrid(nprocs, nrows, ncols)
   do i = 0, n-1
     ncols = n - i
     nrows = int(mod(nprocs, ncols))
-    if (nrows.eq.0) exit
+    if (nrows==0) exit
   end do
   
   nrows = nprocs / ncols
@@ -65,10 +65,10 @@ subroutine dallreduce(x, descx, op, scope)
   lda = descx(9)
   ictxt = descx(2)
   
-  if (op .eq. 'MIN') then
-    call dgamn2d(ictxt,scope,' ',m,n,x,lda,-1,-1,-1,-1,-1)
-  else if (op .eq. 'MAX') then
-    call dgamx2d(ictxt,scope,' ',m,n,x,lda,-1,-1,-1,-1,-1)
+  if (op == 'MIN') then
+    call dgamn2d(ictxt, scope, ' ', m, n, x, lda, -1, -1, -1, -1, -1)
+  else if (op == 'MAX') then
+    call dgamx2d(ictxt, scope, ' ', m, n, x, lda, -1, -1, -1, -1, -1)
   else ! default to sum
     call dgsum2d(ictxt, scope, ' ', m, n, x, lda, -1, -1)
   end if
@@ -94,9 +94,9 @@ subroutine dreduce(x, descx, op, rdest, cdest, scope)
   lda = descx(9)
   ictxt = descx(2)
   
-  if (op .eq. 'MIN') then
+  if (op == 'MIN') then
     call dgamn2d(ictxt, scope, ' ', m, n, x, lda, -1, -1, -1, rdest, cdest)
-  else if (op .eq. 'MAX') then
+  else if (op == 'MAX') then
     call dgamx2d(ictxt, scope, ' ', m, n, x, lda, -1, -1, -1, rdest, cdest)
   else
     call dgsum2d(ictxt, scope, ' ', m, n, x, lda, rdest, cdest)
@@ -122,12 +122,12 @@ subroutine iallreduce(x, descx, op, scope)
   lda = descx(9)
   ictxt = descx(2)
   
-  if (op .eq. 'MIN') then
-    call igamn2d(ictxt, scope, ' ', m, n, x, 1,-1,-1,-1,-1,-1)
-  else if (op .eq. 'MAX') then
-    call igamx2d(ictxt, scope, ' ', m, n, x, 1,-1,-1,-1,-1,-1)
+  if (op == 'MIN') then
+    call igamn2d(ictxt, scope, ' ', m, n, x, 1, -1, -1, -1, -1, -1)
+  else if (op == 'MAX') then
+    call igamx2d(ictxt, scope, ' ', m, n, x, 1, -1, -1, -1, -1, -1)
   else
-    call igsum2d(ictxt, scope, ' ', m, n, x, 1,-1,-1)
+    call igsum2d(ictxt, scope, ' ', m, n, x, 1, -1, -1)
   end if
   
   return 
@@ -150,9 +150,9 @@ subroutine ireduce(x, descx, op, rdest, cdest, scope)
   lda = descx(9)
   ictxt = descx(2)
   
-  if (op .eq. 'MIN') then
+  if (op == 'MIN') then
     call igamn2d(ictxt, scope, ' ', m, n, x, 1, -1, -1, -1, rdest, cdest)
-  else if (op .eq. 'MAX') then
+  else if (op == 'MAX') then
     call igamx2d(ictxt, scope, ' ', m, n, x, 1, -1, -1, -1, rdest, cdest)
   else
     call igsum2d(ictxt, scope, ' ', m, n, x, 1, rdest, cdest)
