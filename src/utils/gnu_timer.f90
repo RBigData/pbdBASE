@@ -12,26 +12,28 @@
 ! halt and print the wallclock runtime.
   ! If ONOFF = 1, then TIME is input
   ! If ONOFF = 0, then TIME is output.
-      SUBROUTINE TIMER(TIME, ONOFF)
-      IMPLICIT NONE
-      ! IN/OUT
-      INTEGER             TIME, ONOFF
-      ! Local
-      DOUBLE PRECISION    TIMEOLD
-      
-      
-      ! Turn it on
-      IF (ONOFF.GE.1) THEN
-        CALL SYSTEM_CLOCK(TIME)
-      ! Turn it off
-      ELSE
-        TIMEOLD = TIME
-        CALL SYSTEM_CLOCK(TIME)
-        TIME = TIME - TIMEOLD
-!        IF (BLACS(4).EQ.0 .AND. BLACS(5).EQ.0) THEN
-!          WRITE (*,*) "Elapsed: ", REAL(TIME)/1000.0
-!        END IF
-      END IF
-      
-      RETURN
-      END SUBROUTINE
+subroutine timer(time, onoff)
+  implicit none
+  ! in/out
+  integer             time, onoff
+  ! local
+  double precision    timeold
+  
+  
+  ! turn it on
+  if (onoff.ge.1) then
+    call system_clock(time)
+  ! turn it off
+  else
+    timeold = time
+    call system_clock(time)
+    time = time - timeold
+!    if (blacs(4) == 0 .and. blacs(5) == 0) then
+!      write (*,*) "elapsed: ", real(time)/1000.0
+!    end if
+  end if
+  
+  return
+end subroutine
+
+

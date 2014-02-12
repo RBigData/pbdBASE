@@ -21,25 +21,54 @@ PKG_LIBS = $(SLAP_LDFLAGS) $(FLIBS) $(SPMD_LDFLAGS) $(SEXPTOOLS_LDFLAGS)
 
 
 ### Setup R source code and objects.
-R_OBJS = \
+
+BASE_OBJS = \
     base/bprnt.o \
-    base/bprnt_c.o \
-    base/variance.o \
+    base/bprnt_c.o
+
+
+EXPM_OBJS = \
     base/expm/pade_coefs.o \
     base/expm/matexp.o \
-    base/expm/p_matexp.o \
+    base/expm/p_matexp.o
+
+
+LINALG_OBJS = \
     base/linalg/auxil.o \
     base/linalg/pcrossprod.o \
     base/linalg/pinverse.o \
     base/linalg/prblas.o \
-    base/linalg/plm.o \
-    base/util/blacs_util.o \
-    base/util/dmat_make.o \
-    base/util/dmat_redist.o \
-    base/util/indices.o \
-    base/util/putil.o \
-    base/util/scale.o \
-    base/util/special.o \
+    base/linalg/plm.o
+
+
+MISC_OBJC = \
+    comm_utils.o \
+    export_blacs/pkg_tools.o
+
+
+STATS_OBJS = \
+    base/stats/variance.o
+
+
+UTILS = \
+    utils/swap.o \
+    utils/quicksort.o \
+    utils/signof.o \
+    utils/sorts.o \
+    utils/strings.o
+
+
+UTILS_OBJS = \
+    base/utils/blacs_util.o \
+    base/utils/dmat_make.o \
+    base/utils/dmat_redist.o \
+    base/utils/indices.o \
+    base/utils/putil.o \
+    base/utils/scale.o \
+    base/utils/special.o \
+
+
+R_OBJS = \
     base_lm.o \
     base_matexp.o \
     base_mpi_blacs.o \
@@ -52,12 +81,11 @@ R_OBJS = \
     base_qr.o \
     base_scalapack.o \
     base_scalapack_utility.o \
-    base_variance.o \
-    comm_utils.o \
-    export_blacs/pkg_tools.o
+    base_variance.o
 
 
-OBJECTS = $(R_OBJS)
+OBJECTS = $(R_OBJS) $(BASE_OBJS) $(EXPM_OBJS) $(LINALG_OBJS) \
+           $(MISC_OBJS) $(STATS_OBJS) $(UTILS) $(UTILS_OBJS)
 
 
 ### For user configuration.
