@@ -53,14 +53,13 @@ STATS_OBJS = \
     base/stats/variance.o
 
 
-# Order matters
 UTILS = \
-    utils/swap.o \
     utils/fpmod.o \
-    utils/quicksort.o \
+    utils/quicksort_utils.o \
     utils/signof.o \
     utils/sorts.o \
-    utils/strings.o 
+    utils/strings.o \
+    utils/swaps.o
 
 
 UTILS_OBJS = \
@@ -89,16 +88,16 @@ R_OBJS = \
     base_variance.o
 
 
-OBJECTS = $(UTILS) $(UTILS_OBJS) \
-          $(LINALG_OBJS) $(EXPM_OBJS) \
-          $(MISC_OBJS) $(STATS_OBJS) \
-          $(BASE_OBJS) $(R_OBJS)
+OBJECTS = $(BASE_OBJS) $(EXPM_OBJS) \
+          $(LINALG_OBJS) $(MISC_OBJS) \
+          $(R_OBJS) $(STATS_OBJS) \
+          $(UTILS) $(UTILS_OBJS)
 
 
 ### For user configuration.
 USER_CONF = Makeconf
 
- 
+
 ### Start making here.
 all: $(SHLIB)
 	@echo "SLAP_LDFLAGS = $(SLAP_LDFLAGS)" > $(USER_CONF)
@@ -109,14 +108,19 @@ all: $(SHLIB)
 	@echo "PKG_FFLAGS = $(PKG_FFLAGS)" >> $(USER_CONF)
 	@echo "PKG_LIBS = $(PKG_LIBS)" >> $(USER_CONF)
 
+# Fortran module dependencies
+utils/quicksort_utils.o: utils/swaps.o
+utils/sorts.o: utils/quicksort_utils.o utils/swaps.o
+
 $(SHLIB): $(OBJECTS)
 
 clean:
-	@rm -rf *.o *.d *.rc *.so *.dylib *.dll *.a *.lib \
-                Makedeps Makevars $(USER_CONF) $(SHLIB) $(OBJECTS) \
-                export_blacs/*.o \
-                base/*.o \
-                base/expm/*.o \
-                base/util/*.o \
-                base/Rtools.o
-
+	@rm -rf *.o *.mod *.d *.rc *.so *.dylib *.dll *.a *.lib \
+		Makedeps Makevars $(USER_CONF) $(SHLIB) $(OBJECTS) \
+		base/*.o \
+		base/expm/*.o \
+		base/linalg/*.o \
+		base/stats/*.o \
+		base/utils/*.o \
+		export_blacs/*.o \
+		utils/*.o
