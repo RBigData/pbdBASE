@@ -1,10 +1,8 @@
 \section{Using pbdBASE}
-\addcontentsline{toc}{section}{\thesection. Using pbdBASE}
 
 % The use of the package falls into two separate cases:  beginners who are unfamiliar with ScaLAPACK, and those already familiar with ScaLAPACK.
 
 \subsection{BLACS Communicators}
-\addcontentsline{toc}{subsection}{\thesubsection. BLACS Communicators}
 
 
 Briefly, distributed matrix computations using ScaLAPACK require specialized MPI communicators, via the BLACS library.  As with any MPI communicator, you must initialize it before getting started with communications, and you must terminate it when you are finished with communications.  For most users, this will amount to calling
@@ -36,14 +34,12 @@ On the other hand, context 1 is always a $1\times n$ grid, where $n$ is the tota
 The function \code{init.grid()} does a great deal of (useful) hand-holding, so the much more advanced user who is familiar with BLACS may be more interested in the function \code{blacs_gridinit()}, which does not reserve contexts 0, 1, or 2.  However, many \pkg{pbdDMAT} functions make assumptions about the existence and shapes of contexts 0, 1, and 2 (as described above), so this functionality is not supported when using that package.
 
 \subsubsection{Destruction}
-\addcontentsline{toc}{subsubsection}{\thesubsubsection. Destruction}
 
 The user can halt all communicators --- both BLACS communicators and, optionally, those created by \pkg{pbdMPI} (or others) --- by calling \code{finalize()}.  To destroy just a single BLACS context (for example, one used to read in data on a subset of processors), then the user should use \code{gridexit()}.  See the \pkg{pbdBASE} reference manual for full details.
 
 
 
 \subsection{Notes for Developers}
-\addcontentsline{toc}{subsection}{\thesubsection. Notes for Developers}
 
 The \pkg{pbdBASE} package also has several useful routines for package developers who need to deal with distributed matrices (such as \pkg{pbdDMAT}'s \code{ddmatrix} object).  Chief among these is the \code{numroc()} function.  Here, \code{numroc} stands for \textbf{num}ber of \textbf{r}ows \textbf{o}r \textbf{c}olumns.  This routine is used for determining local storage dimensions.  If you need to construct a distributed matrix and know its (global) dimension, blocking factor, and BLACS context, then you can determine the local problem size by making the call:
 
