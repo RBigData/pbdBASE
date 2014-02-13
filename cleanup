@@ -16,7 +16,6 @@ rm -rf ./src/*.rc
 rm -rf ./src/*.rds
 
 find ./ -type f -name '*.o' -delete
-find ./ -type f -name '*.mod' -delete
 
 rm -rf ./src/Rtools/*.so
 rm -rf ./src-*
