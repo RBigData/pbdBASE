@@ -56,7 +56,7 @@ STATS_OBJS = \
 UTILS = \
     utils/fpmod.o \
     utils/quicksort_utils.o \
-    utils/signof.o \
+    utils/signs.o \
     utils/sorts.o \
     utils/strings.o \
     utils/swaps.o

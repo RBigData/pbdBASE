@@ -10,7 +10,6 @@
 !   x = array
 !     i = index 1
 !     j = index 2
-
 module swaps
   implicit none
   
@@ -28,11 +27,7 @@ module swaps
     integer, intent(in) :: i, j
     integer :: tmp
     
-    if (i /= j) then
-      tmp = x(i)
-      x(i) = x(j)
-      x(j) = tmp
-    end if
+    include 'include/swap_generic.inc'
     
     return
   end subroutine
@@ -45,11 +40,7 @@ module swaps
     integer, intent(in) :: i, j
     real :: tmp
     
-    if (i /= j) then
-      tmp = x(i)
-      x(i) = x(j)
-      x(j) = tmp
-    end if
+    include 'include/swap_generic.inc'
     
     return
   end subroutine
@@ -62,11 +53,7 @@ module swaps
     integer, intent(in) :: i, j
     double precision :: tmp
     
-    if (i /= j) then
-      tmp = x(i)
-      x(i) = x(j)
-      x(j) = tmp
-    end if
+    include 'include/swap_generic.inc'
     
     return
   end subroutine
@@ -79,11 +66,7 @@ module swaps
     integer, intent(in) :: i, j
     complex :: tmp
     
-    if (i /= j) then
-      tmp = x(i)
-      x(i) = x(j)
-      x(j) = tmp
-    end if
+    include 'include/swap_generic.inc'
     
     return
   end subroutine
@@ -96,11 +79,7 @@ module swaps
     integer, intent(in) :: i, j
     double complex :: tmp
     
-    if (i /= j) then
-      tmp = x(i)
-      x(i) = x(j)
-      x(j) = tmp
-    end if
+    include 'include/swap_generic.inc'
     
     return
   end subroutine

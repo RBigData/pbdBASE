@@ -10,8 +10,62 @@ module quicksort_utils
   implicit none
   
   
+  interface quicksort_median_of_3
+    module procedure iquicksort_median_of_3, squicksort_median_of_3, dquicksort_median_of_3
+  end interface
+  
+  interface quicksort_partition
+    module procedure iquicksort_partition, squicksort_partition, dquicksort_partition
+  end interface
+  
+  
   contains
   
+  ! --------------------------------------------------------
+  ! Median of a length 3 array; used in choosing pivot in quicksort
+  ! --------------------------------------------------------
+  function iquicksort_median_of_3(tmp) result(med)
+    ! in/out
+    integer, intent(inout) :: tmp(3)
+    integer :: med
+    ! local
+    integer :: i
+    
+    include 'include/quicksort_median_of_3_generic.inc'
+    
+    return
+  end function
+  
+  
+  
+  function squicksort_median_of_3(tmp) result(med)
+    ! in/out
+    real, intent(inout) :: tmp(3)
+    real :: med
+    ! local
+    integer :: i
+    
+    include 'include/quicksort_median_of_3_generic.inc'
+    
+    return
+  end function
+  
+  
+  
+  function dquicksort_median_of_3(tmp) result(med)
+    ! in/out
+    double precision, intent(inout) :: tmp(3)
+    double precision :: med
+    ! local
+    integer :: i
+    
+    include 'include/quicksort_median_of_3_generic.inc'
+    
+    return
+  end function
+  
+  
+  ! --------------------------------------------------------
   ! in-place partition function for quicksort
   !  inputs:
   !    x = vector from which median is to be chosen
@@ -20,7 +74,39 @@ module quicksort_utils
   !    ind = index of pivot
   !  output:
   !    ret = number of elements in x <= pvt
-  subroutine quicksort_partition(x, l, r, ind, ret)
+  subroutine iquicksort_partition(x, l, r, ind, ret)
+    ! In/out
+    integer, intent(in) :: l, r, ind
+    integer, intent(inout) :: x(*)
+    integer, intent(out) :: ret
+    ! local
+    integer :: i
+    integer :: pvt
+    
+    include 'include/quicksort_partition_generic.inc'
+    
+    return
+  end subroutine
+  
+  
+  
+  subroutine squicksort_partition(x, l, r, ind, ret)
+    ! In/out
+    integer, intent(in) :: l, r, ind
+    real, intent(inout) :: x(*)
+    integer, intent(out) :: ret
+    ! local
+    integer :: i
+    real :: pvt
+    
+    include 'include/quicksort_partition_generic.inc'
+    
+    return
+  end subroutine
+  
+  
+  
+  subroutine dquicksort_partition(x, l, r, ind, ret)
     ! In/out
     integer, intent(in) :: l, r, ind
     double precision, intent(inout) :: x(*)
@@ -29,49 +115,9 @@ module quicksort_utils
     integer :: i
     double precision :: pvt
     
-    
-    ret = l
-    
-    pvt = x(ind)
-    
-    call swap(x, ind, r)
-    
-    do i = l, r
-      if (x(i).lt.pvt) then
-        call swap(x, i, ret)
-        ret = ret + 1
-      end if
-    end do
-    
-    call swap(x, ret, r)
-    
-    ret = ret - 1 ! for "<=" return
+    include 'include/quicksort_partition_generic.inc'
     
     return
   end subroutine
-  
-  
-  
-  function quicksort_median_of_3(tmp) result(med)
-    ! in/out
-    double precision, intent(inout) :: tmp(3)
-    double precision :: med
-    ! local
-    integer :: i
-    
-    
-    ! bubble sort with a poor man's while loop
-    1 continue
-      do i = 1, 2
-        if (tmp(i) > tmp(i+1)) then
-            call swap(tmp, i, i+1)
-            goto 1
-        end if
-      end do
-    
-    med = tmp(2)
-    
-    return
-  end function
   
 end module

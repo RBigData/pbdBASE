@@ -1,0 +1,4 @@
+This is the hackish way to get around the fact that Fortran lacks
+metaprogramming, while also avoiding a bunch of needless copy/pastes.
+
+It's not pretty, but it works.
