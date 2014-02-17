@@ -1,3 +1,10 @@
+! This Source Code Form is subject to the terms of the Mozilla Public
+! License, v. 2.0. If a copy of the MPL was not distributed with this
+! file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+! Copyright 2014, Schmidt
+
+
 module string_tools
   implicit none
   
@@ -5,7 +12,8 @@ module string_tools
   
   
   ! Makes string all lowercase based on ascii encoding
-  function toupper(str) result(ret)
+  function toupper(str) &
+  result(ret)
     implicit none
     ! in/out
     character(len=*) :: str
@@ -24,12 +32,14 @@ module string_tools
         end if
     end do
     
+    return
   end function
   
   
   
   ! Makes string all uppercase based on ascii encoding
-  function tolower(str) result(ret)
+  function tolower(str) &
+  result(ret)
     implicit none
     ! in/out
     character(len=*) :: str
@@ -48,6 +58,7 @@ module string_tools
         end if
     end do
     
+    return
   end function
   
   

@@ -6,7 +6,6 @@
 
 
 ! Subroutine to mimic R's `[` operator
-!FIXME just doing positive indexing for now
 ! lrows = -1 : all rows are used and 'rows' is ignored
 ! lcols = -1 : all cols are used and 'cols' is ignored
 module subset

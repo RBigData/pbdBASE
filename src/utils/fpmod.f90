@@ -1,6 +1,9 @@
-function fpmod(a, b) result(ret)
+function fpmod(a, b) &
+result(ret)
   double precision, intent(in) :: a, b
   double precision :: ret
+  double precision, parameter :: zero = 0.0d0
+  
   
   if (b == 0) then
     ret = nan
@@ -12,7 +15,7 @@ function fpmod(a, b) result(ret)
     end if
   else
     if (a == 0) then
-      ret = 0.0d0
+      ret = zero
     else if (a > 0) then
       ret = b + dmod(a, -b)
     else
@@ -22,3 +25,4 @@ function fpmod(a, b) result(ret)
   
   return
 end function
+
