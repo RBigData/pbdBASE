@@ -11,18 +11,22 @@
 module subset
   use subset_utils
   use subset_special
+  use iso_c_binding
+  
   implicit none
   
   
   contains
   
-  subroutine subsetter(m, n, x, rows, lrows, cols, lcols, y, my, ny, info)
+  subroutine subsetter(m, n, x, rows, lrows, cols, lcols, y, my, ny, info) &
+  bind(c, name='subsetter_')
     ! in/out
     integer, intent(in) :: m, n, lrows, lcols
+    integer, intent(in) :: my, ny
     integer, intent(in) :: rows(*), cols(*)
-    integer, intent(out) :: my, ny, info
+    integer, intent(out) :: info
     double precision, intent(in) :: x(m, n)
-    double precision, allocatable, intent(out) :: y(:,:)
+    double precision, intent(out) :: y(my, ny)
     ! local
     integer :: i, j
     integer :: row_indx_sign, col_indx_sign
@@ -37,7 +41,7 @@ module subset
       return
     else if (lrows == -1 .and. lcols == -1) then
       print *, y
-      allocate(y(m, n))
+!      allocate(y(m, n))
       y = x
       info = 0
       return
@@ -74,8 +78,8 @@ module subset
     
     
     !!! Determine dims and allocated
-    call subsetter_ydims(m, n, lrows, lcols, row_indx_sign, col_indx_sign, my, ny)
-    allocate(y(my,ny))
+!    call subsetter_ydims(m, n, lrows, lcols, row_indx_sign, col_indx_sign, my, ny)
+!    allocate(y(my,ny))
     
     
     !!! Special cases
