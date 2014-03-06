@@ -17,6 +17,7 @@
 
 #include "matexp.h"
 
+
 void dgemm_(char *transa, char *transb, int *m, int *n, int *k, double *alpha, double *a, int *lda, double *b, int *ldb, double *beta, double *c, int *ldc);
 void dlacpy_(char *uplo, int *m, int *n, double *a, int *lda, double *b, int *ldb);
 
@@ -134,8 +135,8 @@ void matexp_pade_fillmats(const unsigned int m, const unsigned int n, const unsi
   int j;
   const double tmp = matexp_pade_coefs[i];
   double tmpj;
-
-
+  
+  
   if (SGNEXP(-1, i) == 1)
   {
     for (j=0; j<m*n; j++)
@@ -143,7 +144,7 @@ void matexp_pade_fillmats(const unsigned int m, const unsigned int n, const unsi
       // B = C
       tmpj = C[j];
       B[j] = tmpj;
-
+      
       tmpj *= tmp;
       // N = pade_coef[i] * C
       N[j] += tmpj;
@@ -158,7 +159,7 @@ void matexp_pade_fillmats(const unsigned int m, const unsigned int n, const unsi
       // B = C
       tmpj = C[j];
       B[j] = tmpj;
-
+      
       tmpj *= tmp;
       // N = pade_coef[i] * C
       N[j] += tmpj;
@@ -204,19 +205,19 @@ void matexp_pade(const unsigned int n, double *A, double *N, double *D)
       i += n+1;
     }
   }
-
-
+  
+  
   // Fill N and D
-  for (i=1; i<=13; i++)
+  for (i=1; i<=PADE_PQ; i++)
   {
     // C = A*B
     if (i > 1)
       matprod(n, A, B, C);
-
+      
     // Update matrices
     matexp_pade_fillmats(n, n, i, N, D, B, C);
   }
-
+  
   free(B);
   free(C);
 }
