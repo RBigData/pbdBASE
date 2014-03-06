@@ -1,3 +1,7 @@
+2014-3-6:
+ * Fixed regression in MKSUBMAT.
+ * Fixed regression in MKGBLMAT.
+
 2014-2-4:
  * Updated vignette format.
  * Fixed author affiliation in vignette.

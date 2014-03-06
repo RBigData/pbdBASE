@@ -1,7 +1,7 @@
 ### global-to-local
 indxg2l <- function(INDXGLOB, NB, IPROC, ISRCPROC, NPROCS)
 {
-  indx <- NB*((INDXGLOB - 1L)/(NB*NPROCS)) + ((INDXGLOB - 1L)%%NB) + 1L
+  indx <- NB*floor((INDXGLOB - 1L)/(NB*NPROCS)) + ((INDXGLOB - 1L)%%NB) + 1L
   
   return( indx )
 }

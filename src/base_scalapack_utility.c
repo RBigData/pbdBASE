@@ -27,18 +27,18 @@ SEXP R_PDGEMR2D(SEXP M, SEXP N, SEXP X, SEXP DESCX, SEXP CLDIM, SEXP DESCB, SEXP
 {
   R_INIT;
   const int IJ = 1;
-  SEXP B;
+  SEXP C;
   
-  newRmat(B, INT(CLDIM, 0), INT(CLDIM, 1), "dbl");
+  newRmat(C, INT(CLDIM, 0), INT(CLDIM, 1), "dbl");
   
   
   Cpdgemr2d(INTEGER(M)[0], INTEGER(N)[0],
       REAL(X), IJ, IJ, INTEGER(DESCX),
-      REAL(B), IJ, IJ, INTEGER(DESCB), INTEGER(CTXT)[0]);
+      REAL(C), IJ, IJ, INTEGER(DESCB), INTEGER(CTXT)[0]);
   
   
   R_END;
-  return B;
+  return C;
 }
 
 
