@@ -1,6 +1,8 @@
+pbdBASE 0.3-0 (2014-) --------------------------------------------------
+
 2014-3-6:
- * Fixed regression in MKSUBMAT.
- * Fixed regression in MKGBLMAT.
+ * Stopgap fixed regression in MKSUBMAT.
+ * Stopgap fixed regression in MKGBLMAT.
 
 2014-2-4:
  * Updated vignette format.
@@ -8,16 +10,17 @@
 
 2014-2-2:
  * Linked with SEXPtools.
- * Started rewriting internals to use SEXPtools.
+ * Refactored internal wrappers to use SEXPtools.
 
 2014-1-31:
- * ownany() bug fixed.
+ * ownany() bug fixed that affected some grid shapes.
 
 2014-1-14:
-  * Vignetted copyright updated.
+  * Vignette copyright updated.
 
 2013-12-16:
-  * pdgels bug fixes.
+  * PDGELS bug fixes.
+
 
 pbdBASE 0.2-3 (2013-12-14) --------------------------------------------------
 
@@ -36,6 +39,7 @@ pbdBASE 0.2-3 (2013-12-14) --------------------------------------------------
 2013-7-20:
   * Added driver for (non-symmetric) eigenvalue calculator.
 
+
 pbdBASE 0.2-2 (2013-7-8) --------------------------------------------------
 
 2013-6-28:
@@ -50,10 +54,12 @@ pbdBASE 0.2-2 (2013-7-8) --------------------------------------------------
 2013-5-9:
   * Fixed initialization bug in pdgemr2d.
 
+
 pbdBASE 0.2-1 (2013-3-25) --------------------------------------------------
 
 2013-3-20:
   * Added PDSYEV wrappers.
+
 
 pbdBASE 0.2-0 (2013-3-12) --------------------------------------------------
 
@@ -79,6 +85,7 @@ pbdBASE 0.2-0 (2013-3-12) --------------------------------------------------
   * Fixed bug in SEXP wrappers of ScaLAPACK functions; passing 0-byte Ralloc'd vectors.
   * Fix multi-arch problem.
   * Add copyright to vignette.
+
 
 pbdBASE 0.1-1 (2012-12-1) ----------------------------------------------------
 
@@ -106,6 +113,7 @@ pbdBASE 0.1-1 (2012-12-1) ----------------------------------------------------
 2012-10-22:
   * Distributed QR added.
   * Distributed linear least squares solver added for n>p case.
+
 
 ======================= Log Before Release =====================================
 2012-10-02:
