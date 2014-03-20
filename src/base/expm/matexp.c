@@ -46,10 +46,8 @@ static inline void matzero(const unsigned int n, double *a)
   #if defined(_OPENMP_SUPPORT_SIMD)
   #pragma omp for simd
   #endif
-  {
     for (i=0; i<n*n; i++)
       a[i] = 0.0;
-  }
 }
 
 // Identity matrix
@@ -57,20 +55,15 @@ static inline void mateye(const unsigned int n, double *a)
 {
   int i;
   
-  #if defined(_OPENMP_SUPPORT_SIMD)
-  #pragma omp simd
-  #endif
+  matzero(n, a);
+  
+  // Fill diagonal with 1
+  i = 0;
+  while (i < n*n)
   {
-    matzero(n, a);
+    a[i] = 1.0;
     
-    // Fill diagonal with 1
-    i = 0;
-    while (i < n*n)
-    {
-      a[i] = 1.0;
-      
-      i += n+1;
-    }
+    i += n+1;
   }
 }
 
@@ -191,19 +184,14 @@ void matexp_pade(const unsigned int n, double *A, double *N, double *D)
   }
 
   // Initialize N and D
-  #if defined(_OPENMP_SUPPORT_SIMD)
-  #pragma omp simd
-  #endif
+  // Fill diagonal with 1
+  i = 0;
+  while (i < n*n)
   {
-    // Fill diagonal with 1
-    i = 0;
-    while (i < n*n)
-    {
-      N[i] = 1.0;
-      D[i] = 1.0;
-      
-      i += n+1;
-    }
+    N[i] = 1.0;
+    D[i] = 1.0;
+    
+    i += n+1;
   }
   
   
