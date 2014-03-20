@@ -1,5 +1,8 @@
 pbdBASE 0.3-0 (2014-) --------------------------------------------------
 
+2014-3-17:
+ * Fixed portability issue in Makevars.in.
+
 2014-3-6:
  * Stopgap fixed regression in MKSUBMAT.
  * Stopgap fixed regression in MKGBLMAT.

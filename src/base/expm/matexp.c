@@ -43,7 +43,7 @@ static inline void matzero(const unsigned int n, double *a)
 {
   int i;
   
-  #if defined( _OPENMP_SUPPORT_SIMD)
+  #if defined(_OPENMP_SUPPORT_SIMD)
   #pragma omp for simd
   #endif
   {
@@ -57,8 +57,8 @@ static inline void mateye(const unsigned int n, double *a)
 {
   int i;
   
-  #if defined( _OPENMP_SUPPORT_SIMD)
-  #pragma omp for simd
+  #if defined(_OPENMP_SUPPORT_SIMD)
+  #pragma omp simd
   #endif
   {
     matzero(n, a);
@@ -191,8 +191,8 @@ void matexp_pade(const unsigned int n, double *A, double *N, double *D)
   }
 
   // Initialize N and D
-  #if defined( _OPENMP_SUPPORT_SIMD)
-  #pragma omp for simd
+  #if defined(_OPENMP_SUPPORT_SIMD)
+  #pragma omp simd
   #endif
   {
     // Fill diagonal with 1
@@ -201,7 +201,7 @@ void matexp_pade(const unsigned int n, double *A, double *N, double *D)
     {
       N[i] = 1.0;
       D[i] = 1.0;
-
+      
       i += n+1;
     }
   }

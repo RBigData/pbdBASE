@@ -15,8 +15,8 @@ SLAP_LDFLAGS = @SLAP_LDFLAGS@
 ### Package flags.
 PKG_CPPFLAGS = $(SPMD_CPPFLAGS) $(SEXPTOOLS_CPPFLAGS)
 PKG_CFLAGS = $(SHLIB_OPENMP_CFLAGS) -w
-PKG_FFLAGS = $(SHLIB_OPENMP_FFLAGS)
-PKG_FCFLAGS = $(SHLIB_OPENMP_FCFLAGS) -w -Wfatal-errors
+PKG_FFLAGS = $(SHLIB_OPENMP_FFLAGS) -w
+PKG_FCFLAGS = $(SHLIB_OPENMP_FCFLAGS) -w
 #PKG_FFLAGS = $(SAFE_FFLAGS) -w $(SHLIB_OPENMP_FFLAGS)
 #PKG_FCFLAGS = $(SAFE_FCFLAGS) $(SHLIB_OPENMP_FCFLAGS) -w -Wfatal-errors
 
@@ -116,6 +116,7 @@ all: $(SHLIB)
 	@echo "PKG_FFLAGS = $(PKG_FFLAGS)" >> $(USER_CONF)
 	@echo "PKG_LIBS = $(PKG_LIBS)" >> $(USER_CONF)
 
+
 # Fortran module dependencies
 utils/quicksort_utils.o: utils/swaps.o
 utils/sorts.o: utils/quicksort_utils.o utils/swaps.o
@@ -123,7 +124,9 @@ utils/subset_special.o: utils/sorts.o
 utils/subset_utils.o: utils/subset_utils.o utils/sorts.o
 utils/subset.o: utils/subset_special.o utils/subset_utils.o
 
+
 $(SHLIB): $(OBJECTS)
+
 
 clean:
 	@rm -rf *.o *.mod *.d *.rc *.so *.dylib *.dll *.a *.lib \
