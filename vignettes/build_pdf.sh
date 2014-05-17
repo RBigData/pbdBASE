@@ -6,7 +6,7 @@ bibtex pbdBASE-guide
 #pdflatex pbdBASE-guide.Rnw
 pdflatex pbdBASE-guide.Rnw
 pdflatex pbdBASE-guide.Rnw
-Rscript -e "tools::compactPDF('pbdBASE-guide.pdf', gs_quality='ebook')"
+Rscript -e "tools::compactPDF('.', gs_quality='ebook')"
 rm *.aux *.bbl *.blg *.log *.out *.toc *.dvi
 
 mv -f *.pdf ../inst/doc/

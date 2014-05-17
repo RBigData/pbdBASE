@@ -90,27 +90,22 @@
       CBL = DESCX(6)
       
       IF (M.GT.0 .AND. N.GT.0) THEN
-        ! FIXME
-        DO J = 1, N
-          DO I = 1, M
+        DO J = 1, N, CBL
+          DO I = 1, M, RBL
             CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
-            SUBX(I+TI, J+TJ) = GBLX(GI+TI, GJ+TJ)
+            
+            RBL = MIN(RBL, M-I+1)
+            CBL = MIN(CBL, N-J+1)
+            
+            DO TJ = 0, CBL-1
+              !$omp do simd
+              DO TI = 0, RBL-1
+                SUBX(I+TI, J+TJ) = GBLX(GI+TI, GJ+TJ)
+              END DO
+              !$omp end do simd
+            END DO
           END DO 
         END DO
-!        DO J = 1, N, CBL
-!          DO I = 1, M, RBL
-!            CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
-!            
-!            RBL = MIN(RBL, M-I+1)
-!            CBL = MIN(CBL, N-J+1)
-!            
-!            DO TJ = 0, CBL-1
-!              DO TI = 0, RBL-1
-!                SUBX(I+TI, J+TJ) = GBLX(GI+TI, GJ+TJ)
-!              END DO
-!            END DO
-!          END DO 
-!        END DO
       END IF
       
       RETURN
@@ -154,27 +149,20 @@
       CBL = DESCX(6)
       
       IF (M.GT.0 .AND. N.GT.0) THEN
-        ! FIXME
-!        DO J = 1, N, CBL
-!          DO I = 1, M, RBL
-!            CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
-!            
-!            RBL = MIN(RBL, M-I+1)
-!            CBL = MIN(CBL, N-J+1)
-!            
-!            DO TJ = 0, CBL-1
-!              DO TI = 0, RBL-1
-!                GBLX(GI+TI, GJ+TJ) = SUBX(I+TI, J+TJ)
-!              END DO
-!            END DO
-!          
-!          END DO 
-!        END DO
-        DO J = 1, N
-          DO I = 1, M
+        DO J = 1, N, CBL
+          DO I = 1, M, RBL
             CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
-            GBLX(GI+TI, GJ+TJ) = SUBX(I+TI, J+TJ)
-          
+            
+            RBL = MIN(RBL, M-I+1)
+            CBL = MIN(CBL, N-J+1)
+            
+            DO TJ = 0, CBL-1
+              !$omp do simd
+              DO TI = 0, RBL-1
+                GBLX(GI+TI, GJ+TJ) = SUBX(I+TI, J+TJ)
+              END DO
+              !$omp end do simd
+            END DO
           END DO 
         END DO
       END IF

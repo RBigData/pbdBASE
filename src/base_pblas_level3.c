@@ -19,6 +19,7 @@ SEXP R_PDTRAN(SEXP M, SEXP N, SEXP A, SEXP DESCA, SEXP CLDIM, SEXP DESCC)
   SEXP C;
   newRmat(C, INT(CLDIM, 0), INT(CLDIM, 1), "dbl");
   
+  
   pdtran_(INTP(M), INTP(N), &one, 
           DBLP(A), &IJ, &IJ, INTP(DESCA), &zero, 
           DBLP(C), &IJ, &IJ, INTP(DESCC));
