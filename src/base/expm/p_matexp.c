@@ -96,7 +96,7 @@ void p_matpow_by_squaring(double *A, int *desca, int b, double *P)
       p_matcopy(TMP, desca, P, desca);
     }
     
-    b >>= 1;
+    b >>=1;
     p_matprod(A, desca, A, desca, TMP, desca);
     p_matcopy(TMP, desca, A, desca);
   }
@@ -142,7 +142,7 @@ void p_matexp_pade(double *A, int *desca, double *N, double *D)
   memcpy(N, D, m*n*sizeof(double));
   
   // Fill N and D
-  for (i=1; i<=PADE_PQ; i++)
+  for (i=1; i<=13; i++)
   {
     // C = A*B
     if (i > 1)

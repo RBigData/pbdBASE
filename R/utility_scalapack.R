@@ -18,8 +18,6 @@ base.descinit <- function(dim, bldim, ldim, ICTXT=0)
 #  desc[9L] <- max(1L, ldim[1L])     # LLD_A
   desc[9L] <- max(ldim[1L], max(1L, NUMROC(dim[1L], bldim[1L], grid$MYROW, grid$NPROW)))
   
-  desc <- .Fortran("descinit", integer(9L), as.integer(dim[1L]), as.integer(dim[2L]), as.integer(bldim[1L]), as.integer(bldim[2L]), 0L, 0L, as.integer(ICTXT), as.integer(ldim[1L]), 0L)[[1L]]
-  
   return(desc)
 }
 
