@@ -22,8 +22,8 @@ PKG_CPPFLAGS = -I"$(MPI_INCLUDE)" $(SEXPTOOLS_CPPFLAGS)
 PKG_CFLAGS = -w
 PKG_FFLAGS = -w
 ### Order is matter.
-PKG_LIBS = "$(SLAP_LDFLAGS)" $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(MPI_LIB) \
-           $(SEXPTOOLS_LDFLAGS)
+PKG_LIBS = "$(SLAP_LDFLAGS)" $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) \
+           "$(MPI_LIB)" $(SEXPTOOLS_LDFLAGS)
 
 ### Setup R source code and objects.
 R_SRCS_C = $(wildcard *.c) \
@@ -46,7 +46,9 @@ USER_CONF = Makeconf
 all: Makeconf $(SHLIB)
 
 Makeconf:
-	$(ECHO) 'SLAP_LDFLAGS = $(SLAP_LDFLAGS)' > $(USER_CONF)
+	$(ECHO) 'SEXPTOOLS_CPPFLAGS = $(SEXPTOOLS_CPPFLAGS)' > $(USER_CONF)
+	$(ECHO) 'SEXPTOOLS_LDFLAGS = $(SEXPTOOLS_LDFLAGS)' >> $(USER_CONF)
+	$(ECHO) 'SLAP_LDFLAGS = $(SLAP_LDFLAGS)' >> $(USER_CONF)
 	$(ECHO) 'MPI_ROOT = $(MPI_ROOT)' >> $(USER_CONF)
 	$(ECHO) 'MPI_INCLUDE = $(MPI_INCLUDE)' >> $(USER_CONF)
 	$(ECHO) 'MPI_LIB = $(MPI_LIB)' >> $(USER_CONF)
@@ -65,4 +67,3 @@ clean:
                 base/expm/*.o \
                 base/util/*.o \
                 base/Rtools.o
-
