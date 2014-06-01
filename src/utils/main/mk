@@ -1,6 +1,7 @@
 #!/bin/sh
 
-#rm -rf *.mod
+rm -rf *.mod a.out
+
 gfortran \
   ../swaps.f90 \
   ../quicksort_utils.f90 \
@@ -9,7 +10,7 @@ gfortran \
   ../subset_utils.f90 \
   ../subset_special.f90 \
   ../subset.f90 \
-  ../main.f90 \
+  ./main.f90 \
   && ./a.out
 
-rm -rf *.mod
+rm -rf *.mod a.out
