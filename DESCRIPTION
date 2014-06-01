@@ -2,9 +2,9 @@ Package: pbdBASE
 Title: Programming with Big Data -- Base Wrappers for Distributed
         Matrices
 Version: 0.3-0
-Date: 2013-3-4
-Depends: R (>= 2.14.0), methods, rlecuyer, SEXPtools, 
-        pbdMPI (>= 0.2-1), pbdSLAP(>= 0.1-6)
+Date: 2013-05-31
+Depends: R (>= 3.0.0), methods, rlecuyer, SEXPtools, pbdMPI (>= 0.2-3),
+        pbdSLAP(>= 0.1-9)
 LazyLoad: yes
 LazyData: yes
 Authors@R: c(person("Drew", "Schmidt", role = c("aut", "cre"), email =
@@ -16,15 +16,14 @@ Description: pbdBASE gives higher packages, like pbdDMAT, access to
         set of ScaLAPACK wrappers, as well as a host of new C and 
         Fortran code.  
 SystemRequirements: OpenMPI (>= 1.5.4) on Solaris, Linux, Mac, and
-        FreeBSD. MS-MPI (Microsoft HPC Pack 2012) or MPICH2 (>= 1.4.1p1)
-        on Windows.
+        FreeBSD. MS-MPI (Microsoft HPC Pack 2012 R2 MS-MPI
+        Redistributable Package) on Windows.
 License: Mozilla Public License 2.0
-NeedsCompilation: Yes
 URL: http://r-pbd.org/
 BugReports: http://group.r-pbd.org/
 MailingList: Please send questions and comments regarding pbdR to
         RBigData@gmail.com
-Packaged: 2014-01-05 21:51:59 UTC; snoweye
+Packaged: 2014-06-01 02:04:10 UTC; snoweye
 Author: Drew Schmidt [aut, cre],
   Wei-Chen Chen [aut],
   George Ostrouchov [aut],
