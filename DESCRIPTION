@@ -7,6 +7,7 @@ Depends: R (>= 2.14.0), methods, rlecuyer, SEXPtools,
         pbdMPI (>= 0.2-1), pbdSLAP(>= 0.1-6)
 LazyLoad: yes
 LazyData: yes
+ByteCompile: yes
 Authors@R: c(person("Drew", "Schmidt", role = c("aut", "cre"), email =
         "schmidt@math.utk.edu"), person("Wei-Chen", "Chen", role =
         "aut"), person("George", "Ostrouchov", role = "aut"),

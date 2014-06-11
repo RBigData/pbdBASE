@@ -4,3 +4,7 @@
 *.log
 *.status
 *~
+
+src/Makeconf
+src/Makevars
+src/utils/a.out

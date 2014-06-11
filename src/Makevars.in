@@ -1,8 +1,8 @@
 #################################################################
 
 ### SEXPtools
-SEXPTOOLS_CPPFLAGS = @SEXPTOOLS_CPPFLAGS@
-SEXPTOOLS_LDFLAGS = @SEXPTOOLS_LDFLAGS@
+SEXPTOOLS_CPPFLAGS = `$(R_HOME)/bin/Rscript -e "SEXPtools:::cppflags()"`
+SEXPTOOLS_LDFLAGS = `$(R_HOME)/bin/Rscript -e "SEXPtools:::ldflags()"`
 
 
 ### MPI+SLAP

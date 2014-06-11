@@ -23,7 +23,7 @@ void l2gpair_(int *i, int *j, int *gi, int *gj, int *desc, int *blacs);
 void dmat_matexp_pade(const unsigned int n, double *A, double *N, double *D);
 void matpow_by_squaring(double *A, int n, int b, double *P);
 
-void p_matexp_pade(double *A, int *desca, double *N, double *D);
+void p_matexp_pade(double *A, int *desca, int p, double *N, double *D);
 void p_matpow_by_squaring(double *A, int *desca, int b, double *P);
 
 

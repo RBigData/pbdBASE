@@ -34,7 +34,7 @@ SEXP R_matpow_by_squaring(SEXP A, SEXP b)
 
 
 
-SEXP R_matexp_pade(SEXP A)
+SEXP R_matexp_pade(SEXP A, SEXP p)
 {
   R_INIT;
   const int n = nrows(A);
@@ -48,7 +48,7 @@ SEXP R_matexp_pade(SEXP A)
   
   
   // Compute N and D
-  matexp_pade(n, REAL(A), REAL(N), REAL(D));
+  matexp_pade(n, INT(p,0), REAL(A), REAL(N), REAL(D));
   
   
   // Wrangle the return

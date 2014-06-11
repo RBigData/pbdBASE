@@ -4,6 +4,7 @@
 
 // Copyright 2013, Schmidt
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -111,7 +112,7 @@ void p_matpow_by_squaring(double *A, int *desca, int b, double *P)
 // p==q==13
 void matexp_pade_fillmats(const unsigned int m, const unsigned int n, const unsigned int i, double *N, double *D, double *B, double *C);
 
-void p_matexp_pade(double *A, int *desca, double *N, double *D)
+void p_matexp_pade(double *A, int *desca, int p, double *N, double *D)
 {
   int m, n;
   int i;
@@ -142,7 +143,7 @@ void p_matexp_pade(double *A, int *desca, double *N, double *D)
   memcpy(N, D, m*n*sizeof(double));
   
   // Fill N and D
-  for (i=1; i<=PADE_PQ; i++)
+  for (i=1; i<=p; i++)
   {
     // C = A*B
     if (i > 1)

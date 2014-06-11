@@ -37,7 +37,7 @@ SEXP R_p_matpow_by_squaring(SEXP A, SEXP desca, SEXP b)
 
 
 
-SEXP R_p_matexp_pade(SEXP A, SEXP desca)
+SEXP R_p_matexp_pade(SEXP A, SEXP desca, SEXP p)
 {
   R_INIT;
   int m, n;
@@ -54,7 +54,7 @@ SEXP R_p_matexp_pade(SEXP A, SEXP desca)
   
   
   // Compute N and D
-  p_matexp_pade(DBLP(A), INTP(desca), DBLP(N), DBLP(D));
+  p_matexp_pade(DBLP(A), INTP(desca), INT(p, 0), DBLP(N), DBLP(D));
   
   
   // Wrangle the return

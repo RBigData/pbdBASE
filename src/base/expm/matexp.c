@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// Copyright 2013, Schmidt
+// Copyright 2013-2014, Schmidt
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,14 +21,17 @@
 void dgemm_(char *transa, char *transb, int *m, int *n, int *k, double *alpha, double *a, int *lda, double *b, int *ldb, double *beta, double *c, int *ldc);
 void dlacpy_(char *uplo, int *m, int *n, double *a, int *lda, double *b, int *ldb);
 
+
+
 // C = A * B for square matrices
-static inline void matprod(int n, double *a, double *b, double *c)
+static void matprod(int n, double *a, double *b, double *c)
 {
   char trans = 'N';
   double one = 1.0, zero = 0.0;
   
   dgemm_(&trans, &trans, &n, &n, &n, &one, a, &n, b, &n, &zero, c, &n);
 }
+
 
 // Copy A ONTO B, i.e. B = A
 static inline void matcopy(int n, double *A, double *B)
@@ -43,11 +46,13 @@ static inline void matzero(const unsigned int n, double *a)
 {
   int i;
   
-  #if defined(_OPENMP_SUPPORT_SIMD)
-  #pragma omp for simd
-  #endif
+  {
+    #if defined(_OPENMP_SUPPORT_SIMD)
+    #pragma omp for simd
+    #endif
     for (i=0; i<n*n; i++)
       a[i] = 0.0;
+  }
 }
 
 // Identity matrix
@@ -75,7 +80,6 @@ static inline void mateye(const unsigned int n, double *a)
 void matpow_by_squaring(double *A, int n, int b, double *P)
 {
   double *TMP;
-  
   
   mateye(n, P);
   
@@ -162,27 +166,29 @@ void matexp_pade_fillmats(const unsigned int m, const unsigned int n, const unsi
   }
 }
 
-void matexp_pade(const unsigned int n, double *A, double *N, double *D)
+
+
+void matexp_pade(const unsigned int n, const unsigned int p, double *A, double *N, double *D)
 {
   int i;
   double *B, *C;
-
+  
   // Power of A
   B = calloc(n*n, sizeof(double));
   // Temporary storage for matrix multiplication
   C = malloc(n*n * sizeof(double));
-
+  
   assert(B != NULL);
   assert(C != NULL);
-
+  
   matcopy(n, A, C);
-
+  
   for (i=0; i<n*n; i++)
   {
     N[i] = 0.0;
     D[i] = 0.0;
   }
-
+  
   // Initialize N and D
   // Fill diagonal with 1
   i = 0;
@@ -196,7 +202,7 @@ void matexp_pade(const unsigned int n, double *A, double *N, double *D)
   
   
   // Fill N and D
-  for (i=1; i<=PADE_PQ; i++)
+  for (i=1; i<=p; i++)
   {
     // C = A*B
     if (i > 1)
