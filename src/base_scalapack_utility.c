@@ -31,11 +31,9 @@ SEXP R_PDGEMR2D(SEXP M, SEXP N, SEXP X, SEXP DESCX, SEXP CLDIM, SEXP DESCB, SEXP
   
   newRmat(C, INT(CLDIM, 0), INT(CLDIM, 1), "dbl");
   
-  
   Cpdgemr2d(INT(M), INT(N),
       REAL(X), IJ, IJ, INTEGER(DESCX),
       REAL(C), IJ, IJ, INTEGER(DESCB), INT(CTXT));
-  
   
   R_END;
   return C;
@@ -48,18 +46,18 @@ SEXP R_nbd(SEXP N, SEXP D)
 {
   R_INIT;
   int i, test;
-  const int n = INT(N, 0);
-  const int d = INT(D, 0);
+  const int n = INT(N);
+  const int d = INT(D);
   
   SEXP RET;
   newRvec(RET, 1, "int");
-  INT(RET, 0) = d;
+  INT(RET) = d;
   
   for (i=INT(RET, 0); i<=n; i++)
   {
     test = n % i;
     if (test == 0){
-      INT(RET, 0) = i;
+      INT(RET) = i;
       break;
     }
   }
