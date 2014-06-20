@@ -33,7 +33,7 @@ SEXP R_PDGESV(SEXP N, SEXP NRHS, SEXP MXLDIMS, SEXP A, SEXP DESCA, SEXP B, SEXP 
 {
   R_INIT;
   int i;
-  const int IJ = 1;
+  int IJ = 1;
   int * ipiv;
   double *A_cp;
   
@@ -74,7 +74,7 @@ SEXP R_PDGESV(SEXP N, SEXP NRHS, SEXP MXLDIMS, SEXP A, SEXP DESCA, SEXP B, SEXP 
 SEXP R_PDGETRI(SEXP A, SEXP DESCA)
 {
   R_INIT;
-  const int ij = 1;
+  int IJ = 1;
   
   SEXP RET, RET_NAMES, INFO, INV;
   
@@ -83,7 +83,7 @@ SEXP R_PDGETRI(SEXP A, SEXP DESCA)
   
   
   // Compute inverse
-  pdinv_(DBLP(A), &ij, &ij, INTP(DESCA), DBLP(INV), INTP(INFO));
+  pdinv_(DBLP(A), &IJ, &IJ, INTP(DESCA), DBLP(INV), INTP(INFO));
   
   
   // Manage return
@@ -205,7 +205,7 @@ SEXP R_PDGETRF(SEXP M, SEXP N, SEXP A, SEXP CLDIM, SEXP DESCA, SEXP LIPIV)
 {
   R_INIT;
   int *ipiv;
-  const int IJ = 1;
+  int IJ = 1;
   SEXP RET, RET_NAMES, INFO, C;
   
   newRvec(INFO, 1, "int");
@@ -217,7 +217,7 @@ SEXP R_PDGETRF(SEXP M, SEXP N, SEXP A, SEXP CLDIM, SEXP DESCA, SEXP LIPIV)
   
   INT(INFO, 0) = 0;
   
-  LIPIV = nonzero(LIPIV);
+  INT(LIPIV) = nonzero(INT(LIPIV));
   ipiv = (int *) R_alloc(INTP(LIPIV), sizeof(int));
   
   pdgetrf_(INTP(M), INTP(N), DBLP(C), &IJ, &IJ, INTP(DESCA), ipiv, INTP(INFO));
@@ -237,7 +237,7 @@ SEXP R_PDGETRF(SEXP M, SEXP N, SEXP A, SEXP CLDIM, SEXP DESCA, SEXP LIPIV)
 SEXP R_PDPOTRF(SEXP N, SEXP A, SEXP DESCA, SEXP UPLO)
 {
   R_INIT;
-  const int IJ = 1;
+  int IJ = 1;
   double *pt_A, *pt_C;
   SEXP RET, RET_NAMES, INFO, C;
   
@@ -266,7 +266,7 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
 {
   R_INIT;
   char uplo = 'U';
-  const int IJ = 1;
+  int IJ = 1;
   int i, j;
   int m, nz;
   int lwork, liwork, info;
@@ -390,7 +390,7 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
 SEXP R_PDLANGE(SEXP TYPE, SEXP M, SEXP N, SEXP A, SEXP DESCA)
 {
   R_INIT;
-  const int IJ = 1;
+  int IJ = 1;
   double *work;
   
   SEXP VAL;
@@ -407,7 +407,7 @@ SEXP R_PDLANGE(SEXP TYPE, SEXP M, SEXP N, SEXP A, SEXP DESCA)
 SEXP R_PDGECON(SEXP TYPE, SEXP M, SEXP N, SEXP A, SEXP DESCA)
 {
   R_INIT;
-  const int IJ = 1;
+  int IJ = 1;
   double* cpA;
   int info = 0;
   
@@ -442,7 +442,7 @@ SEXP R_PDTRCON(SEXP TYPE, SEXP UPLO, SEXP DIAG, SEXP N, SEXP A, SEXP DESCA)
   double tmp;
   int* iwork;
   int i, lwork, liwork, info = 0;
-  const int IJ = 1, in1 = -1;
+  int IJ = 1, in1 = -1;
   
   SEXP RET;
   newRvec(RET, 2, "dbl");

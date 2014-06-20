@@ -11,8 +11,8 @@
 SEXP R_PDCROSSPROD(SEXP UPLO, SEXP TRANS, SEXP A, SEXP DESCA, SEXP CLDIM, SEXP DESCC)
 {
   R_INIT;
-  const double alpha = 1.0;
-  const int IJ = 1;
+  double alpha = 1.0;
+  int IJ = 1;
   
   SEXP C;
   newRmat(C, INT(CLDIM, 0), INT(CLDIM, 1), "dbl");
@@ -28,7 +28,7 @@ SEXP R_PDCROSSPROD(SEXP UPLO, SEXP TRANS, SEXP A, SEXP DESCA, SEXP CLDIM, SEXP D
 
 SEXP R_PDCHTRI(SEXP UPLO, SEXP A, SEXP ALDIM, SEXP DESCA, SEXP CLDIM, SEXP DESCC)
 {
-  const int IJ = 1;
+  int IJ = 1;
   const int m = INTEGER(ALDIM)[0], n = INTEGER(ALDIM)[1];
   double *CPA;
   int info = 0;

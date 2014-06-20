@@ -1,6 +1,6 @@
 useDynLib(pbdBASE)
 
-import(methods, rlecuyer, pbdMPI, pbdSLAP, SEXPtools)
+import(methods, pbdMPI, pbdSLAP)
 
 # All internal functions
 exportPattern("^base\\.[[:alpha:]]+")

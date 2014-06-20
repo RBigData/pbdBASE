@@ -2,9 +2,6 @@
 #define __DMAT_MATEXP_H__
 
 
-#define PADE_PQ 6
-
-
 // ScaLAPACK functions
 void pdgemm_(char *transa, char *transb, int *m, int *n, int *k, double *alpha, double *a, int *ia, int *ja, int *desca, double *b, int *ib, int *jb, int *descb, double *beta, double *c, int *ic, int *jc, int *descc);
 void pdlacpy_(char *uplo, int *m, int *n, double *a, int *ia, int *ja, int *desca, double *b, int *ib, int *jb, int *descb);
@@ -22,6 +19,7 @@ void l2gpair_(int *i, int *j, int *gi, int *gj, int *desc, int *blacs);
 // Functions
 void dmat_matexp_pade(const unsigned int n, double *A, double *N, double *D);
 void matpow_by_squaring(double *A, int n, int b, double *P);
+void matexp_pade(const unsigned int n, const unsigned int p, double *A, double *N, double *D);
 
 void p_matexp_pade(double *A, int *desca, int p, double *N, double *D);
 void p_matpow_by_squaring(double *A, int *desca, int b, double *P);

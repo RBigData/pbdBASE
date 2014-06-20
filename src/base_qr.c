@@ -5,10 +5,7 @@
 // Copyright 2013, Schmidt
 
 #include <SEXPtools.h>
-#include "scalapack.h"
-
-#define MIN(a,b) (a<b?a:b)
-
+#include "base_global.h"
 
 /* Computing QR */
 SEXP R_PDGEQPF(SEXP TOL, SEXP M, SEXP N,
@@ -16,10 +13,10 @@ SEXP R_PDGEQPF(SEXP TOL, SEXP M, SEXP N,
 {
   R_INIT;
   int lwork = -1;
-  const int IJ = 1;
+  int IJ = 1;
   double *pt_ORG, *pt_COPY;
   double work = 0.0;
-  const double tmp = 0.0;
+  double tmp = 0.0;
   double *p_work;
   const int ltau = MIN(INT(M, 0), INT(N, 0));
   SEXP RET, RET_NAMES, INFO, A_OUT, TAU, IPIV, RANK;
@@ -70,10 +67,10 @@ SEXP R_PDORMQR(SEXP SIDE, SEXP TRANS, SEXP M, SEXP N, SEXP K,
   R_INIT;
   int i, *pt_ALDIM = INTEGER(ALDIM), *pt_BLDIM = INTEGER(BLDIM);
   int lwork = -1;
-  const int IJ = 1;
+  int IJ = 1;
   double *pt_ORG, *pt_COPY, *A_CPY;
   double work = 0.0;
-  const double tmp = 0.0;
+  double tmp = 0.0;
   double *p_work;
   SEXP RET, RET_NAMES, INFO, B_OUT;
   
@@ -135,10 +132,10 @@ SEXP R_PDORGQR(SEXP M, SEXP N, SEXP K, SEXP A, SEXP ALDIM, SEXP DESCA, SEXP TAU)
   R_INIT;
   int i, *pt_ALDIM = INTEGER(ALDIM);
   int lwork = -1;
-  const int IJ = 1;
+  int IJ = 1;
   double *pt_ORG, *pt_COPY;
   double work = 0.0;
-  const double tmp = 0.0;
+  double tmp = 0.0;
   double *p_work;
   SEXP RET, RET_NAMES, INFO, A_OUT;
   

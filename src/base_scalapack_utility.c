@@ -11,8 +11,8 @@
 SEXP R_PDLAPRNT(SEXP M, SEXP N, SEXP A, SEXP DESCA, SEXP CMATNM, SEXP NOUT)
 {
   double work[INTEGER(DESCA)[8]];
-  const int IJ = 1;
-  const int SRC = 0;
+  int IJ = 1;
+  int SRC = 0;
   
   bprnt_(INTEGER(M), INTEGER(N), REAL(A), &IJ, &IJ,
          INTEGER(DESCA), &SRC, &SRC, CHARPT(CMATNM, 0),
@@ -26,7 +26,7 @@ SEXP R_PDLAPRNT(SEXP M, SEXP N, SEXP A, SEXP DESCA, SEXP CMATNM, SEXP NOUT)
 SEXP R_PDGEMR2D(SEXP M, SEXP N, SEXP X, SEXP DESCX, SEXP CLDIM, SEXP DESCB, SEXP CTXT)
 {
   R_INIT;
-  const int IJ = 1;
+  int IJ = 1;
   SEXP C;
   
   newRmat(C, INT(CLDIM, 0), INT(CLDIM, 1), "dbl");

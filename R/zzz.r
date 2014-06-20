@@ -18,10 +18,6 @@
     }
   }
 
-  if(! is.loaded("slap_blacs_gridinit", PACKAGE = "pbdSLAP")){
-    library.dynam("pbdSLAP", "pbdSLAP", libname)
-  }
-
   library.dynam("pbdBASE", pkgname, libname)
   invisible()
 } # End of .onLoad().

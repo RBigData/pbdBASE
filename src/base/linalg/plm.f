@@ -745,7 +745,7 @@
 *     ..
 *     .. Array Arguments ..
       INTEGER            DESCA( 9 ), DESCB( 9 ), IPIV( * )
-      DOUBLE PRECISION   A( * ), B( * ), WORK( * ),
+      DOUBLE PRECISION   A( * ), B( * ), WORK( * ), EFF(*),
      $                   FT ( * ), RSD( * ), TAU( * )
 !
 !     Removed the massive explanation because I got tired of looking

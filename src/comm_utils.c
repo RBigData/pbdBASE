@@ -1,5 +1,6 @@
 #include <R.h>
 #include <Rinternals.h>
+#include "base_global.h"
 
 
 SEXP COMM_STOP(char *msg)

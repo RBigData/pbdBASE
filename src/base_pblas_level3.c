@@ -12,9 +12,9 @@
 SEXP R_PDTRAN(SEXP M, SEXP N, SEXP A, SEXP DESCA, SEXP CLDIM, SEXP DESCC)
 {
   R_INIT;
-  const int IJ = 1;
-  const double one = 1.0;
-  const double zero = 0.0;
+  int IJ = 1;
+  double one = 1.0;
+  double zero = 0.0;
   
   SEXP C;
   newRmat(C, INT(CLDIM, 0), INT(CLDIM, 1), "dbl");
@@ -35,9 +35,9 @@ SEXP R_PDGEMM(SEXP TRANSA, SEXP TRANSB, SEXP M, SEXP N, SEXP K,
     SEXP A, SEXP DESCA, SEXP B, SEXP DESCB, SEXP CLDIM, SEXP DESCC)
 {
   R_INIT;
-  const double alpha = 1.0;
-  const double beta = 0.0;
-  const int IJ = 1;
+  double alpha = 1.0;
+  double beta = 0.0;
+  int IJ = 1;
   
   SEXP C;
   newRmat(C, INT(CLDIM, 0), INT(CLDIM, 1), "dbl");

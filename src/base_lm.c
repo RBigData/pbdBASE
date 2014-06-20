@@ -6,7 +6,7 @@
 
 #include <SEXPtools.h>
 
-#define MIN(a,b) (a<b?a:b)
+#include "base_global.h"
 
 
 /* For computing LLS solution, either over or    under-determined. */
@@ -20,10 +20,10 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
 {
   R_INIT;
   int lwork = -1;
-  const int IJ = 1;
+  int IJ = 1;
   int i;
   double *pt_ORG, *pt_COPY, *pt_EFF, *pt_FT, *pt_RSD, *p_work;
-  const double tmp = 0.0;
+  double tmp = 0.0;
   double work = 0.0;
   
   char trans = 'N'; // If trans='T', expect all hell to break loose
