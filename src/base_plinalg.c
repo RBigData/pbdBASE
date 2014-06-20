@@ -36,7 +36,7 @@ SEXP R_PDCHTRI(SEXP UPLO, SEXP A, SEXP ALDIM, SEXP DESCA, SEXP CLDIM, SEXP DESCC
   SEXP C;
   PROTECT(C = allocMatrix(REALSXP, INTEGER(CLDIM)[0], INTEGER(CLDIM)[1]));
   
-  CPA = R_alloc(m*n, sizeof(double));
+  CPA = malloc(m*n * sizeof(double));
   memcpy(CPA, REAL(A), m*n*sizeof(double));
   
   pdchtri_(CHARPT(UPLO, 0), CPA, &IJ, &IJ, INTEGER(DESCA), 
@@ -48,6 +48,8 @@ SEXP R_PDCHTRI(SEXP UPLO, SEXP A, SEXP ALDIM, SEXP DESCA, SEXP CLDIM, SEXP DESCC
     //FIXME replace with appropriate COMM_WARN
     Rprintf("INFO = %d\n", info);
   }
+  
+  free(CPA);
   
   UNPROTECT(1);
   return(C);

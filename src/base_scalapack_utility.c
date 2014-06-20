@@ -16,7 +16,7 @@ SEXP R_PDLAPRNT(SEXP M, SEXP N, SEXP A, SEXP DESCA, SEXP CMATNM, SEXP NOUT)
   
   bprnt_(INTEGER(M), INTEGER(N), REAL(A), &IJ, &IJ,
          INTEGER(DESCA), &SRC, &SRC, CHARPT(CMATNM, 0),
-         INTEGER(NOUT), &work);
+         INTEGER(NOUT), work);
   
   return RNULL;
 }
@@ -32,9 +32,9 @@ SEXP R_PDGEMR2D(SEXP M, SEXP N, SEXP X, SEXP DESCX, SEXP CLDIM, SEXP DESCB, SEXP
   newRmat(C, INT(CLDIM, 0), INT(CLDIM, 1), "dbl");
   
   
-  Cpdgemr2d(INTEGER(M)[0], INTEGER(N)[0],
+  Cpdgemr2d(INT(M), INT(N),
       REAL(X), IJ, IJ, INTEGER(DESCX),
-      REAL(C), IJ, IJ, INTEGER(DESCB), INTEGER(CTXT)[0]);
+      REAL(C), IJ, IJ, INTEGER(DESCB), INT(CTXT));
   
   
   R_END;

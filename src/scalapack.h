@@ -64,12 +64,7 @@ void bprnt_(int *m, int *n, double *a, int *ia, int *ja, int *desca,
 // REDIST
 void pdgemr2d_(int *m, int *n, double *a, int *ia, int *ja, int *desca,
   double *b, int *ib, int *jb, int *descb, int *ictxt);
-
-
-
-
-
-
-
+void Cpdgemr2d(int m, int n, double *a, int ia, int ja, int *desca,
+  double *b, int ib, int jb, int *descb, int ictxt);
 
 
