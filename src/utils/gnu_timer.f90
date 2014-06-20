@@ -21,7 +21,7 @@ subroutine timer(time, onoff)
   
   
   ! turn it on
-  if (onoff.ge.1) then
+  if (onoff >= 1) then
     call system_clock(time)
   ! turn it off
   else

@@ -62,12 +62,15 @@ UTILS = \
     utils/signs.o \
     utils/sorts.o \
     utils/strings.o \
+    utils/swaps.o
+
+
+### Unused UTILS
+EXPERIMENTAL = \
     utils/subset.o \
     utils/subset_special.o \
-    utils/subset_utils.o \
-    utils/swaps.o \
-    utils/interfaces.o \
-    utils/test.o
+    utils/subset_utils.o
+
 
 
 UTILS_OBJS = \
@@ -77,7 +80,7 @@ UTILS_OBJS = \
     base/utils/indices.o \
     base/utils/putil.o \
     base/utils/scale.o \
-    base/utils/special.o \
+    base/utils/special.o
 
 
 R_OBJS = \
@@ -120,9 +123,9 @@ all: $(SHLIB)
 # Fortran module dependencies
 utils/quicksort_utils.o: utils/swaps.o
 utils/sorts.o: utils/quicksort_utils.o utils/swaps.o
-utils/subset_special.o: utils/sorts.o
-utils/subset_utils.o: utils/subset_utils.o utils/sorts.o
-utils/subset.o: utils/subset_special.o utils/subset_utils.o
+#utils/subset_special.o: utils/sorts.o
+#utils/subset_utils.o: utils/subset_utils.o utils/sorts.o
+#utils/subset.o: utils/subset_special.o utils/subset_utils.o
 
 
 $(SHLIB): $(OBJECTS)
