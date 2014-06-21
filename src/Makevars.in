@@ -110,22 +110,24 @@ USER_CONF = Makeconf
 
 
 ### Start making here.
-all: $(SHLIB)
-	@echo "SLAP_LDFLAGS = $(SLAP_LDFLAGS)" > $(USER_CONF)
-	@echo "SPMD_CPPFLAGS = $(SPMD_CPPFLAGS)" >> $(USER_CONF)
-	@echo "SPMD_LDFLAGS = $(SPMD_LDFLAGS)" >> $(USER_CONF)
-	@echo "PKG_CPPFLAGS = $(PKG_CPPFLAGS)" >> $(USER_CONF)
-	@echo "PKG_CFLAGS = $(PKG_CFLAGS)" >> $(USER_CONF)
-	@echo "PKG_FFLAGS = $(PKG_FFLAGS)" >> $(USER_CONF)
-	@echo "PKG_LIBS = $(PKG_LIBS)" >> $(USER_CONF)
+all: Makeconf $(SHLIB)
+
+Makeconf:
+	echo "SEXPTOOLS_CPPFLAGS = $(SEXPTOOLS_CPPFLAGS)" > $(USER_CONF)
+	echo "SEXPTOOLS_LDFLAGS = $(SEXPTOOLS_LDFLAGS)" >> $(USER_CONF)
+	echo "SLAP_LDFLAGS = $(SLAP_LDFLAGS)" >> $(USER_CONF)
+	echo "SPMD_CPPFLAGS = $(SPMD_CPPFLAGS)" >> $(USER_CONF)
+	echo "SPMD_LDFLAGS = $(SPMD_LDFLAGS)" >> $(USER_CONF)
+	echo "PKG_CPPFLAGS = $(PKG_CPPFLAGS)" >> $(USER_CONF)
+	echo "PKG_CFLAGS = $(PKG_CFLAGS)" >> $(USER_CONF)
+	echo "PKG_FFLAGS = $(PKG_FFLAGS)" >> $(USER_CONF)
+	echo "PKG_LIBS = $(PKG_LIBS)" >> $(USER_CONF)
 
 
 # Fortran module dependencies
 utils/quicksort_utils.o: utils/swaps.o
 utils/sorts.o: utils/quicksort_utils.o utils/swaps.o
-#utils/subset_special.o: utils/sorts.o
-#utils/subset_utils.o: utils/subset_utils.o utils/sorts.o
-#utils/subset.o: utils/subset_special.o utils/subset_utils.o
+utils/subset.o: utils/subset_special.o utils/subset_utils.o
 
 
 $(SHLIB): $(OBJECTS)

@@ -1,6 +1,10 @@
 ### Rscript
 R_SCMD = ${R_HOME}/bin${R_ARCH_BIN}/Rscript -e
 
+### Get SEXPtools flags.
+SEXPTOOLS_CPPFLAGS=$(shell ${R_SCMD} "SEXPtools:::cppflags()")
+SEXPTOOLS_LDFLAGS=$(shell ${R_SCMD} "SEXPtools:::ldflags()")
+
 ### Get ScaLAPACK information from "pbdSLAP".
 SLAP_LDFLAGS = $(shell ${R_SCMD} \
   "source('../R/get_lib.r');get.lib('R_SLAP','"${R_ARCH}"')")
@@ -14,43 +18,65 @@ MPI_LIB = $(shell ${R_SCMD} \
   "source('../R/get_conf.r');get.conf('MPI_LIB','"${R_ARCH}"')")
 
 ### Setup R package flags and substitute by configure for ${MPI_...}.
-PKG_CPPFLAGS = -I"$(MPI_INCLUDE)"
-PKG_CFLAGS = -w
-PKG_FFLAGS = -w
+PKG_CPPFLAGS = -I"$(MPI_INCLUDE)" $(SEXPTOOLS_CPPFLAGS)
+PKG_CFLAGS = $(SHLIB_OPENMP_CFLAGS) -w
+PKG_FFLAGS = $(SHLIB_OPENMP_FFLAGS) -w
+PKG_FCFLAGS = $(SHLIB_OPENMP_FCFLAGS) -w
 ### Order is matter.
-PKG_LIBS = "$(SLAP_LDFLAGS)" $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(MPI_LIB)
+PKG_LIBS = "$(SLAP_LDFLAGS)" $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) \
+           "$(MPI_LIB)" $(SEXPTOOLS_LDFLAGS) $(SHLIB_OPENMP_CFLAGS)
 
 ### Setup R source code and objects.
-R_SRCS_C = $(wildcard *.c) $(wildcard export_blacs/*.c) $(wildcard base/*.c) \
-           $(wildcard base/expm/*.c) $(wildcard base/util/*.c) \
-           $(wildcard Rtools/*.c)
-R_SRCS_F = $(wildcard *.f) $(wildcard base/*.f) \
-           $(wildcard base/util/*.f)
-R_OBJS = $(R_SRCS_C:.c=.o) $(R_SRCS_F:.f=.o)
+R_SRCS_C = $(wildcard *.c) \
+           $(wildcard base/*.c) \
+           $(wildcard base/expm/*.c) \
+           $(wildcard base/utils/*.c) \
+           $(wildcard export_blacs/*.c) \
+           $(wildcard utils/*.c)
+R_SRCS_F = $(wildcard *.f) \
+           $(wildcard base/*.f) \
+           $(wildcard base/linalg/*.f) \
+           $(wildcard base/utils/*.f)
+R_SRCS_F90 = $(wildcard base/linalg/*.f90) \
+             $(wildcard base/stats/*.f90) \
+             $(wildcard base/utils/*.f90) \
+             $(wildcard utils/*.f90)
+
+R_OBJS = $(R_SRCS_C:.c=.o) $(R_SRCS_F:.f=.o) $(R_SRCS_F90:.f90=.o)
 OBJECTS = $(R_OBJS)
 
 ### For user configuration.
 USER_CONF = Makeconf
 
 ### Start making here.
-all: $(SHLIB)
-	@$(ECHO) 'SLAP_LDFLAGS = $(SLAP_LDFLAGS)' > $(USER_CONF)
-	@$(ECHO) 'MPI_ROOT = $(MPI_ROOT)' >> $(USER_CONF)
-	@$(ECHO) 'MPI_INCLUDE = $(MPI_INCLUDE)' >> $(USER_CONF)
-	@$(ECHO) 'MPI_LIB = $(MPI_LIB)' >> $(USER_CONF)
-	@$(ECHO) 'PKG_CPPFLAGS = $(PKG_CPPFLAGS)' >> $(USER_CONF)
-	@$(ECHO) 'PKG_CFLAGS = $(PKG_CFLAGS)' >> $(USER_CONF)
-	@$(ECHO) 'PKG_FFLAGS = $(PKG_FFLAGS)' >> $(USER_CONF)
-	@$(ECHO) 'PKG_LIBS = $(PKG_LIBS)' >> $(USER_CONF)
+all: Makeconf $(SHLIB)
+
+Makeconf:
+	$(ECHO) 'SEXPTOOLS_CPPFLAGS = $(SEXPTOOLS_CPPFLAGS)' > $(USER_CONF)
+	$(ECHO) 'SEXPTOOLS_LDFLAGS = $(SEXPTOOLS_LDFLAGS)' >> $(USER_CONF)
+	$(ECHO) 'SLAP_LDFLAGS = $(SLAP_LDFLAGS)' >> $(USER_CONF)
+	$(ECHO) 'MPI_ROOT = $(MPI_ROOT)' >> $(USER_CONF)
+	$(ECHO) 'MPI_INCLUDE = $(MPI_INCLUDE)' >> $(USER_CONF)
+	$(ECHO) 'MPI_LIB = $(MPI_LIB)' >> $(USER_CONF)
+	$(ECHO) 'PKG_CPPFLAGS = $(PKG_CPPFLAGS)' >> $(USER_CONF)
+	$(ECHO) 'PKG_CFLAGS = $(PKG_CFLAGS)' >> $(USER_CONF)
+	$(ECHO) 'PKG_FFLAGS = $(PKG_FFLAGS)' >> $(USER_CONF)
+	$(ECHO) 'PKG_LIBS = $(PKG_LIBS)' >> $(USER_CONF)
+
+# Fortran module dependencies
+utils/quicksort_utils.o: utils/swaps.o
+utils/sorts.o: utils/quicksort_utils.o utils/swaps.o
+utils/subset.o: utils/subset_special.o utils/subset_utils.o
 
 $(SHLIB): $(OBJECTS)
 
 clean:
 	@rm -rf *.o *.d *.rc *.so *.dll *.dylib *.a *.lib \
-                Makedeps Makevars $(USER_CONF) $(SHLIB) $(OBJECTS) \
-                export_blacs/*.o \
-                base/*.o \
-                base/expm/*.o \
-                base/util/*.o \
-                base/Rtools.o
-
+	        Makedeps Makevars $(USER_CONF) $(SHLIB) $(OBJECTS) \
+	        base/*.o \
+	        base/expm/*.o \
+	        base/linalg/*.o \
+	        base/stats/*.o \
+	        base/utils/*.o \
+        export_blacs/*.o \
+	        utils/*.o

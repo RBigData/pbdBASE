@@ -3,6 +3,7 @@
 rm -rf ./chm
 rm -rf ./config.*
 rm -rf ./autom4te.cache
+rm -rf ./Makeconf
 rm -rf ./src/Makevars
 rm -rf ./src/Makedeps
 rm -rf ./src/Makeconf
