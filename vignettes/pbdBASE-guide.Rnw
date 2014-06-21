@@ -43,7 +43,7 @@ University of Tennessee}
 
 \newpage
 \phantomsection
-\bibliography{./include/pbdBASE.bib}
+\bibliography{./include/pbdBASE}
 \bibliographystyle{plainnat}
 
 \end{document}
