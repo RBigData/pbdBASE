@@ -96,7 +96,8 @@ R_OBJS = \
     base_qr.o \
     base_scalapack.o \
     base_scalapack_utility.o \
-    base_variance.o
+    base_variance.o \
+    other.o
 
 
 OBJECTS = $(BASE_OBJS) $(EXPM_OBJS) \
