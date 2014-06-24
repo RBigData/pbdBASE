@@ -32,7 +32,6 @@ SEXP R_NUMROC(SEXP N, SEXP NB, SEXP IPROC, SEXP NPROCS)
 SEXP R_PDGESV(SEXP N, SEXP NRHS, SEXP MXLDIMS, SEXP A, SEXP DESCA, SEXP B, SEXP DESCB)
 {
   R_INIT;
-  int i;
   int IJ = 1;
   int * ipiv;
   double *A_cp;
@@ -157,7 +156,6 @@ SEXP R_PDGESVD(SEXP M, SEXP N, SEXP ASIZE, SEXP A, SEXP DESCA,
 SEXP R_PDSYEV(SEXP JOBZ, SEXP UPLO, SEXP N, SEXP A, SEXP DESCA, SEXP ZLDIM, SEXP DESCZ)
 {
   R_INIT;
-  double *A_OUT;
   SEXP RET, RET_NAMES, INFO, W, Z;
   int temp_IJ = 1, temp_lwork = -1;
   double temp_A = 0, temp_work = 0, *WORK;
@@ -239,7 +237,6 @@ SEXP R_PDPOTRF(SEXP N, SEXP A, SEXP DESCA, SEXP UPLO)
 {
   R_INIT;
   int IJ = 1;
-  double *pt_A, *pt_C;
   SEXP RET, RET_NAMES, INFO, C;
   
   newRvec(INFO, 1, "int");
@@ -268,13 +265,12 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
   R_INIT;
   char uplo = 'U';
   int IJ = 1;
-  int i, j;
+  int i;
   int m, nz;
   int lwork, liwork, info;
   int descz[9], ldm[2], blacs[5];
   int tmp_liwork;
   int ownany;
-  int unpt;
   int *iwork, *ifail, *iclustr;
   
   double tmp_lwork;
@@ -282,7 +278,7 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
   double *w, *z, *gap;
   double *a;
   
-  SEXP RET, RET_NAMES, W, Z, IFAIL, M;
+  SEXP RET, RET_NAMES, W, Z, M;
   
   
   // grid and local information
@@ -350,7 +346,7 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
   for (i=0; i<m; i++)
     DBL(W, i) = w[i];
   
-  
+/*  SEXP IFAIL;*/
 /*    PROTECT(IFAIL = allocVector(INTSXP, m));*/
 /*    for (i=0; i<m; i++)*/
 /*        INTEGER(IFAIL)[0] = ifail[i];*/
@@ -402,7 +398,6 @@ SEXP R_PDLANGE(SEXP TYPE, SEXP M, SEXP N, SEXP A, SEXP DESCA)
 {
   R_INIT;
   int IJ = 1;
-  double *work;
   
   SEXP VAL;
   newRvec(VAL, 1, "dbl");
@@ -452,7 +447,7 @@ SEXP R_PDTRCON(SEXP TYPE, SEXP UPLO, SEXP DIAG, SEXP N, SEXP A, SEXP DESCA)
   double* work;
   double tmp;
   int* iwork;
-  int i, lwork, liwork, info = 0;
+  int lwork, liwork, info = 0;
   int IJ = 1, in1 = -1;
   
   SEXP RET;

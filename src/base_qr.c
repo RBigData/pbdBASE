@@ -14,7 +14,6 @@ SEXP R_PDGEQPF(SEXP TOL, SEXP M, SEXP N,
   R_INIT;
   int lwork = -1;
   int IJ = 1;
-  double *pt_ORG, *pt_COPY;
   double work = 0.0;
   double tmp = 0.0;
   double *p_work;
