@@ -1,6 +1,7 @@
 2014-6-24:
   * Fixed compiler warnings generated from calling Fortran routines.
   * Cleaned up R wrappers.
+  * Fixed memory/gc issue in R_PDGELS().
 
 2014-6-20:
   * Nasty ICTXT bug in descinit (notably affecting Cpdgemr2d) fixed.
