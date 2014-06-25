@@ -25,6 +25,11 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
   double *pt_ORG, *pt_COPY, *pt_EFF, *pt_FT, *pt_RSD, *p_work;
   double tmp = 0.0;
   double work = 0.0;
+  int NN = INT(N);
+  int DESCA_CP[9];
+  
+  for (i=0; i<9; i++)
+    DESCA_CP[i] = INT(DESCA, i);
   
   char trans = 'N'; // If trans='T', expect all hell to break loose
   
@@ -68,8 +73,8 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
   
   /* workspace query */
   rpdgels_(REAL(TOL), &trans,
-    INTP(M), INTP(N), INTP(NRHS),
-    &tmp, &IJ, &IJ, INTP(DESCA),
+    INTP(M), &NN, INTP(NRHS),
+    &tmp, &IJ, &IJ, DESCA_CP,
     &tmp, &IJ, &IJ, INTP(DESCB),
     &tmp, &tmp, &tmp,
     &tmp, &work, &lwork,
@@ -85,8 +90,8 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
   
   /*    and compute LLS solution */
   rpdgels_(REAL(TOL), &trans,
-    INTP(M), INTP(N), INTP(NRHS),
-    REAL(A_OUT), &IJ, &IJ, INTP(DESCA),
+    INTP(M), &NN, INTP(NRHS),
+    REAL(A_OUT), &IJ, &IJ, DESCA_CP,
     REAL(B_OUT), &IJ, &IJ, INTP(DESCB),
     REAL(EFF), REAL(FT), REAL(RSD),
     REAL(TAU), p_work, &lwork,
