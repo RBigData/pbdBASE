@@ -366,12 +366,12 @@ base.rpdgemr2d <- function(x, descx, descy)
         storage.mode(x) <- "double"
     
     ret <- .Call("R_PDGEMR2D",
-                             as.integer(m), as.integer(n),
-                             x, as.integer(descx),
-                             as.integer(ldimy), as.integer(descy),
-                             as.integer(0), # context 0 is always passed since pdgemr2d 
-                             # requires the grids to have at least 1 processor in common
-                             PACKAGE="pbdBASE")
+                 as.integer(m), as.integer(n),
+                 x, as.integer(descx),
+                 as.integer(ldimy), as.integer(descy),
+                 as.integer(0), # context 0 is always passed since pdgemr2d 
+                 # requires the grids to have at least 1 processor in common
+                 PACKAGE="pbdBASE")
     
     if (!base.ownany(dim=c(m, n), bldim=descy[5L:6L], ICTXT=descy[2L]))
         ret <- matrix(0.0, 1L, 1L)

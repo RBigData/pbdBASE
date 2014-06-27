@@ -3,6 +3,7 @@
 rm -rf ./chm
 rm -rf ./config.*
 rm -rf ./autom4te.cache
+rm -rf ./Makeconf
 rm -rf ./src/Makevars
 rm -rf ./src/Makedeps
 rm -rf ./src/Makeconf
@@ -14,12 +15,10 @@ rm -rf ./src/*.dll
 rm -rf ./src/*.a
 rm -rf ./src/*.rc
 rm -rf ./src/*.rds
-rm -rf ./src/export_blacs/*.o
-rm -rf ./src/base/*.o
-rm -rf ./src/base/expm/*.o
-rm -rf ./src/base/util/*.o
-rm -rf ./src/Rtools/*.o
-rm -rf ./src/Rtools/*.so
+
+find ./ -type f -name '*.o' -delete
+find ./ -type f -name '*.mod' -delete
+
 rm -rf ./src-*
 rm -rf ./inst/etc*
 rm -rf ./man/*.pdf

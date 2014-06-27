@@ -4,61 +4,67 @@
 
 // Copyright 2013, Schmidt
 
-#include <R.h>
-#include <Rinternals.h>
 #include "base_global.h"
+#include <SEXPtools.h>
+
 
 SEXP R_PDLAPRNT(SEXP M, SEXP N, SEXP A, SEXP DESCA, SEXP CMATNM, SEXP NOUT)
 {
-    double work[INTEGER(DESCA)[8]];
-    const int IJ = 1;
-    const int SRC = 0;
-    
-    F77_CALL(bprnt)(INTEGER(M), INTEGER(N), REAL(A), &IJ, &IJ,
-        INTEGER(DESCA), &SRC, &SRC, CHARPT(CMATNM, 0),
-        INTEGER(NOUT), &work);
-    
-    return(R_NilValue);
-} /* End of R_PDLAPRNT(). */
+  double work[INTEGER(DESCA)[8]];
+  int IJ = 1;
+  int SRC = 0;
+  
+  bprnt_(INTEGER(M), INTEGER(N), REAL(A), &IJ, &IJ,
+         INTEGER(DESCA), &SRC, &SRC, CHARPT(CMATNM, 0),
+         INTEGER(NOUT), work);
+  
+  return RNULL;
+}
 
 
 
 SEXP R_PDGEMR2D(SEXP M, SEXP N, SEXP X, SEXP DESCX, SEXP CLDIM, SEXP DESCB, SEXP CTXT)
 {
-    const int IJ = 1;
-    SEXP B;
-    
-    PROTECT(B = allocMatrix(REALSXP, INTEGER(CLDIM)[0], INTEGER(CLDIM)[1]));
-    
-    Cpdgemr2d(INTEGER(M)[0], INTEGER(N)[0],
-        REAL(X), IJ, IJ, INTEGER(DESCX),
-        REAL(B), IJ, IJ, INTEGER(DESCB), INTEGER(CTXT)[0]);
-    
-    UNPROTECT(1);
-    return(B);
-} /* End of R_PDGEMR2D(). */
+  R_INIT;
+  int IJ = 1;
+  SEXP C;
+  
+  newRmat(C, INT(CLDIM, 0), INT(CLDIM, 1), "dbl");
+  
+  Cpdgemr2d(INT(M), INT(N),
+      REAL(X), IJ, IJ, INTEGER(DESCX),
+      REAL(C), IJ, IJ, INTEGER(DESCB), INT(CTXT));
+  
+  R_END;
+  return C;
+}
 
 
 
 // next best divisor function
 SEXP R_nbd(SEXP N, SEXP D)
 {
-    int i, test;
-    
-    SEXP RET;
-    PROTECT(RET = allocVector(INTSXP, 1));
-    INTEGER(RET)[0] = INTEGER(D)[0];
-    
-    for (i=INTEGER(RET)[0]; i<=INTEGER(N)[0]; i++){
-        test = INTEGER(N)[0] % i;
-        if (test == 0){
-            INTEGER(RET)[0] = i;
-            break;
-        }
+  R_INIT;
+  int i, test;
+  const int n = INT(N);
+  const int d = INT(D);
+  
+  SEXP RET;
+  newRvec(RET, 1, "int");
+  INT(RET) = d;
+  
+  for (i=INT(RET, 0); i<=n; i++)
+  {
+    test = n % i;
+    if (test == 0){
+      INT(RET) = i;
+      break;
     }
-    
-    UNPROTECT(1);
-    return RET;
+  }
+  
+  
+  R_END;
+  return RET;
 }
 
 

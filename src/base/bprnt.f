@@ -334,4 +334,4 @@
 *
 *     End of PDLAPRNT
 *
-      END
+      END SUBROUTINE

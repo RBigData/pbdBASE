@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// Copyright 2013, Schmidt
+// Copyright 2013-2014, Schmidt
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,23 +17,27 @@
 
 #include "matexp.h"
 
+
 void dgemm_(char *transa, char *transb, int *m, int *n, int *k, double *alpha, double *a, int *lda, double *b, int *ldb, double *beta, double *c, int *ldc);
 void dlacpy_(char *uplo, int *m, int *n, double *a, int *lda, double *b, int *ldb);
 
+
+
 // C = A * B for square matrices
-static inline void matprod(const unsigned int n, double *a, double *b, double *c)
+static void matprod(int n, double *a, double *b, double *c)
 {
   char trans = 'N';
-  const double one = 1.0, zero = 0.0;
-
+  double one = 1.0, zero = 0.0;
+  
   dgemm_(&trans, &trans, &n, &n, &n, &one, a, &n, b, &n, &zero, c, &n);
 }
 
-// Copy A ONTO B, i.e. B = A
-static inline void matcopy(const unsigned int n, double *A, double *B)
-{
-  const char uplo = 'A';
 
+// Copy A ONTO B, i.e. B = A
+static inline void matcopy(int n, double *A, double *B)
+{
+  char uplo = 'A';
+  
   dlacpy_(&uplo, &n, &n, A, &n, B, &n);
 }
 
@@ -41,11 +45,11 @@ static inline void matcopy(const unsigned int n, double *A, double *B)
 static inline void matzero(const unsigned int n, double *a)
 {
   int i;
-
-  #if defined( _OPENMP_SUPPORT_SIMD)
-  #pragma omp for simd
-  #endif
+  
   {
+    #if defined(_OPENMP_SUPPORT_SIMD)
+    #pragma omp for simd
+    #endif
     for (i=0; i<n*n; i++)
       a[i] = 0.0;
   }
@@ -54,22 +58,17 @@ static inline void matzero(const unsigned int n, double *a)
 // Identity matrix
 static inline void mateye(const unsigned int n, double *a)
 {
-  int i, j;
-
-  #if defined( _OPENMP_SUPPORT_SIMD)
-  #pragma omp for simd
-  #endif
+  int i;
+  
+  matzero(n, a);
+  
+  // Fill diagonal with 1
+  i = 0;
+  while (i < n*n)
   {
-    matzero(n, a);
-
-    // Fill diagonal with 1
-    i = 0;
-    while (i < n*n)
-    {
-      a[i] = 1.0;
-
-      i += n+1;
-    }
+    a[i] = 1.0;
+    
+    i += n+1;
   }
 }
 
@@ -80,27 +79,24 @@ static inline void mateye(const unsigned int n, double *a)
 // P = A^b
 void matpow_by_squaring(double *A, int n, int b, double *P)
 {
-  int i, j;
-  double tmp, tmpj;
   double *TMP;
-
-
+  
   mateye(n, P);
-
+  
   // Trivial cases
   if (b == 0)
     return;
-
+  
   if (b == 1)
   {
     matcopy(n, A, P);
     return;
   }
-
-
+  
+  
   // General case
   TMP = malloc(n*n*sizeof(double));
-
+  
   while (b)
   {
     if (b&1)
@@ -108,12 +104,12 @@ void matpow_by_squaring(double *A, int n, int b, double *P)
       matprod(n, P, A, TMP);
       matcopy(n, TMP, P);
     }
-
+    
     b >>=1;
     matprod(n, A, A, TMP);
     matcopy(n, TMP, A);
   }
-
+  
   free(TMP);
 }
 
@@ -136,8 +132,8 @@ void matexp_pade_fillmats(const unsigned int m, const unsigned int n, const unsi
   int j;
   const double tmp = matexp_pade_coefs[i];
   double tmpj;
-
-
+  
+  
   if (SGNEXP(-1, i) == 1)
   {
     for (j=0; j<m*n; j++)
@@ -145,7 +141,7 @@ void matexp_pade_fillmats(const unsigned int m, const unsigned int n, const unsi
       // B = C
       tmpj = C[j];
       B[j] = tmpj;
-
+      
       tmpj *= tmp;
       // N = pade_coef[i] * C
       N[j] += tmpj;
@@ -160,7 +156,7 @@ void matexp_pade_fillmats(const unsigned int m, const unsigned int n, const unsi
       // B = C
       tmpj = C[j];
       B[j] = tmpj;
-
+      
       tmpj *= tmp;
       // N = pade_coef[i] * C
       N[j] += tmpj;
@@ -170,55 +166,52 @@ void matexp_pade_fillmats(const unsigned int m, const unsigned int n, const unsi
   }
 }
 
-void matexp_pade(const unsigned int n, double *A, double *N, double *D)
+
+
+void matexp_pade(const unsigned int n, const unsigned int p, double *A, double *N, double *D)
 {
   int i;
   double *B, *C;
-
+  
   // Power of A
   B = calloc(n*n, sizeof(double));
   // Temporary storage for matrix multiplication
   C = malloc(n*n * sizeof(double));
-
+  
   assert(B != NULL);
   assert(C != NULL);
-
+  
   matcopy(n, A, C);
-
+  
   for (i=0; i<n*n; i++)
   {
     N[i] = 0.0;
     D[i] = 0.0;
   }
-
+  
   // Initialize N and D
-  #if defined( _OPENMP_SUPPORT_SIMD)
-  #pragma omp for simd
-  #endif
+  // Fill diagonal with 1
+  i = 0;
+  while (i < n*n)
   {
-    // Fill diagonal with 1
-    i = 0;
-    while (i < n*n)
-    {
-      N[i] = 1.0;
-      D[i] = 1.0;
-
-      i += n+1;
-    }
+    N[i] = 1.0;
+    D[i] = 1.0;
+    
+    i += n+1;
   }
-
-
+  
+  
   // Fill N and D
-  for (i=1; i<=13; i++)
+  for (i=1; i<=p; i++)
   {
     // C = A*B
     if (i > 1)
       matprod(n, A, B, C);
-
+      
     // Update matrices
     matexp_pade_fillmats(n, n, i, N, D, B, C);
   }
-
+  
   free(B);
   free(C);
 }

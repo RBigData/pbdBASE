@@ -12,12 +12,12 @@ base.matpow_by_squaring <- function(A, b=1)
 
 
 
-base.matexp_pade <- function(A)
+base.matexp_pade <- function(A, p=6)
 {
   if (!is.double(A))
     storage.mode(A) <- "double"
   
-  out <- .Call("R_matexp_pade", A, PACKAGE="pbdBASE")
+  out <- .Call("R_matexp_pade", A, as.integer(p), PACKAGE="pbdBASE")
   
   N <- out$N
   D <- out$D

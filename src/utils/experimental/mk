@@ -1,0 +1,15 @@
+#!/bin/sh
+
+#rm -rf *.mod
+gfortran \
+  ../swaps.f90 \
+  ../quicksort_utils.f90 \
+  ../sorts.f90 \
+  ../signs.f90 \
+  ../subset_utils.f90 \
+  ../subset_special.f90 \
+  ../subset.f90 \
+  main.f90 \
+  && ./a.out
+
+rm -rf *.mod

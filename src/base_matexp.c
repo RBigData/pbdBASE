@@ -7,16 +7,20 @@
 #include "base_global.h"
 #include "base/expm/matexp.h"
 
+#include <SEXPtools.h>
+
 
 SEXP R_matpow_by_squaring(SEXP A, SEXP b)
 {
+  R_INIT;
   const int n = nrows(A);
   double *cpA;
   
   SEXP P;
-  PROTECT(P = allocMatrix(REALSXP, n, n));
+  newRmat(P, n, n, "dbl");
   
   // A is modified
+  //FIXME check return...
   cpA = malloc(n*n*sizeof(double));
   memcpy(cpA, REAL(A), n*n*sizeof(double));
   
@@ -24,40 +28,35 @@ SEXP R_matpow_by_squaring(SEXP A, SEXP b)
   
   free(cpA);
   
-  UNPROTECT(1);
-  return(P);
+  R_END;
+  return P;
 }
 
 
 
-SEXP R_matexp_pade(SEXP A)
+SEXP R_matexp_pade(SEXP A, SEXP p)
 {
+  R_INIT;
   const int n = nrows(A);
   SEXP N, D;
   SEXP RET, RET_NAMES;
   
+  
   // Allocate N and D
-  PROTECT(N = allocMatrix(REALSXP, n, n));
-  PROTECT(D = allocMatrix(REALSXP, n, n));
+  newRmat(N, n, n, "dbl");
+  newRmat(D, n, n, "dbl");
+  
   
   // Compute N and D
-  matexp_pade(n, REAL(A), REAL(N), REAL(D));
+  matexp_pade(n, INT(p,0), REAL(A), REAL(N), REAL(D));
+  
   
   // Wrangle the return
-  PROTECT(RET = allocVector(VECSXP, 2));
-  PROTECT(RET_NAMES = allocVector(STRSXP, 2));
+  RET_NAMES = make_list_names(2, "N", "D");
+  RET = make_list(RET_NAMES, 2, N, D);
   
-  SET_VECTOR_ELT(RET, 0, N);
-  SET_VECTOR_ELT(RET, 1, D);
-  
-  SET_STRING_ELT(RET_NAMES, 0, mkChar("N")); 
-  SET_STRING_ELT(RET_NAMES, 1, mkChar("D")); 
-  
-  setAttrib(RET, R_NamesSymbol, RET_NAMES);
-  
-  
-  UNPROTECT(4);
-  return(RET);
+  R_END;
+  return RET;
 }
 
 

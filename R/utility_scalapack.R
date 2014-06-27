@@ -7,16 +7,22 @@ base.descinit <- function(dim, bldim, ldim, ICTXT=0)
   
   desc <- integer(9)
   
-  desc[1L] <- 1L                    # matrix type
-  desc[2L] <- ICTXT                 # CTXT_A
-  desc[3L] <- max(0, dim[1L])       # M_A
-  desc[4L] <- max(0, dim[2L])       # N_A
-  desc[5L] <- max(1, bldim[1L])     # MB_A
-  desc[6L] <- max(1, bldim[2L])     # NB_A
-  desc[7L] <- 0L                    # RSRC_A
-  desc[8L] <- 0L                    # CSRC_A
-#  desc[9L] <- max(1L, ldim[1L])     # LLD_A
-  desc[9L] <- max(ldim[1L], max(1L, NUMROC(dim[1L], bldim[1L], grid$MYROW, grid$NPROW)))
+###  desc[1L] <- 1L                    # matrix type
+###  desc[2L] <- ICTXT                 # CTXT_A
+###  desc[3L] <- max(0, dim[1L])       # M_A
+###  desc[4L] <- max(0, dim[2L])       # N_A
+###  desc[5L] <- max(1, bldim[1L])     # MB_A
+###  desc[6L] <- max(1, bldim[2L])     # NB_A
+###  desc[7L] <- 0L                    # RSRC_A
+###  desc[8L] <- 0L                    # CSRC_A
+####  desc[9L] <- max(1L, ldim[1L])     # LLD_A
+###  desc[9L] <- max(ldim[1L], max(1L, NUMROC(dim[1L], bldim[1L], grid$MYROW, grid$NPROW)))
+  
+  desc <- .Fortran("descinit", integer(9L), as.integer(dim[1L]), as.integer(dim[2L]), as.integer(bldim[1L]), as.integer(bldim[2L]), 0L, 0L, as.integer(ICTXT), as.integer(ldim[1L]), 0L)[[1L]]
+  
+  ### Fix for pdgemr2d: if a process is not a part of the given context, its ICTXT is -1
+  if (any(base.blacs(ICTXT=ICTXT) == -1))
+    desc[2L] <- -1L
   
   return(desc)
 }

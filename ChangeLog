@@ -1,8 +1,37 @@
+2014-6-24:
+  * Fixed compiler warnings generated from calling Fortran routines.
+  * Cleaned up R wrappers.
+  * Fixed memory/gc issue in R_PDGELS().
+
+2014-6-20:
+  * Nasty ICTXT bug in descinit (notably affecting Cpdgemr2d) fixed.
+  * Modified matrix exponential kernels to take p as argument.
+
+2014-3-20:
+ * Fixed OpenMP issues in Intel compiler suite.
+ * Fixed portability issue in Makevars.in.
+
+2014-3-6:
+ * Stopgap fixed regression in MKSUBMAT.
+ * Stopgap fixed regression in MKGBLMAT.
+
+2014-2-4:
+ * Updated vignette format.
+ * Fixed author affiliation in vignette.
+
+2014-2-2:
+ * Linked with SEXPtools.
+ * Refactored internal wrappers to use SEXPtools.
+
+2014-1-31:
+ * Fixed ownany() bug fixed that affected some grid shapes.
+
 2014-1-14:
-  * Vignetted copyright updated.
+  * Vignette copyright updated.
 
 2013-12-16:
-  * pdgels bug fixes.
+  * PDGELS bug fixes.
+
 
 pbdBASE 0.2-3 (2013-12-14) --------------------------------------------------
 
@@ -21,6 +50,7 @@ pbdBASE 0.2-3 (2013-12-14) --------------------------------------------------
 2013-7-20:
   * Added driver for (non-symmetric) eigenvalue calculator.
 
+
 pbdBASE 0.2-2 (2013-7-8) --------------------------------------------------
 
 2013-6-28:
@@ -35,10 +65,12 @@ pbdBASE 0.2-2 (2013-7-8) --------------------------------------------------
 2013-5-9:
   * Fixed initialization bug in pdgemr2d.
 
+
 pbdBASE 0.2-1 (2013-3-25) --------------------------------------------------
 
 2013-3-20:
   * Added PDSYEV wrappers.
+
 
 pbdBASE 0.2-0 (2013-3-12) --------------------------------------------------
 
@@ -64,6 +96,7 @@ pbdBASE 0.2-0 (2013-3-12) --------------------------------------------------
   * Fixed bug in SEXP wrappers of ScaLAPACK functions; passing 0-byte Ralloc'd vectors.
   * Fix multi-arch problem.
   * Add copyright to vignette.
+
 
 pbdBASE 0.1-1 (2012-12-1) ----------------------------------------------------
 
@@ -91,6 +124,7 @@ pbdBASE 0.1-1 (2012-12-1) ----------------------------------------------------
 2012-10-22:
   * Distributed QR added.
   * Distributed linear least squares solver added for n>p case.
+
 
 ======================= Log Before Release =====================================
 2012-10-02:

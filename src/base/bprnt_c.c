@@ -6,7 +6,7 @@
 
 #include <R.h>
 
-void F77_SUB(bprnt_c)(const char *data_c, int *data_i, int *data_j,
+void bprnt_c_(const char *data_c, int *data_i, int *data_j,
 		double *data_d){
 	if(strlen(data_c) > 255){
 		Rprintf("invalid name length in bprnt_c");

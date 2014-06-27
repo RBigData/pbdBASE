@@ -4,21 +4,25 @@
 
 // Copyright 2013, Schmidt
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
+#include <string.h>
 
 #include "matexp.h"
 
+
+void pddiagmk_(double *a, int *ia, int *ja, int *desca, double *diag, int *ldiag);
 
 
 // c = a * b
 static inline void p_matprod(double *a, int *desca, double *b, int *descb, double *c, int *descc)
 {
-  const char trans = 'N';
-  const int ij = 1;
-  const double one = 1.0, zero = 0.0;
+  char trans = 'N';
+  int ij = 1;
+  double one = 1.0, zero = 0.0;
   int m, n, k;
   
   
@@ -34,88 +38,22 @@ static inline void p_matprod(double *a, int *desca, double *b, int *descb, doubl
 // Copy a ONTO b, i.e. b = a
 static inline void p_matcopy(double *a, int *desca, double *b, int *descb)
 {
-  const char uplo = 'A';
-  const int n = desca[2];
-  const int ij = 1;
+  char uplo = 'A';
+  int n = desca[2];
+  int ij = 1;
   
   pdlacpy_(&uplo, &n, &n, a, &ij, &ij, desca, b, &ij, &ij, descb);
 }
 
 
 // Identity matrix
-/*static inline */
 void p_mateye(double *a, int *desca)
 {
-  const int ij = 1;
+  int ij = 1;
   double diag = 1.0;
   int ldiag = 1;
   pddiagmk_(a, &ij, &ij, desca, &diag, &ldiag);
 }
-// Fix this later, this is so stupid
-#if 0
-{
-  int i, j, gi, gj, ti, tj;
-  int mb_a, nb_a, minb_a;
-  int ldm[2];
-  int blacs[5];
-  int m, n, gm;
-  
-  // Get local dim and context grid info
-  pdims_(desca, ldm, blacs);
-  
-  m = ldm[0];
-  n = ldm[1];
-  
-  gm = desca[2];
-  
-  mb_a = desca[4];
-  nb_a = desca[5];
-  
-  mb_a = MIN(mb_a, gm);
-  nb_a = MIN(nb_a, gm);
-  
-  // Initialize
-  for (i=0; i<m*n; i++)
-    a[i] = 0.0;
-  
-  // Fill diagonal with 1's
-  for (j=0; j<n; j++)//+=nb_a)
-  {
-    for (i=0; i<m; i++)//+=mb_a)
-    {
-      l2gpair_(&i, &j, &gi, &gj, desca, blacs);
-      
-/*      if (m-i+1 > 0)*/
-        mb_a = MIN(mb_a, m-i+1);
-/*      if (n-j+1 > 0)*/
-        nb_a = MIN(nb_a, n-j+1);
-      
-      
-      
-      minb_a = mb_a<=nb_a?mb_a:nb_a;
-      
-      if (gi == gj)
-        a[i + m*j] = 1.0;
-      // only try if a diagonal entry is in this sub-block
-/*      if (abs(gi-gj) <= minb_a)*/
-/*      {*/
-/*        for (tj=0; tj<nb_a; tj++)*/
-/*        {*/
-/*          for (ti=0; ti<mb_a; ti++)*/
-/*          {*/
-/*            if (gi+ti == gj+tj)*/
-/*            {*/
-/*              a[i+ti + m*(j+tj)] = 1.0;*/
-/*            }*/
-/*          }*/
-/*        }*/
-/*      }*/
-    }
-  }
-  
-}
-#endif
-
 
 
 
@@ -126,8 +64,6 @@ void p_matpow_by_squaring(double *A, int *desca, int b, double *P)
   int n, m;
   int ldm[2];
   int blacs[5];
-  int i, j;
-  double tmp, tmpj;
   double *TMP;
   
   p_mateye(P, desca);
@@ -162,7 +98,7 @@ void p_matpow_by_squaring(double *A, int *desca, int b, double *P)
       p_matcopy(TMP, desca, P, desca);
     }
     
-    b >>=1;
+    b >>= 1;
     p_matprod(A, desca, A, desca, TMP, desca);
     p_matcopy(TMP, desca, A, desca);
   }
@@ -177,7 +113,7 @@ void p_matpow_by_squaring(double *A, int *desca, int b, double *P)
 // p==q==13
 void matexp_pade_fillmats(const unsigned int m, const unsigned int n, const unsigned int i, double *N, double *D, double *B, double *C);
 
-void p_matexp_pade(double *A, int *desca, double *N, double *D)
+void p_matexp_pade(double *A, int *desca, int p, double *N, double *D)
 {
   int m, n;
   int i;
@@ -208,7 +144,7 @@ void p_matexp_pade(double *A, int *desca, double *N, double *D)
   memcpy(N, D, m*n*sizeof(double));
   
   // Fill N and D
-  for (i=1; i<=13; i++)
+  for (i=1; i<=p; i++)
   {
     // C = A*B
     if (i > 1)
