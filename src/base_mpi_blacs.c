@@ -4,8 +4,7 @@
 
 // Copyright 2012-2014, Schmidt
 
-#include "base_global.h"
-#include <SEXPtools.h>
+#include "pbdBASE.h"
 
 
 SEXP R_optimal_grid(SEXP NPROCS)

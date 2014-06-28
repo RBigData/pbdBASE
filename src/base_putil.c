@@ -4,9 +4,8 @@
 
 // Copyright 2013, Schmidt
 
-#include <R.h>
-#include <Rinternals.h>
-#include "base_global.h"
+#include "pbdBASE.h"
+
 
 SEXP R_MKSUBMAT(SEXP GBLX, SEXP LDIM, SEXP DESCX)
 {
@@ -35,7 +34,6 @@ SEXP R_MKGBLMAT(SEXP SUBX, SEXP DESCX, SEXP RDEST, SEXP CDEST)
 
 SEXP R_DALLREDUCE(SEXP X, SEXP LDIM, SEXP DESCX, SEXP OP, SEXP SCOPE)
 {
-  const int ictxt = INTEGER(DESCX)[1];
   const int m = INTEGER(DESCX)[2], n = INTEGER(DESCX)[3];
   
   SEXP CPX;

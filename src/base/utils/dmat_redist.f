@@ -71,10 +71,10 @@
       SUBROUTINE MKSUBMAT(GBLX, SUBX, DESCX)!, RSRC, CSRC)
       IMPLICIT NONE
       ! IN/OUT
-      INTEGER             DESCX(9), RSRC, CSRC
+      INTEGER             DESCX(9)!, RSRC, CSRC
       DOUBLE PRECISION    GBLX(DESCX(3), DESCX(4)), SUBX(DESCX(9), *)
       ! Local
-      INTEGER             M, N, I, J, GI, GJ, RBL, CBL, TI, TJ,
+      INTEGER             M, N, I, J, GI, GJ, RBL, CBL, !TI, TJ,
      $                    LDM(2), BLACS(5)
       ! External
       EXTERNAL            PDIMS, L2GPAIR
@@ -94,7 +94,7 @@
         DO J = 1, N
           DO I = 1, M
             CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
-            SUBX(I+TI, J+TJ) = GBLX(GI+TI, GJ+TJ)
+            SUBX(I, J) = GBLX(GI, GJ)
           END DO 
         END DO
 !        DO J = 1, N, CBL
@@ -130,10 +130,10 @@
       SUBROUTINE MKGBLMAT(GBLX, SUBX, DESCX, RDEST, CDEST)
       IMPLICIT NONE
       ! IN/OUT
-      INTEGER             DESCX(9), RDEST, CDEST, PROC
+      INTEGER             DESCX(9), RDEST, CDEST
       DOUBLE PRECISION    GBLX(DESCX(3), DESCX(4)), SUBX(DESCX(9), *)
       ! Local
-      INTEGER             M, N, I, J, GI, GJ, RBL, CBL, TI, TJ,
+      INTEGER             M, N, I, J, GI, GJ, RBL, CBL, !TI, TJ,
      $                    LDM(2), BLACS(5)
       ! Parameter
       DOUBLE PRECISION    ZERO
@@ -173,7 +173,7 @@
         DO J = 1, N
           DO I = 1, M
             CALL L2GPAIR(I, J, GI, GJ, DESCX, BLACS)
-            GBLX(GI+TI, GJ+TJ) = SUBX(I+TI, J+TJ)
+            GBLX(GI, GJ) = SUBX(I, J)
           
           END DO 
         END DO

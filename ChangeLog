@@ -1,6 +1,14 @@
-pbdBASE 0.3-0 (2014-) --------------------------------------------------
+2014-6-24:
+  * Fixed compiler warnings generated from calling Fortran routines.
+  * Cleaned up R wrappers.
+  * Fixed memory/gc issue in R_PDGELS().
 
-2014-3-17:
+2014-6-20:
+  * Nasty ICTXT bug in descinit (notably affecting Cpdgemr2d) fixed.
+  * Modified matrix exponential kernels to take p as argument.
+
+2014-3-20:
+ * Fixed OpenMP issues in Intel compiler suite.
  * Fixed portability issue in Makevars.in.
 
 2014-3-6:
@@ -16,7 +24,7 @@ pbdBASE 0.3-0 (2014-) --------------------------------------------------
  * Refactored internal wrappers to use SEXPtools.
 
 2014-1-31:
- * ownany() bug fixed that affected some grid shapes.
+ * Fixed ownany() bug fixed that affected some grid shapes.
 
 2014-1-14:
   * Vignette copyright updated.

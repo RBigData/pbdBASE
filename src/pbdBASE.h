@@ -1,10 +1,8 @@
-#ifndef __BASE_GLOBAL__
-#define __BASE_GLOBAL__
+#ifndef __PBDBASE_PACKAGE__
+#define __PBDBASE_PACKAGE__
 
 
-#include <R.h>
-#include <Rinternals.h>
-#include <Rdefines.h>
+#include <RNACI.h>
 
 #include "scalapack.h"
 

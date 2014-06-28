@@ -4,15 +4,13 @@
 
 // Copyright 2013, Schmidt
 
-#include "base_global.h"
-#include <SEXPtools.h>
+#include "pbdBASE.h"
 
 
 /* Reductions */
 SEXP R_igsum2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST)
 {
   R_INIT;
-  int i;
   const int m = INT(M, 0), n = INT(N, 0);
   char top = ' ';
   
@@ -32,7 +30,6 @@ SEXP R_igsum2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP R
 
 SEXP R_dgsum2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST)
 {
-  int i;
   const int m = INT(M, 0), n = INT(N, 0);
   char top = ' ';
   
@@ -52,7 +49,6 @@ SEXP R_dgsum2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP R
 
 SEXP R_igamx2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST)
 {
-  int i;
   const int m = INTEGER(M)[0], n = INTEGER(N)[0];
   char top = ' ';
   int rcflag = -1;
@@ -73,7 +69,6 @@ SEXP R_igamx2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP R
 
 SEXP R_dgamx2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST)
 {
-  int i;
   const int m = INTEGER(M)[0], n = INTEGER(N)[0];
   char top = ' ';
   int rcflag = -1;
@@ -94,7 +89,6 @@ SEXP R_dgamx2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP R
 
 SEXP R_igamn2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST)
 {
-  int i;
   const int m = INTEGER(M)[0], n = INTEGER(N)[0];
   char top = ' ';
   int rcflag = -1;
@@ -115,7 +109,6 @@ SEXP R_igamn2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP R
 
 SEXP R_dgamn2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST)
 {
-  int i;
   const int m = INTEGER(M)[0], n = INTEGER(N)[0];
   char top = ' ';
   int rcflag = -1;
@@ -137,7 +130,6 @@ SEXP R_dgamn2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP R
 // Point to point send/receive
 SEXP R_dgesd2d1(SEXP ICTXT, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST)
 {
-  int i;
   const int m = INTEGER(M)[0], n = INTEGER(N)[0];
   
   SEXP OUT;
@@ -156,7 +148,6 @@ SEXP R_dgesd2d1(SEXP ICTXT, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP C
 
 SEXP R_dgerv2d1(SEXP ICTXT, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST)
 {
-  int i;
   const int m = INTEGER(M)[0], n = INTEGER(N)[0];
   
   SEXP OUT;

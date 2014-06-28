@@ -3,7 +3,10 @@
 *.so
 *.log
 *.status
+
 *~
+*.swp
+*.orig
 
 src/Makeconf
 src/Makevars

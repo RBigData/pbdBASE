@@ -4,8 +4,7 @@
 
 // Copyright 2013, Schmidt
 
-#include "base_global.h"
-#include <SEXPtools.h>
+#include "pbdBASE.h"
 
 
 SEXP R_PDLAPRNT(SEXP M, SEXP N, SEXP A, SEXP DESCA, SEXP CMATNM, SEXP NOUT)
