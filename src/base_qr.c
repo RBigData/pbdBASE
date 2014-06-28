@@ -4,8 +4,8 @@
 
 // Copyright 2013, Schmidt
 
-#include <SEXPtools.h>
-#include "base_global.h"
+#include "pbdBASE.h"
+
 
 /* Computing QR */
 SEXP R_PDGEQPF(SEXP TOL, SEXP M, SEXP N,

@@ -1,8 +1,8 @@
 #################################################################
 
-### SEXPtools
-SEXPTOOLS_CPPFLAGS = `$(R_HOME)/bin/Rscript -e "SEXPtools:::cppflags()"`
-SEXPTOOLS_LDFLAGS = `$(R_HOME)/bin/Rscript -e "SEXPtools:::ldflags()"`
+### RNACI
+RNACI_CPPFLAGS = `$(R_HOME)/bin/Rscript -e "RNACI:::cppflags()"`
+RNACI_LDFLAGS = `$(R_HOME)/bin/Rscript -e "RNACI:::ldflags()"`
 
 
 ### MPI+SLAP
@@ -13,14 +13,14 @@ SLAP_LDFLAGS = @SLAP_LDFLAGS@
 
 
 ### Package flags.
-PKG_CPPFLAGS = $(SPMD_CPPFLAGS) $(SEXPTOOLS_CPPFLAGS)
+PKG_CPPFLAGS = $(SPMD_CPPFLAGS) $(RNACI_CPPFLAGS)
 PKG_CFLAGS = $(SHLIB_OPENMP_CFLAGS) -w
 PKG_FFLAGS = $(SHLIB_OPENMP_FFLAGS) -w
 PKG_FCFLAGS = $(SHLIB_OPENMP_FCFLAGS) -w
 
 
 PKG_LIBS = $(SLAP_LDFLAGS) $(FLIBS) $(SPMD_LDFLAGS) \
-           $(SEXPTOOLS_LDFLAGS) \
+           $(RNACI_LDFLAGS) \
            $(SHLIB_OPENMP_CFLAGS)
 
 
@@ -112,8 +112,8 @@ USER_CONF = Makeconf
 all: Makeconf $(SHLIB)
 
 Makeconf:
-	echo "SEXPTOOLS_CPPFLAGS = $(SEXPTOOLS_CPPFLAGS)" > $(USER_CONF)
-	echo "SEXPTOOLS_LDFLAGS = $(SEXPTOOLS_LDFLAGS)" >> $(USER_CONF)
+	echo "RNACI_CPPFLAGS = $(RNACI_CPPFLAGS)" > $(USER_CONF)
+	echo "RNACI_LDFLAGS = $(RNACI_LDFLAGS)" >> $(USER_CONF)
 	echo "SLAP_LDFLAGS = $(SLAP_LDFLAGS)" >> $(USER_CONF)
 	echo "SPMD_CPPFLAGS = $(SPMD_CPPFLAGS)" >> $(USER_CONF)
 	echo "SPMD_LDFLAGS = $(SPMD_LDFLAGS)" >> $(USER_CONF)

@@ -4,10 +4,7 @@
 
 // Copyright 2013, Schmidt and Chen
 
-#include <SEXPtools.h>
-#include "base_global.h"
-
-#include "scalapack.h"
+#include "pbdBASE.h"
 
 
 SEXP R_NUMROC(SEXP N, SEXP NB, SEXP IPROC, SEXP NPROCS)

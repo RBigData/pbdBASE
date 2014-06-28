@@ -4,10 +4,8 @@
 
 // Copyright 2013, Schmidt
 
-#include "base_global.h"
+#include "pbdBASE.h"
 #include "base/expm/matexp.h"
-
-#include <SEXPtools.h>
 
 
 SEXP R_matpow_by_squaring(SEXP A, SEXP b)

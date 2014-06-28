@@ -4,9 +4,7 @@
 
 // Copyright 2013, Schmidt
 
-#include <SEXPtools.h>
-
-#include "base_global.h"
+#include "pbdBASE.h"
 
 
 /* For computing LLS solution, either over or    under-determined. */
