@@ -20,7 +20,7 @@
       SUBROUTINE PTRI2ZERO(UPLO, DIAG, X, DESCX)
       IMPLICIT NONE
       ! IN/OUT
-      INTEGER             IX, JX, DESCX(9)
+      INTEGER             DESCX(9)
       DOUBLE PRECISION    X(DESCX(9), *)
       CHARACTER*1         UPLO, DIAG
       ! Local
@@ -309,10 +309,10 @@
       ! IN/OUT
       INTEGER             IX, JX, DESCX(9), RDEST, CDEST
       DOUBLE PRECISION    X(DESCX(9), *), DIAG( * )
-      CHARACTER*1         REDUCE
+!      CHARACTER*1         REDUCE
       ! Local
       INTEGER             K, M, N, I, J, GI, GJ, LDM(2), 
-     $                    BLACS(5), DESC(9)
+     $                    BLACS(5)
       ! Parameter
       DOUBLE PRECISION    ZERO
       PARAMETER ( ZERO = 0.0D0 )

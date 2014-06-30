@@ -4,9 +4,8 @@
 
 // Copyright 2013, Schmidt
 
-#include <R.h>
-#include <Rinternals.h>
-#include "base_global.h"
+#include "pbdBASE.h"
+
 
 SEXP R_MKSUBMAT(SEXP GBLX, SEXP LDIM, SEXP DESCX)
 {

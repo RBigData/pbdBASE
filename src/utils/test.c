@@ -1,4 +1,4 @@
-#include <SEXPtools.h>
+#include <RNACI.h>
 
 SEXP _base_testfun()
 {

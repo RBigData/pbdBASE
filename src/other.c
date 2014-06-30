@@ -4,9 +4,8 @@
 
 // Copyright 2013-2014, Schmidt and Chen
 
-#include <R.h>
-#include <Rinternals.h>
-#include "base_global.h"
+#include "pbdBASE.h"
+
 
 static void l2g_coord(int* ret, int i, int j, int* dim, int* bldim, int* procs, int* myproc)
 {

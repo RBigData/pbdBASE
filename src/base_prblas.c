@@ -4,9 +4,7 @@
 
 // Copyright 2013, Schmidt
 
-#include <R.h>
-#include <Rinternals.h>
-#include "base_global.h"
+#include "pbdBASE.h"
 
 
 SEXP R_RL2BLAS(SEXP X, SEXP LDIM, SEXP DESCX, SEXP VEC, SEXP LVEC, SEXP FUN)

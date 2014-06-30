@@ -4,8 +4,7 @@
 
 // Copyright 2013, Schmidt
 
-#include "base_global.h"
-#include <SEXPtools.h>
+#include "pbdBASE.h"
 
 
 /* Reductions */
