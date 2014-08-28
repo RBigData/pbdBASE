@@ -67,12 +67,10 @@ static inline void mateye(const unsigned int n, double *a)
   for (i=0; i<n*n; i++)
     a[i] = 0.0;
   
-  // Fill diagonal with 1
   i = 0;
   while (i < n*n)
   {
     a[i] = 1.0;
-    
     i += n+1;
   }
 }
@@ -183,17 +181,17 @@ void matexp_pade_fillmats(const int m, const int n, const int i, double *N, doub
   const int sgn = SGNEXP(-1, i);
   
     /* Performs the following actions:
-      B = C
-      N = pade_coef[i] * C
-      D = (-1)^j * pade_coef[i] * C
+        B = C
+        N = pade_coef[i] * C
+        D = (-1)^j * pade_coef[i] * C
     */
     for (j=0; j<m*n; j++)
     {
-      
       tmpj = C[j];
       B[j] = tmpj;
       
       tmpj *= tmp;
+      
       N[j] += tmpj;
       D[j] += sgn*tmpj;
     }
