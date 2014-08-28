@@ -1,8 +1,13 @@
-  /* This Source Code Form is subject to the terms of the Mozilla Public
+/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// Copyright 2013-2014, Schmidt
+// Copyright 2013-2014, Drew Schmidt
+
+// Matrix exponentiation algorithm from:
+// "New Scaling and Squaring Algorithm for the Matrix Exponential",
+// Awad H. Al-Mohy and Nicholas J. Higham, August 2009
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,10 +23,9 @@
 #include "matexp.h"
 
 
-void dgemm_(char *transa, char *transb, int *m, int *n, int *k, double *alpha, double *a, int *lda, double *b, int *ldb, double *beta, double *c, int *ldc);
-void dlacpy_(char *uplo, int *m, int *n, double *a, int *lda, double *b, int *ldb);
-
-
+// -------------------------------------------------------- 
+// Utilities
+// -------------------------------------------------------- 
 
 // C = A * B for square matrices
 static void matprod(int n, double *a, double *b, double *c)
@@ -33,6 +37,7 @@ static void matprod(int n, double *a, double *b, double *c)
 }
 
 
+
 // Copy A ONTO B, i.e. B = A
 static inline void matcopy(int n, double *A, double *B)
 {
@@ -41,26 +46,15 @@ static inline void matcopy(int n, double *A, double *B)
   dlacpy_(&uplo, &n, &n, A, &n, B, &n);
 }
 
-// Zero matrix
-static inline void matzero(const unsigned int n, double *a)
-{
-  int i;
-  
-  {
-    #if defined(_OPENMP_SUPPORT_SIMD)
-    #pragma omp for simd
-    #endif
-    for (i=0; i<n*n; i++)
-      a[i] = 0.0;
-  }
-}
+
 
 // Identity matrix
 static inline void mateye(const unsigned int n, double *a)
 {
   int i;
   
-  matzero(n, a);
+  for (i=0; i<n*n; i++)
+    a[i] = 0.0;
   
   // Fill diagonal with 1
   i = 0;
@@ -74,10 +68,54 @@ static inline void mateye(const unsigned int n, double *a)
 
 
 
+// 1-norm for a square matrix
+static double matnorm_1(const double *x, const int n)
+{
+  int i, j;
+  double norm = 0;
+  double tmp;
+  
+  // max(colSums(abs(x))) 
+  for (j=0; j<n; j++)
+  {
+    tmp = 0;
+    
+    for (i=0; i<n; i++)
+      tmp += fabs(x[i*n + j]);
+    
+    if (tmp > norm)
+      norm = tmp;
+  }
+  
+  return norm;
+}
 
-// Exponentiation by squaring --- A is modified
-// P = A^b
-void matpow_by_squaring(double *A, int n, int b, double *P)
+
+
+#define NTHETA 5
+
+static int matexp_scale_factor(const double *x, const int n)
+{
+  int i;
+  const double theta[] = {1.5e-2, 2.5e-1, 9.5e-1, 2.1e0, 5.4e0};
+  
+  const double x_1 = matnorm_1(x, n);
+  
+  for (i=0; i<NTHETA; i++)
+  {
+    if (x_1 <= theta[i])
+      return 0;
+  }
+  
+  i = (int) ceil(log2(x_1/theta[5]));
+  
+  return 1 << i;
+}
+
+
+
+// Matrix power by squaring: P = A^b --- A is modified
+static void matpow_by_squaring(double *A, int n, int b, double *P)
 {
   double *TMP;
   
@@ -115,19 +153,20 @@ void matpow_by_squaring(double *A, int n, int b, double *P)
 
 
 
+// -------------------------------------------------------- 
+// Matrix Exponentiation via Pade' Approximations
+// -------------------------------------------------------- 
+
 
 
 /* r_m(x) = p_m(x) / q_m(x), where
    p_m(x) = sum_{j=0}^m (2m-j)!m!/(2m)!/(m-j)!/j! * x^j
-
+  
    and q_m(x) = p_m(-x)
 */
 
-
-// Matrix exponentiation using Pade' approximations
-// p==q==13
-
-void matexp_pade_fillmats(const unsigned int m, const unsigned int n, const unsigned int i, double *N, double *D, double *B, double *C)
+// (p==q) <= 13
+void matexp_pade_fillmats(const int m, const int n, const int i, double *N, double *D, double *B, double *C)
 {
   int j;
   const double tmp = matexp_pade_coefs[i];
@@ -168,18 +207,22 @@ void matexp_pade_fillmats(const unsigned int m, const unsigned int n, const unsi
 
 
 
-void matexp_pade(const unsigned int n, const unsigned int p, double *A, double *N, double *D)
+static void matexp_pade(const int n, const int p, double *A, double *N)
 {
-  int i;
-  double *B, *C;
+  int i, info = 0;
+  int *ipiv;
+  double *B, *C, *D;
   
   // Power of A
   B = calloc(n*n, sizeof(double));
+  assert(B != NULL);
+  
   // Temporary storage for matrix multiplication
   C = malloc(n*n * sizeof(double));
-  
-  assert(B != NULL);
   assert(C != NULL);
+  
+  D = malloc(n*n * sizeof(double));
+  assert(D != NULL);
   
   matcopy(n, A, C);
   
@@ -212,8 +255,41 @@ void matexp_pade(const unsigned int n, const unsigned int p, double *A, double *
     matexp_pade_fillmats(n, n, i, N, D, B, C);
   }
   
+  // R <- solve(D) %*% N
+  ipiv = calloc(n, sizeof(double));
+  assert(ipiv != NULL);
+  
+  dgesv_(&n, &n, D, &n, ipiv, N, &n, &info);
+  
+  
   free(B);
   free(C);
+  free(D);
+  free(ipiv);
 }
 
+
+
+void matexp(const int n, const int p, const double t, double *x, double *ret)
+{
+  const int m = matexp_scale_factor(x, n);
+  const int one = 1;
+  double tmp;
+  
+  if (m == 0)
+  {
+    dscal_(&n, &t, x, &one);
+    return matexp_pade(n, p, x, ret);
+  }
+  
+  tmp = t / ((double) m);
+  dscal_(&n, &tmp, x, &one);
+  
+  
+  matexp_pade(n, p, x, ret);
+  
+  matcopy(n, ret, x);
+  
+  matpow_by_squaring(x, n, m, ret);
+}
 
