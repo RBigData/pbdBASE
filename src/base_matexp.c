@@ -25,8 +25,7 @@ SEXP R_matexp(SEXP A, SEXP p)
     A_cp[i] = REAL(A)[i];
   
   
-  double t = 1;
-  matexp(n, INT(p), t, A_cp, REAL(R));
+  matexp(n, INT(p), A_cp, REAL(R));
   
   free(A_cp);
   

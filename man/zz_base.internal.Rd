@@ -66,6 +66,7 @@
 
 
 \alias{base.dhilbmk}
+\alias{base.matexp}
 \alias{base.matexp_pade}
 \alias{base.matpow_by_squaring}
 
