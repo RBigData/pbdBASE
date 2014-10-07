@@ -6,6 +6,5 @@
 ### Suggested by Prof Brian Ripley
 ### ?globalVariables
 
-utils::globalVariables(c(".conflicts.OK"))
-
+utils::globalVariables(c(".conflicts.OK", ".pbdBASEEnv", ".SPMD.CT"))
 
