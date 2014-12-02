@@ -19,12 +19,10 @@ base.rpdtran <- function(a, desca, descc)
   
   cldim <- base.numroc(descc[3L:4L], descc[5L:6L], ICTXT=descc[2L])
   
-  ret <- .Call("R_PDTRAN",
+  ret <- .Call(R_PDTRAN,
                 as.integer(m), as.integer(n),
                 a, as.integer(desca),
-                as.integer(cldim), as.integer(descc),
-                PACKAGE="pbdBASE"
-              )
+                as.integer(cldim), as.integer(descc))
   
   return(ret)
 }
@@ -49,13 +47,12 @@ base.rpdgemm <- function(transx, transy, x, descx, y, descy, descc)
   if (!is.double(y))
     storage.mode(y) <- "double"
   
-  ret <- .Call("R_PDGEMM",
+  ret <- .Call(R_PDGEMM,
                 transx, transy,
                 as.integer(m), as.integer(n), as.integer(k),
                 x, as.integer(descx),
                 y, as.integer(descy),
-                as.integer(cldim), as.integer(descc),
-                PACKAGE="pbdBASE")
+                as.integer(cldim), as.integer(descc))
   
   return( ret )
 }

@@ -5,9 +5,7 @@ base.mksubmat <- function(x, descx)
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  subx <- .Call("R_MKSUBMAT", 
-                x, as.integer(ldim), as.integer(descx), 
-                PACKAGE="pbdBASE")
+  subx <- .Call(R_MKSUBMAT, x, as.integer(ldim), as.integer(descx))
   
   return( subx )
 }
@@ -18,9 +16,8 @@ base.mkgblmat <- function(x, descx, rsrc, csrc)
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  ret <- .Call("R_MKGBLMAT", 
-       x, as.integer(descx), as.integer(rsrc), as.integer(csrc), 
-       PACKAGE="pbdBASE")
+  ret <- .Call(R_MKGBLMAT, 
+       x, as.integer(descx), as.integer(rsrc), as.integer(csrc))
   
   return( ret )
   
@@ -32,9 +29,8 @@ base.dallreduce <- function(x, descx, op='sum', scope='All')
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  ret <- .Call("R_DALLREDUCE", 
-        x, as.integer(dim(x)), as.integer(descx), as.character(op), as.character(scope),
-        PACKAGE = 'pbdBASE')
+  ret <- .Call(R_DALLREDUCE, 
+        x, as.integer(dim(x)), as.integer(descx), as.character(op), as.character(scope))
   
   return( ret )
 }
@@ -48,9 +44,8 @@ base.tri2zero <- function(x, descx, uplo='L', diag='N')
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  ret <- .Call("R_PTRI2ZERO", 
-               uplo, diag, x, as.integer(dim(x)), as.integer(descx), 
-               PACKAGE="pbdBASE")
+  ret <- .Call(R_PTRI2ZERO, 
+               uplo, diag, x, as.integer(dim(x)), as.integer(descx))
   
   return( ret )
 }
@@ -64,9 +59,8 @@ base.pdsweep <- function(x, descx, vec, MARGIN, FUN)
   if (!is.double(vec))
     storage.mode(vec) <- "double"
   
-  ret <- .Call("R_PDSWEEP", 
-               x, as.integer(dim(x)), as.integer(descx), vec, as.integer(length(vec)), as.integer(MARGIN), as.character(FUN),
-               PACKAGE="pbdBASE")
+  ret <- .Call(R_PDSWEEP, 
+               x, as.integer(dim(x)), as.integer(descx), vec, as.integer(length(vec)), as.integer(MARGIN), as.character(FUN))
   
   return( ret )
 }
@@ -80,9 +74,8 @@ base.rl2blas <- function(x, descx, vec, FUN)
   if (!is.double(vec))
     storage.mode(vec) <- "double"
   
-  ret <- .Call("R_RL2BLAS", 
-               x, as.integer(dim(x)), as.integer(descx), vec, as.integer(length(vec)), as.integer(FUN),
-               PACKAGE="pbdBASE")
+  ret <- .Call(R_RL2BLAS, 
+               x, as.integer(dim(x)), as.integer(descx), vec, as.integer(length(vec)), as.integer(FUN))
   
   return(ret)
 }
@@ -108,9 +101,8 @@ base.rl2insert <- function(x, descx, vec, i, j)
   if (!is.double(vec))
     storage.mode(vec) <- "double"
   
-  ret <- .Call("R_RL2INSERT", 
-               x, as.integer(dim(x)), as.integer(descx), vec, as.integer(length(vec)), as.integer(i), as.integer(length(i)), as.integer(j), as.integer(length(j)),
-               PACKAGE="pbdBASE")
+  ret <- .Call(R_RL2INSERT, 
+               x, as.integer(dim(x)), as.integer(descx), vec, as.integer(length(vec)), as.integer(i), as.integer(length(i)), as.integer(j), as.integer(length(j)))
   
   return( ret )
 }
@@ -133,10 +125,9 @@ base.ddiagtk <- function(x, descx, proc.dest='all')
   
   ldiag <- min(descx[3L:4L])
   
-  ret <- .Call("R_PDGDGTK", 
+  ret <- .Call(R_PDGDGTK, 
                x, as.integer(dim(x)), as.integer(descx), as.integer(ldiag),
-               as.integer(rdest), as.integer(cdest),
-               PACKAGE="pbdBASE")
+               as.integer(rdest), as.integer(cdest))
   
   return( ret )
 }
@@ -149,9 +140,8 @@ base.ddiagmk <- function(diag, descx)
   if (!is.double(diag))
     storage.mode(diag) <- "double"
   
-  out <- .Call("R_PDDIAGMK", 
-               as.integer(ldim), as.integer(descx), diag, as.integer(length(diag)),
-               PACKAGE="pbdBASE")
+  out <- .Call(R_PDDIAGMK, 
+               as.integer(ldim), as.integer(descx), diag, as.integer(length(diag)))
   
   return( out )
 }
@@ -165,9 +155,8 @@ base.rcolcpy <- function(x, descx, y, descy, xcol, ycol)
   if (!is.double(y))
     storage.mode(y) <- "double"
   
-  ret <- .Call("R_RCOLCPY", 
-               x, as.integer(dim(x)), as.integer(descx), as.integer(xcol), y, as.integer(descy), as.integer(ycol), as.integer(length(ycol)),
-               PACKAGE="pbdBASE")
+  ret <- .Call(R_RCOLCPY, 
+               x, as.integer(dim(x)), as.integer(descx), as.integer(xcol), y, as.integer(descy), as.integer(ycol), as.integer(length(ycol)))
   
   return( ret )
 }
@@ -179,9 +168,8 @@ base.rcolcpy2 <- function(x, descx, y, descy, xcol, ycol)
   if (!is.double(y))
     storage.mode(y) <- "double"
   
-  ret <- .Call("R_RCOLCPY2", 
-               x, as.integer(dim(x)), as.integer(descx), as.integer(xcol), as.integer(length(xcol)), y, as.integer(descy), as.integer(ycol), as.integer(length(ycol)),
-               PACKAGE="pbdBASE")
+  ret <- .Call(R_RCOLCPY2, 
+               x, as.integer(dim(x)), as.integer(descx), as.integer(xcol), as.integer(length(xcol)), y, as.integer(descy), as.integer(ycol), as.integer(length(ycol)))
   
   return( ret )
 }
@@ -193,9 +181,8 @@ base.rrowcpy <- function(x, descx, y, descy, xrow, yrow)
   if (!is.double(y))
     storage.mode(y) <- "double"
   
-  ret <- .Call("R_RROWCPY", 
-               x, as.integer(dim(x)), as.integer(descx), as.integer(xrow), y, as.integer(descy), as.integer(yrow), as.integer(length(yrow)),
-               PACKAGE="pbdBASE")
+  ret <- .Call(R_RROWCPY, 
+               x, as.integer(dim(x)), as.integer(descx), as.integer(xrow), y, as.integer(descy), as.integer(yrow), as.integer(length(yrow)))
   
   return( ret )
 }
@@ -207,9 +194,8 @@ base.rrowcpy2 <- function(x, descx, y, descy, xrow, yrow)
   if (!is.double(y))
     storage.mode(y) <- "double"
   
-  ret <- .Call("R_RROWCPY2", 
-               x, as.integer(dim(x)), as.integer(descx), as.integer(xrow), as.integer(length(xrow)), y, as.integer(descy), as.integer(yrow), as.integer(length(yrow)),
-               PACKAGE="pbdBASE")
+  ret <- .Call(R_RROWCPY2, 
+               x, as.integer(dim(x)), as.integer(descx), as.integer(xrow), as.integer(length(xrow)), y, as.integer(descy), as.integer(yrow), as.integer(length(yrow)))
   
   return( ret )
 }
@@ -223,9 +209,8 @@ base.pdmvsum <- function(x, descx, y, descy)
   if (!is.double(y))
     storage.mode(y) <- "double"
   
-  ret <- .Call("R_PDMVSUM", 
-               x, as.integer(dim(x)), as.integer(descx), y, as.integer(descy),
-               PACKAGE="pbdBASE")
+  ret <- .Call(R_PDMVSUM, 
+               x, as.integer(dim(x)), as.integer(descx), y, as.integer(descy))
   
   return(ret)
 }
@@ -235,9 +220,7 @@ base.dhilbmk <- function(n)
 {
   n <- as.integer(n)
   
-  ret <- .Call("R_DHILBMK", 
-               n,
-               PACKAGE="pbdBASE")
+  ret <- .Call(R_DHILBMK, n)
   
   return( ret )
 }
@@ -249,9 +232,7 @@ base.pdhilbmk <- function(descx)
   descx <- as.integer(descx)
   ldim <- as.integer(base.numroc(dim=descx[3L:4L], bldim=descx[5L:6L], ICTXT=descx[2L], fixme=TRUE))
   
-  ret <- .Call("R_PDHILBMK", 
-               ldim, descx,
-               PACKAGE="pbdBASE")
+  ret <- .Call(R_PDHILBMK, ldim, descx)
   
   return( ret )
 }
@@ -265,9 +246,7 @@ base.pdmkcpn1 <- function(coef, descx)
   if (!is.double(coef))
     storage.mode(coef) <- "double"
   
-  out <- .Call("R_PDMKCPN1", 
-               as.integer(ldim), as.integer(descx), coef,
-               PACKAGE="pbdBASE")
+  out <- .Call(R_PDMKCPN1, as.integer(ldim), as.integer(descx), coef)
   
   return( out )
 }

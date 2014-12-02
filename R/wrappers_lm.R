@@ -19,11 +19,10 @@ base.rpdgels <- function(tol, m, n, nrhs, a, desca, b, descb)
   
   ltau <- as.integer(min(m, n))
   
-  ret <- .Call("R_PDGELS",
+  ret <- .Call(R_PDGELS,
             TOL=as.double(tol), M=as.integer(m), N=as.integer(n), NRHS=as.integer(nrhs),
             A=a, DESCA=as.integer(desca), B=b, DESCB=as.integer(descb),
-            LTAU=ltau,
-            PACKAGE="pbdBASE")
+            LTAU=ltau)
   
   
   # Sometimes R mistakenly frees these matrices...

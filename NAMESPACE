@@ -1,4 +1,26 @@
-useDynLib(pbdBASE)
+useDynLib(pbdBASE,
+  R_nbd,
+  ### Scalapack utilities
+  R_NUMROC, R_PDLAPRNT, g2l_coords, l2g_coords,
+  ### BLACS
+  R_optimal_grid, R_blacs_init, R_igsum2d1, R_dgsum2d1, R_igamx2d1, 
+  R_dgamx2d1, R_igamn2d1, R_dgamn2d1, R_dgesd2d1, R_dgerv2d1,
+  ### lm
+  R_PDGELS,
+  ### expm
+  R_matexp, R_p_matpow_by_squaring, R_p_matexp_pade,
+  ### pblas
+  R_PDTRAN, R_PDGEMM, R_PDCROSSPROD, R_PDCHTRI, R_PDCLVAR,
+  ### utils
+  R_MKSUBMAT, R_MKGBLMAT, R_DALLREDUCE, R_PTRI2ZERO, R_PDSWEEP, R_RL2BLAS, 
+  R_RL2INSERT, R_PDGDGTK, R_PDDIAGMK, R_RCOLCPY, R_RCOLCPY2, R_RROWCPY, 
+  R_RROWCPY2, R_PDMVSUM, R_DHILBMK, R_PDHILBMK, R_PDMKCPN1, 
+  ### qr
+  R_PDGEQPF, R_PDORGQR, R_PDORMQR, 
+  ### scalapack
+  R_PDGETRI, R_PDGESV, R_PDGESVD, R_PDSYEV, R_PDPOTRF, R_PDSYEVX, 
+  R_PDGETRF, R_PDLANGE, R_PDTRCON, R_PDGECON, R_PDGEMR2D
+)
 
 import(methods, pbdMPI, pbdSLAP)
 

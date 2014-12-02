@@ -4,9 +4,7 @@ base.rpdgeqpf <- function(tol, m, n, x, descx)
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  ret <- .Call("R_PDGEQPF",
-               as.double(tol), as.integer(m), as.integer(n), x, as.integer(descx),
-               PACKAGE="pbdBASE")
+  ret <- .Call(R_PDGEQPF, as.double(tol), as.integer(m), as.integer(n), x, as.integer(descx))
   
   if (comm.rank()!=0)
     rank <- 0L
@@ -34,10 +32,9 @@ base.rpdorgqr <- function(m, n, k, qr, descqr, tau)
   if (!is.double(tau))
     storage.mode(tau) <- "double"
   
-  out <- .Call("R_PDORGQR",
+  out <- .Call(R_PDORGQR,
             as.integer(m), as.integer(n), as.integer(k),
-            qr, as.integer(dim(qr)), as.integer(descqr), tau,
-            PACKAGE="pbdBASE")
+            qr, as.integer(dim(qr)), as.integer(descqr), tau)
   
   if (out$INFO!=0)
     comm.warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
@@ -68,13 +65,12 @@ base.rpdormqr <- function(side, trans, m, n, k, qr, descqr, tau, c, descc)
   if (!is.double(tau))
     storage.mode(tau) <- "double"
   
-  out <- .Call("R_PDORMQR",
+  out <- .Call(R_PDORMQR,
             as.character(side), as.character(trans),
             as.integer(m), as.integer(n), as.integer(k),
             qr, as.integer(dim(qr)), as.integer(descqr),
             tau,
-            c, as.integer(dim(c)), as.integer(descc),
-            PACKAGE="pbdBASE")
+            c, as.integer(dim(c)), as.integer(descc))
   
   if (out$INFO!=0)
     comm.warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))

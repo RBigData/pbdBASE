@@ -71,9 +71,7 @@ numroc <- base.numroc
 
 NUMROC <- function(N, NB, IPROC, NPROCS)
 {
-   ret <- .Call("R_NUMROC", 
-                as.integer(N), as.integer(NB), as.integer(IPROC), as.integer(NPROCS),
-                PACKAGE="pbdBASE")
+   ret <- .Call(R_NUMROC, as.integer(N), as.integer(NB), as.integer(IPROC), as.integer(NPROCS))
   
   return( ret )
 }
@@ -120,12 +118,11 @@ base.rpdlaprnt <- function(m, n, a, desca)
   if (!is.double(a))
     storage.mode(a) <- "double"
   
-  .Call("R_PDLAPRNT", 
+  .Call(R_PDLAPRNT, 
         as.integer(m), as.integer(n),
         a, as.integer(desca),
         as.character(deparse(substitute(a))),
         6L,  #WCC: 0 for stderr, 6 for stdout. Both are disabled.
-        PACKAGE="pbdBASE"
         )
   
   return( invisible(0) )
@@ -173,10 +170,9 @@ base.g2l_coord <- function(ind, dim, bldim, ICTXT=0)
   procs <- c(blacs_$NPROW, blacs_$NPCOL)
   src <- c(0,0)
   
-  out <- .Call("g2l_coords", 
+  out <- .Call(g2l_coords, 
                 ind=as.integer(ind), dim=as.integer(dim), bldim=as.integer(bldim),
-                procs=as.integer(procs), src=as.integer(src),
-                PACKAGE="pbdBASE")
+                procs=as.integer(procs), src=as.integer(src))
   
 #  out[5:6] <- out[5:6] + 1
   
@@ -202,10 +198,9 @@ base.l2g_coord <- function(ind, dim, bldim, ICTXT=0)
   procs <- c(blacs_$NPROW, blacs_$NPCOL)
   myproc <- c(blacs_$MYROW, blacs_$MYCOL)
   
-  out <- .Call("l2g_coords", 
+  out <- .Call(l2g_coords, 
                 ind=as.integer(ind), dim=as.integer(dim), bldim=as.integer(bldim),
-                procs=as.integer(procs), src=as.integer(myproc),
-                PACKAGE="pbdBASE")
+                procs=as.integer(procs), src=as.integer(myproc))
   
   return(out)
 }

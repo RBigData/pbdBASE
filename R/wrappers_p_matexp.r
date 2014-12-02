@@ -6,7 +6,7 @@ base.p_matpow_by_squaring_wrap <- function(A, desca, b=1)
   if (!is.double(A))
     storage.mode(A) <- "double"
   
-  ret <- .Call("R_p_matpow_by_squaring", A, desca, b, PACKAGE="pbdBASE")
+  ret <- .Call(R_p_matpow_by_squaring, A, desca, b)
   
   return( ret )
 }
@@ -20,7 +20,7 @@ base.p_matexp_pade_wrap <- function(A, desca, p=6)
   if (!is.double(A))
     storage.mode(A) <- "double"
   
-  ret <- .Call("R_p_matexp_pade", A, desca, as.integer(p), PACKAGE="pbdBASE")
+  ret <- .Call(R_p_matexp_pade, A, desca, as.integer(p))
   
   return( ret )
 }

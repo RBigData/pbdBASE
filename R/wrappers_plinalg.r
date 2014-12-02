@@ -9,10 +9,9 @@ base.crossprod <- function(uplo, trans, x, descx, descc)
   
   cldim <- base.numroc(descc[3:4], descc[5:6], ICTXT=descc[2])
   
-  ret <- .Call("R_PDCROSSPROD",
+  ret <- .Call(R_PDCROSSPROD,
                   uplo, trans, x, as.integer(descx),
-                  as.integer(cldim), as.integer(descc),
-                  PACKAGE="pbdBASE")
+                  as.integer(cldim), as.integer(descc))
   
   return( ret )
 }
@@ -28,10 +27,9 @@ base.pdchtri <- function(uplo, x, descx, descc)
   
   cldim <- base.numroc(descc[3:4], descc[5:6], ICTXT=descc[2])
   
-  ret <- .Call("R_PDCHTRI", 
+  ret <- .Call(R_PDCHTRI, 
                 uplo, x, as.integer(dim(x)), as.integer(descx), 
-                as.integer(cldim), as.integer(descc),
-                PACKAGE="pbdBASE")
+                as.integer(cldim), as.integer(descc))
   
   return( ret )
 }
@@ -43,23 +41,19 @@ base.pdclvar <- function(x, descx)
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  ret <- .Call("R_PDCLVAR", 
-              x, as.integer(descx), as.integer(dim(x)[2L]),
-              PACKAGE="pbdBASE")
+  ret <- .Call(R_PDCLVAR, x, as.integer(descx), as.integer(dim(x)[2L]))
   
   return( ret )
 }
 
 
-base.pdnep <- function(x, descx)
-{
-  if (!is.double(x))
-    storage.mode(x) <- "double"
-  
-  ret <- .Call("R_PDNEP", 
-                x, as.integer(descx), dim(x),
-                PACKAGE="pbdBASE")
-  
-  return( ret )
-}
+#base.pdnep <- function(x, descx)
+#{
+#  if (!is.double(x))
+#    storage.mode(x) <- "double"
+#  
+#  ret <- .Call(R_PDNEP, x, as.integer(descx), dim(x))
+#  
+#  return( ret )
+#}
 

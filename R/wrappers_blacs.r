@@ -10,7 +10,7 @@ base.procgrid <- function(nprocs)
 #  out <- .Fortran("OPTIMALGRID", as.integer(nprocs), integer(1), integer(1))
 #  out[[1L]] <- NULL
 #  return(list(nprow=out[[2L]], npcol=out[[1L]]))
-  .Call("R_optimal_grid", as.integer(nprocs), PACKAGE="pbdBASE")
+  .Call(R_optimal_grid, as.integer(nprocs))
 }
 
 procgrid <- base.procgrid
@@ -63,9 +63,7 @@ base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
     return( invisible(1) )
   }
   
-  value <- .Call("R_blacs_init", 
-                 as.integer(NPROW), as.integer(NPCOL), as.integer(ICTXT),
-                 PACKAGE = "pbdBASE")
+  value <- .Call(R_blacs_init, as.integer(NPROW), as.integer(NPCOL), as.integer(ICTXT))
   
   assign(x=nm, value=value, envir=.pbdBASEEnv )
   
@@ -189,10 +187,9 @@ base.igsum2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
   if (!is.integer(x))
     storage.mode(x) <- "integer"
   
-  out <- .Call("R_igsum2d1", as.integer(ICTXT), as.character(SCOPE), 
+  out <- .Call(R_igsum2d1, as.integer(ICTXT), as.character(SCOPE), 
                 as.integer(m), as.integer(n), x, as.integer(lda), 
-                as.integer(RDEST), as.integer(CDEST), 
-                PACKAGE="pbdBASE")
+                as.integer(RDEST), as.integer(CDEST))
   
   return( out )
 }
@@ -205,10 +202,9 @@ base.dgsum2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  out <- .Call("R_dgsum2d1", as.integer(ICTXT), as.character(SCOPE), 
+  out <- .Call(R_dgsum2d1, as.integer(ICTXT), as.character(SCOPE), 
                 as.integer(m), as.integer(n), x, as.integer(lda), 
-                as.integer(RDEST), as.integer(CDEST), 
-                PACKAGE="pbdBASE")
+                as.integer(RDEST), as.integer(CDEST))
   
   return( out )
 }
@@ -223,10 +219,9 @@ base.igamx2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
   if (!is.integer(x))
     storage.mode(x) <- "integer"
   
-  out <- .Call("R_igamx2d1", as.integer(ICTXT), as.character(SCOPE), 
+  out <- .Call(R_igamx2d1, as.integer(ICTXT), as.character(SCOPE), 
                 as.integer(m), as.integer(n), x, as.integer(lda), 
-                as.integer(RDEST), as.integer(CDEST), 
-                PACKAGE="pbdBASE")
+                as.integer(RDEST), as.integer(CDEST))
   
   return( out )
 }
@@ -239,10 +234,9 @@ base.dgamx2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  out <- .Call("R_dgamx2d1", as.integer(ICTXT), as.character(SCOPE), 
+  out <- .Call(R_dgamx2d1, as.integer(ICTXT), as.character(SCOPE), 
                 as.integer(m), as.integer(n), x, as.integer(lda), 
-                as.integer(RDEST), as.integer(CDEST), 
-                PACKAGE="pbdBASE")
+                as.integer(RDEST), as.integer(CDEST))
   
   return( out )
 }
@@ -257,10 +251,9 @@ base.igamn2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
   if (!is.integer(x))
     storage.mode(x) <- "integer"
   
-  out <- .Call("R_igamn2d1", as.integer(ICTXT), as.character(SCOPE), 
+  out <- .Call(R_igamn2d1, as.integer(ICTXT), as.character(SCOPE), 
                 as.integer(m), as.integer(n), x, as.integer(lda), 
-                as.integer(RDEST), as.integer(CDEST), 
-                PACKAGE="pbdBASE")
+                as.integer(RDEST), as.integer(CDEST))
   
   return( out )
 }
@@ -273,10 +266,9 @@ base.dgamn2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  out <- .Call("R_dgamn2d1", as.integer(ICTXT), as.character(SCOPE), 
+  out <- .Call(R_dgamn2d1, as.integer(ICTXT), as.character(SCOPE), 
                 as.integer(m), as.integer(n), x, as.integer(lda), 
-                as.integer(RDEST), as.integer(CDEST), 
-                PACKAGE="pbdBASE")
+                as.integer(RDEST), as.integer(CDEST))
   
   return( out )
 }
@@ -291,9 +283,8 @@ base.dgesd2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  out <- .Call("R_dgesd2d1", as.integer(ICTXT), as.integer(m), as.integer(n), 
-                x, as.integer(lda), as.integer(RDEST), as.integer(CDEST), 
-                PACKAGE="pbdBASE")
+  out <- .Call(R_dgesd2d1, as.integer(ICTXT), as.integer(m), as.integer(n), 
+                x, as.integer(lda), as.integer(RDEST), as.integer(CDEST))
   
   return( out )
 }
@@ -306,9 +297,8 @@ base.dgerv2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
   if (!is.double(x))
     storage.mode(x) <- "double"
   
-  out <- .Call("R_dgerv2d1", as.integer(ICTXT), as.integer(m), as.integer(n), 
-                x, as.integer(lda), as.integer(RDEST), as.integer(CDEST), 
-                PACKAGE="pbdBASE")
+  out <- .Call(R_dgerv2d1, as.integer(ICTXT), as.integer(m), as.integer(n), 
+                x, as.integer(lda), as.integer(RDEST), as.integer(CDEST))
   
   return( out )
 }
