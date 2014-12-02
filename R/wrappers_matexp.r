@@ -1,30 +1,10 @@
-base.matpow_by_squaring <- function(A, b=1)
-{
-  b <- as.integer(b)
-  
-  if (!is.double(A))
-    storage.mode(A) <- "double"
-  
-  ret <- .Call("R_matpow_by_squaring", A, b, PACKAGE="pbdBASE")
-  
-  return( ret )
-}
-
-
-
-base.matexp_pade <- function(A, p=6)
+base.matexp <- function(A, p=6, t=1)
 {
   if (!is.double(A))
     storage.mode(A) <- "double"
   
-  out <- .Call("R_matexp_pade", A, as.integer(p), PACKAGE="pbdBASE")
-  
-  N <- out$N
-  D <- out$D
-  
-  R <- solve(D) %*% N
+  R <- .Call("R_matexp", A, as.integer(p), as.double(t), PACKAGE="pbdBASE")
   
   return( R )
 }
-
 

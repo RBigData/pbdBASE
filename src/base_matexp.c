@@ -2,59 +2,35 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// Copyright 2013, Schmidt
+// Copyright 2013-2014, Schmidt
+
 
 #include "pbdBASE.h"
 #include "base/expm/matexp.h"
 
 
-SEXP R_matpow_by_squaring(SEXP A, SEXP b)
+SEXP R_matexp(SEXP A, SEXP p)
 {
   R_INIT;
   const int n = nrows(A);
-  double *cpA;
+  int i;
+  double *A_cp;
+  SEXP R;
   
-  SEXP P;
-  newRmat(P, n, n, "dbl");
+  newRmat(R, n, n, "dbl");
   
-  // A is modified
-  //FIXME check return...
-  cpA = malloc(n*n*sizeof(double));
-  memcpy(cpA, REAL(A), n*n*sizeof(double));
+  A_cp = malloc(n*n*sizeof(A_cp));
   
-  matpow_by_squaring(cpA, n, INT(b,0), REAL(P));
-  
-  free(cpA);
-  
-  R_END;
-  return P;
-}
-
-
-
-SEXP R_matexp_pade(SEXP A, SEXP p)
-{
-  R_INIT;
-  const int n = nrows(A);
-  SEXP N, D;
-  SEXP RET, RET_NAMES;
+  for (i=0; i<n*n; i++)
+    A_cp[i] = REAL(A)[i];
   
   
-  // Allocate N and D
-  newRmat(N, n, n, "dbl");
-  newRmat(D, n, n, "dbl");
+  matexp(n, INT(p), A_cp, REAL(R));
   
-  
-  // Compute N and D
-  matexp_pade(n, INT(p,0), REAL(A), REAL(N), REAL(D));
-  
-  
-  // Wrangle the return
-  RET_NAMES = make_list_names(2, "N", "D");
-  RET = make_list(RET_NAMES, 2, N, D);
+  free(A_cp);
   
   R_END;
-  return RET;
+  return R;
 }
 
 
