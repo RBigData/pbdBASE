@@ -122,7 +122,7 @@ base.rpdlaprnt <- function(m, n, a, desca)
         as.integer(m), as.integer(n),
         a, as.integer(desca),
         as.character(deparse(substitute(a))),
-        6L,  #WCC: 0 for stderr, 6 for stdout. Both are disabled.
+        6L #WCC: 0 for stderr, 6 for stdout. Both are disabled.
         )
   
   return( invisible(0) )
