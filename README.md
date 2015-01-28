@@ -1,8 +1,10 @@
 # pbdBASE 
 
-pbdBASE is a package for distributed matrix algebra computations over MPI,
-using the BLACS, PBLAS, and ScaLAPACK libraries by way of the pbdMPI 
-and pbdSLAP packages.
+Unless you are a developer/distributed programming nerd, you probably
+want to see pbdDMAT and/or pbdDEMO.
+
+pbdBASE is a set of bindings to and extensions for BLACS, PBLAS, and
+ScaLAPACK.
 
 pbdBASE requires:
 * R version 2.14.0 or higher with pbdMPI and pbdSLAP.
