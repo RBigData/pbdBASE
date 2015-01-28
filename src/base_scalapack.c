@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// Copyright 2013, Schmidt and Chen
+// Copyright 2013-2015, Schmidt and Chen
 
 #include "pbdBASE.h"
 
@@ -213,11 +213,9 @@ SEXP R_PDGETRF(SEXP M, SEXP N, SEXP A, SEXP CLDIM, SEXP DESCA, SEXP LIPIV)
   INT(INFO, 0) = 0;
   
   INT(LIPIV) = nonzero(INT(LIPIV));
-  ipiv = malloc(INT(LIPIV) * sizeof(int));
+  ipiv = R_alloc(INT(LIPIV), sizeof(int));
   
   pdgetrf_(INTP(M), INTP(N), DBLP(C), &IJ, &IJ, INTP(DESCA), ipiv, INTP(INFO));
-  
-  free(ipiv);
   
   // Manage return
   RET_NAMES = make_list_names(2, "info", "A");
@@ -293,17 +291,17 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
   for (i=0; i<9; i++)
     descz[i] = INT(DESCA, i);
   
-  w = malloc(INT(N) * sizeof(double));
-  z = malloc(ldm[0]*ldm[1] * sizeof(double));
-  gap = malloc(blacs[1]*blacs[2] * sizeof(double));
+  w = R_alloc(INT(N), sizeof(double));
+  z = R_alloc(ldm[0]*ldm[1], sizeof(double));
+  gap = R_alloc(blacs[1]*blacs[2], sizeof(double));
   
   
-  a = malloc(ldm[0]*ldm[1] * sizeof(double));
+  a = R_alloc(ldm[0]*ldm[1], sizeof(double));
   
   memcpy(a, DBLP(A), nrows(A)*ncols(A)*sizeof(double));
   
-  ifail = malloc(INT(N, 0) * sizeof(int));
-  iclustr = malloc(2*blacs[1]*blacs[2] * sizeof(int));
+  ifail = R_alloc(INT(N, 0), sizeof(int));
+  iclustr = R_alloc(2*blacs[1]*blacs[2], sizeof(int));
   
   
   // Allocate local workspace
@@ -320,10 +318,10 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
     ifail, iclustr, gap, &info);
   
   lwork = nonzero( ((int) tmp_lwork) );
-  work = malloc(lwork * sizeof(double));
+  work = R_alloc(lwork, sizeof(double));
   
   liwork = nonzero(tmp_liwork);
-  iwork = malloc(liwork * sizeof(int));
+  iwork = R_alloc(liwork, sizeof(int));
   
   // Compute eigenvalues
   m = 0;
@@ -369,16 +367,6 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
     RET = make_list(RET_NAMES, 3, W, Z, M);
   }
   
-  // Clean up
-  free(w);
-  free(z);
-  free(gap);
-  free(a);
-  free(ifail);
-  free(iclustr);
-  free(work);
-  free(iwork);
-  
   
   R_END;
   return RET;
@@ -419,7 +407,7 @@ SEXP R_PDGECON(SEXP TYPE, SEXP M, SEXP N, SEXP A, SEXP DESCA)
   
   
   // Copy A
-  cpA = malloc(nrows(A)*ncols(A) * sizeof(double));
+  cpA = R_alloc(nrows(A)*ncols(A), sizeof(double));
   memcpy(cpA, REAL(A), nrows(A)*ncols(A)*sizeof(double));
   
   
@@ -429,7 +417,6 @@ SEXP R_PDGECON(SEXP TYPE, SEXP M, SEXP N, SEXP A, SEXP DESCA)
   
   
   DBL(RET, 1) = (double) info;
-  free(cpA);
   
   R_END;
   return RET;
