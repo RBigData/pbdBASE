@@ -1,4 +1,5 @@
 ### global-to-local
+#' @export
 indxg2l <- function(INDXGLOB, NB, IPROC, ISRCPROC, NPROCS)
 {
   indx <- NB*floor((INDXGLOB - 1L)/(NB*NPROCS)) + ((INDXGLOB - 1L)%%NB) + 1L
@@ -6,6 +7,7 @@ indxg2l <- function(INDXGLOB, NB, IPROC, ISRCPROC, NPROCS)
   return( indx )
 }
 
+#' @export
 g2lpair <- function(gi, gj, bldim, ICTXT)
 {
   dum <- 0
@@ -20,7 +22,7 @@ g2lpair <- function(gi, gj, bldim, ICTXT)
 
 
 
-### local-to-global
+#' @export
 indxl2g <- function(INDXLOC, NB, IPROC, ISRCPROC, NPROCS)
 {
   indx <- NPROCS*NB*(as.integer((INDXLOC - 1L)/NB)) + 
@@ -31,6 +33,7 @@ indxl2g <- function(INDXLOC, NB, IPROC, ISRCPROC, NPROCS)
   return( indx )
 }
 
+#' @export
 l2gpair <- function(i, j, bldim, ICTXT)
 {
   grid <- blacs(ICTXT=ICTXT)

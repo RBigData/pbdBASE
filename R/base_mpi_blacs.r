@@ -1,4 +1,5 @@
 # "Optimal" process grid when nprow and npcol are empty
+#' @export
 base.procgrid <- function(nprocs)
 {
 #  out <- .Fortran("OPTIMALGRID", as.integer(nprocs), integer(1), integer(1))
@@ -23,7 +24,8 @@ isint <- function(x){
 }
 
 
-# Initialize Process Grid --- these functions have side effects and no return
+
+#' @export
 base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
 {
   if (missing(ICTXT))
@@ -72,11 +74,94 @@ base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
   invisible( 0 )
 }
 
+#' @export
 blacs_gridinit <- base.blacs_gridinit
 
 
 
-base.init.grid <- function(NPROW, NPCOL, ICTXT, ..., quiet = FALSE)
+
+#' Initialize Process Grid
+#' 
+#' Manages the creation of BLACS context grids.
+#' 
+#' \code{blacs_gridinit()} is for experienced users only.  It is a shallow
+#' wrapper of the BLACS routine \code{BLACS_GRIDINIT}, with the addition of
+#' creating the \code{.__blacs_gridinfo_ICTXT} objects, as described below.
+#' 
+#' The remainder of this section applies only to \code{init.grid()}.
+#' 
+#' If \code{ICTXT} is missing, three variables will be created in the
+#' \code{.pbdBASEEnv} environment:
+#' 
+#' \code{.__blacs_gridinfo_0}
+#' 
+#' \code{.__blacs_gridinfo_1}
+#' 
+#' \code{.__blacs_gridinfo_2}
+#' 
+#' These variables store the BLACS process grid information for the BLACS
+#' context corresponding to the trailing digit of the variable. Most users
+#' should invoke \code{init.grid()} in this fashion, namely with ICTXT missing,
+#' and only do so once.
+#' 
+#' Contexts 0, 1, and 2 are reserved. Additional custom contexts are possible
+#' to create, but they must be integers >= 3.
+#' 
+#' Context 0 is the ``full'' process grid of \code{NPROW} by \code{NPCOL}
+#' processes; contexts 1 is the process grid consisting of 1 process row and
+#' \code{NPROW}*\code{NPCOL} processes columns; context 2 is the process grid
+#' consisting of \code{NPROW}*\code{NPCOL} processes rows and 1 process column.
+#' These contexts can be redundant depending on the number of prcesses
+#' available.
+#' 
+#' BLACS contexts have important internal use, and advanced users familiar with
+#' ScaLAPACK might find some advantage in directly manipulating these process
+#' grids. Most users should not need to directly manage BLACS contexts, in this
+#' function or elsewhere.
+#' 
+#' If the \code{NPROW} and \code{NPCOL} values are missing, then a best process
+#' grid will be chosen for the user based on the total available number of
+#' processes. Here ``best'' means as close to a square grid as possible.
+#' 
+#' The variables \code{.__blacs_gridinfo_ICTXT} are just storage mechanisms to
+#' avoid needing to directly invoke the BLACS routine \code{BLACS_GRIDINFO}.
+#' 
+#' Additionally, another variable is created in the \code{.pbdBASEEnv}
+#' environment, namely \code{.__blacs_initialized}. Its existence is to alert
+#' \code{finalize()} to shut down BLACS communicators, if necessary, to prevent
+#' memory leaks.
+#' 
+#' @param NPROW 
+#' number of process rows. Can be missing; see details.
+#' @param NPCOL 
+#' number of process columns. Can be missing; see details.
+#' @param ICTXT 
+#' BLACS context number.
+#' @param quiet 
+#' logical; controls whether or not information about grid size
+#' should be printed.
+#' 
+#' @return 
+#' Silently returns 0 when successful. Additionally, several variables
+#' are created in the \code{.pbdBASEEnv} environment.  See Details section.
+#' 
+#' @seealso \link{BLACS}
+#' 
+#' @keywords BLACS
+#' 
+#' @examples
+#' \dontrun{
+#' # Save code in a file "demo.r" and run with 2 processors by
+#' # > mpiexec -np 2 Rscript demo.r
+#' 
+#' library(pbdBASE, quiet = TRUE)
+#' init.grid()
+#' 
+#' finalize()
+#' }
+#' 
+#' @export
+init.grid <- function(NPROW, NPCOL, ICTXT, quiet = FALSE)
 {
   # initialize pbdMPI communicator
   pbdMPI::init() 
@@ -117,12 +202,11 @@ base.init.grid <- function(NPROW, NPCOL, ICTXT, ..., quiet = FALSE)
   invisible(0) # quiet return
 }
 
-init.grid <- base.init.grid
 
 
 
 # shut down a BLACS context
-base.gridexit <- function(ICTXT, ..., override=FALSE)
+base.gridexit <- function(ICTXT, override=FALSE)
 {
   base.valid_context(ICTXT=ICTXT, override=override)
   
@@ -137,23 +221,93 @@ base.gridexit <- function(ICTXT, ..., override=FALSE)
   return( invisible(0) )
 }
 
+
+#' gridexit
+#' 
+#' Frees a BLACS context.
+#' 
+#' For advanced users only.
+#' 
+#' The function frees the requested BLACS context. It is a trivial wrapper for
+#' the BLACS routine \code{BLACS_GRIDEXIT}. Also removes the object
+#' \code{.__blacs_gridinfo_ICTXT}.
+#' 
+#' Contexts 0, 1, and 2 can not be freed in this way unless the argument
+#' \code{override=FALSE}. This will probably break something and I do not
+#' recommend it.
+#' 
+#' @param ICTXT 
+#' BLACS context number.
+#' @param override 
+#' logical; if TRUE, ignores normal check preventing the
+#' closing of \code{ICTXT} values of 0, 1, and 2.
+#' 
+#' @return
+#' Silently returns 0 when successful. Silently returns 1 when
+#' requested \code{ICTXT} does not exist.
+#' 
+#' @seealso \code{\link{InitGrid}}
+#' 
+#' @keywords BLACS
+#' 
+#' @export
 gridexit <- base.gridexit
 
 
 
-# exit the blacs grid
+#' BLACS Exit
+#' 
+#' Shuts down all BLACS communicators.
+#' 
+#' If the user wishes to shut down BLACS communicators but still have access to
+#' MPI, then call this function with \code{CONT=TRUE}.  Calling
+#' \code{blacsexit(CONT=FALSE)} will shut down all MPI communicators,
+#' equivalent to calling
+#' 
+#' \code{> blacsexit(CONT=TRUE)} \code{> finalize(mpi.finalize=TRUE)}
+#' 
+#' This function is automatically invoked if BLACS communicators are running
+#' and \code{finalize()} is called.
+#' 
+#' @param CONT 
+#' logical; determines whether or not to shut down \emph{all} MPI
+#' communicators
+#' 
+#' @return 
+#' Has an invisible return of 0 when successful.
+#' 
+#' @seealso \code{\link{InitGrid}}
+#' 
+#' @keywords BLACS
+#' 
+#' @examples
+#' \dontrun{
+#' # Save code in a file "demo.r" and run with 2 processors by
+#' # > mpiexec -np 2 Rscript demo.r
+#' 
+#' library(pbdBASE, quiet = TRUE)
+#' init.grid()
+#' 
+#' blacsexit()
+#' 
+#' finalize()
+#' }
+#' 
+#' @export
 base.blacsexit <- function(CONT=TRUE)
 {
-  .Fortran("BLACS_EXIT", as.integer(CONT), PACKAGE="pbdBASE")
+  .Fortran("BLACS_EXIT", as.integer(CONT), PACKAGE="pbdSLAP")
   
   return( invisible(0) )
 }
 
+#' @export
 blacsexit <- base.blacsexit
 
 
 
 # replacement for pbdMPI::finalize() that automatically shuts BLACS down
+#' @export
 base.finalize <- function(mpi.finalize=.SPMD.CT$mpi.finalize)
 {
   if (exists(".__blacs_initialized", envir = .pbdBASEEnv)){
@@ -164,6 +318,7 @@ base.finalize <- function(mpi.finalize=.SPMD.CT$mpi.finalize)
   pbdMPI::finalize(mpi.finalize=mpi.finalize)
 }
 
+#' @export
 finalize <- base.finalize
 
 

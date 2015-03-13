@@ -1,6 +1,7 @@
 # R version of ScaLAPACK tool DESCINIT
 # Creates ScaLAPACK descriptor array for distributed matrix
-# This array is identical to 
+
+#' @export
 base.descinit <- function(dim, bldim, ldim, ICTXT=0)
 {
   grid <- base.blacs(ICTXT)
@@ -31,6 +32,8 @@ base.descinit <- function(dim, bldim, ldim, ICTXT=0)
 # Computes ldim of ddmatrix given dim and bldim
 # if fixme=TRUE, then returned local dimensions which are < 1 will 
 # be corrected (made = 1), and otherwise will be left unchanged.
+
+#' @export
 base.numroc <- function(dim, bldim, ICTXT=0, fixme=TRUE)
 {
   
@@ -77,22 +80,55 @@ NUMROC <- function(N, NB, IPROC, NPROCS)
 }
 
 
-# For use with local arithmetic; basically does nothing if the 
-# local storage is just filler to make scalapack happy
-# return is logical answer to the question:  'do I own anything?', 
-# and not a C-style return
-#base.ownany <- function(dim, bldim, ICTXT=0)
-#{
-#  if (length(bldim)==1)
-#    bldim <- rep(bldim, 2)
-#  
-#  check <- base.numroc(dim=dim, bldim=bldim, ICTXT=ICTXT, fixme=FALSE)
-#  
-#  if (any(check<1))
-#    return(FALSE)
-#  else
-#    return(TRUE)
-#}
+
+#' Determining Local Ownership of a Distributed Matrix
+#' 
+#' aa
+#' 
+#' For advanced users only.
+#' 
+#' \code{numroc()} is a re-implementation at the R level of the ScaLAPACK
+#' subroutine NUMROC, which returns the local dimension of the matrix storage,
+#' i.e. the dimension for the \code{Data} slot of the distributed matrix on
+#' that process. The \code{fixme=} option, if \code{TRUE}, returns a minimum of
+#' 1 for each dimension. If \code{fixme=FALSE}, then values less than 1 for
+#' either dimension are possible, and in this case indicate a lack of local
+#' ownership of the global matrix.
+#' 
+#' \code{ownany()} is a simple wrapper of numroc. The return is the answer to
+#' the question 'do I own any of the global matrix?'.  Passing a distributed
+#' matrix is allowed, but often it is convenient to determine that information
+#' without even having a distributed matrix on hand. In this case, explicitly
+#' passing the appropriate information to the arguments \code{dim=},
+#' \code{bldim=} (and \code{CTXT=} as necessary, since it defaults to 0) while
+#' leaving \code{x} missing will produce the desired result. See the examples
+#' below for more clarity.
+#' 
+#' The return for each function is local.
+#' 
+#' @aliases Ownership base.ownany numroc
+#' @param dim global dimension
+#' @param bldim blocking dimension
+#' @param ICTXT BLACS context
+#' @param fixme logical, controls correction of local dimension return
+#' @seealso \code{\link{BLACS}, \link{InitGrid}}
+#' @keywords BLACS Distributing Data
+#' @examples
+#' 
+#' \dontrun{
+#' # Save code in a file "demo.r" and run with 2 processors by
+#' # > mpiexec -np 2 Rscript demo.r
+#' 
+#' library(pbdBASE, quiet = TRUE)
+#' init.grid()
+#' 
+#' iown <- ownany(dim=c(4, 4), bldim=c(2, 2), CTXT=0)
+#' comm.print(iown, all.rank=T)
+#' 
+#' finalize()
+#' }
+#' 
+#' @export
 base.ownany <- function(dim, bldim, ICTXT=0)
 {
   if (length(bldim)==1)
@@ -113,6 +149,8 @@ base.ownany <- function(dim, bldim, ICTXT=0)
 
 
 # Hook into ScaLAPACK tool PDLAPRNT
+
+#' @export
 base.rpdlaprnt <- function(m, n, a, desca)
 {
   if (!is.double(a))
@@ -129,6 +167,8 @@ base.rpdlaprnt <- function(m, n, a, desca)
 }
 
 # Compute maximum dimension across all nodes
+
+#' @export
 base.maxdim <- function(dim)
 {
   mdim <- numeric(2)
@@ -139,6 +179,8 @@ base.maxdim <- function(dim)
 }
 
 # Compute dimensions on process MYROW=MYCOL=0
+
+#' @export
 base.dim0 <- function(dim, ICTXT=0)
 {
   blacs_ <- base.blacs(ICTXT=ICTXT)
@@ -164,6 +206,8 @@ base.dim0 <- function(dim, ICTXT=0)
 
 
 # l2g and g2l
+
+#' @export
 base.g2l_coord <- function(ind, dim, bldim, ICTXT=0)
 {
   blacs_ <- base.blacs(ICTXT=ICTXT)
@@ -192,6 +236,7 @@ base.g2l_coord <- function(ind, dim, bldim, ICTXT=0)
 g2l_coord <- base.g2l_coord
 
 
+#' @export
 base.l2g_coord <- function(ind, dim, bldim, ICTXT=0)
 {
   blacs_ <- base.blacs(ICTXT=ICTXT)

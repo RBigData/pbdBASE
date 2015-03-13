@@ -8,6 +8,7 @@
 # PDGETRI:    Matrix inverse
 # ------------------------------------------------
 
+#' @export
 base.rpdgetri <- function(n, a, desca)
 {
     aldim <- base.numroc(desca[3:4], desca[5:6], ICTXT=desca[2])
@@ -27,6 +28,7 @@ base.rpdgetri <- function(n, a, desca)
 # PDGESV:    Solving Ax=b
 # ------------------------------------------------
 
+#' @export
 base.rpdgesv <- function(n, nrhs, a, desca, b, descb)
 {
     aldim <- base.numroc(desca[3:4], desca[5:6], ICTXT=desca[2])
@@ -61,6 +63,7 @@ base.rpdgesv <- function(n, nrhs, a, desca, b, descb)
 # PDGESVD:    SVD of x
 # ------------------------------------------------
 
+#' @export
 base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt, ..., inplace=FALSE)
 {
     size <- min(m, n)
@@ -123,6 +126,7 @@ base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt, ..., inpla
 # PDSYEV:    Eigen
 # ------------------------------------------------
 
+#' @export
 base.rpdsyev <- function(jobz, uplo, n, a, desca, descz)
 {
     aldim <- dim(a)
@@ -159,6 +163,7 @@ base.rpdsyev <- function(jobz, uplo, n, a, desca, descz)
 # PDPOTRF:    Cholesky Factorization
 # ------------------------------------------------
 
+#' @export
 base.rpdpotrf <- function(uplo, n, a, desca)
 {
     
@@ -182,6 +187,7 @@ base.rpdpotrf <- function(uplo, n, a, desca)
 # PDSYEVX:    Eigenvalues...again
 # ------------------------------------------------
 
+#' @export
 base.rpdsyevx <- function(jobz, range, n, a, desca, vl, vu, il, iu, abstol=1e-8, orfac=1e-3)
 {
     
@@ -204,6 +210,7 @@ base.rpdsyevx <- function(jobz, range, n, a, desca, vl, vu, il, iu, abstol=1e-8,
 # PDGETRF:    LU Decomposition
 # ------------------------------------------------
 
+#' @export
 base.rpdgetrf <- function(a, desca)
 {
     m <- desca[3L]
@@ -237,6 +244,7 @@ base.rpdgetrf <- function(a, desca)
 # ------------------------------------------------
 # ################################################
 
+#' @export
 base.indxg2p <- function(INDXGLOB, NB, NPROCS)
 {
     
@@ -248,6 +256,8 @@ base.indxg2p <- function(INDXGLOB, NB, NPROCS)
 }
 
 
+
+#' @export
 numroc2 <- function(N, NB, IPROC, NPROCS)
 {
     ISRCPROC <- 0L
@@ -270,6 +280,7 @@ numroc2 <- function(N, NB, IPROC, NPROCS)
 
 
 # matrix norms
+#' @export
 base.rpdlange <- function(norm, m, n, a, desca)
 {
     if (length(norm)>1L)
@@ -315,6 +326,7 @@ base.rpdtrcon <- function(norm, uplo, diag, n, a, desca)
 
 
 # Inverse condition number - general matrix
+#' @export
 base.rpdgecon <- function(norm, m, n, a, desca)
 {
     if (length(norm)>1L)
@@ -345,6 +357,7 @@ base.rpdgecon <- function(norm, m, n, a, desca)
 # PDGEMR2D:    BC redistributions
 # ------------------------------------------------
 
+#' @export
 base.rpdgemr2d <- function(x, descx, descy)
 {
     ldimy <- base.numroc(dim=descy[3L:4L], bldim=descy[5L:6L], ICTXT=descy[2L])

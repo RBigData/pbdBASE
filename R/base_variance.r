@@ -1,3 +1,4 @@
+#' @export
 base.pdclvar <- function(x, descx)
 {
   if (!is.double(x))

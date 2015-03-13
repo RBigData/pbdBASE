@@ -1,4 +1,21 @@
-# crossprod/tcrossprod
+#' crossprod
+#' 
+#' Crossproduct.
+#' 
+#' For advanced users only.
+#' 
+#' @param uplo
+#' Triangle whose values to use.
+#' @param trans
+#' tcrossprod or crossprod.
+#' @param x
+#' Matrix to crossprod.
+#' @param descx
+#' ScaLAPACK descriptor array.
+#' @param descc
+#' ScaLAPACK descriptor array of output.
+#' 
+#' @export
 base.crossprod <- function(uplo, trans, x, descx, descc)
 {
   trans <- toupper(trans)
@@ -17,9 +34,27 @@ base.crossprod <- function(uplo, trans, x, descx, descc)
 }
 
 
-# FIXME move row/col adjustment down to Fortran (currently in calling DMAT chol2inv method)
+
+#' pdchtri
+#' 
+#' Invers of cholesky.
+#' 
+#' For advanced users only.
+#' 
+#' @param uplo
+#' Triangle whose values to use.
+#' @param x
+#' Matrix to crossprod.
+#' @param descx
+#' ScaLAPACK descriptor array.
+#' @param descc
+#' ScaLAPACK descriptor array of output.
+#' 
+#' @export
 base.pdchtri <- function(uplo, x, descx, descc)
 {
+  # FIXME move row/col adjustment down to Fortran (currently in calling DMAT chol2inv method)
+  
   uplo <- toupper(uplo)
   
   if (!is.double(x))
@@ -33,16 +68,4 @@ base.pdchtri <- function(uplo, x, descx, descc)
   
   return( ret )
 }
-
-
-
-#base.pdnep <- function(x, descx)
-#{
-#  if (!is.double(x))
-#    storage.mode(x) <- "double"
-#  
-#  ret <- .Call(R_PDNEP, x, as.integer(descx), dim(x))
-#  
-#  return( ret )
-#}
 

@@ -1,3 +1,17 @@
+#' matexp
+#' 
+#' Serial matrix exponentiation.
+#' 
+#' For advanced users only.
+#' 
+#' @param A
+#' Matrix to exponentiate.
+#' @param p
+#' Pade' expansion size.
+#' @param t
+#' TODO.
+#' 
+#' @export
 base.matexp <- function(A, p=6, t=1)
 {
   if (!is.double(A))

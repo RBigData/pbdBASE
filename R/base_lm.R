@@ -1,6 +1,25 @@
-# lm.fit()
-# Wrapper for custom PDGELS function, which solves linear least
-# squares problems.
+#' rpdgels
+#' 
+#' Linear model fitter via rank-revealing QR (with pivoting).
+#' 
+#' For advanced users only.
+#' 
+#' @param tol 
+#' Numerical tolerance for the QR.
+#' @param m,n
+#' Problem size.
+#' @param nrhs
+#' Number of right hand sides.
+#' @param a
+#' Left hand side.
+#' @param desca
+#' ScaLAPACK descriptor array.
+#' @param b
+#' Right hand side.
+#' @param descb
+#' ScaLAPACK descriptor array.
+#' 
+#' @export
 base.rpdgels <- function(tol, m, n, nrhs, a, desca, b, descb)
 {
 #  # FIXME adjustment for weird lda issue

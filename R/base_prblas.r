@@ -1,3 +1,17 @@
+#' Level 2 R-like BLAS
+#' 
+#' For advanced users only.
+#' 
+#' @param x
+#' Matrix.
+#' @param descx
+#' ScaLAPACK descriptor array.
+#' @param vec
+#' Global vector.
+#' @param FUN
+#' Function.
+#' 
+#' @export
 base.rl2blas <- function(x, descx, vec, FUN)
 {
   if (!is.double(x))
@@ -14,7 +28,20 @@ base.rl2blas <- function(x, descx, vec, FUN)
 
 
 
-# matrix-vector insertion
+#' R-like Matrix-Vector Insertion
+#' 
+#' For advanced users only.
+#' 
+#' @param x
+#' Matrix.
+#' @param descx
+#' ScaLAPACK descriptor array.
+#' @param vec
+#' Global vector.
+#' @param i,j
+#' Indices.
+#' 
+#' @export
 base.rl2insert <- function(x, descx, vec, i, j)
 {
   dim <- descx[3L:4L]
@@ -43,6 +70,18 @@ base.rl2insert <- function(x, descx, vec, i, j)
 
 
 
+#' R Column Copy
+#' 
+#' For advanced users only.
+#' 
+#' @param x,y
+#' Matrix.
+#' @param descx,descy
+#' ScaLAPACK descriptor array.
+#' @param xcol,ycol
+#' Columns.
+#' 
+#' @export
 base.rcolcpy <- function(x, descx, y, descy, xcol, ycol)
 {
   if (!is.double(x))
@@ -58,6 +97,18 @@ base.rcolcpy <- function(x, descx, y, descy, xcol, ycol)
 
 
 
+#' R Column Copy-2
+#' 
+#' For advanced users only.
+#' 
+#' @param x,y
+#' Matrix.
+#' @param descx,descy
+#' ScaLAPACK descriptor array.
+#' @param xcol,ycol
+#' Columns.
+#' 
+#' @export
 base.rcolcpy2 <- function(x, descx, y, descy, xcol, ycol)
 {
   if (!is.double(x))
@@ -73,6 +124,18 @@ base.rcolcpy2 <- function(x, descx, y, descy, xcol, ycol)
 
 
 
+#' R Row Copy
+#' 
+#' For advanced users only.
+#' 
+#' @param x,y
+#' Matrix.
+#' @param descx,descy
+#' ScaLAPACK descriptor array.
+#' @param xrow,yrow
+#' Rows.
+#' 
+#' @export
 base.rrowcpy <- function(x, descx, y, descy, xrow, yrow)
 {
   if (!is.double(x))
@@ -88,6 +151,18 @@ base.rrowcpy <- function(x, descx, y, descy, xrow, yrow)
 
 
 
+#' R Row Copy-2
+#' 
+#' For advanced users only.
+#' 
+#' @param x,y
+#' Matrix.
+#' @param descx,descy
+#' ScaLAPACK descriptor array.
+#' @param xrow,yrow
+#' Rows.
+#' 
+#' @export
 base.rrowcpy2 <- function(x, descx, y, descy, xrow, yrow)
 {
   if (!is.double(x))
@@ -103,6 +178,18 @@ base.rrowcpy2 <- function(x, descx, y, descy, xrow, yrow)
 
 
 
+#' R-like Matrix-Vector Sum
+#' 
+#' For advanced users only.
+#' 
+#' @param x
+#' Matrix.
+#' @param y
+#' Vector.
+#' @param descx,descy
+#' ScaLAPACK descriptor array.
+#' 
+#' @export
 base.pdmvsum <- function(x, descx, y, descy)
 {
   if (!is.double(x))

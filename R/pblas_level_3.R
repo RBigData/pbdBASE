@@ -1,6 +1,8 @@
 # ------------------------------------------------
 # PDTRAN:  Matrix transpose
 # ------------------------------------------------
+
+#' @export
 base.rpdtran <- function(a, desca, descc)
 {
   m <- descc[3L]
@@ -22,6 +24,8 @@ base.rpdtran <- function(a, desca, descc)
 # ------------------------------------------------
 # PDGEMM:  Matrix-Matrix multiplication
 # ------------------------------------------------
+
+#' @export
 base.rpdgemm <- function(transx, transy, x, descx, y, descy, descc)
 {
   transx <- toupper(transx)

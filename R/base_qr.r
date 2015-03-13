@@ -1,4 +1,21 @@
-# qr()
+#' rpdgeqpf
+#' 
+#' QR.
+#' 
+#' For advanced users only.
+#' 
+#' @param tol 
+#' Numerical tolerance for the QR.
+#' @param m,n
+#' Problem size.
+#' @param nrhs
+#' Number of right hand sides.
+#' @param x
+#' Matrix.
+#' @param descx
+#' ScaLAPACK descriptor array.
+#' 
+#' @export
 base.rpdgeqpf <- function(tol, m, n, x, descx)
 {
   if (!is.double(x))
@@ -21,9 +38,24 @@ base.rpdgeqpf <- function(tol, m, n, x, descx)
 
 
 
-
-# qr.Q()
-# recover Q from base.rpdgeqrf
+#' rpdorgqr
+#' 
+#' Recover Q.
+#' 
+#' For advanced users only.
+#' 
+#' @param m,n
+#' Problem size.
+#' @param k
+#' Number of elementary reflectors.
+#' @param qr
+#' QR decomposition.
+#' @param descqr
+#' ScaLAPACK descriptor array.
+#' @param tau
+#' Elementary reflectors.
+#' 
+#' @export
 base.rpdorgqr <- function(m, n, k, qr, descqr, tau)
 {
   if (!is.double(qr))
@@ -46,7 +78,32 @@ base.rpdorgqr <- function(m, n, k, qr, descqr, tau)
 
 
 
-# multiply Q/Q^T against y
+#' rpdormqr
+#' 
+#' Qy.
+#' 
+#' For advanced users only.
+#' 
+#' @param side
+#' 
+#' @param trans
+#' Q or Q^T.
+#' @param m,n
+#' Problem size.
+#' @param k
+#' Number of elementary reflectors.
+#' @param qr
+#' QR decomposition.
+#' @param descqr
+#' ScaLAPACK descriptor array.
+#' @param tau
+#' Elementary reflectors.
+#' @param c
+#' Vector.
+#' @param descc
+#' ScaLAPACK descriptor array.
+#' 
+#' @export
 base.rpdormqr <- function(side, trans, m, n, k, qr, descqr, tau, c, descc)
 {
   # FIXME adjustment for weird lda issue

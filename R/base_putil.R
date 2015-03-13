@@ -1,3 +1,16 @@
+#' (Un)Distribute
+#' 
+#' (Un)Distribute matrix.
+#' 
+#' For advanced users only.
+#' 
+#' @param x
+#' Matrix.
+#' @param descx
+#' ScaLAPACK descriptor array.
+#' 
+#' @rdname lclgblmat
+#' @export
 base.mksubmat <- function(x, descx)
 {
   ldim <- base.numroc(dim=descx[3L:4L], bldim=descx[5L:6L], ICTXT=descx[2L], fixme=TRUE)
@@ -11,6 +24,11 @@ base.mksubmat <- function(x, descx)
 }
 
 
+
+#' @param rsrc,csrc
+#' Row/column source.
+#' @rdname lclgblmat
+#' @export
 base.mkgblmat <- function(x, descx, rsrc, csrc)
 {
   if (!is.double(x))
@@ -24,6 +42,23 @@ base.mkgblmat <- function(x, descx, rsrc, csrc)
 }
 
 
+
+#' dallreduce
+#' 
+#' Allreduce
+#' 
+#' For advanced users only.
+#' 
+#' @param x
+#' Matrix.
+#' @param descx
+#' ScaLAPACK descriptor array.
+#' @param op
+#' Operation.
+#' @param scope
+#' Rows, columns, or both.
+#' 
+#' @export
 base.dallreduce <- function(x, descx, op='sum', scope='All')
 {
   if (!is.double(x))
@@ -36,6 +71,23 @@ base.dallreduce <- function(x, descx, op='sum', scope='All')
 }
 
 
+
+#' tri2zero
+#' 
+#' Zero Triangle
+#' 
+#' For advanced users only.
+#' 
+#' @param x
+#' Matrix.
+#' @param descx
+#' ScaLAPACK descriptor array.
+#' @param uplo
+#' Triangle.
+#' @param diag
+#' Zero diagonal as well.
+#' 
+#' @export
 base.tri2zero <- function(x, descx, uplo='L', diag='N')
 {
   uplo <- toupper(uplo)
@@ -51,6 +103,25 @@ base.tri2zero <- function(x, descx, uplo='L', diag='N')
 }
 
 
+
+#' pdsweep
+#' 
+#' Matrix-Vector Sweep
+#' 
+#' For advanced users only.
+#' 
+#' @param x
+#' Matrix.
+#' @param descx
+#' ScaLAPACK descriptor array.
+#' @param vec
+#' Vector
+#' @param MARGIN
+#' Rows or columns.
+#' @param FUN
+#' Function.
+#' 
+#' @export
 base.pdsweep <- function(x, descx, vec, MARGIN, FUN)
 {
   if (!is.double(x))
@@ -67,6 +138,21 @@ base.pdsweep <- function(x, descx, vec, MARGIN, FUN)
 
 
 
+#' diag
+#' 
+#' Grab diagonal or create distributed diagonal matrix.
+#' 
+#' For advanced users only.
+#' 
+#' @param x
+#' Matrix.
+#' @param descx
+#' ScaLAPACK descriptor array.
+#' @param proc.dest
+#' Who owns the result.
+#' 
+#' @rdname diag
+#' @export
 base.ddiagtk <- function(x, descx, proc.dest='all')
 {
   if (!is.double(x))
@@ -91,7 +177,8 @@ base.ddiagtk <- function(x, descx, proc.dest='all')
   return( ret )
 }
 
-
+#' @rdname diag
+#' @export
 base.ddiagmk <- function(diag, descx)
 {
   ldim <- base.numroc(dim=descx[3L:4L], bldim=descx[5L:6L], ICTXT=descx[2L])
@@ -107,6 +194,16 @@ base.ddiagmk <- function(diag, descx)
 
 
 
+#' dhilbmk
+#' 
+#' Create Hilbert matrix.
+#' 
+#' For advanced users only.
+#' 
+#' @param n
+#' Size.
+#' 
+#' @export
 base.dhilbmk <- function(n)
 {
   n <- as.integer(n)
@@ -118,6 +215,16 @@ base.dhilbmk <- function(n)
 
 
 
+#' pdhilbmk
+#' 
+#' Create Hilbert matrix.
+#' 
+#' For advanced users only.
+#' 
+#' @param n
+#' Size.
+#' 
+#' @export
 base.pdhilbmk <- function(descx)
 {
   descx <- as.integer(descx)
@@ -130,6 +237,18 @@ base.pdhilbmk <- function(descx)
 
 
 
+#' pdmkcpn1
+#' 
+#' Create Companion Matrix
+#' 
+#' For advanced users only.
+#' 
+#' @param coef
+#' Coefficients vector.
+#' @param descx
+#' ScaLAPACK descriptor array.
+#' 
+#' @export
 base.pdmkcpn1 <- function(coef, descx)
 {
   ldim <- base.numroc(dim=descx[3L:4L], bldim=descx[5L:6L], ICTXT=descx[2L])

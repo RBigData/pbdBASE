@@ -1,4 +1,28 @@
-# Sums
+#' BLACS Sums
+#' 
+#' Sum across a process grid.
+#' 
+#' For advanced users only.
+#' 
+#' @param ICTXT
+#' BLACS ICTXT.
+#' @param SCOPE
+#' Rows, cols, or both.
+#' @param m,n
+#' Problem size.
+#' @param nrhs
+#' Number of right hand sides.
+#' @param x
+#' Local values.
+#' @param lda
+#' Leading dimension.
+#' @param RDEST
+#' Row destination.
+#' @param CDEST
+#' Col destination.
+#' 
+#' @rdname blacs-sums
+#' @export
 base.igsum2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 {
   if (!is.matrix(x) && !is.vector(x))
@@ -14,6 +38,8 @@ base.igsum2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
   return( out )
 }
 
+#' @rdname blacs-sums
+#' @export
 base.dgsum2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 {
   if (!is.matrix(x) && !is.vector(x))
@@ -30,7 +56,32 @@ base.dgsum2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 }
 
 
-# Max value
+
+#' BLACS Max
+#' 
+#' Max value across a process grid.
+#' 
+#' For advanced users only.
+#' 
+#' @param ICTXT
+#' BLACS ICTXT.
+#' @param SCOPE
+#' Rows, cols, or both.
+#' @param m,n
+#' Problem size.
+#' @param nrhs
+#' Number of right hand sides.
+#' @param x
+#' Local values.
+#' @param lda
+#' Leading dimension.
+#' @param RDEST
+#' Row destination.
+#' @param CDEST
+#' Col destination.
+#' 
+#' @rdname blacs-max
+#' @export
 base.igamx2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 {
   if (!is.matrix(x) && !is.vector(x))
@@ -46,6 +97,8 @@ base.igamx2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
   return( out )
 }
 
+#' @rdname blacs-min
+#' @export
 base.dgamx2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 {
   if (!is.matrix(x) && !is.vector(x))
@@ -62,7 +115,32 @@ base.dgamx2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 }
 
 
-# Min value
+
+#' BLACS Min
+#' 
+#' Min value across a process grid.
+#' 
+#' For advanced users only.
+#' 
+#' @param ICTXT
+#' BLACS ICTXT.
+#' @param SCOPE
+#' Rows, cols, or both.
+#' @param m,n
+#' Problem size.
+#' @param nrhs
+#' Number of right hand sides.
+#' @param x
+#' Local values.
+#' @param lda
+#' Leading dimension.
+#' @param RDEST
+#' Row destination.
+#' @param CDEST
+#' Col destination.
+#' 
+#' @rdname blacs-min
+#' @export
 base.igamn2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 {
   if (!is.matrix(x) && !is.vector(x))
@@ -78,6 +156,8 @@ base.igamn2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
   return( out )
 }
 
+#' @rdname blacs-min
+#' @export
 base.dgamn2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 {
   if (!is.matrix(x) && !is.vector(x))
@@ -94,7 +174,31 @@ base.dgamn2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 }
 
 
-# point to point communication
+#' BLACS Point to Poin
+#' 
+#' Sent value across a process grid.
+#' 
+#' For advanced users only.
+#' 
+#' @param ICTXT
+#' BLACS ICTXT.
+#' @param SCOPE
+#' Rows, cols, or both.
+#' @param m,n
+#' Problem size.
+#' @param nrhs
+#' Number of right hand sides.
+#' @param x
+#' Local values.
+#' @param lda
+#' Leading dimension.
+#' @param RDEST
+#' Row destination.
+#' @param CDEST
+#' Col destination.
+#' 
+#' @rdname blacs-p2p
+#' @export
 base.dgesd2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 {
   if (!is.matrix(x) && !is.vector(x))
@@ -109,6 +213,8 @@ base.dgesd2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
   return( out )
 }
 
+#' @rdname blacs-p2p
+#' @export
 base.dgerv2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 {
   if (!is.matrix(x) && !is.vector(x))

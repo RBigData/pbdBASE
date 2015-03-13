@@ -1,154 +1,71 @@
-2014-6-24:
+Release 0.3-1:
+  * Numerous improvements to documentation.
+  * Switched to roxygen2.
+
+Release 0.3-0
   * Fixed compiler warnings generated from calling Fortran routines.
   * Cleaned up R wrappers.
   * Fixed memory/gc issue in R_PDGELS().
-
-2014-6-20:
   * Nasty ICTXT bug in descinit (notably affecting Cpdgemr2d) fixed.
   * Modified matrix exponential kernels to take p as argument.
-
-2014-3-20:
- * Fixed OpenMP issues in Intel compiler suite.
- * Fixed portability issue in Makevars.in.
-
-2014-3-6:
- * Stopgap fixed regression in MKSUBMAT.
- * Stopgap fixed regression in MKGBLMAT.
-
-2014-2-4:
- * Updated vignette format.
- * Fixed author affiliation in vignette.
-
-2014-2-2:
- * Linked with SEXPtools.
- * Refactored internal wrappers to use SEXPtools.
-
-2014-1-31:
- * Fixed ownany() bug fixed that affected some grid shapes.
-
-2014-1-14:
+  * Fixed OpenMP issues in Intel compiler suite.
+  * Fixed portability issue in Makevars.in.
+  * Stopgap fixed regression in MKSUBMAT.
+  * Stopgap fixed regression in MKGBLMAT.
+  * Updated vignette format.
+  * Fixed author affiliation in vignette.
+  * Linked with SEXPtools.
+  * Refactored internal wrappers to use SEXPtools.
+  * Fixed ownany() bug fixed that affected some grid shapes.
   * Vignette copyright updated.
-
-2013-12-16:
   * PDGELS bug fixes.
 
-
-pbdBASE 0.2-3 (2013-12-14) --------------------------------------------------
-
-2013-12-13:
+Release 0.2-3:
   * Fixed errors in manual.
-
-2013-12-11:
   * Fixed matrix exponental bugs.
-
-2013-10-30:
   * Added matrix exponentiation drivers.
-
-2013-8-14:
   * Added experimental pdsyevx wrapper.
-
-2013-7-20:
   * Added driver for (non-symmetric) eigenvalue calculator.
 
-
-pbdBASE 0.2-2 (2013-7-8) --------------------------------------------------
-
-2013-6-28:
+Release 0.2-2:
   * Nasty init.grid() bugfix.
-
-2013-6-7:
   * Bugfix for changing between BLACS and MPI process numbering.
-
-2013-5-24:
   * Added experimental methods for level 2 distributed-distributed R-like BLAS.
-
-2013-5-9:
   * Fixed initialization bug in pdgemr2d.
 
-
-pbdBASE 0.2-1 (2013-3-25) --------------------------------------------------
-
-2013-3-20:
+Release 0.2-1:
   * Added PDSYEV wrappers.
 
-
-pbdBASE 0.2-0 (2013-3-12) --------------------------------------------------
-
-2013-3-12:
-  * Final touches for CRAN.
-
-2013-02-26:
+Release 0.2-0:
   * Created better separation between pbdBASE and pbdDMAT packages
-
-2013-02-05:
   * Completely redid the internals.  Much less stupid/wasteful now.
-
-2013-01-29:
   * Expose BLACS C extension; BLACS pointers now exportable.
   * Added pdsyrk wrappers.
   * Modified pdgemm wrappers.
-
-2013-01-04:
   * Added new matrix norm and condition number routines.
   * Fix .Last.lib problem.
-
-2012-12-17:
   * Fixed bug in SEXP wrappers of ScaLAPACK functions; passing 0-byte Ralloc'd vectors.
   * Fix multi-arch problem.
   * Add copyright to vignette.
 
-
-pbdBASE 0.1-1 (2012-12-1) ----------------------------------------------------
-
-2012-11-30:
-  * Created .pbdBASEEnv environment.
+Release 0.1-1:
   * Changed functions to write to new env rather than .GlobalEnv.
-  * Finished cleaning up lm.fit.
   * Made PBLAS/ScaLAPACK wrappers less stupid.
-
-2012-11-21:
-  * Fixed many problems with qr wrappers.
-
-2012-11-01:
   * Fixed some nasty redistribution bugs.
-
-2012-10-30:
   * Made lm.fit-related foreign language wrappers more efficient.
-
-2012-10-26:
   * Significantly cleaned up all foreign language wrappers.
-
-2012-10-23:
   * Cleaned up wrappers for singular value decomposition.
-
-2012-10-22:
   * Distributed QR added.
   * Distributed linear least squares solver added for n>p case.
 
-
-======================= Log Before Release =====================================
-2012-10-02:
-  * Prepare for the first submission.
-
-2012-09-18:
-  * Changed high order (re)distribution methods functionality.
+Release 0.1-0:
   * Added demos.
   * Modify "PDLAPRNT" function.
-
-2012-09-12:
   * Added insertion methods.
-
-2012-09-11:
-  * Remembered to do this.
   * Split 'pbdDMAC' into 'pbdBASE' and 'pbdDMAC'.
-
-2012-08-21:
   * Delete configure.ac and use RmpiSPMD:::LdFlags() and others.
   * Rename to 'pbdDMAC'.
-
-2012-08-13:
   * Link with RmpiSLAP.
   * Add guide, man pages, installation, ...
-
-2012-07-xx:
   * Add BLACS, PBLAS, ScaLAPACK.
+

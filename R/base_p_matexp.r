@@ -1,3 +1,4 @@
+#' @export
 base.p_matpow_by_squaring_wrap <- function(A, desca, b=1)
 {
   b <- as.integer(b)
@@ -13,6 +14,7 @@ base.p_matpow_by_squaring_wrap <- function(A, desca, b=1)
 
 
 
+#' @export
 base.p_matexp_pade_wrap <- function(A, desca, p=6)
 {
   desca <- as.integer(desca)
