@@ -1,10 +1,9 @@
-#### Lastest load into a package.
+### Lastest load into a package.
 
-### Export Namespace does not use .First.lib() and .Last.lib(), but use
-### .onLoad() and .onUnload().
-# .First.lib <- function(lib, pkg){
-# } # End of .First.lib().
+## Export Namespace does not use .First.lib() and .Last.lib(), but use
+## .onLoad() and .onUnload().
 
+#' @export
 .Last.lib <- function(libpath){
   ### To free all BLACS points.
   base.finalize(mpi.finalize = FALSE)

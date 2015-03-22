@@ -7,6 +7,8 @@
 #' MPL\cr LazyLoad: \tab yes\cr } This package requires an MPI library
 #' (OpenMPI, MPICH2, or LAM/MPI).
 #' 
+#' @import methods pbdMPI pbdSLAP
+#' 
 #' @useDynLib pbdBASE,
 #'   R_nbd,
 #'   R_NUMROC, R_PDLAPRNT, g2l_coords, l2g_coords,
