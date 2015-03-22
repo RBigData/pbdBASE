@@ -9,7 +9,7 @@
 #' @param p
 #' Pade' expansion size.
 #' @param t
-#' TODO.
+#' Scaling factor.
 #' 
 #' @export
 base.matexp <- function(A, p=6, t=1)

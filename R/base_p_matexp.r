@@ -1,3 +1,16 @@
+#' p_matpow_by_squaring_wrap
+#' 
+#' Matrix power by squaring.
+#' 
+#' For advanced users only.
+#' 
+#' @param A
+#' Matrix.
+#' @param desca
+#' ScaLAPACK descriptor array.
+#' @param b
+#' 
+#' 
 #' @export
 base.p_matpow_by_squaring_wrap <- function(A, desca, b=1)
 {

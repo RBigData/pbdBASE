@@ -11,7 +11,7 @@ base.matexp(A, p = 6, t = 1)
 
 \item{p}{Pade' expansion size.}
 
-\item{t}{TODO.}
+\item{t}{Scaling factor.}
 }
 \description{
 Serial matrix exponentiation.
