@@ -316,6 +316,8 @@ g2l_coord <- base.g2l_coord
 #' @param ICTXT
 #' BLACS context.
 #' 
+#' @name l2g_coord
+#' @rdname l2g_coord
 #' @export
 base.l2g_coord <- function(ind, dim, bldim, ICTXT=0)
 {
