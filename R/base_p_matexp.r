@@ -9,7 +9,7 @@
 #' @param desca
 #' ScaLAPACK descriptor array.
 #' @param b
-#' 
+#' Power.
 #' 
 #' @export
 base.p_matpow_by_squaring_wrap <- function(A, desca, b=1)
@@ -27,6 +27,19 @@ base.p_matpow_by_squaring_wrap <- function(A, desca, b=1)
 
 
 
+#' p_matexp_pade_wrap
+#' 
+#' Pade' expansion.
+#' 
+#' For advanced users only.
+#' 
+#' @param A
+#' Matrix.
+#' @param desca
+#' ScaLAPACK descriptor array.
+#' @param p
+#' Order of the Pade' approximation.
+#' 
 #' @export
 base.p_matexp_pade_wrap <- function(A, desca, p=6)
 {

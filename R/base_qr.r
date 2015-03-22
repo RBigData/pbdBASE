@@ -80,12 +80,12 @@ base.rpdorgqr <- function(m, n, k, qr, descqr, tau)
 
 #' rpdormqr
 #' 
-#' Qy.
+#' op(Q) * y.
 #' 
 #' For advanced users only.
 #' 
 #' @param side
-#' 
+#' 'L' or 'R', for left or righth application of Q matrix.
 #' @param trans
 #' Q or Q^T.
 #' @param m,n

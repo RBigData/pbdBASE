@@ -7,7 +7,7 @@
 base.rpdormqr(side, trans, m, n, k, qr, descqr, tau, c, descc)
 }
 \arguments{
-\item{side}{}
+\item{side}{'L' or 'R', for left or righth application of Q matrix.}
 
 \item{trans}{Q or Q^T.}
 
@@ -26,7 +26,7 @@ base.rpdormqr(side, trans, m, n, k, qr, descqr, tau, c, descc)
 \item{descc}{ScaLAPACK descriptor array.}
 }
 \description{
-Qy.
+op(Q) * y.
 }
 \details{
 For advanced users only.
