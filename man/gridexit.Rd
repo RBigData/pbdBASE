@@ -30,8 +30,5 @@ Contexts 0, 1, and 2 can not be freed in this way unless the argument
 \code{override=FALSE}. This will probably break something and I do not
 recommend it.
 }
-\seealso{
-\code{\link{InitGrid}}
-}
 \keyword{BLACS}
 

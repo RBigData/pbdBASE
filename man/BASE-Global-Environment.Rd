@@ -5,7 +5,7 @@
 \alias{.pbdBASEEnv}
 \alias{BASE Global Environment}
 \title{Global Environment for the pbdBASE Package}
-\format{\preformatted{<environment: 0x3dd9188> 
+\format{\preformatted{<environment: 0x3bda1d8> 
 }}
 \usage{
 .pbdBASEEnv
@@ -16,9 +16,6 @@ The environment for the pbdBASE package where "global" variables are stored.
 \details{
 The \code{.__blacs_gridinfo_} and \code{._blacs_initialized} objects are
 stored in this environment.
-}
-\seealso{
-InitGrid
 }
 \keyword{datasets}
 

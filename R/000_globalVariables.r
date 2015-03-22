@@ -16,7 +16,6 @@ utils::globalVariables(c(".conflicts.OK", ".pbdBASEEnv", ".SPMD.CT"))
 #' stored in this environment.
 #' 
 #' @name BASE Global Environment
-#' @seealso InitGrid
 #' @export
 .pbdBASEEnv <- new.env()
 

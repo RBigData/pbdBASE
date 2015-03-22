@@ -2,6 +2,17 @@
 # PDTRAN:  Matrix transpose
 # ------------------------------------------------
 
+#' rpdtran
+#' 
+#' Transpose.
+#' 
+#' For advanced users only.
+#' 
+#' @param a
+#' Matrix.
+#' @param desca,descc
+#' ScaLAPACK descriptor array.
+#' 
 #' @export
 base.rpdtran <- function(a, desca, descc)
 {
@@ -25,6 +36,19 @@ base.rpdtran <- function(a, desca, descc)
 # PDGEMM:  Matrix-Matrix multiplication
 # ------------------------------------------------
 
+#' rpdgemm
+#' 
+#' Matrix-Matrix Multiply.
+#' 
+#' For advanced users only.
+#' 
+#' @param transx,transy
+#' 'T' or 'N' for transpose or not.
+#' @param x,y
+#' Matrix.
+#' @param descx,descy,descc
+#' ScaLAPACK descriptor array.
+#' 
 #' @export
 base.rpdgemm <- function(transx, transy, x, descx, y, descy, descc)
 {

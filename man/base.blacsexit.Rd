@@ -40,8 +40,5 @@ blacsexit()
 finalize()
 }
 }
-\seealso{
-\code{\link{InitGrid}}
-}
 \keyword{BLACS}
 

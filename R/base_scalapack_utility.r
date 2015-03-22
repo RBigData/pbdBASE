@@ -83,8 +83,6 @@ NUMROC <- function(N, NB, IPROC, NPROCS)
 
 #' Determining Local Ownership of a Distributed Matrix
 #' 
-#' aa
-#' 
 #' For advanced users only.
 #' 
 #' \code{numroc()} is a re-implementation at the R level of the ScaLAPACK
@@ -111,10 +109,10 @@ NUMROC <- function(N, NB, IPROC, NPROCS)
 #' @param bldim blocking dimension
 #' @param ICTXT BLACS context
 #' @param fixme logical, controls correction of local dimension return
-#' @seealso \code{\link{BLACS}, \link{InitGrid}}
-#' @keywords BLACS Distributing Data
-#' @examples
 #' 
+#' @keywords BLACS Distributing Data
+#' 
+#' @examples
 #' \dontrun{
 #' # Save code in a file "demo.r" and run with 2 processors by
 #' # > mpiexec -np 2 Rscript demo.r

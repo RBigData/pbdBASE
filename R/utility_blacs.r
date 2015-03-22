@@ -41,8 +41,6 @@ valid_context <- base.valid_context
 #' @return 
 #' Returns the minimum value.
 #' 
-#' @seealso \code{\link{InitGrid}}
-#' 
 #' @keywords BLACS
 #' 
 #' @export
@@ -105,8 +103,6 @@ base.blacs <- function(ICTXT=0)
 #' associated BLACS context number; \code{MYROW} and \code{MYCOL}, the current
 #' process' row and column position in the process grid.
 #' 
-#' @seealso \code{\link{InitGrid}}
-#' 
 #' @keywords BLACS
 #' 
 #' @examples
@@ -144,12 +140,13 @@ blacs <- base.blacs
 #' @param ICTXT BLACS context number.
 #' @param PROW,PCOL BLACS grid location row/column
 #' @param PNUM process rank
+#' 
 #' @return \code{pnum} returns an integer; \code{pcoord} returns a list
 #' containing elements \code{PROW} and \code{PCOL}.
-#' @seealso \code{\link{BLACS}, \link{InitGrid}}
-#' @keywords BLACS
-#' @examples
 #' 
+#' @keywords BLACS
+#' 
+#' @examples
 #' \dontrun{
 #' # Save code in a file "demo.r" and run with 2 processors by
 #' # > mpiexec -np 2 Rscript demo.r

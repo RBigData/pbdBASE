@@ -145,8 +145,6 @@ blacs_gridinit <- base.blacs_gridinit
 #' Silently returns 0 when successful. Additionally, several variables
 #' are created in the \code{.pbdBASEEnv} environment.  See Details section.
 #' 
-#' @seealso \link{BLACS}
-#' 
 #' @keywords BLACS
 #' 
 #' @examples
@@ -160,6 +158,8 @@ blacs_gridinit <- base.blacs_gridinit
 #' finalize()
 #' }
 #' 
+#' @name InitGrid
+#' @rdname init.grid
 #' @export
 init.grid <- function(NPROW, NPCOL, ICTXT, quiet = FALSE)
 {
@@ -246,8 +246,6 @@ base.gridexit <- function(ICTXT, override=FALSE)
 #' Silently returns 0 when successful. Silently returns 1 when
 #' requested \code{ICTXT} does not exist.
 #' 
-#' @seealso \code{\link{InitGrid}}
-#' 
 #' @keywords BLACS
 #' 
 #' @export
@@ -275,8 +273,6 @@ gridexit <- base.gridexit
 #' 
 #' @return 
 #' Has an invisible return of 0 when successful.
-#' 
-#' @seealso \code{\link{InitGrid}}
 #' 
 #' @keywords BLACS
 #' 
