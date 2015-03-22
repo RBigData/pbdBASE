@@ -14,8 +14,6 @@ base.rpdgeqpf(tol, m, n, x, descx)
 \item{x}{Matrix.}
 
 \item{descx}{ScaLAPACK descriptor array.}
-
-\item{nrhs}{Number of right hand sides.}
 }
 \description{
 QR.

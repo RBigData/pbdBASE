@@ -10,8 +10,6 @@
 #' Rows, cols, or both.
 #' @param m,n
 #' Problem size.
-#' @param nrhs
-#' Number of right hand sides.
 #' @param x
 #' Local values.
 #' @param lda
@@ -69,8 +67,6 @@ base.dgsum2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 #' Rows, cols, or both.
 #' @param m,n
 #' Problem size.
-#' @param nrhs
-#' Number of right hand sides.
 #' @param x
 #' Local values.
 #' @param lda
@@ -128,8 +124,6 @@ base.dgamx2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 #' Rows, cols, or both.
 #' @param m,n
 #' Problem size.
-#' @param nrhs
-#' Number of right hand sides.
 #' @param x
 #' Local values.
 #' @param lda
@@ -186,8 +180,6 @@ base.dgamn2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 #' Rows, cols, or both.
 #' @param m,n
 #' Problem size.
-#' @param nrhs
-#' Number of right hand sides.
 #' @param x
 #' Local values.
 #' @param lda

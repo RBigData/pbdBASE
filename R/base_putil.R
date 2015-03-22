@@ -151,6 +151,7 @@ base.pdsweep <- function(x, descx, vec, MARGIN, FUN)
 #' @param proc.dest
 #' Who owns the result.
 #' 
+#' @name diag
 #' @rdname diag
 #' @export
 base.ddiagtk <- function(x, descx, proc.dest='all')
@@ -177,6 +178,9 @@ base.ddiagtk <- function(x, descx, proc.dest='all')
   return( ret )
 }
 
+#' @param diag
+#' Diagonal.
+#' 
 #' @rdname diag
 #' @export
 base.ddiagmk <- function(diag, descx)

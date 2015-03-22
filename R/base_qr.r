@@ -8,8 +8,6 @@
 #' Numerical tolerance for the QR.
 #' @param m,n
 #' Problem size.
-#' @param nrhs
-#' Number of right hand sides.
 #' @param x
 #' Matrix.
 #' @param descx

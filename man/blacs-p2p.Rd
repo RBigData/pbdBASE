@@ -23,8 +23,6 @@ base.dgerv2d(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 \item{RDEST}{Row destination.}
 
 \item{CDEST}{Col destination.}
-
-\item{nrhs}{Number of right hand sides.}
 }
 \description{
 Sent value across a process grid.
