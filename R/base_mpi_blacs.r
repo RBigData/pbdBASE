@@ -1,10 +1,15 @@
-# "Optimal" process grid when nprow and npcol are empty
+#' procgrid
+#' 
+#' "Optimal" process grid when nprow and npcol are empty
+#' 
+#' For advanced users only.
+#' 
+#' @param nprocs
+#' Number of processors.
+#' 
 #' @export
 base.procgrid <- function(nprocs)
 {
-#  out <- .Fortran("OPTIMALGRID", as.integer(nprocs), integer(1), integer(1))
-#  out[[1L]] <- NULL
-#  return(list(nprow=out[[2L]], npcol=out[[1L]]))
   .Call(R_optimal_grid, as.integer(nprocs))
 }
 
