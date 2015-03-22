@@ -17,6 +17,23 @@ procgrid <- base.procgrid
 
 
 
+#' blacs_gridinit
+#' 
+#' BLACS grid initialization.
+#' 
+#' For advanced users only.
+#' 
+#' @param ICTXT
+#' BLACS context.
+#' @param NPROW,NPCOL
+#' Number of process rows/cols.
+#' @param ...
+#' Additional arguments.
+#' @param quiet
+#' Verbose initialization or not.
+#' 
+#' @name gridinit
+#' @rdname gridinit
 #' @export
 base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
 {
@@ -66,6 +83,7 @@ base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
   invisible( 0 )
 }
 
+#' @rdname gridinit
 #' @export
 blacs_gridinit <- base.blacs_gridinit
 
@@ -196,24 +214,6 @@ init.grid <- function(NPROW, NPCOL, ICTXT, quiet = FALSE)
 
 
 
-
-# shut down a BLACS context
-base.gridexit <- function(ICTXT, override=FALSE)
-{
-  base.valid_context(ICTXT=ICTXT, override=override)
-  
-  blacs_ <- base.blacs(ICTXT=ICTXT)
-  FCTXT <- blacs_$ICTXT
-
-  if (blacs_$MYROW != -1 && blacs_$MYCOL != -1)
-    .Fortran("BLACS_GRIDEXIT", ICONTXT=as.integer(FCTXT), PACKAGE="pbdBASE")
-
-  rm(list = paste(".__blacs_gridinfo_", ICTXT, sep=""), envir=.pbdBASEEnv)
-
-  return( invisible(0) )
-}
-
-
 #' gridexit
 #' 
 #' Frees a BLACS context.
@@ -240,6 +240,26 @@ base.gridexit <- function(ICTXT, override=FALSE)
 #' 
 #' @keywords BLACS
 #' 
+#' @name gridexit
+#' @rdname gridexit
+#' @export
+base.gridexit <- function(ICTXT, override=FALSE)
+{
+  base.valid_context(ICTXT=ICTXT, override=override)
+  
+  blacs_ <- base.blacs(ICTXT=ICTXT)
+  FCTXT <- blacs_$ICTXT
+
+  if (blacs_$MYROW != -1 && blacs_$MYCOL != -1)
+    .Fortran("BLACS_GRIDEXIT", ICONTXT=as.integer(FCTXT), PACKAGE="pbdBASE")
+
+  rm(list = paste(".__blacs_gridinfo_", ICTXT, sep=""), envir=.pbdBASEEnv)
+
+  return( invisible(0) )
+}
+
+
+#' @rdname gridexit
 #' @export
 gridexit <- base.gridexit
 
