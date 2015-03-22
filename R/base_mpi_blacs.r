@@ -17,19 +17,6 @@ procgrid <- base.procgrid
 
 
 
-isint <- function(x){
-  if (is.numeric(x)){
-    if (x-as.integer(x) == 0)
-      return( TRUE )
-    else
-      return( FALSE )
-  }
-  else
-    return( FALSE )
-}
-
-
-
 #' @export
 base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
 {
