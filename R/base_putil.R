@@ -221,8 +221,8 @@ base.dhilbmk <- function(n)
 #' 
 #' For advanced users only.
 #' 
-#' @param n
-#' Size.
+#' @param descx
+#' ScaLAPACK descriptor matrix.
 #' 
 #' @export
 base.pdhilbmk <- function(descx)

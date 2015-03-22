@@ -5,7 +5,7 @@
 \alias{.pbdBASEEnv}
 \alias{BASE Global Environment}
 \title{Global Environment for the pbdBASE Package}
-\format{\preformatted{<environment: 0x35c4f88> 
+\format{\preformatted{<environment: 0x38abac0> 
 }}
 \usage{
 .pbdBASEEnv

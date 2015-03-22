@@ -7,7 +7,7 @@
 base.pdhilbmk(descx)
 }
 \arguments{
-\item{n}{Size.}
+\item{descx}{ScaLAPACK descriptor matrix.}
 }
 \description{
 Create Hilbert matrix.
