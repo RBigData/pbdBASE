@@ -265,7 +265,6 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
   int lwork, liwork, info;
   int descz[9], ldm[2], blacs[5];
   int tmp_liwork;
-  int ownany;
   int *iwork, *ifail, *iclustr;
   
   double tmp_lwork;
@@ -278,10 +277,6 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
   
   // grid and local information
   pdims_(INTEGER(DESCA), ldm, blacs);
-  if (ldm[0] < 1 || ldm[1] < 1)
-    ownany = FALSE;
-  else
-    ownany = TRUE;
   
   ldm[0] = nrows(A);//nonzero(ldm[0]);
   ldm[1] = ncols(A);//nonzero(ldm[1]);

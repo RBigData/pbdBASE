@@ -173,7 +173,7 @@ static void matpow_by_squaring(double *A, int n, int b, double *P)
 */
 
 // Workhorse for matexp_pade
-void matexp_pade_fillmats(const int m, const int n, const int i, double *N, double *D, double *B, double *C)
+void matexp_pade_fillmats(const int m, const int n, const int i, double *restrict N, double *restrict D, double *restrict B, const double *restrict C)
 {
   int j;
   const double tmp = matexp_pade_coefs[i];
@@ -247,7 +247,7 @@ static void matexp_pade(int n, const int p, double *A, double *N)
   }
   
   // R <- inverse(D) %*% N
-  ipiv = calloc(n, sizeof(double));
+  ipiv = calloc(n, sizeof(*ipiv));
   assert(ipiv != NULL);
   
   dgesv_(&n, &n, D, &n, ipiv, N, &n, &info);
