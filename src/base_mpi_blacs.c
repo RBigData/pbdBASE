@@ -48,3 +48,16 @@ SEXP R_blacs_init(SEXP NPROW, SEXP NPCOL, SEXP ICTXT)
 }
 
 
+
+SEXP R_blacs_exit(SEXP CONT)
+{
+  blacs_exit_(INTP(CONT));
+  
+  return R_NilValue;
+}
+
+
+
+
+
+

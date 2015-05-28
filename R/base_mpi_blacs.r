@@ -304,7 +304,7 @@ gridexit <- base.gridexit
 #' @export
 base.blacsexit <- function(CONT=TRUE)
 {
-  .Fortran("BLACS_EXIT", as.integer(CONT), PACKAGE="pbdSLAP")
+  .Call("R_blacs_exit", as.integer(CONT), PACKAGE="pbdBASE")
   
   return( invisible(0) )
 }
