@@ -1,13 +1,20 @@
-# ################################################
 # ------------------------------------------------
 # Linear Equations
 # ------------------------------------------------
-# ################################################
 
-# ------------------------------------------------
-# PDGETRI:    Matrix inverse
-# ------------------------------------------------
-
+#' rpdgetri
+#' 
+#' Matrix inversion.
+#' 
+#' For advanced users only.
+#' 
+#' @param n
+#' Problem size.
+#' @param a
+#'  Matrix.
+#' @param desca
+#' ScaLAPACK descriptor array.
+#' 
 #' @export
 base.rpdgetri <- function(n, a, desca)
 {
@@ -24,10 +31,23 @@ base.rpdgetri <- function(n, a, desca)
     return( out$A )
 }
 
-# ------------------------------------------------
-# PDGESV:    Solving Ax=b
-# ------------------------------------------------
 
+
+#' rpdgesv
+#' 
+#' Solving a (square) system of equations.
+#' 
+#' For advanced users only.
+#' 
+#' @param n
+#' Problem size.
+#' @param nrhs
+#' Number of right hand sides.
+#' @param a,b
+#' Matrix.
+#' @param desca,descb
+#' ScaLAPACK descriptor array.
+#' 
 #' @export
 base.rpdgesv <- function(n, nrhs, a, desca, b, descb)
 {
@@ -53,16 +73,31 @@ base.rpdgesv <- function(n, nrhs, a, desca, b, descb)
     return( out$B ) 
 }
 
-# ################################################
+
+
 # ------------------------------------------------
 # Matrix Factorizations
 # ------------------------------------------------
-# ################################################
 
-# ------------------------------------------------
-# PDGESVD:    SVD of x
-# ------------------------------------------------
-
+#' rpdgesvd
+#' 
+#' SVD.
+#' 
+#' For advanced users only.
+#' 
+#' @param jobu,jobvt
+#' Control for u/vt return.
+#' @param m,n
+#' Problem size.
+#' @param a
+#'  Matrix.
+#' @param desca,descu,descvt
+#' ScaLAPACK descriptor array.
+#' @param ...
+#' Ignored
+#' @param inplace
+#' Should the computation be done in-place or not.  For REALLY advanced users only.
+#' 
 #' @export
 base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt, ..., inplace=FALSE)
 {
@@ -122,10 +157,24 @@ base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt, ..., inpla
 }
 
 
-# ------------------------------------------------
-# PDSYEV:    Eigen
-# ------------------------------------------------
 
+#' rpdsyev
+#' 
+#' Symmetric eigenvalue decomposition.
+#' 
+#' For advanced users only.
+#' 
+#' @param jobz
+#' Control for if vectors/values/both are returned.
+#' @param uplo
+#' Triangle where the information is stored (in the symmetric matrix).
+#' @param n
+#' Problem size.
+#' @param a
+#' Matrix.
+#' @param desca,descz
+#' ScaLAPACK descriptor array.
+#' 
 #' @export
 base.rpdsyev <- function(jobz, uplo, n, a, desca, descz)
 {
@@ -159,10 +208,22 @@ base.rpdsyev <- function(jobz, uplo, n, a, desca, descz)
 }
 
 
-# ------------------------------------------------
-# PDPOTRF:    Cholesky Factorization
-# ------------------------------------------------
 
+#' rpdpotrf
+#' 
+#' Cholesky factorization.
+#' 
+#' For advanced users only.
+#' 
+#' @param uplo
+#' Triangle where the information is stored (in the symmetric matrix).
+#' @param n
+#' Problem size.
+#' @param a
+#'  Matrix.
+#' @param desca
+#' ScaLAPACK descriptor array.
+#' 
 #' @export
 base.rpdpotrf <- function(uplo, n, a, desca)
 {
@@ -183,10 +244,31 @@ base.rpdpotrf <- function(uplo, n, a, desca)
 
 
 
-# ------------------------------------------------
-# PDSYEVX:    Eigenvalues...again
-# ------------------------------------------------
-
+#' rpdsyevx
+#' 
+#' Genearlized eigenvalue problem.
+#' 
+#' For advanced users only.
+#' 
+#' @param jobz
+#' Control for if vectors/values/both are returned.
+#' @param range
+#' Parameter to determine the search criteria for eigenvalues.
+#' @param n
+#' Problem size.
+#' @param a
+#'  Matrix.
+#' @param desca
+#' ScaLAPACK descriptor array.
+#' @param vl,vu
+#' Endpoints of the interval subset of the real line in which to search for eigenvalues, if specified by \code{range}.
+#' @param il,iu
+#' Eigenvalues with indices \code{il}, ..., \code{iu} will be found, if specified by \code{range}.
+#' @param abstol
+#' Absolute error tolerance for the eigenvalues.
+#' @param orfac
+#' Eigenvectors with eigenvalues below orfac*norm(a) of each other are reorthogonalized.
+#' 
 #' @export
 base.rpdsyevx <- function(jobz, range, n, a, desca, vl, vu, il, iu, abstol=1e-8, orfac=1e-3)
 {
@@ -206,10 +288,17 @@ base.rpdsyevx <- function(jobz, range, n, a, desca, vl, vu, il, iu, abstol=1e-8,
 }
 
 
-# ------------------------------------------------
-# PDGETRF:    LU Decomposition
-# ------------------------------------------------
-
+#' rpdgetrf
+#' 
+#' LU factorization.
+#' 
+#' For advanced users only.
+#' 
+#' @param a
+#'  Matrix.
+#' @param desca
+#' ScaLAPACK descriptor array.
+#' 
 #' @export
 base.rpdgetrf <- function(a, desca)
 {
@@ -238,12 +327,26 @@ base.rpdgetrf <- function(a, desca)
 }
 
 
-# ################################################
+
 # ------------------------------------------------
 # Auxillary
 # ------------------------------------------------
-# ################################################
 
+#' indxg2p
+#' 
+#' Computes the process coordinate which contains the entry of a
+#' distributed matrix specified by a global index INDXGLOB.  
+#' Simplified reimplementation of the ScaLAPACK aux INDXG2P function.
+#' 
+#' For advanced users only.
+#' 
+#' @param INDXGLOB
+#' Global index.
+#' @param NB
+#' Block size.
+#' @param NPROCS
+#' Total number of processors over which matrix is distributed.
+#' 
 #' @export
 base.indxg2p <- function(INDXGLOB, NB, NPROCS)
 {
@@ -257,12 +360,28 @@ base.indxg2p <- function(INDXGLOB, NB, NPROCS)
 
 
 
+#' numroc2
+#' 
+#' A better version of NUMROC (NUMber Rows Or Columns).  Returns the local
+#' dimension given global matrix + distribution parameters.
+#' 
+#' For advanced users only.
+#' 
+#' @param N
+#' Global number of rows/cols.
+#' @param NB
+#' Block size.
+#' @param IPROC
+#' Coordinate of the process whose local info is to be determined.
+#' @param NPROCS
+#' Total number of processors over which matrix is distributed.
+#' 
 #' @export
 numroc2 <- function(N, NB, IPROC, NPROCS)
 {
     ISRCPROC <- 0L
     
-    MYDIST <- (NPROCS + IPROC -    ISRCPROC) %% NPROCS
+    MYDIST <- (NPROCS + IPROC - ISRCPROC) %% NPROCS
     NBLOCKS <- floor(N / NB)
     ldim <- floor(NBLOCKS / NPROCS) * NB
     EXTRABLKS <- NBLOCKS %% NPROCS
@@ -279,7 +398,22 @@ numroc2 <- function(N, NB, IPROC, NPROCS)
 }
 
 
-# matrix norms
+
+#' rpdlange
+#' 
+#' Matrix norms.
+#' 
+#' For advanced users only.
+#' 
+#' @param norm
+#' Type of norm.
+#' @param m,n
+#' Problem size
+#' @param a
+#' Matrix.
+#' @param desca
+#' ScaLAPACK descriptor array.
+#' 
 #' @export
 base.rpdlange <- function(norm, m, n, a, desca)
 {
@@ -300,7 +434,26 @@ base.rpdlange <- function(norm, m, n, a, desca)
 
 
 
-# Inverse condition number - triangular matrix
+#' rpdtrcon
+#' 
+#' Inverse condition number of a triangular matrix.
+#' 
+#' For advanced users only.
+#' 
+#' @param norm
+#' Type of norm.
+#' @param uplo
+#' Triangle where information is stored.
+#' @param diag
+#' Specifies if the matrix is unit triangular or not.
+#' @param n
+#' Problem size
+#' @param a
+#' Matrix.
+#' @param desca
+#' ScaLAPACK descriptor array.
+#' 
+#' @export
 base.rpdtrcon <- function(norm, uplo, diag, n, a, desca)
 {
     if (length(norm)>1L)
@@ -325,7 +478,21 @@ base.rpdtrcon <- function(norm, uplo, diag, n, a, desca)
 
 
 
-# Inverse condition number - general matrix
+#' rpdgecon
+#' 
+#' Inverse condition number of a general matrix.
+#' 
+#' For advanced users only.
+#' 
+#' @param norm
+#' Type of norm.
+#' @param m,n
+#' Problem size
+#' @param a
+#' Matrix.
+#' @param desca
+#' ScaLAPACK descriptor array.
+#' 
 #' @export
 base.rpdgecon <- function(norm, m, n, a, desca)
 {
@@ -347,16 +514,21 @@ base.rpdgecon <- function(norm, m, n, a, desca)
 
 
 
-# ################################################
 # ------------------------------------------------
 # Utility
 # ------------------------------------------------
-# ################################################
 
-# ------------------------------------------------
-# PDGEMR2D:    BC redistributions
-# ------------------------------------------------
-
+#' rpdgemr2d
+#' 
+#' General 2d block cyclic redistribution function.
+#' 
+#' For advanced users only.
+#' 
+#' @param x
+#' Matrix.
+#' @param descx,descy
+#' ScaLAPACK descriptor array.
+#' 
 #' @export
 base.rpdgemr2d <- function(x, descx, descy)
 {
@@ -380,7 +552,4 @@ base.rpdgemr2d <- function(x, descx, descy)
     
     return( ret )
 }
-
-
-
 
