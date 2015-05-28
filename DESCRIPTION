@@ -1,7 +1,7 @@
 Package: pbdBASE
 Title: Programming with Big Data -- Base Wrappers for Distributed
         Matrices
-Version: 0.3-1
+Version: 0.3-2
 Depends: R (>= 2.14.0), methods, pbdMPI (>= 0.2-4), pbdSLAP(>= 0.1-9)
 LinkingTo: RNACI
 LazyLoad: yes
