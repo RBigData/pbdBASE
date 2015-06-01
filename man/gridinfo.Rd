@@ -42,7 +42,7 @@ init.grid()
 
 mygrid <- blacs(0)
 
-comm.print(mygrid)
+pbdMPI::comm.print(mygrid)
 
 finalize()
 }

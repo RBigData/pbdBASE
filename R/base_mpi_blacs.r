@@ -40,7 +40,7 @@ base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
   if (missing(ICTXT))
     ICTXT <- base.minctxt(after=-1)
   else if (!isint(x=ICTXT) || ICTXT < 0)
-    comm.stop("ICTXT must be a non-negative integer")
+    pbdMPI::comm.stop("ICTXT must be a non-negative integer")
   
   
 #  pbdMPI::init() # initialize pbdMPI communicator
@@ -52,19 +52,19 @@ base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
     NPCOL <- as.integer(procs$npcol)
   } 
   else if (missing(NPROW) && !missing(NPCOL))
-    comm.stop("You must also provide a value for 'NPROW'")
+    pbdMPI::comm.stop("You must also provide a value for 'NPROW'")
   else if (!missing(NPROW) && missing(NPCOL)) 
-    comm.stop("You must also provide a value for 'NPCOL'")
+    pbdMPI::comm.stop("You must also provide a value for 'NPCOL'")
   else if (!isint(x=NPROW) || !isint(x=NPCOL))
-    comm.stop("'NPROW' and 'NPCOL' must be integers")
+    pbdMPI::comm.stop("'NPROW' and 'NPCOL' must be integers")
   else if (NPROW*NPCOL > nprocs) 
-    comm.stop(paste("Error: grid size of ", NPROW, "x", NPCOL, " is not possible with ", nprocs, " processes", sep=""))
+    pbdMPI::comm.stop(paste("Error: grid size of ", NPROW, "x", NPCOL, " is not possible with ", nprocs, " processes", sep=""))
   
   
   nm <- paste(".__blacs_gridinfo_", ICTXT, sep="")
   
   if (exists(nm, envir=.pbdBASEEnv)){
-    comm.warning(paste("Context", ICTXT, "is already in use. No new grid created"))
+    pbdMPI::comm.warning(paste("Context", ICTXT, "is already in use. No new grid created"))
     return( invisible(1) )
   }
   
@@ -180,17 +180,17 @@ init.grid <- function(NPROW, NPCOL, ICTXT, quiet = FALSE)
   if (missing(ICTXT)){
     ICTXT <- base.minctxt(after=-1)
   } else if (ICTXT==0 || ICTXT==1 || ICTXT==2){
-      comm.stop("Contexts 0, 1, and 2 are reserved; use 3 or above.")
+      pbdMPI::comm.stop("Contexts 0, 1, and 2 are reserved; use 3 or above.")
   }
   
   # determine number processor rows/columns
   if (missing(NPROW) && missing(NPCOL)){
     if (exists(".__blacs_gridinfo_0")){
-      comm.warning("Context 0 is already initialized. No new grid created")
+      pbdMPI::comm.warning("Context 0 is already initialized. No new grid created")
       return( invisible(1) )
     }
   } else if (missing(NPROW) || missing(NPCOL)){
-    comm.stop("You must supply either both 'NPROW' and 'NPCOL' or neither.")
+    pbdMPI::comm.stop("You must supply either both 'NPROW' and 'NPCOL' or neither.")
   }
   
   # initialize grid

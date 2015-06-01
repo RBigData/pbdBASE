@@ -15,13 +15,13 @@ base.valid_context <- function(ICTXT, ..., override=FALSE)
 {
   if (!override)
     if (ICTXT==0 || ICTXT==1 || ICTXT==2) 
-      comm.stop(paste("Context", ICTXT, "is protected"))
+      pbdMPI::comm.stop(paste("Context", ICTXT, "is protected"))
   else if (ICTXT < 0) 
-    comm.stop("Negative BLACS context is not allowed")
+    pbdMPI::comm.stop("Negative BLACS context is not allowed")
   else if (as.integer(ICTXT)!=ICTXT) 
-    comm.stop("Non-integer BLACS contexts are not permitted")
+    pbdMPI::comm.stop("Non-integer BLACS contexts are not permitted")
   else if (!exists(paste(".__blacs_gridinfo_", ICTXT, sep=""))){
-    comm.warning(paste("Context", ICTXT, "does not exist"))
+    pbdMPI::comm.warning(paste("Context", ICTXT, "does not exist"))
     return( invisible(1) )
   } 
 }
@@ -58,7 +58,7 @@ valid_context <- base.valid_context
 base.minctxt <- function(after=0)
 {
   if (after < -1)
-    comm.stop("Error : contexts must be non-negative")
+    pbdMPI::comm.stop("Error : contexts must be non-negative")
   
   after <- after+1
   
@@ -110,7 +110,7 @@ minctxt <- base.minctxt
 #' 
 #' mygrid <- blacs(0)
 #' 
-#' comm.print(mygrid)
+#' pbdMPI::comm.print(mygrid)
 #' 
 #' finalize()
 #' }
@@ -125,7 +125,7 @@ base.blacs <- function(ICTXT=0)
   grid <- paste(".__blacs_gridinfo_", ICTXT, sep="")
   
   if (!exists(grid, envir=.pbdBASEEnv))
-    comm.stop(paste("Processor grid ICTXT=", ICTXT, " does not exist.  Make sure you called init.grid()", sep=""))
+    pbdMPI::comm.stop(paste("Processor grid ICTXT=", ICTXT, " does not exist.  Make sure you called init.grid()", sep=""))
   
   gridinfo <- get(grid, envir=.pbdBASEEnv)
   

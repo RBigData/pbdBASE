@@ -1,6 +1,7 @@
 Release 0.3-1:
   * Numerous improvements to documentation.
   * Switched to roxygen2.
+  * Numerous source organization improvements.
 
 Release 0.3-0
   * Fixed compiler warnings generated from calling Fortran routines.

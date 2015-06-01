@@ -23,3 +23,18 @@ base.nbd <- function(n, d)
   .Call(R_nbd, as.integer(n), as.integer(d))
 }
 
+
+
+isint <- function(x, epsilon=1e-8)
+{
+  if (is.numeric(x))
+  {
+    if (abs(x-as.integer(x)) < epsilon)
+      return( TRUE )
+    else
+      return( FALSE )
+  }
+  else
+    return( FALSE )
+}
+

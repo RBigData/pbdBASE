@@ -21,7 +21,7 @@ base.rpdgeqpf <- function(tol, m, n, x, descx)
   
   ret <- .Call(R_PDGEQPF, as.double(tol), as.integer(m), as.integer(n), x, as.integer(descx))
   
-  if (comm.rank()!=0)
+  if (pbdMPI::comm.rank()!=0)
     rank <- 0L
   else
     rank <- ret$rank
@@ -29,7 +29,7 @@ base.rpdgeqpf <- function(tol, m, n, x, descx)
   rank <- pbdMPI::allreduce(rank)
   
   if (ret$INFO!=0)
-    comm.warning(paste("ScaLAPACK returned INFO=", ret$INFO, "; returned solution is likely invalid", sep=""))
+    pbdMPI::comm.warning(paste("ScaLAPACK returned INFO=", ret$INFO, "; returned solution is likely invalid", sep=""))
   
   return( ret )
 }
@@ -67,7 +67,7 @@ base.rpdorgqr <- function(m, n, k, qr, descqr, tau)
             qr, as.integer(dim(qr)), as.integer(descqr), tau)
   
   if (out$INFO!=0)
-    comm.warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
+    pbdMPI::comm.warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
   
   ret <- out$A
   
@@ -128,7 +128,7 @@ base.rpdormqr <- function(side, trans, m, n, k, qr, descqr, tau, c, descc)
             c, as.integer(dim(c)), as.integer(descc))
   
   if (out$INFO!=0)
-    comm.warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
+    pbdMPI::comm.warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
   
   return( out$B )
 }

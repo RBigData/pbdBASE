@@ -26,7 +26,7 @@ base.rpdgetri <- function(n, a, desca)
     out <- .Call(R_PDGETRI, a, as.integer(desca))
     
     if (out$info!=0)
-        comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
+        pbdMPI::comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
     
     return( out$A )
 }
@@ -68,7 +68,7 @@ base.rpdgesv <- function(n, nrhs, a, desca, b, descb)
                  a, as.integer(desca), b, as.integer(descb))
     
     if (out$info!=0)
-        comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
+        pbdMPI::comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
     
     return( out$B ) 
 }
@@ -149,7 +149,7 @@ base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt, ..., inpla
                         as.character(jobu), as.character(jobvt), inplace)
     
     if (out$info!=0)
-        comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
+        pbdMPI::comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
     
     ret <- list( d=out$d, u=out$u, vt=out$vt )
     
@@ -199,7 +199,7 @@ base.rpdsyev <- function(jobz, uplo, n, a, desca, descz)
                         as.integer(zldim), as.integer(descz))
     
     if (out$info!=0)
-        comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
+        pbdMPI::comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
     
     out$values <- rev(out$values)
     out$info <- NULL
@@ -237,7 +237,7 @@ base.rpdpotrf <- function(uplo, n, a, desca)
                  as.character(uplo))
     
     if (ret$info!=0)
-        comm.warning(paste("ScaLAPACK returned INFO=", ret$info, "; returned solution is likely invalid", sep=""))
+        pbdMPI::comm.warning(paste("ScaLAPACK returned INFO=", ret$info, "; returned solution is likely invalid", sep=""))
     
     return( ret ) 
 }
@@ -321,7 +321,7 @@ base.rpdgetrf <- function(a, desca)
                  as.integer(lipiv))
     
     if (out$info!=0)
-        comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
+        pbdMPI::comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
     
     return( out$A ) 
 }
@@ -404,7 +404,7 @@ base.rpdtrcon <- function(norm, uplo, diag, n, a, desca)
                 as.integer(n), a, as.integer(desca))
     
     if (ret[2L] < 0)
-        comm.warning(paste("INFO =", ret[2L]))
+        pbdMPI::comm.warning(paste("INFO =", ret[2L]))
     
     return( ret[1L] )
 }
@@ -440,7 +440,7 @@ base.rpdgecon <- function(norm, m, n, a, desca)
     ret <- .Call(R_PDGECON, norm, as.integer(m), as.integer(n), a, as.integer(desca))
     
     if (ret[2] < 0)
-        comm.warning(paste("INFO =", ret[2]))
+        pbdMPI::comm.warning(paste("INFO =", ret[2]))
     
     return( ret[1] )
 }

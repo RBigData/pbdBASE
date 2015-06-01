@@ -24,7 +24,7 @@
 base.igsum2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 {
   if (!is.matrix(x) && !is.vector(x))
-    comm.stop("ERROR : object 'x' must be of class matrix or vector.")
+    pbdMPI::comm.stop("ERROR : object 'x' must be of class matrix or vector.")
   
   if (!is.integer(x))
     storage.mode(x) <- "integer"
@@ -41,7 +41,7 @@ base.igsum2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 base.dgsum2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 {
   if (!is.matrix(x) && !is.vector(x))
-    comm.stop("ERROR : object 'x' must be of class matrix or vector.")
+    pbdMPI::comm.stop("ERROR : object 'x' must be of class matrix or vector.")
   
   if (!is.double(x))
     storage.mode(x) <- "double"
@@ -81,7 +81,7 @@ base.dgsum2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 base.igamx2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 {
   if (!is.matrix(x) && !is.vector(x))
-    comm.stop("ERROR : object 'x' must be of class matrix or vector.")
+    pbdMPI::comm.stop("ERROR : object 'x' must be of class matrix or vector.")
   
   if (!is.integer(x))
     storage.mode(x) <- "integer"
@@ -98,7 +98,7 @@ base.igamx2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 base.dgamx2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 {
   if (!is.matrix(x) && !is.vector(x))
-    comm.stop("ERROR : object 'x' must be of class matrix or vector.")
+    pbdMPI::comm.stop("ERROR : object 'x' must be of class matrix or vector.")
   
   if (!is.double(x))
     storage.mode(x) <- "double"
@@ -138,7 +138,7 @@ base.dgamx2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 base.igamn2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 {
   if (!is.matrix(x) && !is.vector(x))
-    comm.stop("ERROR : object 'x' must be of class matrix or vector.")
+    pbdMPI::comm.stop("ERROR : object 'x' must be of class matrix or vector.")
   
   if (!is.integer(x))
     storage.mode(x) <- "integer"
@@ -155,7 +155,7 @@ base.igamn2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 base.dgamn2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 {
   if (!is.matrix(x) && !is.vector(x))
-    comm.stop("ERROR : object 'x' must be of class matrix or vector.")
+    pbdMPI::comm.stop("ERROR : object 'x' must be of class matrix or vector.")
   
   if (!is.double(x))
     storage.mode(x) <- "double"
@@ -194,7 +194,7 @@ base.dgamn2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 base.dgesd2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 {
   if (!is.matrix(x) && !is.vector(x))
-    comm.stop("ERROR : object 'x' must be of class matrix or vector.")
+    pbdMPI::comm.stop("ERROR : object 'x' must be of class matrix or vector.")
   
   if (!is.double(x))
     storage.mode(x) <- "double"
@@ -210,7 +210,7 @@ base.dgesd2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 base.dgerv2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 {
   if (!is.matrix(x) && !is.vector(x))
-    comm.stop("ERROR : object 'x' must be of class matrix or vector.")
+    pbdMPI::comm.stop("ERROR : object 'x' must be of class matrix or vector.")
   
   if (!is.double(x))
     storage.mode(x) <- "double"
