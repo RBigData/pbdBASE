@@ -1,3 +1,15 @@
+#' Column Variances
+#' 
+#' Computes the variances of a ScaLAPCK-like distributed matrix.
+#' Significantly faster than using \code{apply()}, even in compared
+#' to the performance differences you would find comparing these
+#' two approaches using just base R.
+#' 
+#' @param x
+#' The matrix.
+#' @param descx
+#' ScaLAPACK descriptor array.
+#' 
 #' @export
 base.pdclvar <- function(x, descx)
 {

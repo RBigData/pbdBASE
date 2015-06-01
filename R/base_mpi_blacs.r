@@ -301,6 +301,8 @@ gridexit <- base.gridexit
 #' finalize()
 #' }
 #' 
+#' @name blacsexit
+#' @rdname blacsexit
 #' @export
 base.blacsexit <- function(CONT=TRUE)
 {
@@ -309,23 +311,34 @@ base.blacsexit <- function(CONT=TRUE)
   return( invisible(0) )
 }
 
+#' @rdname blacsexit
 #' @export
 blacsexit <- base.blacsexit
 
 
 
-# replacement for pbdMPI::finalize() that automatically shuts BLACS down
+#' Finalizer
+#' 
+#' A replacement for \code{pbdMPI::finalize()} that automatically
+#' shuts BLACS communicators down.
+#' 
+#' @param mpi.finalize
+#' If MPI should be shut down.
+#' 
+#' @name finalizer
+#' @rdname finalizer
 #' @export
-base.finalize <- function(mpi.finalize=.SPMD.CT$mpi.finalize)
+base.finalize <- function(mpi.finalize=pbdMPI::.SPMD.CT$mpi.finalize)
 {
   if (exists(".__blacs_initialized", envir = .pbdBASEEnv)){
     base.blacsexit(CONT=TRUE)
     rm(list = ".__blacs_initialized", envir = .pbdBASEEnv)
   }
-    
+  
   pbdMPI::finalize(mpi.finalize=mpi.finalize)
 }
 
+#' @rdname finalizer
 #' @export
 finalize <- base.finalize
 

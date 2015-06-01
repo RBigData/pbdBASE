@@ -1,4 +1,15 @@
-# Checking if ICTXT is valid
+#' BLACS Context Validation
+#' 
+#' Checks if a supplied \code{ICTXT} is valid.
+#' 
+#' @param ICTXT
+#' BLACS context number.
+#' @param ...
+#' Not used.
+#' @param override
+#' If \code{override=FALSE}, the context number will produce an
+#' error if it is any of the reserved contexts (0, 1, or 2).
+#' 
 #' @export
 base.valid_context <- function(ICTXT, ..., override=FALSE)
 {
@@ -65,22 +76,6 @@ minctxt <- base.minctxt
 
 
 
-# get BLACS communicator info
-#' @export
-base.blacs <- function(ICTXT=0)
-{
-  ICTXT <- as.integer(ICTXT)
-  
-  grid <- paste(".__blacs_gridinfo_", ICTXT, sep="")
-  
-  if (!exists(grid, envir=.pbdBASEEnv))
-    comm.stop(paste("Processor grid ICTXT=", ICTXT, " does not exist.  Make sure you called init.grid()", sep=""))
-  
-  gridinfo <- get(grid, envir=.pbdBASEEnv)
-  
-  return(gridinfo)
-}
-
 #' Get BLACS Context Grid Information
 #' 
 #' Grabs the existing BLACS context grid information.
@@ -120,6 +115,24 @@ base.blacs <- function(ICTXT=0)
 #' finalize()
 #' }
 #' 
+#' @name gridinfo
+#' @rdname gridinfo
+#' @export
+base.blacs <- function(ICTXT=0)
+{
+  ICTXT <- as.integer(ICTXT)
+  
+  grid <- paste(".__blacs_gridinfo_", ICTXT, sep="")
+  
+  if (!exists(grid, envir=.pbdBASEEnv))
+    comm.stop(paste("Processor grid ICTXT=", ICTXT, " does not exist.  Make sure you called init.grid()", sep=""))
+  
+  gridinfo <- get(grid, envir=.pbdBASEEnv)
+  
+  return(gridinfo)
+}
+
+#' @rdname gridinfo
 #' @export
 blacs <- base.blacs
 
