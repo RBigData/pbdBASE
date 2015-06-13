@@ -16,7 +16,7 @@ base.pdchtri(uplo, x, descx, descc)
 \item{descc}{ScaLAPACK descriptor array of output.}
 }
 \description{
-Invers of cholesky.
+Inverse of cholesky.
 }
 \details{
 For advanced users only.

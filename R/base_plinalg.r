@@ -37,7 +37,7 @@ base.crossprod <- function(uplo, trans, x, descx, descc)
 
 #' pdchtri
 #' 
-#' Invers of cholesky.
+#' Inverse of cholesky.
 #' 
 #' For advanced users only.
 #' 
