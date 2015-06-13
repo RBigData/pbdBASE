@@ -179,6 +179,9 @@
         END DO
       END IF
       
+      ! Have to move to a common grid for the reduction
+      DESCX(2) = 0
+      
       IF (RDEST.EQ.-1) THEN
         CALL DALLREDUCE(GBLX, DESCX, 'S', 'All')
       ELSE

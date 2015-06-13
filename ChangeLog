@@ -1,3 +1,6 @@
+Release 0.4-1:
+  * Fixed mkgblmat bug when using non-full contexts.
+
 Release 0.4-0:
   * Changed base api.
   * Numerous improvements to documentation.

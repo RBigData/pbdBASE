@@ -1,7 +1,7 @@
 Package: pbdBASE
 Title: Programming with Big Data -- Base Wrappers for Distributed
         Matrices
-Version: 0.4-0
+Version: 0.4-1
 Depends: R (>= 3.0.0), methods
 Imports: pbdMPI (>= 0.2-4),
     pbdSLAP(>= 0.1-9)
