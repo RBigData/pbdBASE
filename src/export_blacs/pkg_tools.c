@@ -5,9 +5,15 @@
 /* WCC: These functions are to export and access pointers in R.
  *
  * Wei-Chen Chen, Mar 2013.
+ * Modified June 2015, Higgs and Schmidt.
  */
 
 #include "pkg_global.h"
+
+// NOTE: Not supported by icc.
+
+
+#ifndef __INTEL_COMPILER
 
 void set_BLACS_APTS_in_R(){
 	/* Define R objects. */
@@ -68,7 +74,6 @@ void get_BLACS_APTS_from_R(){
         if(R_apts == R_NilValue){
                 error(".__BLACS_APTS__ is not found in .GlobalEnv");
         }
-
         /* Get pointers. */
         BLACS_APTS_ptr = R_ExternalPtrAddr(R_apts);
 
@@ -102,12 +107,6 @@ void get_BLACS_APTS_from_R(){
 	if(myrank == 0){
 		REprintf("  %s (v): %d %d %d %d %d.\n", __FILE__, BI_MaxNCtxt,
 			BI_MaxNSysCtxt, BI_Iam, BI_Np, BI_AuxBuff);
-/* Not a good idea to print NULL pointers.
-		REprintf("  %s (v): %d %d %d %d.\n", __FILE__, *BI_ReadyB,
-			*BI_ActiveQ, **BI_MyContxts, *BI_COMM_WORLD);
-		REprintf("  %s (v): %d %d.\n", __FILE__, *BI_SysContxts,
-			*BI_Stats);
-*/
 		REprintf("  %s (v): %d %d %d.\n", __FILE__, BI_AuxBuff.Len,
 			BI_AuxBuff.nAops, BI_AuxBuff.N);
 		REprintf("  %s (a): %x %x %x %x %x.\n", __FILE__, &BI_MaxNCtxt,
@@ -119,4 +118,11 @@ void get_BLACS_APTS_from_R(){
 	}
 	#endif
 } /* End of get_BLACS_APTS_from_R(). */
+
+#else
+
+void set_BLACS_APTS_in_R(){}
+void get_BLACS_APTS_from_R(){}
+
+#endif
 

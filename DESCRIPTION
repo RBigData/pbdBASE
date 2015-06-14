@@ -13,7 +13,8 @@ NeedsCompilation: yes
 Authors@R: c(person("Drew", "Schmidt", role = c("aut", "cre"), email =
         "schmidt@math.utk.edu"), person("Wei-Chen", "Chen", role =
         "aut"), person("George", "Ostrouchov", role = "aut"),
-        person("Pragneshkumar", "Patel", role = "aut"))
+        person("Pragneshkumar", "Patel", role = "aut"),
+        person("Ewan", "Higgs", role="ctb"))
 Description: pbdBASE gives higher packages, like pbdDMAT, access to 
         low-level scalable Fortran routines. The package consists of a
         set of ScaLAPACK wrappers, as well as a host of new C and 
