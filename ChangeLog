@@ -1,5 +1,7 @@
 Release 0.4-1:
   * Fixed mkgblmat bug when using non-full contexts.
+  * Fixed build issue with Intel compilers.
+  * Updated README.md.
 
 Release 0.4-0:
   * Changed base api.
