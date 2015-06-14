@@ -1,22 +1,45 @@
 # pbdBASE 
 
-Unless you are a developer/distributed programming nerd, you probably
-want to see pbdDMAT and/or pbdDEMO.
+* **Version:** 0.4-1
+* **License:** [![License](http://img.shields.io/badge/license-MPL%202-orange.svg?style=flat)](https://www.mozilla.org/MPL/2.0/)
+* **Author:** See section below.
 
-pbdBASE is a set of bindings to and extensions for BLACS, PBLAS, and
-ScaLAPACK.
 
-pbdBASE requires:
-* R version 2.14.0 or higher with pbdMPI and pbdSLAP.
-* SUN HPC 8.2.1 (OpenMPI) for Solaris.
-* OpenMPI for Linux.
-* OpenMPI for Mac OS X.
-* MS-MPI or MPICH2 for Windows.
+pbdBASE is a set of bindings to and extensions for the distributed
+linear algebra libraries BLACS, PBLAS, and ScaLAPACK.
+The package is very low-level, and unless you are very familiar
+with these libraries (or even if you are...), you are instead
+recommended to see the pbdDMAT and pbdDEMO packages.
 
-For installing pbdBASE, 
-* see "INSTALL" for Solaris, Linux and Mac OS.
-* see "INSTALL.win.*" for Windows.
 
-More information about pbdBASE can be found in
-1. pbdBASE vignette at pbdBASE/inst/doc/pbdBASE-guide.pdf
-2. http://r-pbd.org/
+
+## Installation
+
+pbdDMAT requires
+* A system installation of MPI
+* R version 2.14.0 or higher
+* The RNACI, pbdSLAP, and pbdMPI packages, as well as their dependencies.
+
+The package can be installed from the CRAN via the usual
+`install.packages("pbdBASE")`, or via the devtools package:
+
+```r
+library(devtools)
+install_github("wrathematics/pbdBASE")
+```
+
+See the vignette for installation troubleshooting.
+
+
+
+## Authors
+
+pbdBASE is authored and maintained by the pbdR core team:
+* Drew Schmidt
+* Wei-Chen Chen
+* George Ostrouchov
+* Pragneshkumar Patel
+
+With additional contributions from:
+* Ewan Higgs
+
