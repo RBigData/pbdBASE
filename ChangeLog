@@ -1,3 +1,6 @@
+Release 0.4-2:
+  * Switched to a header-only RNACI.
+
 Release 0.4-1:
   * Fixed mkgblmat bug when using non-full contexts.
   * Fixed build issue with Intel compilers.

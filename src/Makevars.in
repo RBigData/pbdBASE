@@ -1,10 +1,5 @@
 #################################################################
 
-### RNACI
-RNACI_CPPFLAGS = `$(R_HOME)/bin/Rscript -e "RNACI:::cppflags()"`
-RNACI_LDFLAGS = `$(R_HOME)/bin/Rscript -e "RNACI:::ldflags()"`
-
-
 ### MPI+SLAP
 SPMD_CPPFLAGS = @SPMD_CPPFLAGS@
 SPMD_LDFLAGS = @SPMD_LDFLAGS@
@@ -13,14 +8,13 @@ SLAP_LDFLAGS = @SLAP_LDFLAGS@
 
 
 ### Package flags.
-PKG_CPPFLAGS = $(SPMD_CPPFLAGS) $(RNACI_CPPFLAGS)
+PKG_CPPFLAGS = $(SPMD_CPPFLAGS) -I../inst/RNACI
 PKG_CFLAGS = $(SHLIB_OPENMP_CFLAGS) -w
 PKG_FFLAGS = $(SHLIB_OPENMP_FFLAGS) -w
 PKG_FCFLAGS = $(SHLIB_OPENMP_FCFLAGS) -w
 
 
 PKG_LIBS = $(SLAP_LDFLAGS) $(FLIBS) $(SPMD_LDFLAGS) \
-           $(RNACI_LDFLAGS) \
            $(SHLIB_OPENMP_CFLAGS)
 
 
@@ -112,8 +106,6 @@ USER_CONF = Makeconf
 all: Makeconf $(SHLIB)
 
 Makeconf:
-	echo "RNACI_CPPFLAGS = $(RNACI_CPPFLAGS)" > $(USER_CONF)
-	echo "RNACI_LDFLAGS = $(RNACI_LDFLAGS)" >> $(USER_CONF)
 	echo "SLAP_LDFLAGS = $(SLAP_LDFLAGS)" >> $(USER_CONF)
 	echo "SPMD_CPPFLAGS = $(SPMD_CPPFLAGS)" >> $(USER_CONF)
 	echo "SPMD_LDFLAGS = $(SPMD_LDFLAGS)" >> $(USER_CONF)
