@@ -18,7 +18,7 @@ recommended to see the pbdDMAT and pbdDEMO packages.
 pbdDMAT requires
 * A system installation of MPI
 * R version 2.14.0 or higher
-* The RNACI, pbdSLAP, and pbdMPI packages, as well as their dependencies.
+* The pbdSLAP and pbdMPI packages, as well as their dependencies.
 
 The package can be installed from the CRAN via the usual
 `install.packages("pbdBASE")`, or via the devtools package:
