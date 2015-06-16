@@ -15,7 +15,7 @@ recommended to see the pbdDMAT and pbdDEMO packages.
 
 ## Installation
 
-pbdDMAT requires
+pbdBASE requires
 * A system installation of MPI
 * R version 2.14.0 or higher
 * The pbdSLAP and pbdMPI packages, as well as their dependencies.
