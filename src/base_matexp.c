@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// Copyright 2013-2014, Schmidt
+// Copyright 2013-2015, Schmidt
 
 
 #include "pbdBASE.h"
@@ -19,15 +19,13 @@ SEXP R_matexp(SEXP A, SEXP p)
   
   newRmat(R, n, n, "dbl");
   
-  A_cp = malloc(n*n*sizeof(A_cp));
+  A_cp = (double *) R_alloc(n*n, sizeof(A_cp));
   
   for (i=0; i<n*n; i++)
     A_cp[i] = REAL(A)[i];
   
   
   matexp(n, INT(p), A_cp, REAL(R));
-  
-  free(A_cp);
   
   R_END;
   return R;
