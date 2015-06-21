@@ -284,16 +284,17 @@ void matexp(int n, const int p, double *x, double *ret)
   m = matexp_scale_factor(x, n);
   
   if (m == 0)
-    return matexp_pade(n, p, x, ret);
+    matexp_pade(n, p, x, ret);
+  else
+  {
+    tmp = 1. / ((double) m);
+    dscal_(&nn, &tmp, x, &one);
   
-  tmp = 1. / ((double) m);
-  dscal_(&nn, &tmp, x, &one);
+    matexp_pade(n, p, x, ret);
   
+    matcopy(n, ret, x);
   
-  matexp_pade(n, p, x, ret);
-  
-  matcopy(n, ret, x);
-  
-  matpow_by_squaring(x, n, m, ret);
+    matpow_by_squaring(x, n, m, ret);
+  }
 }
 
