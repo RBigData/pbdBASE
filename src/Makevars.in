@@ -67,7 +67,6 @@ EXPERIMENTAL = \
 
 UTILS_OBJS = \
     base/utils/blacs_util.o \
-    base/utils/dmat_make.o \
     base/utils/dmat_redist.o \
     base/utils/indices.o \
     base/utils/putil.o \
