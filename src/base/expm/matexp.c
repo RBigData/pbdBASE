@@ -1,4 +1,6 @@
-/* Copyright (C) 2013-2014 Drew Schmidt. All rights reserved.
+/* Copyright (C) 2013-2015 Drew Schmidt. 
+ *               2015 Wei-Chen Chen
+ * All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
