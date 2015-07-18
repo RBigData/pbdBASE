@@ -3,8 +3,8 @@ Title: Programming with Big Data -- Base Wrappers for Distributed
         Matrices
 Version: 0.4-2
 Depends: R (>= 3.0.0), methods
-Imports: pbdMPI (>= 0.2-4),
-    pbdSLAP(>= 0.1-9)
+Imports: pbdMPI (>= 0.2-5),
+    pbdSLAP(>= 0.2-0)
 LazyLoad: yes
 LazyData: yes
 ByteCompile: yes
