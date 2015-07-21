@@ -10,10 +10,6 @@
 
 #include "pkg_global.h"
 
-// NOTE: Not supported by icc.
-
-
-#ifndef __INTEL_COMPILER
 
 void set_BLACS_APTS_in_R(){
 	/* Define R objects. */
@@ -118,11 +114,4 @@ void get_BLACS_APTS_from_R(){
 	}
 	#endif
 } /* End of get_BLACS_APTS_from_R(). */
-
-#else
-
-void set_BLACS_APTS_in_R(){}
-void get_BLACS_APTS_from_R(){}
-
-#endif
 

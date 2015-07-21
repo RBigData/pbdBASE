@@ -15,86 +15,87 @@ PKG_FCFLAGS = $(SHLIB_OPENMP_FCFLAGS) -w
 
 
 PKG_LIBS = $(SLAP_LDFLAGS) $(FLIBS) $(SPMD_LDFLAGS) \
-           $(SHLIB_OPENMP_CFLAGS)
+					 $(SHLIB_OPENMP_CFLAGS)
 
 
 ### Setup R source code and objects.
 
 BASE_OBJS = \
-    base/bprnt.o \
-    base/bprnt_c.o
+		base/bprnt.o \
+		base/bprnt_c.o
 
 
 EXPM_OBJS = \
-    base/expm/pade_coefs.o \
-    base/expm/matexp.o \
-    base/expm/p_matexp.o
+		base/expm/pade_coefs.o \
+		base/expm/matexp.o \
+		base/expm/p_matexp.o
 
 
 LINALG_OBJS = \
-    base/linalg/auxil.o \
-    base/linalg/pcrossprod.o \
-    base/linalg/pinverse.o \
-    base/linalg/prblas.o \
-    base/linalg/plm.o
+		base/linalg/auxil.o \
+		base/linalg/pcrossprod.o \
+		base/linalg/pinverse.o \
+		base/linalg/prblas.o \
+		base/linalg/plm.o
 
 
 MISC_OBJC = \
-    comm_utils.o \
-    export_blacs/pkg_tools.o
+		comm_utils.o
+
+EXPORT_BLACS = @EXPORT_BLACS@
 
 
 STATS_OBJS = \
-    base/stats/variance.o
+		base/stats/variance.o
 
 
 UTILS = \
-    utils/fpmod.o \
-    utils/quicksort_utils.o \
-    utils/signs.o \
-    utils/sorts.o \
-    utils/strings.o \
-    utils/swaps.o
+		utils/fpmod.o \
+		utils/quicksort_utils.o \
+		utils/signs.o \
+		utils/sorts.o \
+		utils/strings.o \
+		utils/swaps.o
 
 
 ### Unused UTILS
 EXPERIMENTAL = \
-    utils/subset.o \
-    utils/subset_special.o \
-    utils/subset_utils.o
+		utils/subset.o \
+		utils/subset_special.o \
+		utils/subset_utils.o
 
 
 
 UTILS_OBJS = \
-    base/utils/blacs_util.o \
-    base/utils/dmat_redist.o \
-    base/utils/indices.o \
-    base/utils/putil.o \
-    base/utils/scale.o \
-    base/utils/special.o
+		base/utils/blacs_util.o \
+		base/utils/dmat_redist.o \
+		base/utils/indices.o \
+		base/utils/putil.o \
+		base/utils/scale.o \
+		base/utils/special.o
 
 
 R_OBJS = \
-    base_lm.o \
-    base_matexp.o \
-    base_mpi_blacs.o \
-    base_mpi_blacs_reductions.o \
-    base_pblas_level3.o \
-    base_plinalg.o \
-    base_p_matexp.o \
-    base_prblas.o \
-    base_putil.o \
-    base_qr.o \
-    base_scalapack.o \
-    base_scalapack_utility.o \
-    base_variance.o \
-    other.o
+		base_lm.o \
+		base_matexp.o \
+		base_mpi_blacs.o \
+		base_mpi_blacs_reductions.o \
+		base_pblas_level3.o \
+		base_plinalg.o \
+		base_p_matexp.o \
+		base_prblas.o \
+		base_putil.o \
+		base_qr.o \
+		base_scalapack.o \
+		base_scalapack_utility.o \
+		base_variance.o \
+		other.o
 
 
-OBJECTS = $(BASE_OBJS) $(EXPM_OBJS) \
-          $(LINALG_OBJS) $(MISC_OBJS) \
-          $(R_OBJS) $(STATS_OBJS) \
-          $(UTILS) $(UTILS_OBJS)
+OBJECTS = $(BASE_OBJS) $(EXPM_OBJS) $(LINALG_OBJS) \
+					$(MISC_OBJS) $(EXPORT_BLACS) \
+					$(R_OBJS) $(STATS_OBJS) \
+					$(UTILS) $(UTILS_OBJS)
 
 
 ### For user configuration.
