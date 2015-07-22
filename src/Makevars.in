@@ -89,7 +89,8 @@ R_OBJS = \
 		base_scalapack.o \
 		base_scalapack_utility.o \
 		base_variance.o \
-		other.o
+		other.o \
+		descinit.o
 
 
 OBJECTS = $(BASE_OBJS) $(EXPM_OBJS) $(LINALG_OBJS) \
