@@ -1,6 +1,8 @@
 Release 0.4-2:
+  * Fixed major problem with internal BLACS grid management with MKL.
   * Switched to a header-only RNACI.
   * Fixed build issues on Solaris (wcc).
+  * Added flag to disable src/export_blacs (needed for Intel mpi).
 
 Release 0.4-1:
   * Fixed mkgblmat bug when using non-full contexts.
