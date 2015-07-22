@@ -56,8 +56,6 @@ SEXP R_blacs_init(SEXP NPROW_in, SEXP NPCOL_in, SEXP ICTXT_in)
   RET_NAMES = make_list_names(5, "NPROW", "NPCOL", "ICTXT", "MYROW", "MYCOL");
   RET = make_list(RET_NAMES, 5, NPROW, NPCOL, ICTXT, MYROW, MYCOL);
   
-  PRINT(RET);
-  
   R_END;
   return(RET);
 }
