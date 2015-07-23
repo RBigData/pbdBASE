@@ -16,10 +16,6 @@
 #' @export
 base.descinit <- function(dim, bldim, ldim, ICTXT=0)
 {
-  grid <- base.blacs(ICTXT)
-  
-  desc <- integer(9)
-  
 ###  desc[1L] <- 1L                    # matrix type
 ###  desc[2L] <- ICTXT                 # CTXT_A
 ###  desc[3L] <- max(0, dim[1L])       # M_A
@@ -30,8 +26,11 @@ base.descinit <- function(dim, bldim, ldim, ICTXT=0)
 ###  desc[8L] <- 0L                    # CSRC_A
 ####  desc[9L] <- max(1L, ldim[1L])     # LLD_A
 ###  desc[9L] <- max(ldim[1L], max(1L, NUMROC(dim[1L], bldim[1L], grid$MYROW, grid$NPROW)))
+  grid <- base.blacs(ICTXT=ICTXT)
+  lld <- NUMROC(dim[1L], bldim[1L], grid$MYROW, grid$NPROW)
+  lld <- max(lld, 1L)
   
-  desc <- .Fortran("descinit", integer(9L), as.integer(dim[1L]), as.integer(dim[2L]), as.integer(bldim[1L]), as.integer(bldim[2L]), 0L, 0L, as.integer(ICTXT), as.integer(ldim[1L]), 0L)[[1L]]
+  desc <- .Call("R_descinit", as.integer(dim), as.integer(bldim), as.integer(ICTXT), as.integer(lld))
   
   ### Fix for pdgemr2d: if a process is not a part of the given context, its ICTXT is -1
   if (any(base.blacs(ICTXT=ICTXT) == -1))

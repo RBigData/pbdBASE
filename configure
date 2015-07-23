@@ -584,6 +584,7 @@ PACKAGE_URL=''
 ac_unique_file="src/base_scalapack.c"
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+EXPORT_BLACS
 SPMD_LDFLAGS
 SPMD_CPPFLAGS
 SLAP_LDFLAGS
@@ -628,6 +629,7 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
+enable_blacsexport
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1237,6 +1239,13 @@ if test -n "$ac_init_help"; then
    esac
   cat <<\_ACEOF
 
+Optional Features:
+  --disable-option-checking  ignore unrecognized --enable/--with options
+  --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
+  --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --enable-blacsexport    Enable BLACS export, default yes. Disable for Intel
+                          MPI.
+
 Report bugs to the package provider.
 _ACEOF
 ac_status=$?
@@ -1667,13 +1676,37 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
+: ${R_HOME=`R RHOME`}
+if test -z "${R_HOME}"; then
+  echo "could not determine R_HOME"
+  exit 1
+fi
+
 R_SCMD="${R_HOME}/bin/Rscript -e"
+
+
+### Ability to disable src/export_blacs/ --- needed for Intel mpi
+# Check whether --enable-blacsexport was given.
+if test "${enable_blacsexport+set}" = set; then :
+  enableval=$enable_blacsexport; ENABLE_BLACSEXPORT="no"
+else
+  ENABLE_BLACSEXPORT="yes"
+
+fi
+
+
+
+if test "X$ENABLE_BLACSEXPORT" = "Xyes"; then
+  EXPORT_BLACS="export_blacs/pkg_tools.o"
+else
+  EXPORT_BLACS=""
+fi
 
 
 # pbdSLAP
 EXT_LDFLAGS=`${R_SCMD} "source('./R/get_conf.r');get.conf('EXT_LDFLAGS','"${R_ARCH}"','pbdSLAP')"`
 R_SLAP=`${R_SCMD} "source('./R/get_lib.r');get.lib('R_SLAP','"${R_ARCH}"')"`
-if test -f "$R_SLAP" ; then
+if test -f "$R_SLAP"; then
   SLAP_LDFLAGS="$R_SLAP \$(LAPACK_LIBS) \$(BLAS_LIBS)"
 else
   SLAP_LDFLAGS="$EXT_LDFLAGS"
@@ -1689,6 +1722,7 @@ SPMD_LDFLAGS=`${R_SCMD} "source('./R/get_conf.r');get.conf('PKG_LIBS','"${R_ARCH
 echo " "
 echo "****************** Results of pbdBASE package configure *****************"
 echo " "
+echo ">> EXPORT_BLACS = ${EXPORT_BLACS}"
 echo ">> EXT_LDFLAGS = ${EXT_LDFLAGS}"
 echo ">> R_SLAP = ${R_SLAP}"
 echo ">> SLAP_LDFLAGS = ${SLAP_LDFLAGS}"
@@ -1700,6 +1734,7 @@ echo " "
 
 
 # Substitute templates
+
 
 
 
