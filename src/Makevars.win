@@ -1,10 +1,6 @@
 ### Rscript
 R_SCMD = ${R_HOME}/bin${R_ARCH_BIN}/Rscript -e
 
-### Get RNACI flags.
-RNACI_CPPFLAGS=$(shell ${R_SCMD} "RNACI:::cppflags()")
-RNACI_LDFLAGS=$(shell ${R_SCMD} "RNACI:::ldflags()")
-
 ### Get ScaLAPACK information from "pbdSLAP".
 SLAP_LDFLAGS = $(shell ${R_SCMD} \
   "source('../R/get_lib.r');get.lib('R_SLAP','"${R_ARCH}"')")
@@ -18,7 +14,7 @@ MPI_LIB = $(shell ${R_SCMD} \
   "source('../R/get_conf.r');get.conf('MPI_LIB','"${R_ARCH}"')")
 
 ### Setup R package flags and substitute by configure for ${MPI_...}.
-PKG_CPPFLAGS = -I"$(MPI_INCLUDE)" $(RNACI_CPPFLAGS)
+PKG_CPPFLAGS = -I"$(MPI_INCLUDE)"  -I../inst/RNACI
 PKG_CFLAGS = $(SHLIB_OPENMP_CFLAGS) -w
 PKG_FFLAGS = $(SHLIB_OPENMP_FFLAGS) -w
 PKG_FCFLAGS = $(SHLIB_OPENMP_FCFLAGS) -w
