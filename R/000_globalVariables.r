@@ -6,7 +6,7 @@
 ### Suggested by Prof Brian Ripley
 ### ?globalVariables
 
-utils::globalVariables(c(".conflicts.OK", ".pbdBASEEnv", ".SPMD.CT"))
+utils::globalVariables(c(".conflicts.OK", ".pbdBASEEnv"))
 
 #' Global Environment for the pbdBASE Package
 #' 
