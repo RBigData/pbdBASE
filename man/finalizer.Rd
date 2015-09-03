@@ -6,9 +6,9 @@
 \alias{finalizer}
 \title{Finalizer}
 \usage{
-base.finalize(mpi.finalize = pbdMPI::.SPMD.CT$mpi.finalize)
+base.finalize(mpi.finalize = pbdMPI::.pbdMPIEnv$SPMD.CT$mpi.finalize)
 
-finalize(mpi.finalize = pbdMPI::.SPMD.CT$mpi.finalize)
+finalize(mpi.finalize = pbdMPI::.pbdMPIEnv$SPMD.CT$mpi.finalize)
 }
 \arguments{
 \item{mpi.finalize}{If MPI should be shut down.}

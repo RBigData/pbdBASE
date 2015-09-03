@@ -328,7 +328,7 @@ blacsexit <- base.blacsexit
 #' @name finalizer
 #' @rdname finalizer
 #' @export
-base.finalize <- function(mpi.finalize=pbdMPI::.SPMD.CT$mpi.finalize)
+base.finalize <- function(mpi.finalize=pbdMPI::.pbdMPIEnv$SPMD.CT$mpi.finalize)
 {
   if (exists(".__blacs_initialized", envir = .pbdBASEEnv)){
     base.blacsexit(CONT=TRUE)
