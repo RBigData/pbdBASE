@@ -22,7 +22,7 @@
 #' @export
 indxg2l <- function(INDXGLOB, NB, IPROC, ISRCPROC, NPROCS)
 {
-  indx <- NB*floor((INDXGLOB - 1L)/(NB*NPROCS)) + ((INDXGLOB - 1L)%%NB) + 1L
+  indx <- NB*as.integer((INDXGLOB - 1L)/(NB*NPROCS)) + ((INDXGLOB - 1L)%%NB) + 1L
   
   return( indx )
 }
@@ -108,7 +108,7 @@ base.indxg2p <- function(INDXGLOB, NB, NPROCS)
     
     ISRCPROC <- 0L
     
-    ret <- (ISRCPROC + (INDXGLOB - 1L) / NB) %% NPROCS
+    ret <- (ISRCPROC + as.integer((INDXGLOB - 1L) / NB)) %% NPROCS
     
     return( ret )
 }
@@ -137,8 +137,8 @@ numroc2 <- function(N, NB, IPROC, NPROCS)
     ISRCPROC <- 0L
     
     MYDIST <- (NPROCS + IPROC - ISRCPROC) %% NPROCS
-    NBLOCKS <- floor(N / NB)
-    ldim <- floor(NBLOCKS / NPROCS) * NB
+    NBLOCKS <- as.integer(N / NB)
+    ldim <- as.integer(NBLOCKS / NPROCS) * NB
     EXTRABLKS <- NBLOCKS %% NPROCS
     
     if (is.na(EXTRABLKS))

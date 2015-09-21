@@ -1,3 +1,7 @@
+Release 0.4-3:
+  * Fixed indxg2p bug indexing bug.
+  * Swap floor() to as.integer() in indexing functions.
+
 Release 0.4-2:
   * Fixed major problem with internal BLACS grid management with MKL.
   * Switched to a header-only RNACI.
