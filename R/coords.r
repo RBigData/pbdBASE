@@ -1,4 +1,4 @@
-#' indxg2l
+#' Local to Global/Global to Local Indexing
 #' 
 #' Get the local index given global information.
 #' 
@@ -42,7 +42,7 @@ indxl2g <- function(INDXLOC, NB, IPROC, ISRCPROC, NPROCS)
 
 
 
-#' g2lpair
+#' Global to Local/Local to Global Pair Indexing
 #' 
 #' Get the local index-pair given global information.
 #' 
@@ -224,4 +224,32 @@ base.pcoord <- function(ICTXT, PNUM)
 }
 
 pcoord <- base.pcoord
+
+
+
+#' g2lcoord
+#' 
+#' Global to local coordinates with explicit ownership given.
+#' 
+#' @param dim
+#' Global dimension.
+#' @param bldim
+#' Blocking dimension.
+#' @param gi,gj
+#' Global row and column indices, respectively.
+#' @param gridinfo
+#' The return of \code{base.blacs(ICTXT(x))}.  See the Details section
+#' for more information.
+#' 
+#' @return
+#' For the process that owns the desired local data at global indices
+#' \code{(gi, gj)}, the return is the local index.  Otherwise, \code{NA}
+#' is returned.
+#' 
+#' @export
+g2lcoord <- function(dim, bldim, gi, gj, gridinfo)
+{
+  .Call(R_g2lcoord, as.integer(dim), as.integer(bldim), 
+        as.integer(gi), as.integer(gj), gridinfo)
+}
 
