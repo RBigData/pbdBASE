@@ -4,7 +4,7 @@
 \alias{coordspair}
 \alias{g2lpair}
 \alias{l2gpair}
-\title{g2lpair}
+\title{Global to Local/Local to Global Pair Indexing}
 \usage{
 g2lpair(gi, gj, bldim, ICTXT)
 

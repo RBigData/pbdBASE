@@ -1,4 +1,4 @@
-#' indxg2l
+#' Local to Global/Global to Local Indexing
 #' 
 #' Get the local index given global information.
 #' 
@@ -22,7 +22,7 @@
 #' @export
 indxg2l <- function(INDXGLOB, NB, IPROC, ISRCPROC, NPROCS)
 {
-  indx <- NB*floor((INDXGLOB - 1L)/(NB*NPROCS)) + ((INDXGLOB - 1L)%%NB) + 1L
+  indx <- NB*as.integer((INDXGLOB - 1L)/(NB*NPROCS)) + ((INDXGLOB - 1L)%%NB) + 1L
   
   return( indx )
 }
@@ -42,7 +42,7 @@ indxl2g <- function(INDXLOC, NB, IPROC, ISRCPROC, NPROCS)
 
 
 
-#' g2lpair
+#' Global to Local/Local to Global Pair Indexing
 #' 
 #' Get the local index-pair given global information.
 #' 
@@ -108,7 +108,7 @@ base.indxg2p <- function(INDXGLOB, NB, NPROCS)
     
     ISRCPROC <- 0L
     
-    ret <- (ISRCPROC + (INDXGLOB - 1L) / NB) %% NPROCS
+    ret <- (ISRCPROC + as.integer((INDXGLOB - 1L) / NB)) %% NPROCS
     
     return( ret )
 }
@@ -137,8 +137,8 @@ numroc2 <- function(N, NB, IPROC, NPROCS)
     ISRCPROC <- 0L
     
     MYDIST <- (NPROCS + IPROC - ISRCPROC) %% NPROCS
-    NBLOCKS <- floor(N / NB)
-    ldim <- floor(NBLOCKS / NPROCS) * NB
+    NBLOCKS <- as.integer(N / NB)
+    ldim <- as.integer(NBLOCKS / NPROCS) * NB
     EXTRABLKS <- NBLOCKS %% NPROCS
     
     if (is.na(EXTRABLKS))
@@ -224,4 +224,32 @@ base.pcoord <- function(ICTXT, PNUM)
 }
 
 pcoord <- base.pcoord
+
+
+
+#' g2lcoord
+#' 
+#' Global to local coordinates with explicit ownership given.
+#' 
+#' @param dim
+#' Global dimension.
+#' @param bldim
+#' Blocking dimension.
+#' @param gi,gj
+#' Global row and column indices, respectively.
+#' @param gridinfo
+#' The return of \code{base.blacs(ICTXT(x))}.  See the Details section
+#' for more information.
+#' 
+#' @return
+#' For the process that owns the desired local data at global indices
+#' \code{(gi, gj)}, the return is the local index.  Otherwise, \code{NA}
+#' is returned.
+#' 
+#' @export
+g2lcoord <- function(dim, bldim, gi, gj, gridinfo)
+{
+  .Call(R_g2lcoord, as.integer(dim), as.integer(bldim), 
+        as.integer(gi), as.integer(gj), gridinfo)
+}
 

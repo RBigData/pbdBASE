@@ -39,7 +39,8 @@ LINALG_OBJS = \
 		base/linalg/plm.o
 
 
-MISC_OBJC = \
+MISC_OBJS = \
+		coords.o \
 		comm_utils.o
 
 EXPORT_BLACS = @EXPORT_BLACS@

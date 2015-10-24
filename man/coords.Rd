@@ -4,7 +4,7 @@
 \alias{coords}
 \alias{indxg2l}
 \alias{indxl2g}
-\title{indxg2l}
+\title{Local to Global/Global to Local Indexing}
 \usage{
 indxg2l(INDXGLOB, NB, IPROC, ISRCPROC, NPROCS)
 
