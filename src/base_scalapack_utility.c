@@ -22,6 +22,25 @@ SEXP R_PDLAPRNT(SEXP M, SEXP N, SEXP A, SEXP DESCA, SEXP CMATNM, SEXP NOUT)
 
 
 
+// redistributors
+SEXP R_PIGEMR2D(SEXP M, SEXP N, SEXP X, SEXP DESCX, SEXP CLDIM, SEXP DESCB, SEXP CTXT)
+{
+  R_INIT;
+  int IJ = 1;
+  SEXP C;
+  
+  newRmat(C, INT(CLDIM, 0), INT(CLDIM, 1), "dbl");
+  
+  Cpigemr2d(INT(M), INT(N),
+      INTEGER(X), IJ, IJ, INTEGER(DESCX),
+      INTEGER(C), IJ, IJ, INTEGER(DESCB), INT(CTXT));
+  
+  R_END;
+  return C;
+}
+
+
+
 SEXP R_PDGEMR2D(SEXP M, SEXP N, SEXP X, SEXP DESCX, SEXP CLDIM, SEXP DESCB, SEXP CTXT)
 {
   R_INIT;
@@ -65,6 +84,3 @@ SEXP R_nbd(SEXP N, SEXP D)
   R_END;
   return RET;
 }
-
-
-

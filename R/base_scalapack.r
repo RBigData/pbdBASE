@@ -466,23 +466,26 @@ base.rpdgecon <- function(norm, m, n, a, desca)
 base.rpdgemr2d <- function(x, descx, descy)
 {
     ldimy <- base.numroc(dim=descy[3L:4L], bldim=descy[5L:6L], ICTXT=descy[2L])
-    
+    ldimy <- as.integer(ldimy)
+    descx <- as.integer(descx)
+    descy <- as.integer(descy)
     m <- descx[3L]
     n <- descx[4L]
     
-    if (!is.double(x))
-        storage.mode(x) <- "double"
-    
-    ret <- .Call(R_PDGEMR2D,
-                 as.integer(m), as.integer(n),
-                 x, as.integer(descx),
-                 as.integer(ldimy), as.integer(descy),
-                 as.integer(0)) # context 0 is always passed since pdgemr2d 
-                 # requires the grids to have at least 1 processor in common
+    # context 0 is always passed since pxgemr2d 
+    # requires the grids to have at least 1 processor in common
+    if (is.integer(x))
+        ret <- .Call(R_PIGEMR2D, m, n, x, descx, ldimy, descy, 0L) 
+    else
+    {
+        if (!is.double(x))
+            storage.mode(x) <- "double"
+        
+        ret <- .Call(R_PDGEMR2D, m, n, x, descx, ldimy, descy, 0L) 
+    }
     
     if (!base.ownany(dim=c(m, n), bldim=descy[5L:6L], ICTXT=descy[2L]))
         ret <- matrix(0.0, 1L, 1L)
     
     return( ret )
 }
-
