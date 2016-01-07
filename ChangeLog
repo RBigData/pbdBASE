@@ -1,4 +1,5 @@
 Release 0.4-3:
+  * Add pigemr2d() wrapper.
   * Added g2lcoord()
   * Fixed indxg2p bug indexing bug.
   * Swap floor() to as.integer() in indexing functions.

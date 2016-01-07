@@ -53,5 +53,3 @@ SEXP g2l_coords(SEXP ind, SEXP dim, SEXP bldim, SEXP procs, SEXP src)
   UNPROTECT(1);
   return ret;
 }
-
-
