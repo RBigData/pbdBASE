@@ -1,13 +1,9 @@
 Package: pbdBASE
 Title: Programming with Big Data -- Base Wrappers for Distributed
-    Matrices
+        Matrices
 Version: 0.4-3
-Depends:
-    R (>= 3.0.0),
-    methods
-Imports:
-    pbdMPI (>= 0.3-0),
-    pbdSLAP(>= 0.2-1)
+Depends: R (>= 3.0.0), methods
+Imports: pbdMPI (>= 0.3-0), pbdSLAP(>= 0.2-1)
 LazyLoad: yes
 LazyData: yes
 ByteCompile: yes
@@ -24,12 +20,18 @@ Description: An interface to and extensions for the 'PBLAS' and
     the native libraries it wraps.  For a much higher level way of
     managing distributed matrices, see the 'pbdDMAT' package.
 SystemRequirements: OpenMPI (>= 1.5.4) on Solaris, Linux, Mac, and
-    FreeBSD. MS-MPI (Microsoft HPC Pack 2012) or MPICH2 (>=
-    1.4.1p1) on Windows.
+        FreeBSD. MS-MPI (Microsoft HPC Pack 2012) or MPICH2 (>=
+        1.4.1p1) on Windows.
 License: Mozilla Public License 2.0
 URL: http://r-pbd.org/
 BugReports: http://group.r-pbd.org/
 MailingList: Please send questions and comments regarding pbdR to
-    RBigData@gmail.com
+        RBigData@gmail.com
 Maintainer: Drew Schmidt <schmidt@math.utk.edu>
 RoxygenNote: 5.0.1
+Packaged: 2016-01-07 02:55:33 UTC; snoweye
+Author: Drew Schmidt [aut, cre],
+  Wei-Chen Chen [aut],
+  George Ostrouchov [aut],
+  Pragneshkumar Patel [aut],
+  Ewan Higgs [ctb]
