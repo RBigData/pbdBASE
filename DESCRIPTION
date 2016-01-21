@@ -6,7 +6,7 @@ Depends:
     R (>= 3.0.0),
     methods
 Imports:
-    pbdMPI (>= 0.3-0),
+    pbdMPI (>= 0.3-1),
     pbdSLAP(>= 0.2-1)
 LazyLoad: yes
 LazyData: yes
