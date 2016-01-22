@@ -18,6 +18,10 @@
   }
 
   library.dynam("pbdBASE", pkgname, libname)
+
+  if (!exists(".__blacsc_gridinfo_0", envir = .pbdBASEEnv)) 
+    init.grid()
+
   invisible()
 } # End of .onLoad().
 
