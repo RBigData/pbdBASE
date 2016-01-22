@@ -474,15 +474,9 @@ base.rpdgemr2d <- function(x, descx, descy)
     
     # context 0 is always passed since pxgemr2d 
     # requires the grids to have at least 1 processor in common
-    if (is.integer(x))
-        ret <- .Call(R_PIGEMR2D, m, n, x, descx, ldimy, descy, 0L) 
-    else
-    {
-        if (!is.double(x))
-            storage.mode(x) <- "double"
-        
-        ret <- .Call(R_PDGEMR2D, m, n, x, descx, ldimy, descy, 0L) 
-    }
+    ### TODO integrate PIGEMR2D
+    if (!is.double(x))
+        storage.mode(x) <- "double"
     
     if (!base.ownany(dim=c(m, n), bldim=descy[5L:6L], ICTXT=descy[2L]))
         ret <- matrix(0.0, 1L, 1L)
