@@ -1,3 +1,6 @@
+Release 0.5-0:
+  * Call init.grid() on package load.
+
 Release 0.4-3:
   * Add pigemr2d() wrapper.
   * Added g2lcoord()
