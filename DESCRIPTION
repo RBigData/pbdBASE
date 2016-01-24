@@ -2,8 +2,12 @@ Package: pbdBASE
 Title: Programming with Big Data -- Base Wrappers for Distributed
         Matrices
 Version: 0.4-3
-Depends: R (>= 3.0.0), methods
-Imports: pbdMPI (>= 0.3-0), pbdSLAP(>= 0.2-1)
+Depends: 
+    R (>= 3.0.0), 
+    methods
+Imports:
+    pbdMPI (>= 0.3-1),
+    pbdSLAP(>= 0.2-1)
 LazyLoad: yes
 LazyData: yes
 ByteCompile: yes
@@ -29,9 +33,3 @@ MailingList: Please send questions and comments regarding pbdR to
         RBigData@gmail.com
 Maintainer: Drew Schmidt <schmidt@math.utk.edu>
 RoxygenNote: 5.0.1
-Packaged: 2016-01-07 02:55:33 UTC; snoweye
-Author: Drew Schmidt [aut, cre],
-  Wei-Chen Chen [aut],
-  George Ostrouchov [aut],
-  Pragneshkumar Patel [aut],
-  Ewan Higgs [ctb]
