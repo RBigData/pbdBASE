@@ -3,10 +3,10 @@
 #' Redistribute a matrix from rank 0 to all ranks in block cyclic
 #' fashion.
 #' 
+#' @param desc
+#' ScaLAPACK descriptor array.
 #' @param A
 #' Matrix.
-#' @param descx
-#' ScaLAPACK descriptor array.
 #' 
 #' @export
 base.redist <- function(desc, A)

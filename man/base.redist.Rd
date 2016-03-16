@@ -7,9 +7,9 @@
 base.redist(desc, A)
 }
 \arguments{
-\item{A}{Matrix.}
+\item{desc}{ScaLAPACK descriptor array.}
 
-\item{descx}{ScaLAPACK descriptor array.}
+\item{A}{Matrix.}
 }
 \description{
 Redistribute a matrix from rank 0 to all ranks in block cyclic
