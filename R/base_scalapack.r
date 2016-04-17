@@ -478,6 +478,8 @@ base.rpdgemr2d <- function(x, descx, descy)
     if (!is.double(x))
         storage.mode(x) <- "double"
     
+    ret <- .Call(R_PDGEMR2D, m, n, x, descx, ldimy, descy, 0L)
+    
     if (!base.ownany(dim=c(m, n), bldim=descy[5L:6L], ICTXT=descy[2L]))
         ret <- matrix(0.0, 1L, 1L)
     

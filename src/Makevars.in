@@ -72,6 +72,7 @@ UTILS_OBJS = \
 		base/utils/dmat_redist.o \
 		base/utils/indices.o \
 		base/utils/putil.o \
+		base/utils/redist.o \
 		base/utils/scale.o \
 		base/utils/special.o
 
@@ -90,6 +91,7 @@ R_OBJS = \
 		base_scalapack.o \
 		base_scalapack_utility.o \
 		base_variance.o \
+		redist.o \
 		other.o \
 		descinit.o
 

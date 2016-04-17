@@ -1,3 +1,6 @@
+Release 0.4-4:
+  * Add custom redistribution function.
+
 Release 0.4-3:
   * Add pigemr2d() wrapper.
   * Added g2lcoord()
