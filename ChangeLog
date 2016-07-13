@@ -1,5 +1,6 @@
 Release 0.4-4:
-  * Add custom redistribution function.
+  * Add custom distribution function.
+  * Fixed pdgemr2d() bug.
 
 Release 0.4-3:
   * Add pigemr2d() wrapper.
@@ -90,4 +91,3 @@ Release 0.1-0:
   * Link with RmpiSLAP.
   * Add guide, man pages, installation, ...
   * Add BLACS, PBLAS, ScaLAPACK.
-
