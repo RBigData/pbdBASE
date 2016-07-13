@@ -1,7 +1,6 @@
 Package: pbdBASE
 Type: Package
-Title: Programming with Big Data -- Base Wrappers for Distributed
-        Matrices
+Title: Programming with Big Data -- Base Wrappers for Distributed Matrices
 Version: 0.4-4
 Description: An interface to and extensions for the 'PBLAS' and
     'ScaLAPACK' numerical libraries.  This enables R to utilize
@@ -16,21 +15,19 @@ Depends:
 Imports:
     pbdMPI (>= 0.3-1),
     pbdSLAP(>= 0.2-1)
-SystemRequirements: OpenMPI (>= 1.5.4) on Solaris, Linux, Mac, and
-        FreeBSD. MS-MPI (Microsoft HPC Pack 2012) or MPICH2 (>=
-        1.4.1p1) on Windows.
+SystemRequirements: OpenMPI (>= 1.5.4) on Solaris, Linux, Mac, and FreeBSD.
+    MS-MPI (Microsoft HPC Pack 2012) or MPICH2 (>= 1.4.1p1) on Windows.
 LazyLoad: yes
 LazyData: yes
 ByteCompile: yes
 NeedsCompilation: yes
 URL: http://r-pbd.org/
 BugReports: http://group.r-pbd.org/
-MailingList: Please send questions and comments regarding pbdR to
-        RBigData@gmail.com
-Authors@R: c(person("Drew", "Schmidt", role = c("aut", "cre"), email =
-    "schmidt@math.utk.edu"), person("Wei-Chen", "Chen", role =
-    "aut"), person("George", "Ostrouchov", role = "aut"),
-    person("Pragneshkumar", "Patel", role = "aut"),
+MailingList: Please send questions and comments regarding pbdR to RBigData@gmail.com
+Authors@R: c(person("Drew", "Schmidt", role=c("aut", "cre"), email="schmidt@math.utk.edu"),
+    person("Wei-Chen", "Chen", role="aut"),
+    person("George", "Ostrouchov", role="aut"),
+    person("Pragneshkumar", "Patel", role="aut"),
     person("Ewan", "Higgs", role="ctb"))
 Maintainer: Drew Schmidt <schmidt@math.utk.edu>
 RoxygenNote: 5.0.1
