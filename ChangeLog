@@ -1,5 +1,5 @@
 Release 0.4-4:
-  * Add custom distribution function.
+  * Add custom distribution function to replace pdgemr2d() for most purposes.
   * Fixed pdgemr2d() bug.
 
 Release 0.4-3:
