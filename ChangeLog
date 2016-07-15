@@ -1,6 +1,8 @@
 Release 0.4-4:
   * Add custom distribution function to replace pdgemr2d() for most purposes.
   * Fixed pdgemr2d() bug.
+  * Fix several issues with condition numbers.
+  * Some small internal cleanup.
 
 Release 0.4-3:
   * Add pigemr2d() wrapper.
