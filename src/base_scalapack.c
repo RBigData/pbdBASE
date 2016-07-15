@@ -396,22 +396,20 @@ SEXP R_PDGECON(SEXP TYPE, SEXP M, SEXP N, SEXP A, SEXP DESCA)
   int IJ = 1;
   double* cpA;
   int info = 0;
-  
+  const int m = nrows(A);
+  const int n = ncols(A);
   SEXP RET;
   newRvec(RET, 2, "dbl"); // RET = {cond_num, info}
   
-  
-  // Copy A
-  cpA = R_alloc(nrows(A)*ncols(A), sizeof(double));
-  memcpy(cpA, REAL(A), nrows(A)*ncols(A)*sizeof(double));
-  
+  cpA = malloc(m*n * sizeof(*cpA));
+  memcpy(cpA, DBLP(A), m*n*sizeof(*cpA));
   
   // compute inverse of condition number
-  condnum_(CHARPT(TYPE, 0), INTP(M), INTP(N), cpA, 
-    &IJ, &IJ, INTP(DESCA), DBLP(RET), &info);
-  
+  condnum_(CHARPT(TYPE, 0), INTP(M), INTP(N), cpA, &IJ, &IJ, INTP(DESCA), DBLP(RET), &info);
   
   DBL(RET, 1) = (double) info;
+  
+  free(cpA);
   
   R_END;
   return RET;
@@ -432,15 +430,14 @@ SEXP R_PDTRCON(SEXP TYPE, SEXP UPLO, SEXP DIAG, SEXP N, SEXP A, SEXP DESCA)
   SEXP RET;
   newRvec(RET, 2, "dbl");
   
-  
   // workspace query and allocate work vectors
   pdtrcon_(CHARPT(TYPE, 0), CHARPT(UPLO, 0), CHARPT(DIAG, 0),
     INTP(N), DBLP(A), &IJ, &IJ, INTP(DESCA), DBLP(RET), 
     &tmp, &in1, &liwork, &in1, &info);
   
   lwork = (int) tmp;
-  work = (double *) R_alloc(lwork, sizeof(double));
-  iwork = (int *) R_alloc(liwork, sizeof(int));
+  work = malloc(lwork * sizeof(*work));
+  iwork = malloc(liwork * sizeof(*iwork));
   
   // compute inverse of condition number
   info = 0;
@@ -450,8 +447,9 @@ SEXP R_PDTRCON(SEXP TYPE, SEXP UPLO, SEXP DIAG, SEXP N, SEXP A, SEXP DESCA)
   
   DBL(RET, 1) = (double) info;
   
+  free(work);
+  free(iwork);
+  
   R_END;
   return RET;
 }
-
-

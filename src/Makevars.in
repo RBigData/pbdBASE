@@ -32,7 +32,7 @@ EXPM_OBJS = \
 
 
 LINALG_OBJS = \
-		base/linalg/auxil.o \
+		base/linalg/norms.o \
 		base/linalg/pcrossprod.o \
 		base/linalg/pinverse.o \
 		base/linalg/prblas.o \
