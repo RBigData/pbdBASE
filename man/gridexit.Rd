@@ -13,7 +13,8 @@ gridexit(ICTXT, override = FALSE)
 \item{ICTXT}{BLACS context number.}
 
 \item{override}{logical; if TRUE, ignores normal check preventing the
-closing of \code{ICTXT} values of 0, 1, and 2.}
+closing of \code{ICTXT} values of 0, 1, and 2. This could cause things
+to go crazy and I do not recommend it.}
 }
 \value{
 Silently returns 0 when successful. Silently returns 1 when
