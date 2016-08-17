@@ -7,7 +7,7 @@ citHeader("To cite pbdBASE in a publication use:")
 
 citEntry(
   entry = "Misc",
-  title = "{pbdBASE}: Programming with Big Data -- Core pbd Classes and Methods",
+  title = "{pbdBASE}: pbdR Base Wrappers for Distributed Matrices",
   author = personList(as.person("Drew Schmidt"),
                       as.person("Wei-Chen Chen"),
                       as.person("George Ostrouchov"),
@@ -16,7 +16,7 @@ citEntry(
   note = note,
   url = "https://cran.r-project.org/package=pbdBASE",
   textVersion = NULL,
-  key = "Schmidt2012pbdBASEpackage"
+  key = "pbdBASEpackage"
 )
 
 citEntry(
@@ -30,5 +30,5 @@ citEntry(
   note = "{R} package vignette",
   url = "https://cran.r-project.org/package=pbdBASE",
   textVersion = NULL,
-  key = "Schmidt2012pbdBASEvignette"
+  key = "pbdBASEvignette"
 )
