@@ -209,23 +209,17 @@ static void matexp_pade(int n, const int p, double *A, double *N)
   double *B, *C, *D;
   
   // Power of A
-  B = calloc(n*n, sizeof(double));
+  B = calloc(n*n, sizeof(*B));
   assert(B != NULL);
   
   // Temporary storage for matrix multiplication
-  C = malloc(n*n * sizeof(double));
+  C = calloc(n*n, sizeof(*C));
   assert(C != NULL);
   
-  D = malloc(n*n * sizeof(double));
+  D = calloc(n*n, sizeof(*D));
   assert(D != NULL);
   
   matcopy(n, A, C);
-  
-  for (i=0; i<n*n; i++)
-  {
-    N[i] = 0.0;
-    D[i] = 0.0;
-  }
   
   i = 0;
   while (i < n*n)
@@ -299,4 +293,3 @@ void matexp(int n, const int p, double *x, double *ret)
     matpow_by_squaring(x, n, m, ret);
   }
 }
-

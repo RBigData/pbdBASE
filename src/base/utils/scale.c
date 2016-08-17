@@ -17,6 +17,8 @@
 //   fun = char with 4 possibilities, describing the type of sweep to perform:
 //     "+", "-", "*", "/"
 
+#include "utils.h"
+
 
 #define ROWS 1
 #define COLS 2
@@ -41,8 +43,6 @@ static inline void l2gpair(const int i, const int j, int* restrict gi, int* rest
 {
   *gi = indxl2g(i, desc[5-1], blacs[4-1], 0, blacs[2-1]);
   *gj = indxl2g(j, desc[6-1], blacs[5-1], 0, blacs[3-1]);
-  
-  printf("i=%d, j=%d, (%d, %d)\n", i, j, desc[5-1], desc[6-1]);
 }
 
 

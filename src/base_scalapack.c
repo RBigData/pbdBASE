@@ -213,7 +213,7 @@ SEXP R_PDGETRF(SEXP M, SEXP N, SEXP A, SEXP CLDIM, SEXP DESCA, SEXP LIPIV)
   INT(INFO, 0) = 0;
   
   INT(LIPIV) = nonzero(INT(LIPIV));
-  ipiv = R_alloc(INT(LIPIV), sizeof(int));
+  ipiv = (int*) R_alloc(INT(LIPIV), sizeof(int));
   
   pdgetrf_(INTP(M), INTP(N), DBLP(C), &IJ, &IJ, INTP(DESCA), ipiv, INTP(INFO));
   
@@ -286,17 +286,17 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
   for (i=0; i<9; i++)
     descz[i] = INT(DESCA, i);
   
-  w = R_alloc(INT(N), sizeof(double));
-  z = R_alloc(ldm[0]*ldm[1], sizeof(double));
-  gap = R_alloc(blacs[1]*blacs[2], sizeof(double));
+  w = (double*) R_alloc(INT(N), sizeof(double));
+  z = (double*) R_alloc(ldm[0]*ldm[1], sizeof(double));
+  gap = (double*) R_alloc(blacs[1]*blacs[2], sizeof(double));
   
   
-  a = R_alloc(ldm[0]*ldm[1], sizeof(double));
+  a = (double*) R_alloc(ldm[0]*ldm[1], sizeof(double));
   
   memcpy(a, DBLP(A), nrows(A)*ncols(A)*sizeof(double));
   
-  ifail = R_alloc(INT(N, 0), sizeof(int));
-  iclustr = R_alloc(2*blacs[1]*blacs[2], sizeof(int));
+  ifail = (int*) R_alloc(INT(N, 0), sizeof(int));
+  iclustr = (int*) R_alloc(2*blacs[1]*blacs[2], sizeof(int));
   
   
   // Allocate local workspace
@@ -313,10 +313,10 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
     ifail, iclustr, gap, &info);
   
   lwork = nonzero( ((int) tmp_lwork) );
-  work = R_alloc(lwork, sizeof(double));
+  work = (double*) R_alloc(lwork, sizeof(double));
   
   liwork = nonzero(tmp_liwork);
-  iwork = R_alloc(liwork, sizeof(int));
+  iwork = (int*) R_alloc(liwork, sizeof(int));
   
   // Compute eigenvalues
   m = 0;

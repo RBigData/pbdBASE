@@ -1,3 +1,7 @@
+#ifndef __PBDBASE_SCALAPACK__
+#define __PBDBASE_SCALAPACK__
+
+
 // BLACS
 void sl_init_(int *ictxt, int *nprow, int *npcol);
 void blacs_gridinfo_(int *ictxt, int *nprow, int *npcol, int *myrow,
@@ -59,12 +63,24 @@ void pdorgqr_(int *m, int *n, int *k, double *a, int *ia, int *ja, int *desca,
 // TOOLS
 void bprnt_(int *m, int *n, double *a, int *ia, int *ja, int *desca,
   int *irprnt, int *icprnt, char *chatnm, int *nout, double *work);
+void descinit_(int *desc, int *m, int *n, int *mb, int *nb, int *isrc,
+  int *icsrc, int *ictxt, int *lld, int *info);
 
 
 // REDIST
 void pigemr2d_(int *m, int *n, int *a, int *ia, int *ja, int *desca,
   int *b, int *ib, int *jb, int *descb, int *ictxt);
+void Cpigemr2d(int m, int n, int *a, int ia, int ja, int *desca,
+  int *b, int ib, int jb, int *descb, int ictxt);
 void pdgemr2d_(int *m, int *n, double *a, int *ia, int *ja, int *desca,
   double *b, int *ib, int *jb, int *descb, int *ictxt);
 void Cpdgemr2d(int m, int n, double *a, int ia, int ja, int *desca,
   double *b, int ib, int jb, int *descb, int ictxt);
+
+
+// ???
+int numroc_(int* n, int* nb, int* iproc, int* isrcproc, int* nprocs);
+void Cblacs_gridinfo(int ConTxt, int *nprow, int *npcol, int *myrow, int *mycol);
+
+
+#endif

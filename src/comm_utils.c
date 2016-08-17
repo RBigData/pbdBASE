@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// Copyright 2014, Schmidt
+// Copyright 2014, 2016 Schmidt
 
 #include "pbdBASE.h"
 
@@ -52,7 +52,6 @@ SEXP COMM_WARNING(char *msg)
 SEXP COMM_PRINT(SEXP x)
 {
   SEXP mpiPackage;
-  SEXP Rmsg;
   SEXP ret;
   
   PROTECT(mpiPackage = 
