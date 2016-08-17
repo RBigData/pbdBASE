@@ -14,7 +14,7 @@ pbdBASE is a set of bindings to and extensions for the distributed linear algebr
 pbdBASE requires:
 
 * A system installation of MPI
-* R version 2.14.0 or higher
+* R version 3.0.0 or higher
 * The pbdSLAP and pbdMPI packages, as well as their dependencies.
 
 Assuming you meet the system dependencies, you can install the stable version from CRAN using the usual `install.packages()`:
