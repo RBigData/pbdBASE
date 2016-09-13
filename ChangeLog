@@ -2,6 +2,8 @@ Release 0.4-5:
   * Rewrote sweeper.
   * Remove -w and fix compiler warnings.
   * Update internal RNACI.
+  * Fixed several serious memory issues when computing eigenvalues.
+  * Switch pdsyev() to pdsyevr().
 
 Release 0.4-4:
   * Add custom distribution function to replace pdgemr2d() for most purposes.

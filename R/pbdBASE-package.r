@@ -22,7 +22,7 @@
 #'   R_RL2INSERT, R_PDGDGTK, R_PDDIAGMK, R_RCOLCPY, R_RCOLCPY2, R_RROWCPY, 
 #'   R_RROWCPY2, R_PDMVSUM, R_DHILBMK, R_PDHILBMK, R_PDMKCPN1, 
 #'   R_PDGEQPF, R_PDORGQR, R_PDORMQR, 
-#'   R_PDGETRI, R_PDGESV, R_PDGESVD, R_PDSYEV, R_PDPOTRF, R_PDSYEVX, 
+#'   R_PDGETRI, R_PDGESV, R_PDGESVD, R_PDSYEVR, R_PDPOTRF, R_PDSYEVX, 
 #'   R_PDGETRF, R_PDLANGE, R_PDTRCON, R_PDGECON, R_PDGEMR2D,
 #'   R_g2lcoord
 #' 
@@ -33,4 +33,3 @@
 #' @references Programming with Big Data in R Website: \url{http://r-pbd.org/}
 #' @keywords Package
 NULL
-

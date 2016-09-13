@@ -41,6 +41,10 @@ void pdgesvd_(char *jobu, char *jobvt, int *m, int *n, double *a, int *ia,
 void pdsyev_(char *jobz, char *uplo, int *n, double *a, int *ia, int *ja, 
   int *desca, double *w, double *z, int *iz, int *jz, int *descz, double *work, 
   int *lwork, int *info);
+void pdsyevr_(char *jobz, char *range, char *uplo, int  *n, double *a, int *ia,
+  int *ja, int *desca, double *vl, double *vu, int *il, int *iu, int *m, int *nz,
+  double *w, double *z, int *iz, int *jz, int *descz, double *work, int *lwork,
+  int *iwork, int  *liwork, int *info);
 void pdgetrf_(int *m, int *n, double *a, int *ia, int *ja, int *desca, 
   int *ipiv, int *info);
 void pdpotrf_(char *uplo, int *n, double *a, int *ia, int *ja, int *desca, 
