@@ -1,3 +1,6 @@
+Release 0.4-6:
+  * Fix indexing problem in pdsweep()
+
 Release 0.4-5:
   * Rewrote sweeper.
   * Remove -w and fix compiler warnings.
