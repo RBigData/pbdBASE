@@ -1,6 +1,6 @@
 # pbdBASE 
 
-* **Version:** 0.4-5
+* **Version:** 0.4-6
 * **License:** [![License](http://img.shields.io/badge/license-MPL%202-orange.svg?style=flat)](https://www.mozilla.org/MPL/2.0/)
 * **Author:** See section below.
 
