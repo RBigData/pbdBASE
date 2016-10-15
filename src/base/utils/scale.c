@@ -56,7 +56,7 @@ static inline void l2gpair(const int i, const int j, int* restrict gi, int* rest
         for (int i=1; i<=m; i++) \
         { \
           l2gpair(i, j, &gi, &gj, descx, blacs); \
-          pos = ind(gi + k*(gj-1), lvec); \
+          pos = ind(gi + k*(gj-1), lvec) -1; \
           x[i-1 + m*(j-1)] = x[i-1 + m*(j-1)] OP vec[pos]; \
         } \
       } \
@@ -69,7 +69,7 @@ static inline void l2gpair(const int i, const int j, int* restrict gi, int* rest
         for (int i=1; i<=m; i++) \
         { \
           l2gpair(i, j, &gi, &gj, descx, blacs); \
-          pos = ind(gj + k*(gi-1), lvec); \
+          pos = ind(gj + k*(gi-1), lvec) - 1; \
           x[i + m*j] = x[i + m*j] OP vec[pos]; \
         } \
       } \
