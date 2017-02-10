@@ -1,6 +1,6 @@
 Release 0.5-0:
   * Update to RNACI v0.4.0.
-  * Added base.rpdgelqf().
+  * Added base.pdgelqf().
 
 Release 0.4-6:
   * Fix indexing problem in pdsweep()
