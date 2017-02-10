@@ -64,6 +64,8 @@ void pdorgqr_(int *m, int *n, int *k, double *a, int *ia, int *ja, int *desca,
   double *tau, double *work, int *lwork, int *info);
 void pdgelqf_(int *m, int *n, double *a, int *ia, int *ja, int *desca,
   double *tau, double *work, int *lwork, int *info);
+void pdorglq_(int *m, int *n, int *k, double *a, int *ia, int *ja, int *desca,
+  double *tau, double *work, int *lwork, int *info);
 
 
 // TOOLS

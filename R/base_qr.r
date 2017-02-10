@@ -135,6 +135,10 @@ base.rpdormqr <- function(side, trans, m, n, k, qr, descqr, tau, c, descc)
 
 
 
+# -----------------------------------------------------------------------------
+# LQ
+# -----------------------------------------------------------------------------
+
 #' rpdgelqf
 #' 
 #' LQ.
@@ -160,4 +164,41 @@ base.rpdgelqf <- function(m, n, x, descx)
     pbdMPI::comm.warning(paste("ScaLAPACK returned INFO=", ret$INFO, "; returned solution is likely invalid", sep=""))
   
   ret
+}
+
+
+
+#' rpdorglq
+#' 
+#' Recover Q.
+#' 
+#' For advanced users only.
+#' 
+#' @param m,n
+#' Problem size.
+#' @param k
+#' Number of elementary reflectors.
+#' @param lq
+#' QR decomposition.
+#' @param desc
+#' ScaLAPACK descriptor array.
+#' @param tau
+#' Elementary reflectors.
+#' 
+#' @export
+base.rpdorglq <- function(m, n, k, lq, desc, tau)
+{
+  if (!is.double(lq))
+    storage.mode(lq) <- "double"
+  
+  if (!is.double(tau))
+    storage.mode(tau) <- "double"
+  
+  out <- 
+    .Call(R_PDORGLQ, as.integer(m), as.integer(n), as.integer(k), lq, as.integer(desc), tau)
+  
+  if (out$INFO!=0)
+    pbdMPI::comm.warning(paste("ScaLAPACK returned INFO=", out$INFO, "; returned solution is likely invalid", sep=""))
+  
+    out$A
 }
