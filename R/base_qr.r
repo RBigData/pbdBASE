@@ -133,3 +133,31 @@ base.rpdormqr <- function(side, trans, m, n, k, qr, descqr, tau, c, descc)
   return( out$B )
 }
 
+
+
+#' rpdgelqf
+#' 
+#' LQ.
+#' 
+#' For advanced users only.
+#' 
+#' @param m,n
+#' Problem size.
+#' @param x
+#' Matrix.
+#' @param descx
+#' ScaLAPACK descriptor array.
+#' 
+#' @export
+base.rpdgelqf <- function(m, n, x, descx)
+{
+  if (!is.double(x))
+    storage.mode(x) <- "double"
+  
+  ret <- .Call(R_PDGELQF, as.integer(m), as.integer(n), x, as.integer(descx))
+  
+  if (ret$INFO!=0)
+    pbdMPI::comm.warning(paste("ScaLAPACK returned INFO=", ret$INFO, "; returned solution is likely invalid", sep=""))
+  
+  ret
+}

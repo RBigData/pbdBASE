@@ -2,14 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// Copyright 2013, Schmidt
+// Copyright 2013, 2017, Schmidt
 
 #include "pbdBASE.h"
 
 
 /* Computing QR */
-SEXP R_PDGEQPF(SEXP TOL, SEXP M, SEXP N,
-    SEXP A, SEXP DESCA)
+SEXP R_PDGEQPF(SEXP TOL, SEXP M, SEXP N, SEXP A, SEXP DESCA)
 {
   R_INIT;
   int lwork = -1;
@@ -175,3 +174,50 @@ SEXP R_PDORGQR(SEXP M, SEXP N, SEXP K, SEXP A, SEXP ALDIM, SEXP DESCA, SEXP TAU)
   return RET;
 }
 
+
+
+// ----------------------------------------------------------------------------
+// LQ
+// ----------------------------------------------------------------------------
+
+/* Computing QR */
+SEXP R_PDGELQF(SEXP TOL, SEXP M, SEXP N, SEXP A, SEXP DESCA)
+{
+  R_INIT;
+  int lwork = -1;
+  int IJ = 1;
+  double work = 0.0;
+  double tmp = 0.0;
+  double *p_work;
+  const int ltau = MIN(INT(M, 0), INT(N, 0));
+  SEXP RET, RET_NAMES, INFO, A_OUT, TAU;
+  
+  newRvec(INFO, 1, "int", true);
+  newRmat(A_OUT, nrows(A), ncols(A), "dbl");
+  newRvec(TAU, ltau, "dbl");
+  
+  
+  /* Copy A since pdorgqr writes in place */
+  memcpy(DBLP(A_OUT), DBLP(A), nrows(A)*ncols(A)*sizeof(double));
+  
+  /* workspace query */
+  pdgelqf_(INTP(M), INTP(N), &tmp, &IJ, &IJ, INTP(DESCA), &tmp, &work, &lwork, INTP(INFO));
+  
+  // pdgelqf(m, n, a, ia, ja, desca, tau, work, lwork, info)
+  
+  
+  /* allocate work vector and factor A=QR */
+  lwork = (int) work;
+  lwork = nonzero(lwork);
+  p_work = (double *) R_alloc(lwork, sizeof(double));
+  
+  pdgelqf_(INTP(M), INTP(N), DBLP(A_OUT), &IJ, &IJ, INTP(DESCA), DBLP(TAU), p_work, &lwork, INTP(INFO));
+  
+  
+  // Manage return
+  RET_NAMES = make_list_names(3, "lq", "tau", "INFO");
+  RET = make_list(RET_NAMES, 3, A_OUT, TAU, INFO);
+  
+  R_END;
+  return RET;
+}

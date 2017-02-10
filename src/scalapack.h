@@ -62,6 +62,8 @@ void pdormqr_(char *side, char *trans, int *m, int *n, int *k, double *a,
   int *descc, double *work, int *lwork, int *info);
 void pdorgqr_(int *m, int *n, int *k, double *a, int *ia, int *ja, int *desca, 
   double *tau, double *work, int *lwork, int *info);
+void pdgelqf_(int *m, int *n, double *a, int *ia, int *ja, int *desca,
+  double *tau, double *work, int *lwork, int *info);
 
 
 // TOOLS
@@ -83,7 +85,7 @@ void Cpdgemr2d(int m, int n, double *a, int ia, int ja, int *desca,
 
 
 // ???
-int numroc_(int* n, int* nb, int* iproc, int* isrcproc, int* nprocs);
+int numroc_(const int* n, const int* nb, const int* iproc, const int* isrcproc, const int* nprocs);
 void Cblacs_gridinfo(int ConTxt, int *nprow, int *npcol, int *myrow, int *mycol);
 
 
