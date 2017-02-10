@@ -181,7 +181,7 @@ SEXP R_PDORGQR(SEXP M, SEXP N, SEXP K, SEXP A, SEXP ALDIM, SEXP DESCA, SEXP TAU)
 // ----------------------------------------------------------------------------
 
 /* Computing QR */
-SEXP R_PDGELQF(SEXP TOL, SEXP M, SEXP N, SEXP A, SEXP DESCA)
+SEXP R_PDGELQF(SEXP M, SEXP N, SEXP A, SEXP DESCA)
 {
   R_INIT;
   int lwork = -1;
