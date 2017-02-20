@@ -21,4 +21,3 @@ base.matexp <- function(A, p=6, t=1)
   
   return( R )
 }
-

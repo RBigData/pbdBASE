@@ -62,7 +62,7 @@ extern SEXP R_g2lcoord(SEXP dim, SEXP bldim, SEXP gi, SEXP gj, SEXP gridinfo);
 extern SEXP R_igamn2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST);
 extern SEXP R_igamx2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST);
 extern SEXP R_igsum2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST);
-extern SEXP R_matexp(SEXP A, SEXP p);
+extern SEXP R_matexp(SEXP A, SEXP p, SEXP t_);
 extern SEXP R_nbd(SEXP N, SEXP D);
 extern SEXP R_optimal_grid(SEXP NPROCS);
 extern SEXP R_p_matexp_pade(SEXP A, SEXP desca, SEXP p);
@@ -129,7 +129,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"R_igamn2d1", (DL_FUNC) &R_igamn2d1, 8},
   {"R_igamx2d1", (DL_FUNC) &R_igamx2d1, 8},
   {"R_igsum2d1", (DL_FUNC) &R_igsum2d1, 8},
-  {"R_matexp", (DL_FUNC) &R_matexp, 2},
+  {"R_matexp", (DL_FUNC) &R_matexp, 3},
   {"R_nbd", (DL_FUNC) &R_nbd, 2},
   {"R_optimal_grid", (DL_FUNC) &R_optimal_grid, 1},
   {"R_p_matexp_pade", (DL_FUNC) &R_p_matexp_pade, 3},
