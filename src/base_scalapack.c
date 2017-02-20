@@ -96,59 +96,6 @@ SEXP R_PDGETRI(SEXP A, SEXP DESCA)
 // Factorizations 
 // -------------------------------------------------------- 
 
-
-/* SVD */
-SEXP R_PDGESVD(SEXP M, SEXP N, SEXP ASIZE, SEXP A, SEXP DESCA, 
-    SEXP ULDIM, SEXP DESCU, SEXP VTLDIM, SEXP DESCVT, SEXP JOBU, SEXP JOBVT, 
-    SEXP INPLACE)
-{
-  R_INIT;
-  double *A_OUT;
-  int IJ = 1, temp_lwork = -1;
-  double temp_A = 0, temp_work = 0, *WORK;
-  SEXP RET, RET_NAMES, INFO, D, U, VT;
-  
-  newRvec(INFO, 1, "int");
-  newRvec(D, INT(ASIZE, 0), "dbl");
-  newRmat(U, INT(ULDIM, 0), INT(ULDIM, 1), "dbl");
-  newRmat(VT, INT(VTLDIM, 0), INT(VTLDIM, 1), "dbl");
-  
-  
-  // Query size of workspace
-  INT(INFO, 0) = 0;
-  
-  pdgesvd_(STR(JOBU, 0), STR(JOBVT, 0),
-    INTP(M), INTP(N),
-    &temp_A, &IJ, &IJ, INTP(DESCA),
-    &temp_A, &temp_A, &IJ, &IJ, INTP(DESCU),
-    &temp_A, &IJ, &IJ, INTP(DESCVT),
-    &temp_work, &temp_lwork, INTP(INFO));
-      
-  // Allocate work vector and calculate svd
-  temp_lwork = (int) temp_work;
-  temp_lwork = nonzero(temp_lwork);
-  
-  WORK = (double *) R_alloc(temp_lwork, sizeof(double));
-  
-  A_OUT = (double *) R_alloc(nrows(A)*ncols(A), sizeof(double));
-  memcpy(A_OUT, REAL(A), nrows(A)*ncols(A)*sizeof(double));
-  
-  pdgesvd_(STR(JOBU, 0), STR(JOBVT, 0),
-    INTP(M), INTP(N),
-    A_OUT, &IJ, &IJ, INTP(DESCA),
-    REAL(D), REAL(U), &IJ, &IJ, INTP(DESCU),
-    REAL(VT), &IJ, &IJ, INTP(DESCVT),
-    WORK, &temp_lwork, INTP(INFO));
-  
-  // Manage return
-  RET_NAMES = make_list_names(4, "info", "d", "u", "vt");
-  RET = make_list(RET_NAMES, 4, INFO, D, U, VT);
-  
-  R_END;
-  return RET;
-} 
-
-
 /* Symmetric Eigen */
 SEXP R_PDSYEVR(SEXP JOBZ, SEXP UPLO, SEXP N, SEXP A, SEXP DESCA, SEXP DESCZ)
 {

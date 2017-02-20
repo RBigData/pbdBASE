@@ -93,7 +93,9 @@ R_OBJS = \
 		base_variance.o \
 		redist.o \
 		other.o \
-		descinit.o
+		svd.o \
+		descinit.o \
+    pbdBASE_native.o
 
 
 OBJECTS = $(BASE_OBJS) $(EXPM_OBJS) $(LINALG_OBJS) \
