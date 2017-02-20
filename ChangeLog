@@ -2,6 +2,8 @@ Release 0.5-0:
   * Update to RNACI v0.4.0.
   * Added base.pdgelqf().
   * Added base.rpdorglq().
+  * Exported native routines.
+  * Fixed base.matexp() bug.
 
 Release 0.4-6:
   * Fix indexing problem in pdsweep()
