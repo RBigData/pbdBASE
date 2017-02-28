@@ -3,7 +3,7 @@ AC_PREREQ([2.69])
 AC_INIT([pbdBASE], [0.3-0])
 AC_CONFIG_SRCDIR([src/base_scalapack.c])
 
-
+AC_PROG_CC_C99
 
 
 # Determine R_HOME.
@@ -71,4 +71,3 @@ AC_SUBST(SPMD_LDFLAGS)
 AC_SUBST(EXPORT_BLACS)
 
 AC_OUTPUT(src/Makevars)
-
