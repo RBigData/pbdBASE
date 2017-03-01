@@ -34,10 +34,13 @@ void pdgemm_(char *transa, char *transb, int *m, int *n, int *k, double *alpha,
 // SCALAPACK
 void pdgesv_(int *n, int *nrhs, double *a, int *ia, int *ja, int *desca, 
   int *ipiv, double *b, int *ib, int *jb, int *descb, int *info);
-void pdgesvd_(char *jobu, char *jobvt, int *m, int *n, double *a, int *ia, 
-  int *ja, int *desca, double *s, double *u, int *iu, int *ju, int *descu, 
-  double *vt, int *ivt, int *jvt, int *descvt, double *work, int *lwork, 
-  int *info);
+void pdgesvd_(const char *restrict jobu, const char *restrict jobvt,
+  const int *restrict m, const int *restrict n, double *restrict a,
+  const int *restrict ia, const int *restrict ja, const int *restrict desca,
+  double *restrict s, double *restrict u, const int *restrict iu,
+  const int *restrict ju, const int *restrict descu, double *restrict vt,
+  const int *restrict ivt, const int *restrict jvt, const int *restrict descvt,
+  double *restrict work, const int *restrict lwork, int *restrict info);
 void pdsyev_(char *jobz, char *uplo, int *n, double *a, int *ia, int *ja, 
   int *desca, double *w, double *z, int *iz, int *jz, int *descz, double *work, 
   int *lwork, int *info);
