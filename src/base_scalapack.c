@@ -96,90 +96,60 @@ SEXP R_PDGETRI(SEXP A, SEXP DESCA)
 // Factorizations 
 // -------------------------------------------------------- 
 
-
-/* SVD */
-SEXP R_PDGESVD(SEXP M, SEXP N, SEXP ASIZE, SEXP A, SEXP DESCA, 
-    SEXP ULDIM, SEXP DESCU, SEXP VTLDIM, SEXP DESCVT, SEXP JOBU, SEXP JOBVT, 
-    SEXP INPLACE)
-{
-  R_INIT;
-  double *A_OUT;
-  int temp_IJ = 1, temp_lwork = -1;
-  double temp_A = 0, temp_work = 0, *WORK;
-  SEXP RET, RET_NAMES, INFO, D, U, VT;
-  
-  newRvec(INFO, 1, "int");
-  newRvec(D, INT(ASIZE, 0), "dbl");
-  newRmat(U, INT(ULDIM, 0), INT(ULDIM, 1), "dbl");
-  newRmat(VT, INT(VTLDIM, 0), INT(VTLDIM, 1), "dbl");
-  
-  
-  // Query size of workspace
-  INT(INFO, 0) = 0;
-  
-  pdgesvd_(STR(JOBU, 0), STR(JOBVT, 0),
-    INTP(M), INTP(N),
-    &temp_A, &temp_IJ, &temp_IJ, INTP(DESCA),
-    &temp_A, &temp_A, &temp_IJ, &temp_IJ, INTP(DESCU),
-    &temp_A, &temp_IJ, &temp_IJ, INTP(DESCVT),
-    &temp_work, &temp_lwork, INTP(INFO));
-      
-  // Allocate work vector and calculate svd
-  temp_lwork = (int) temp_work;
-  temp_lwork = nonzero(temp_lwork);
-  
-  WORK = (double *) R_alloc(temp_lwork, sizeof(double));
-  
-  A_OUT = (double *) R_alloc(nrows(A)*ncols(A), sizeof(double));
-  memcpy(A_OUT, REAL(A), nrows(A)*ncols(A)*sizeof(double));
-  
-  pdgesvd_(STR(JOBU, 0), STR(JOBVT, 0),
-    INTP(M), INTP(N),
-    A_OUT, &temp_IJ, &temp_IJ, INTP(DESCA),
-    REAL(D), REAL(U), &temp_IJ, &temp_IJ, INTP(DESCU),
-    REAL(VT), &temp_IJ, &temp_IJ, INTP(DESCVT),
-    WORK, &temp_lwork, INTP(INFO));
-  
-  // Manage return
-  RET_NAMES = make_list_names(4, "info", "d", "u", "vt");
-  RET = make_list(RET_NAMES, 4, INFO, D, U, VT);
-  
-  R_END;
-  return RET;
-} 
-
-
 /* Symmetric Eigen */
-SEXP R_PDSYEV(SEXP JOBZ, SEXP UPLO, SEXP N, SEXP A, SEXP DESCA, SEXP ZLDIM, SEXP DESCZ)
+SEXP R_PDSYEVR(SEXP JOBZ, SEXP UPLO, SEXP N, SEXP A, SEXP DESCA, SEXP DESCZ)
 {
   R_INIT;
   SEXP RET, RET_NAMES, INFO, W, Z;
-  int temp_IJ = 1, temp_lwork = -1;
-  double temp_A = 0, temp_work = 0, *WORK;
+  char range = 'A';
+  int IJ = 1;
+  int lwork = -1;
+  int *iwork;
+  int liwork = -1;
+  double temp_work = 0;
+  double *work;
+  double *A_cp;
+  double tmp = 0;
+  int itmp = 0;
+  int m, nz;
   
   newRvec(INFO, 1, "int");
+  INT(INFO, 0) = 0;
   newRvec(W, INT(N, 0), "dbl");
-  newRmat(Z, INT(ZLDIM, 0), INT(ZLDIM, 1), "dbl");
-  
+  newRmat(Z, nrows(A), ncols(A), "dbl");
   
   /* Query size of workspace */
-  INT(INFO, 0) = 0;
+  // pdsyev_(CHARPT(JOBZ, 0), CHARPT(UPLO, 0), INTP(N),
+  //     &tmp, &IJ, &IJ, INTP(DESCA),
+  //     &tmp, &tmp, &IJ, &IJ, INTP(DESCZ),
+  //     &temp_work, &lwork, INTP(INFO));
   
-  pdsyev_(CHARPT(JOBZ, 0), CHARPT(UPLO, 0), INTP(N),
-      &temp_A, &temp_IJ, &temp_IJ, INTP(DESCA),
-      &temp_A, &temp_A, &temp_IJ, &temp_IJ, INTP(DESCZ),
-      &temp_work, &temp_lwork, INTP(INFO));
-      
-  /* Allocate work vector and calculate svd */
-  temp_lwork = (int) temp_work;
-  temp_lwork = nonzero(temp_lwork);
+  pdsyevr_(CHARPT(JOBZ, 0), &range, CHARPT(UPLO, 0), INTP(N),
+    &tmp, &IJ, &IJ, INTP(DESCA), &tmp, &tmp, &itmp, &itmp,
+    &m, &nz, DBLP(W), DBLP(Z), &IJ, &IJ, INTP(DESCZ),
+    &temp_work, &lwork, &liwork, &liwork, INTP(INFO));
   
-  WORK = (double *) R_alloc(temp_lwork, sizeof(double));
+  /* Allocate workspace and calculate */
+  const size_t size = nrows(A)*ncols(A);
+  A_cp = (double *) R_alloc(size, sizeof(*A_cp));
+  memcpy(A_cp, DBLP(A), size*sizeof(*A_cp));
   
-  pdsyev_(CHARPT(JOBZ, 0), CHARPT(UPLO, 0), INTP(N),
-      DBLP(A), &temp_IJ, &temp_IJ, INTP(DESCA),
-      DBLP(W), DBLP(Z), &temp_IJ, &temp_IJ, INTP(DESCZ),
-      WORK, &temp_lwork, INTP(INFO));
+  lwork = (int) temp_work;
+  lwork = nonzero(lwork);
+  work = (double *) R_alloc(lwork, sizeof(*work));
+  
+  liwork = nonzero(liwork);
+  iwork = (int *) R_alloc(liwork, sizeof(*iwork));
+  
+  pdsyevr_(CHARPT(JOBZ, 0), &range, CHARPT(UPLO, 0), INTP(N),
+    A_cp, &IJ, &IJ, INTP(DESCA), &tmp, &tmp, &itmp, &itmp,
+    &m, &nz, DBLP(W), DBLP(Z), &IJ, &IJ, INTP(DESCZ),
+    work, &lwork, iwork, &liwork, INTP(INFO));
+  
+  // pdsyev_(CHARPT(JOBZ, 0), CHARPT(UPLO, 0), INTP(N),
+  //     A_cp, &IJ, &IJ, INTP(DESCA),
+  //     DBLP(W), DBLP(Z), &IJ, &IJ, INTP(DESCZ),
+  //     work, &lwork, INTP(INFO));
   
   
   // Manage return
@@ -213,7 +183,7 @@ SEXP R_PDGETRF(SEXP M, SEXP N, SEXP A, SEXP CLDIM, SEXP DESCA, SEXP LIPIV)
   INT(INFO, 0) = 0;
   
   INT(LIPIV) = nonzero(INT(LIPIV));
-  ipiv = R_alloc(INT(LIPIV), sizeof(int));
+  ipiv = (int*) R_alloc(INT(LIPIV), sizeof(int));
   
   pdgetrf_(INTP(M), INTP(N), DBLP(C), &IJ, &IJ, INTP(DESCA), ipiv, INTP(INFO));
   
@@ -286,17 +256,17 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
   for (i=0; i<9; i++)
     descz[i] = INT(DESCA, i);
   
-  w = R_alloc(INT(N), sizeof(double));
-  z = R_alloc(ldm[0]*ldm[1], sizeof(double));
-  gap = R_alloc(blacs[1]*blacs[2], sizeof(double));
+  w = (double*) R_alloc(INT(N), sizeof(double));
+  z = (double*) R_alloc(ldm[0]*ldm[1], sizeof(double));
+  gap = (double*) R_alloc(blacs[1]*blacs[2], sizeof(double));
   
   
-  a = R_alloc(ldm[0]*ldm[1], sizeof(double));
+  a = (double*) R_alloc(ldm[0]*ldm[1], sizeof(double));
   
   memcpy(a, DBLP(A), nrows(A)*ncols(A)*sizeof(double));
   
-  ifail = R_alloc(INT(N, 0), sizeof(int));
-  iclustr = R_alloc(2*blacs[1]*blacs[2], sizeof(int));
+  ifail = (int*) R_alloc(INT(N, 0), sizeof(int));
+  iclustr = (int*) R_alloc(2*blacs[1]*blacs[2], sizeof(int));
   
   
   // Allocate local workspace
@@ -313,10 +283,10 @@ SEXP R_PDSYEVX(SEXP JOBZ, SEXP RANGE, SEXP N, SEXP A, SEXP DESCA, SEXP VL, SEXP 
     ifail, iclustr, gap, &info);
   
   lwork = nonzero( ((int) tmp_lwork) );
-  work = R_alloc(lwork, sizeof(double));
+  work = (double*) R_alloc(lwork, sizeof(double));
   
   liwork = nonzero(tmp_liwork);
-  iwork = R_alloc(liwork, sizeof(int));
+  iwork = (int*) R_alloc(liwork, sizeof(int));
   
   // Compute eigenvalues
   m = 0;
@@ -396,22 +366,20 @@ SEXP R_PDGECON(SEXP TYPE, SEXP M, SEXP N, SEXP A, SEXP DESCA)
   int IJ = 1;
   double* cpA;
   int info = 0;
-  
+  const int m = nrows(A);
+  const int n = ncols(A);
   SEXP RET;
   newRvec(RET, 2, "dbl"); // RET = {cond_num, info}
   
-  
-  // Copy A
-  cpA = R_alloc(nrows(A)*ncols(A), sizeof(double));
-  memcpy(cpA, REAL(A), nrows(A)*ncols(A)*sizeof(double));
-  
+  cpA = malloc(m*n * sizeof(*cpA));
+  memcpy(cpA, DBLP(A), m*n*sizeof(*cpA));
   
   // compute inverse of condition number
-  condnum_(CHARPT(TYPE, 0), INTP(M), INTP(N), cpA, 
-    &IJ, &IJ, INTP(DESCA), DBLP(RET), &info);
-  
+  condnum_(CHARPT(TYPE, 0), INTP(M), INTP(N), cpA, &IJ, &IJ, INTP(DESCA), DBLP(RET), &info);
   
   DBL(RET, 1) = (double) info;
+  
+  free(cpA);
   
   R_END;
   return RET;
@@ -432,15 +400,14 @@ SEXP R_PDTRCON(SEXP TYPE, SEXP UPLO, SEXP DIAG, SEXP N, SEXP A, SEXP DESCA)
   SEXP RET;
   newRvec(RET, 2, "dbl");
   
-  
   // workspace query and allocate work vectors
   pdtrcon_(CHARPT(TYPE, 0), CHARPT(UPLO, 0), CHARPT(DIAG, 0),
     INTP(N), DBLP(A), &IJ, &IJ, INTP(DESCA), DBLP(RET), 
     &tmp, &in1, &liwork, &in1, &info);
   
   lwork = (int) tmp;
-  work = (double *) R_alloc(lwork, sizeof(double));
-  iwork = (int *) R_alloc(liwork, sizeof(int));
+  work = malloc(lwork * sizeof(*work));
+  iwork = malloc(liwork * sizeof(*iwork));
   
   // compute inverse of condition number
   info = 0;
@@ -450,8 +417,9 @@ SEXP R_PDTRCON(SEXP TYPE, SEXP UPLO, SEXP DIAG, SEXP N, SEXP A, SEXP DESCA)
   
   DBL(RET, 1) = (double) info;
   
+  free(work);
+  free(iwork);
+  
   R_END;
   return RET;
 }
-
-

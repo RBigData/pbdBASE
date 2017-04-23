@@ -13,7 +13,7 @@ get.conf <- function(arg, arch = '', package = "pbdMPI"){
     ret <- gsub(paste("^", arg, " = (.*)", sep = ""), "\\1", ret[id[1]])
     if(arg == "MPI_LIB" && .Platform$OS.type == "windows" &&
        length(grep("-L", ret)) == 0){
-      ret <- gsub("\\\\", "/", shortPathName(ret))
+      ret <- gsub("\\\\", "/", utils::shortPathName(ret))
     }
     cat(ret)
   } else{

@@ -232,7 +232,8 @@ init.grid <- function(NPROW, NPCOL, ICTXT, quiet = FALSE)
 #' BLACS context number.
 #' @param override 
 #' logical; if TRUE, ignores normal check preventing the
-#' closing of \code{ICTXT} values of 0, 1, and 2.
+#' closing of \code{ICTXT} values of 0, 1, and 2. This could cause things
+#' to go crazy and I do not recommend it.
 #' 
 #' @return
 #' Silently returns 0 when successful. Silently returns 1 when
@@ -341,5 +342,3 @@ base.finalize <- function(mpi.finalize=.pbd_env$SPMD.CT$mpi.finalize)
 #' @rdname finalizer
 #' @export
 finalize <- base.finalize
-
-

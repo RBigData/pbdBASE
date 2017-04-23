@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// Copyright 2013-2015, Schmidt
+// Copyright 2013-2016 Schmidt
 
 #include "pbdBASE.h"
 #include "base/expm/matexp.h"
@@ -20,10 +20,12 @@ SEXP R_p_matpow_by_squaring(SEXP A, SEXP desca, SEXP b)
   
   // Why did I make a copy ... ? // Oh now I remember
   //FIXME check returns...
-  cpA = R_alloc(m*n, sizeof(double));
+  cpA = malloc(m*n * sizeof(double));
   memcpy(cpA, REAL(A), m*n*sizeof(double));
   
   p_matpow_by_squaring(cpA, INTEGER(desca), INT(b, 0), REAL(P));
+  
+  free(cpA);
   
   R_END;
   return(P);
@@ -59,4 +61,3 @@ SEXP R_p_matexp_pade(SEXP A, SEXP desca, SEXP p)
   R_END;
   return RET;
 }
-

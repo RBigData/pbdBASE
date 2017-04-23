@@ -224,16 +224,19 @@ int BI_ContxtNum(BLACSCONTEXT *ctxt);
 /*
  * A small macro useful for debugging
  */
-//WCC #define ErrPrint \
-//WCC { \
-//WCC    extern int BI_Iam; \
-//WCC    fprintf(stderr, "%d: line %d of file %s\n", BI_Iam, __LINE__, __FILE__); \
-//WCC }
+ 
+/* WCC
+#define ErrPrint \
+{ \
+  extern int BI_Iam; \
+  fprintf(stderr, "%d: line %d of file %s\n", BI_Iam, __LINE__, __FILE__); \
+}
 #define ErrPrint \
 { \
    extern int BI_Iam; \
    REprintf("%d: line %d of file %s\n", BI_Iam, __LINE__, __FILE__); \
 }
+*/
 
 /*
  * These macros allow for the funky function declarations and character handling

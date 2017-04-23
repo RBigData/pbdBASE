@@ -114,4 +114,3 @@ void get_BLACS_APTS_from_R(){
 	}
 	#endif
 } /* End of get_BLACS_APTS_from_R(). */
-

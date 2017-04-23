@@ -9,20 +9,21 @@
 #include "base/expm/matexp.h"
 
 
-SEXP R_matexp(SEXP A, SEXP p)
+SEXP R_matexp(SEXP A, SEXP p, SEXP t_)
 {
   R_INIT;
   const int n = nrows(A);
   int i;
   double *A_cp;
   SEXP R;
+  const double t = DBL(t_);
   
   newRmat(R, n, n, "dbl");
   
   A_cp = (double *) R_alloc(n*n, sizeof(A_cp));
   
   for (i=0; i<n*n; i++)
-    A_cp[i] = REAL(A)[i];
+    A_cp[i] = t * REAL(A)[i];
   
   
   matexp(n, INT(p), A_cp, REAL(R));
@@ -30,5 +31,3 @@ SEXP R_matexp(SEXP A, SEXP p)
   R_END;
   return R;
 }
-
-

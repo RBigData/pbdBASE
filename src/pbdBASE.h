@@ -10,6 +10,8 @@
 #include "base/stats/stats.h"
 #include "base/utils/utils.h"
 
+void pdsweep(double *restrict x, const int ix, const int jx, int *restrict descx, double *restrict vec, const int lvec, const int margin, const char fun);
+
 
 // Obtain character pointers
 #define CHARPT(x,i)	((char*)CHAR(STRING_ELT(x,i)))

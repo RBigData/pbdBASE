@@ -4,11 +4,7 @@
 
 // Copyright 2016, Schmidt
 
-
-int numroc_(int* n, int* nb, int* iproc, int* isrcproc, int* nprocs);
-void Cblacs_gridinfo(int ConTxt, int *nprow, int *npcol, int *myrow, int *mycol);
-
-
+#include "../../scalapack.h"
 
 void dmat_ldimget(int *desc, int* nrows, int* ncols)
 {

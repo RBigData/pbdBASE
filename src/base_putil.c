@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// Copyright 2013, Schmidt
+// Copyright 2013, 2016 Schmidt
 
 #include "pbdBASE.h"
 
@@ -74,8 +74,7 @@ SEXP R_PDSWEEP(SEXP X, SEXP LDIM, SEXP DESCX, SEXP VEC, SEXP LVEC, SEXP MARGIN, 
   
   memcpy(REAL(CPX), REAL(X), m*n*sizeof(double));
   
-  pdsweep_(REAL(CPX), &IJ, &IJ, INTEGER(DESCX), REAL(VEC), INTEGER(LVEC), 
-    INTEGER(MARGIN), CHARPT(FUN, 0));
+  pdsweep(REAL(CPX), IJ, IJ, INTEGER(DESCX), REAL(VEC), INT(LVEC), INT(MARGIN), CHARPT(FUN, 0)[0]);
   
   UNPROTECT(1);
   return CPX;
@@ -153,5 +152,3 @@ SEXP R_PDMKCPN1(SEXP LDIM, SEXP DESCX, SEXP COEF)
   UNPROTECT(1);
   return X;
 }
-
-
