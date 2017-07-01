@@ -55,10 +55,22 @@ base.rpdgemm <- function(transx, transy, x, descx, y, descy, descc)
   transx <- toupper(transx)
   transy <- toupper(transy)
   
-  m <- descx[3L]
-  n <- descy[4L]
-  k <- descy[3L]
+  if (transx == 'N')
+    m <- descx[3L]
+  else
+    m <- descx[4L]
   
+  if (transy == 'N')
+  {
+    n <- descy[4L]
+    k <- descy[3L]
+  }
+  else
+  {
+    n <- descy[3L]
+    k <- descy[4L]
+  }
+    
   cldim <- base.numroc(descc[3:4], descc[5:6], ICTXT=descc[2])
   
   if (!is.double(x))
@@ -66,13 +78,11 @@ base.rpdgemm <- function(transx, transy, x, descx, y, descy, descc)
   if (!is.double(y))
     storage.mode(y) <- "double"
   
-  ret <- .Call(R_PDGEMM,
-                transx, transy,
-                as.integer(m), as.integer(n), as.integer(k),
-                x, as.integer(descx),
-                y, as.integer(descy),
-                as.integer(cldim), as.integer(descc))
+  ret <- .Call(R_PDGEMM, transx, transy,
+    as.integer(m), as.integer(n), as.integer(k),
+    x, as.integer(descx),
+    y, as.integer(descy),
+    as.integer(cldim), as.integer(descc))
   
-  return( ret )
+  ret
 }
-
