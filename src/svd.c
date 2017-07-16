@@ -31,6 +31,7 @@
 // For m<n we can use LQ, but this is not yet complete.
 
 #include "pbdBASE.h"
+#include <stdint.h>
 
 
 typedef int32_t len_t;
