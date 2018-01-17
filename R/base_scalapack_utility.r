@@ -259,8 +259,6 @@ base.dim0 <- function(dim, ICTXT=0)
 #' 
 #' @param ind
 #' Matrix indices.
-#' @param dim
-#' Global dim.
 #' @param bldim
 #' Blocking dimension.
 #' @param ICTXT
@@ -269,15 +267,13 @@ base.dim0 <- function(dim, ICTXT=0)
 #' @name g2l_coord
 #' @rdname g2l_coord
 #' @export
-base.g2l_coord <- function(ind, dim, bldim, ICTXT=0)
+base.g2l_coord <- function(ind, bldim, ICTXT=0)
 {
   blacs_ <- base.blacs(ICTXT=ICTXT)
   procs <- c(blacs_$NPROW, blacs_$NPCOL)
   src <- c(0,0)
   
-  out <- .Call(g2l_coords, 
-                ind=as.integer(ind), dim=as.integer(dim), bldim=as.integer(bldim),
-                procs=as.integer(procs), src=as.integer(src))
+  out <- .Call(g2l_coords, ind=as.integer(ind), bldim=as.integer(bldim), procs=as.integer(procs), src=as.integer(src))
   
 #  out[5:6] <- out[5:6] + 1
   
@@ -308,8 +304,6 @@ g2l_coord <- base.g2l_coord
 #' 
 #' @param ind
 #' Matrix indices.
-#' @param dim
-#' Global dim.
 #' @param bldim
 #' Blocking dimension.
 #' @param ICTXT
@@ -318,15 +312,13 @@ g2l_coord <- base.g2l_coord
 #' @name l2g_coord
 #' @rdname l2g_coord
 #' @export
-base.l2g_coord <- function(ind, dim, bldim, ICTXT=0)
+base.l2g_coord <- function(ind, bldim, ICTXT=0)
 {
   blacs_ <- base.blacs(ICTXT=ICTXT)
   procs <- c(blacs_$NPROW, blacs_$NPCOL)
   myproc <- c(blacs_$MYROW, blacs_$MYCOL)
   
-  out <- .Call(l2g_coords, 
-                ind=as.integer(ind), dim=as.integer(dim), bldim=as.integer(bldim),
-                procs=as.integer(procs), src=as.integer(myproc))
+  out <- .Call(l2g_coords, ind=as.integer(ind), bldim=as.integer(bldim), procs=as.integer(procs), src=as.integer(myproc))
   
   return(out)
 }

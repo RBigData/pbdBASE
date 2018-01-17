@@ -5,14 +5,12 @@
 \alias{l2g_coord}
 \title{l2g_coord}
 \usage{
-base.l2g_coord(ind, dim, bldim, ICTXT = 0)
+base.l2g_coord(ind, bldim, ICTXT = 0)
 
-l2g_coord(ind, dim, bldim, ICTXT = 0)
+l2g_coord(ind, bldim, ICTXT = 0)
 }
 \arguments{
 \item{ind}{Matrix indices.}
-
-\item{dim}{Global dim.}
 
 \item{bldim}{Blocking dimension.}
 
