@@ -29,7 +29,7 @@ void set_BLACS_APTS_in_R(){
 	BLACS_APTS.BI_ReadyB = BI_ReadyB;
 	BLACS_APTS.BI_ActiveQ = BI_ActiveQ;
 	BLACS_APTS.BI_AuxBuff = &BI_AuxBuff;
-	BLACS_APTS.BI_MyContxts = BI_MyContxts;
+	BLACS_APTS.BI_MyContxts = *BI_MyContxts;
 	BLACS_APTS.BI_SysContxts = BI_SysContxts;
 	BLACS_APTS.BI_COMM_WORLD = BI_COMM_WORLD;
 	BLACS_APTS.BI_Stats = BI_Stats;
