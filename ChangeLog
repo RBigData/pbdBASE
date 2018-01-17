@@ -5,6 +5,7 @@ Release 0.5-0:
   * Added base.rpdorglq().
   * Exported native routines.
   * Fixed base.matexp() bug.
+  * Fixed some compiler warnings.
 
 Release 0.4-6:
   * Fix indexing problem in pdsweep()
