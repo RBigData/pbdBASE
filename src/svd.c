@@ -164,8 +164,8 @@ SEXP R_PDGESVD(SEXP M, SEXP N, SEXP ASIZE, SEXP A, SEXP DESCA,
   
   // Manage return
   INT(INFO) = svd.info;
-  RET_NAMES = make_list_names(4, "info", "d", "u", "vt");
-  RET = make_list(RET_NAMES, 4, INFO, D, U, VT);
+  make_list_names(RET_NAMES, 4, "info", "d", "u", "vt");
+  make_list(RET, RET_NAMES, 4, INFO, D, U, VT);
   
   R_END;
   return RET;

@@ -14,9 +14,7 @@ SEXP R_PDCLVAR(SEXP X, SEXP DESCX, SEXP LSD)
   
   newRvec(VAR, INT(LSD, 0), "dbl");
   
-  
   pdclvar_(REAL(X), INTEGER(DESCX), REAL(VAR));
-  
   
   R_END;
   return VAR;

@@ -14,7 +14,6 @@ static void l2g_coord(int* ret, int i, int j, int* dim, int* bldim, int* procs, 
   ret[1] = nprocs*bldim[1] * (j-1)/bldim[1] + (j-1)%bldim[1] + ((nprocs+myproc[1])%nprocs)*bldim[1] + 1;
 }
 
-
 SEXP l2g_coords(SEXP ind, SEXP dim, SEXP bldim, SEXP procs, SEXP myproc)
 {
   SEXP ret;
@@ -25,6 +24,7 @@ SEXP l2g_coords(SEXP ind, SEXP dim, SEXP bldim, SEXP procs, SEXP myproc)
   UNPROTECT(1);
   return ret;
 }
+
 
 
 static void g2l_coord( int* ret, int i, int j, int* dim, int* bldim, int* procs, int* src)
@@ -41,7 +41,6 @@ static void g2l_coord( int* ret, int i, int j, int* dim, int* bldim, int* procs,
   ret[4] = i % bldim[0] + bldim[0] * ret[0];
   ret[5] = j % bldim[1] + bldim[1] * ret[1];
 }
-
 
 SEXP g2l_coords(SEXP ind, SEXP dim, SEXP bldim, SEXP procs, SEXP src)
 {

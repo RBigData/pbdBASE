@@ -55,8 +55,8 @@ SEXP R_p_matexp_pade(SEXP A, SEXP desca, SEXP p)
   
   
   // Wrangle the return
-  RET_NAMES = make_list_names(2, "N", "D");
-  RET = make_list(RET_NAMES, 2, N, D);
+  make_list_names(RET_NAMES, 2, "N", "D");
+  make_list(RET, RET_NAMES, 2, N, D);
   
   R_END;
   return RET;
