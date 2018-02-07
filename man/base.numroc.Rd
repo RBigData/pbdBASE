@@ -21,4 +21,3 @@ NUMber of Rows Or Columns
 \details{
 For advanced users only.
 }
-

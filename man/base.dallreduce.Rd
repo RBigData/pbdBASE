@@ -21,4 +21,3 @@ Allreduce
 \details{
 For advanced users only.
 }
-

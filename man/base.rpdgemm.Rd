@@ -19,4 +19,3 @@ Matrix-Matrix Multiply.
 \details{
 For advanced users only.
 }
-

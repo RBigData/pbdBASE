@@ -21,4 +21,3 @@ Matrix norms.
 \details{
 For advanced users only.
 }
-

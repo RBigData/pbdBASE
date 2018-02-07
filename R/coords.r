@@ -177,8 +177,9 @@ numroc2 <- function(N, NB, IPROC, NPROCS)
 #' @keywords BLACS
 #' 
 #' @examples
-#' \dontrun{
-#' # Save code in a file "demo.r" and run with 2 processors by
+#' tf <- tempfile(pattern = "demo", fileext = ".r")
+#' cat("
+#' # Save code in a file 'demo.r' and run with 2 processors by
 #' # > mpiexec -np 2 Rscript demo.r
 #' 
 #' library(pbdBASE, quiet = TRUE)
@@ -187,12 +188,13 @@ numroc2 <- function(N, NB, IPROC, NPROCS)
 #' blacs_ <- blacs(ICTXT = 0)
 #' 
 #' # get the ICTXT = 0 BLACS coordsinates for process 0
-#' myCoords <- pcoord(ICTXT = 0, PNUM = 0)
+#' myCoords <- base.pcoord(ICTXT = 0, PNUM = 0)
 #' 
 #' comm.print(myCoords)
 #' 
 #' finalize()
-#' }
+#' ", file = tf)
+#' # system(paste0("mpiexec -np 2 Rscript ", tf))    # No interaction.
 #' 
 #' @name pcoords
 #' @rdname pcoords

@@ -15,4 +15,3 @@ Create Hilbert matrix.
 \details{
 For advanced users only.
 }
-

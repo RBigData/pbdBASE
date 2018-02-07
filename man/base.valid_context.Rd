@@ -17,4 +17,3 @@ error if it is any of the reserved contexts (0, 1, or 2).}
 \description{
 Checks if a supplied \code{ICTXT} is valid.
 }
-

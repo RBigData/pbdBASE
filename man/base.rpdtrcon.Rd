@@ -25,4 +25,3 @@ Inverse condition number of a triangular matrix.
 \details{
 For advanced users only.
 }
-

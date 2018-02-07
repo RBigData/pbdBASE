@@ -16,4 +16,3 @@ base.pdmvsum(x, descx, y, descy)
 \description{
 For advanced users only.
 }
-

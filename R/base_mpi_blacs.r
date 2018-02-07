@@ -158,15 +158,17 @@ blacs_gridinit <- base.blacs_gridinit
 #' @keywords BLACS
 #' 
 #' @examples
-#' \dontrun{
-#' # Save code in a file "demo.r" and run with 2 processors by
+#' tf <- tempfile(pattern = "demo", fileext = ".r")
+#' cat("
+#' # Save code in a file 'demo.r' and run with 2 processors by
 #' # > mpiexec -np 2 Rscript demo.r
 #' 
 #' library(pbdBASE, quiet = TRUE)
 #' init.grid()
 #' 
 #' finalize()
-#' }
+#' ", file = tf)
+#' # system(paste0("mpiexec -np 2 Rscript ", tf))    # No interaction.
 #' 
 #' @name InitGrid
 #' @rdname init.grid
@@ -290,8 +292,9 @@ gridexit <- base.gridexit
 #' @keywords BLACS
 #' 
 #' @examples
-#' \dontrun{
-#' # Save code in a file "demo.r" and run with 2 processors by
+#' tf <- tempfile(pattern = "demo", fileext = ".r")
+#' cat("
+#' # Save code in a file 'demo.r' and run with 2 processors by
 #' # > mpiexec -np 2 Rscript demo.r
 #' 
 #' library(pbdBASE, quiet = TRUE)
@@ -299,8 +302,9 @@ gridexit <- base.gridexit
 #' 
 #' blacsexit()
 #' 
-#' finalize()
-#' }
+#' # finalize()  # This should be off since blacexit().
+#' ", file = tf)
+#' # system(paste0("mpiexec -np 2 Rscript ", tf))    # No interaction.
 #' 
 #' @name blacsexit
 #' @rdname blacsexit

@@ -18,4 +18,3 @@ base.rl2insert(x, descx, vec, i, j)
 \description{
 For advanced users only.
 }
-

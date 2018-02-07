@@ -19,4 +19,3 @@ Pade' expansion.
 \details{
 For advanced users only.
 }
-

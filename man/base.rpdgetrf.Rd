@@ -17,4 +17,3 @@ LU factorization.
 \details{
 For advanced users only.
 }
-

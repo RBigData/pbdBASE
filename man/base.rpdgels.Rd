@@ -27,4 +27,3 @@ Linear model fitter via rank-revealing QR (with pivoting).
 \details{
 For advanced users only.
 }
-

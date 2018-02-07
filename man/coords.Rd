@@ -3,6 +3,7 @@
 \name{coords}
 \alias{coords}
 \alias{indxg2l}
+\alias{coords}
 \alias{indxl2g}
 \title{Local to Global/Global to Local Indexing}
 \usage{
@@ -29,4 +30,3 @@ Get the local index given global information.
 \details{
 For advanced users only.
 }
-

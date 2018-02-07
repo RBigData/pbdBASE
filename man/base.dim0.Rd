@@ -17,4 +17,3 @@ Compute dimensions on process MYROW=MYCOL=0
 \details{
 For advanced users only.
 }
-

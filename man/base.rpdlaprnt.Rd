@@ -19,4 +19,3 @@ Matrix printer.
 \details{
 For advanced users only.
 }
-

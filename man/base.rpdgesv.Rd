@@ -21,4 +21,3 @@ Solving a (square) system of equations.
 \details{
 For advanced users only.
 }
-

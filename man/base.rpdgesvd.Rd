@@ -26,4 +26,3 @@ SVD.
 \details{
 For advanced users only.
 }
-

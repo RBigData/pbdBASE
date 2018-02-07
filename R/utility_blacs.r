@@ -101,8 +101,9 @@ minctxt <- base.minctxt
 #' @keywords BLACS
 #' 
 #' @examples
-#' \dontrun{
-#' # Save code in a file "demo.r" and run with 2 processors by
+#' tf <- tempfile(pattern = "demo", fileext = ".r")
+#' cat("
+#' # Save code in a file 'demo.r' and run with 2 processors by
 #' # > mpiexec -np 2 Rscript demo.r
 #' 
 #' library(pbdBASE, quiet = TRUE)
@@ -113,7 +114,8 @@ minctxt <- base.minctxt
 #' pbdMPI::comm.print(mygrid)
 #' 
 #' finalize()
-#' }
+#' ", file = tf)
+#' # system(paste0("mpiexec -np 2 Rscript ", tf))    # No interaction
 #' 
 #' @name gridinfo
 #' @rdname gridinfo

@@ -21,4 +21,3 @@ Zero Triangle
 \details{
 For advanced users only.
 }
-

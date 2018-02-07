@@ -21,4 +21,3 @@ Cholesky factorization.
 \details{
 For advanced users only.
 }
-

@@ -24,4 +24,3 @@ is returned.
 \description{
 Global to local coordinates with explicit ownership given.
 }
-
