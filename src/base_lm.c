@@ -97,8 +97,8 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
   
   
   // Manage return
-  RET_NAMES = make_list_names(9, "INFO", "A", "B", "EFF", "FT", "RSD", "TAU", "IPIV", "RANK");
-  RET = make_list(RET_NAMES, 9, INFO, A_OUT, B_OUT, EFF, FT, RSD, TAU, IPIV, RANK);
+  make_list_names(RET_NAMES, 9, "INFO", "A", "B", "EFF", "FT", "RSD", "TAU", "IPIV", "RANK");
+  make_list(RET, RET_NAMES, 9, INFO, A_OUT, B_OUT, EFF, FT, RSD, TAU, IPIV, RANK);
   
   R_END;
   return RET;

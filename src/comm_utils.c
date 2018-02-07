@@ -9,20 +9,19 @@
 
 SEXP COMM_STOP(char *msg)
 {
-  SEXP mpiPackage;
+  SEXP mpiPackage, fun_install, expr;
   SEXP Rmsg;
   SEXP ret;
-  
-  PROTECT(mpiPackage = 
-    eval( lang2( install("getNamespace"), ScalarString(mkChar("pbdMPI")) ), R_GlobalEnv )
-  );
   
   PROTECT(Rmsg = allocVector(STRSXP, 1));
   SET_STRING_ELT(Rmsg, 0, mkChar(msg));
   
-  ret = eval( lang2( install("comm.stop"), Rmsg ), mpiPackage );
+  PROTECT(mpiPackage = evalfun_stringarg("getNamespace", "pbdMPI"));
+  PROTECT(fun_install = install("comm.stop"));
+  PROTECT(expr = lang2(fun_install, Rmsg));
+  ret = eval(expr, mpiPackage);
   
-  UNPROTECT(2);
+  UNPROTECT(4);
   return ret;
 }
 
@@ -30,20 +29,19 @@ SEXP COMM_STOP(char *msg)
 
 SEXP COMM_WARNING(char *msg)
 {
-  SEXP mpiPackage;
+  SEXP mpiPackage, fun_install, expr;
   SEXP Rmsg;
   SEXP ret;
-  
-  PROTECT(mpiPackage = 
-    eval( lang2( install("getNamespace"), ScalarString(mkChar("pbdMPI")) ), R_GlobalEnv )
-  );
   
   PROTECT(Rmsg = allocVector(STRSXP, 1));
   SET_STRING_ELT(Rmsg, 0, mkChar(msg));
   
-  ret = eval( lang2( install("comm.warning"), Rmsg ), mpiPackage );
+  PROTECT(mpiPackage = evalfun_stringarg("getNamespace", "pbdMPI"));
+  PROTECT(fun_install = install("comm.warning"));
+  PROTECT(expr = lang2(fun_install, Rmsg));
+  ret = eval(expr, mpiPackage);
   
-  UNPROTECT(2);
+  UNPROTECT(4);
   return ret;
 }
 
@@ -51,15 +49,14 @@ SEXP COMM_WARNING(char *msg)
 
 SEXP COMM_PRINT(SEXP x)
 {
-  SEXP mpiPackage;
+  SEXP mpiPackage, fun_install, expr;
   SEXP ret;
   
-  PROTECT(mpiPackage = 
-    eval( lang2( install("getNamespace"), ScalarString(mkChar("pbdMPI")) ), R_GlobalEnv )
-  );
+  PROTECT(mpiPackage = evalfun_stringarg("getNamespace", "pbdMPI"));
+  PROTECT(fun_install = install("comm.print"));
+  PROTECT(expr = lang2(fun_install, x));
+  ret = eval(expr, mpiPackage);
   
-  ret = eval( lang2( install("comm.print"), x ), mpiPackage );
-  
-  UNPROTECT(2);
+  UNPROTECT(3);
   return ret;
 }

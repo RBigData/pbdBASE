@@ -47,8 +47,8 @@ SEXP R_PDGEQPF(SEXP TOL, SEXP M, SEXP N, SEXP A, SEXP DESCA)
   
   
   // Manage return
-  RET_NAMES = make_list_names(5, "qr", "rank", "tau", "pivot", "INFO");
-  RET = make_list(RET_NAMES, 5, A_OUT, RANK, TAU, IPIV, INFO);
+  make_list_names(RET_NAMES, 5, "qr", "rank", "tau", "pivot", "INFO");
+  make_list(RET, RET_NAMES, 5, A_OUT, RANK, TAU, IPIV, INFO);
   
   R_END;
   return RET;
@@ -115,8 +115,8 @@ SEXP R_PDORMQR(SEXP SIDE, SEXP TRANS, SEXP M, SEXP N, SEXP K,
       p_work, &lwork, INTEGER(INFO));
   
   /* Return. */
-  RET_NAMES = make_list_names(2, "INFO", "B");
-  RET = make_list(RET_NAMES, 2, INFO, B_OUT);
+  make_list_names(RET_NAMES, 2, "INFO", "B");
+  make_list(RET, RET_NAMES, 2, INFO, B_OUT);
   
   R_END;
   return RET;
@@ -167,8 +167,8 @@ SEXP R_PDORGQR(SEXP M, SEXP N, SEXP K, SEXP A, SEXP ALDIM, SEXP DESCA, SEXP TAU)
       p_work, &lwork, INTEGER(INFO));
   
   /* Return. */
-  RET_NAMES = make_list_names(2, "INFO", "A");
-  RET = make_list(RET_NAMES, 2, INFO, A_OUT);
+  make_list_names(RET_NAMES, 2, "INFO", "A");
+  make_list(RET, RET_NAMES, 2, INFO, A_OUT);
   
   R_END;
   return RET;
@@ -215,8 +215,8 @@ SEXP R_PDGELQF(SEXP M, SEXP N, SEXP A, SEXP DESCA)
   
   
   // Manage return
-  RET_NAMES = make_list_names(3, "lq", "tau", "INFO");
-  RET = make_list(RET_NAMES, 3, A_OUT, TAU, INFO);
+  make_list_names(RET_NAMES, 3, "lq", "tau", "INFO");
+  make_list(RET, RET_NAMES, 3, A_OUT, TAU, INFO);
   
   R_END;
   return RET;
@@ -257,8 +257,8 @@ SEXP R_PDORGLQ(SEXP M, SEXP N, SEXP K, SEXP A, SEXP DESCA, SEXP TAU)
     REAL(TAU), p_work, &lwork, INTP(INFO));
   
   /* Return. */
-  RET_NAMES = make_list_names(2, "INFO", "A");
-  RET = make_list(RET_NAMES, 2, INFO, A_OUT);
+  make_list_names(RET_NAMES, 2, "INFO", "A");
+  make_list(RET, RET_NAMES, 2, INFO, A_OUT);
   
   R_END;
   return RET;

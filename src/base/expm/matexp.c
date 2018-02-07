@@ -64,7 +64,7 @@ static inline void matcopy(int n, double *A, double *B)
 // Identity matrix
 static inline void mateye(const unsigned int n, double *a)
 {
-  int i;
+  unsigned int i;
   
   for (i=0; i<n*n; i++)
     a[i] = 0.0;

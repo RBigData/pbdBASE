@@ -5,14 +5,12 @@
 \alias{g2l_coord}
 \title{g2l_coord}
 \usage{
-base.g2l_coord(ind, dim, bldim, ICTXT = 0)
+base.g2l_coord(ind, bldim, ICTXT = 0)
 
-g2l_coord(ind, dim, bldim, ICTXT = 0)
+g2l_coord(ind, bldim, ICTXT = 0)
 }
 \arguments{
 \item{ind}{Matrix indices.}
-
-\item{dim}{Global dim.}
 
 \item{bldim}{Blocking dimension.}
 

@@ -7,27 +7,28 @@
 #include "pbdBASE.h"
 
 
-static void l2g_coord(int* ret, int i, int j, int* dim, int* bldim, int* procs, int* myproc)
+static void l2g_coord(int* ret, int i, int j, int* bldim, int* procs, int* myproc)
 {
   const int nprocs = procs[0] * procs[1];
+  
   ret[0] = nprocs*bldim[0] * (i-1)/bldim[0] + (i-1)%bldim[0] + ((nprocs+myproc[0])%nprocs)*bldim[0] + 1;
   ret[1] = nprocs*bldim[1] * (j-1)/bldim[1] + (j-1)%bldim[1] + ((nprocs+myproc[1])%nprocs)*bldim[1] + 1;
 }
 
-
-SEXP l2g_coords(SEXP ind, SEXP dim, SEXP bldim, SEXP procs, SEXP myproc)
+SEXP l2g_coords(SEXP ind, SEXP bldim, SEXP procs, SEXP myproc)
 {
   SEXP ret;
   PROTECT(ret = allocVector(INTSXP, 6));
   
-  l2g_coord(INTEGER(ret), INTEGER(ind)[0], INTEGER(ind)[1], INTEGER(dim), INTEGER(bldim), INTEGER(procs), INTEGER(myproc));
+  l2g_coord(INTEGER(ret), INTEGER(ind)[0], INTEGER(ind)[1], INTEGER(bldim), INTEGER(procs), INTEGER(myproc));
   
   UNPROTECT(1);
   return ret;
 }
 
 
-static void g2l_coord( int* ret, int i, int j, int* dim, int* bldim, int* procs, int* src)
+
+static void g2l_coord(int* ret, int i, int j, int* bldim, int* procs, int* src)
 {
   // matrix block position
   ret[0] = i / (procs[0] * bldim[0]);
@@ -42,13 +43,12 @@ static void g2l_coord( int* ret, int i, int j, int* dim, int* bldim, int* procs,
   ret[5] = j % bldim[1] + bldim[1] * ret[1];
 }
 
-
-SEXP g2l_coords(SEXP ind, SEXP dim, SEXP bldim, SEXP procs, SEXP src)
+SEXP g2l_coords(SEXP ind, SEXP bldim, SEXP procs, SEXP src)
 {
   SEXP ret;
   PROTECT(ret = allocVector(INTSXP, 6));
   
-  g2l_coord(INTEGER(ret), INTEGER(ind)[0], INTEGER(ind)[1], INTEGER(dim), INTEGER(bldim), INTEGER(procs), INTEGER(src));
+  g2l_coord(INTEGER(ret), INTEGER(ind)[0], INTEGER(ind)[1], INTEGER(bldim), INTEGER(procs), INTEGER(src));
   
   UNPROTECT(1);
   return ret;

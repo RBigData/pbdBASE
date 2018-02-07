@@ -20,6 +20,8 @@
 #include "utils.h"
 
 
+#define UNUSED(x) (void)(x)
+
 #define ROWS 1
 #define COLS 2
 
@@ -80,6 +82,9 @@ static inline void l2gpair(const int i, const int j, int* restrict gi, int* rest
 
 void pdsweep(double *restrict x, const int ix, const int jx, int *restrict descx, double *restrict vec, const int lvec, const int margin, const char fun)
 {
+  UNUSED(ix);
+  UNUSED(jx);
+  
   int k, m, n, pos, gi, gj;
   int ldm[2], blacs[5];
   

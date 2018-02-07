@@ -68,8 +68,8 @@ extern SEXP R_optimal_grid(SEXP NPROCS);
 extern SEXP R_p_matexp_pade(SEXP A, SEXP desca, SEXP p);
 extern SEXP R_p_matpow_by_squaring(SEXP A, SEXP desca, SEXP b);
 extern SEXP R_redist(SEXP desc, SEXP A);
-extern SEXP g2l_coords(SEXP ind, SEXP dim, SEXP bldim, SEXP procs, SEXP src);
-extern SEXP l2g_coords(SEXP ind, SEXP dim, SEXP bldim, SEXP procs, SEXP myproc);
+extern SEXP g2l_coords(SEXP ind, SEXP bldim, SEXP procs, SEXP src);
+extern SEXP l2g_coords(SEXP ind, SEXP bldim, SEXP procs, SEXP myproc);
 
 static const R_CallMethodDef CallEntries[] = {
   {"COMM_PRINT", (DL_FUNC) &COMM_PRINT, 1},
@@ -135,8 +135,8 @@ static const R_CallMethodDef CallEntries[] = {
   {"R_p_matexp_pade", (DL_FUNC) &R_p_matexp_pade, 3},
   {"R_p_matpow_by_squaring", (DL_FUNC) &R_p_matpow_by_squaring, 3},
   {"R_redist", (DL_FUNC) &R_redist, 2},
-  {"g2l_coords", (DL_FUNC) &g2l_coords, 5},
-  {"l2g_coords", (DL_FUNC) &l2g_coords, 5},
+  {"g2l_coords", (DL_FUNC) &g2l_coords, 4},
+  {"l2g_coords", (DL_FUNC) &l2g_coords, 4},
   {NULL, NULL, 0}
 };
 void R_init_pbdBASE(DllInfo *dll)
