@@ -29,4 +29,3 @@ in data onto a subset of processors before distributing out to the full
 grid.
 }
 \keyword{BLACS}
-

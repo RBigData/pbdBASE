@@ -19,4 +19,3 @@ LQ.
 \details{
 For advanced users only.
 }
-

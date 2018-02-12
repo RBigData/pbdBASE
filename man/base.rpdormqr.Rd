@@ -31,4 +31,3 @@ op(Q) * y.
 \details{
 For advanced users only.
 }
-

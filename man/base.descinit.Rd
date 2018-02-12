@@ -21,4 +21,3 @@ Creates ScaLAPACK descriptor array.
 \details{
 For advanced users only.
 }
-

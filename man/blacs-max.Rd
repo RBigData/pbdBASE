@@ -27,4 +27,3 @@ Max value across a process grid.
 \details{
 For advanced users only.
 }
-

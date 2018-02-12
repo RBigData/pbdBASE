@@ -18,4 +18,3 @@ base.rl2blas(x, descx, vec, FUN)
 \description{
 For advanced users only.
 }
-

@@ -21,4 +21,3 @@ QR.
 \details{
 For advanced users only.
 }
-

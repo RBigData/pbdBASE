@@ -23,4 +23,3 @@ Symmetric eigenvalue decomposition.
 \details{
 For advanced users only.
 }
-

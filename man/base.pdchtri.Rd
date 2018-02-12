@@ -21,4 +21,3 @@ Inverse of cholesky.
 \details{
 For advanced users only.
 }
-

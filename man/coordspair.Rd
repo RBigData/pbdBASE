@@ -3,6 +3,7 @@
 \name{coordspair}
 \alias{coordspair}
 \alias{g2lpair}
+\alias{coordspair}
 \alias{l2gpair}
 \title{Global to Local/Local to Global Pair Indexing}
 \usage{
@@ -25,4 +26,3 @@ Get the local index-pair given global information.
 \details{
 For advanced users only.
 }
-

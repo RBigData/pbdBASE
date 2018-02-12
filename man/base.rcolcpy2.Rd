@@ -16,4 +16,3 @@ base.rcolcpy2(x, descx, y, descy, xcol, ycol)
 \description{
 For advanced users only.
 }
-

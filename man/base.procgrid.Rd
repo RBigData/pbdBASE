@@ -15,4 +15,3 @@ base.procgrid(nprocs)
 \details{
 For advanced users only.
 }
-

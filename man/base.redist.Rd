@@ -15,4 +15,3 @@ base.redist(desc, A)
 Redistribute a matrix from rank 0 to all ranks in block cyclic
 fashion.
 }
-

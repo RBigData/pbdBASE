@@ -17,4 +17,3 @@ General 2d block cyclic redistribution function.
 \details{
 For advanced users only.
 }
-

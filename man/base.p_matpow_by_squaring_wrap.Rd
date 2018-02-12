@@ -19,4 +19,3 @@ Matrix power by squaring.
 \details{
 For advanced users only.
 }
-

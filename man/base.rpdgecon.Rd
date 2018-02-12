@@ -21,4 +21,3 @@ Inverse condition number of a general matrix.
 \details{
 For advanced users only.
 }
-

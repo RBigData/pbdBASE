@@ -17,4 +17,3 @@ Create Companion Matrix
 \details{
 For advanced users only.
 }
-

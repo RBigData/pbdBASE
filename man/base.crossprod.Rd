@@ -23,4 +23,3 @@ Crossproduct.
 \details{
 For advanced users only.
 }
-

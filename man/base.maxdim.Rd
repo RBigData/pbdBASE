@@ -15,4 +15,3 @@ Compute maximum dimension across all nodes
 \details{
 For advanced users only.
 }
-

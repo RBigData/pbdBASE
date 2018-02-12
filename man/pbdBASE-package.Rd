@@ -13,12 +13,11 @@ types, as well as the data types themselves.
 MPL\cr LazyLoad: \tab yes\cr } This package requires an MPI library
 (OpenMPI, MPICH2, or LAM/MPI).
 }
+\references{
+Programming with Big Data in R Website: \url{http://r-pbd.org/}
+}
 \author{
 Drew Schmidt \email{wrathematics AT gmail.com}, Wei-Chen Chen, George
 Ostrouchov, and Pragneshkumar Patel.
 }
-\references{
-Programming with Big Data in R Website: \url{http://r-pbd.org/}
-}
 \keyword{Package}
-

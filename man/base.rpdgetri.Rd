@@ -19,4 +19,3 @@ Matrix inversion.
 \details{
 For advanced users only.
 }
-

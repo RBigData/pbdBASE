@@ -11,11 +11,9 @@
 #' The candidate divisor.
 #' 
 #' @examples
-#' \dontrun{
 #' library(pbdBASE, quiet = TRUE)
 #' base.nbd(100, 10) # 10 divides 100, so 10 is returned
 #' base.nbd(100, 11) # 11 does not, so the "next best" divisor, 20, is returned
-#' }
 #' 
 #' @export
 base.nbd <- function(n, d)

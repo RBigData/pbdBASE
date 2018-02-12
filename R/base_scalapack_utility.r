@@ -129,8 +129,9 @@ NUMROC <- function(N, NB, IPROC, NPROCS)
 #' @keywords BLACS Distributing Data
 #' 
 #' @examples
-#' \dontrun{
-#' # Save code in a file "demo.r" and run with 2 processors by
+#' tf <- tempfile(pattern = "demo", fileext = ".r")
+#' cat("
+#' # Save code in a file 'demo.r' and run with 2 processors by
 #' # > mpiexec -np 2 Rscript demo.r
 #' 
 #' library(pbdBASE, quiet = TRUE)
@@ -140,7 +141,8 @@ NUMROC <- function(N, NB, IPROC, NPROCS)
 #' comm.print(iown, all.rank=T)
 #' 
 #' finalize()
-#' }
+#' ", file = tf)
+#' # system(paste0("mpiexec -np 2 Rscript ", tf))    # No interaction.
 #' 
 #' @export
 base.ownany <- function(dim, bldim, ICTXT=0)

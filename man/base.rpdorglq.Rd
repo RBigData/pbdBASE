@@ -23,4 +23,3 @@ Recover Q.
 \details{
 For advanced users only.
 }
-

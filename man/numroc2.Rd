@@ -22,4 +22,3 @@ dimension given global matrix + distribution parameters.
 \details{
 For advanced users only.
 }
-

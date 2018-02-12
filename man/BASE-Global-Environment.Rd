@@ -2,8 +2,8 @@
 % Please edit documentation in R/000_globalVariables.r
 \docType{data}
 \name{BASE Global Environment}
-\alias{.pbdBASEEnv}
 \alias{BASE Global Environment}
+\alias{.pbdBASEEnv}
 \title{Global Environment for the pbdBASE Package}
 \format{An object of class \code{environment} of length 0.}
 \usage{
@@ -17,4 +17,3 @@ The \code{.__blacs_gridinfo_} and \code{._blacs_initialized} objects are
 stored in this environment.
 }
 \keyword{datasets}
-

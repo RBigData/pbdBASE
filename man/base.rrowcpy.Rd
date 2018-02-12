@@ -16,4 +16,3 @@ base.rrowcpy(x, descx, y, descy, xrow, yrow)
 \description{
 For advanced users only.
 }
-

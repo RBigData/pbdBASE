@@ -19,4 +19,3 @@ Serial matrix exponentiation.
 \details{
 For advanced users only.
 }
-

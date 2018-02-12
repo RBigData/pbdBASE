@@ -32,4 +32,3 @@ Genearlized eigenvalue problem.
 \details{
 For advanced users only.
 }
-

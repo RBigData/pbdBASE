@@ -23,4 +23,3 @@ Matrix-Vector Sweep
 \details{
 For advanced users only.
 }
-

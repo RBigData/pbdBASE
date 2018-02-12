@@ -21,4 +21,3 @@ Simplified reimplementation of the ScaLAPACK aux INDXG2P function.
 \details{
 For advanced users only.
 }
-
