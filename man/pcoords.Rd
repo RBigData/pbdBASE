@@ -31,11 +31,10 @@ process number associated with the BLACS process grid location
 \code{c(MYPROW, MYPCOL)}, while the latter does the reverse.
 }
 \examples{
-tf <- tempfile(pattern = "demo", fileext = ".r")
-cat("
 # Save code in a file 'demo.r' and run with 2 processors by
 # > mpiexec -np 2 Rscript demo.r
 
+spmd.code <- "
 library(pbdBASE, quiet = TRUE)
 init.grid()
 
@@ -47,8 +46,8 @@ myCoords <- base.pcoord(ICTXT = 0, PNUM = 0)
 comm.print(myCoords)
 
 finalize()
-", file = tf)
-# system(paste0("mpiexec -np 2 Rscript ", tf))    # No interaction.
+"
+pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 
 }
 \keyword{BLACS}
