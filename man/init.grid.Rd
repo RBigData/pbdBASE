@@ -73,17 +73,16 @@ environment, namely \code{.__blacs_initialized}. Its existence is to alert
 memory leaks.
 }
 \examples{
-tf <- tempfile(pattern = "demo", fileext = ".r")
-cat("
-# Save code in a file 'demo.r' and run with 2 processors by
+# Save code in a file "demo.r" and run with 2 processors by
 # > mpiexec -np 2 Rscript demo.r
 
+spmd.code <- "
 library(pbdBASE, quiet = TRUE)
 init.grid()
 
 finalize()
-", file = tf)
-# system(paste0("mpiexec -np 2 Rscript ", tf))    # No interaction.
+"
+pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 
 }
 \keyword{BLACS}
