@@ -2,13 +2,13 @@
 % Please edit documentation in R/base_mpi_blacs.r
 \name{gridinit}
 \alias{gridinit}
-\alias{base.blacs_gridinit}
-\alias{blacs_gridinit}
-\title{blacs_gridinit}
+\alias{base.blacs_init}
+\alias{blacs_init}
+\title{blacs_init}
 \usage{
-base.blacs_gridinit(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
+base.blacs_init(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
 
-blacs_gridinit(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
+blacs_init(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
 }
 \arguments{
 \item{ICTXT}{BLACS context.}

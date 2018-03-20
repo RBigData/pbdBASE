@@ -17,7 +17,7 @@ procgrid <- base.procgrid
 
 
 
-#' blacs_gridinit
+#' blacs_init
 #' 
 #' BLACS grid initialization.
 #' 
@@ -35,7 +35,7 @@ procgrid <- base.procgrid
 #' @name gridinit
 #' @rdname gridinit
 #' @export
-base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
+base.blacs_init <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
 {
   if (missing(ICTXT))
     ICTXT <- base.minctxt(after=-1)
@@ -70,7 +70,7 @@ base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
   
   value <- .Call(R_blacs_init, as.integer(NPROW), as.integer(NPCOL), as.integer(ICTXT))
   
-  assign(x=nm, value=value, envir=.pbdBASEEnv )
+  assign(x=nm, value=value, envir=.pbdBASEEnv)
   
   if (ICTXT==0 && !quiet)
     pbdMPI::comm.cat(sprintf("%s", paste("Using ", NPROW, "x", NPCOL, " for the default grid size\n\n", sep="")), quiet=TRUE)
@@ -85,17 +85,55 @@ base.blacs_gridinit <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
 
 #' @rdname gridinit
 #' @export
-blacs_gridinit <- base.blacs_gridinit
+blacs_init <- base.blacs_init
 
-
+#' Creating Grid From A System Context
+#'
+#' Creates a grid from a System Context obtained from a call to `sys2blacs_handle`.
+#' @param NPROW Number of rows in the process grid
+#' @param NPCOL Number of columns in the process grid
+#' @param SYSCTXT System context obtained from a call to `sys2blacs_handle`
+#' @param nprocs Number of processors in the communicator
+#' @param comm communicator
+#' @return A blacs context number
+#' @export
+base.blacs_gridinit <- function(SYSCTXT,
+                                NPROW,
+                                NPCOL,
+                                nprocs = pbdMPI::comm.size(comm),
+                                comm = .pbd_env$SPMD.CT$comm,
+                                ...)
+{
+   if (missing(NPROW) && missing(NPCOL)){
+    procs <- base.procgrid(nprocs=nprocs)
+    NPROW <- as.integer(procs$nprow)
+    NPCOL <- as.integer(procs$npcol)
+  }
+  else if (missing(NPROW) && !missing(NPCOL))
+    pbdMPI::comm.stop("You must also provide a value for 'NPROW'")
+  else if (!missing(NPROW) && missing(NPCOL)) 
+    pbdMPI::comm.stop("You must also provide a value for 'NPCOL'")
+  else if (!isint(x=NPROW) || !isint(x=NPCOL))
+    pbdMPI::comm.stop("'NPROW' and 'NPCOL' must be integers")
+  else if (NPROW*NPCOL > nprocs) 
+    pbdMPI::comm.stop(paste("Error: grid size of ", NPROW, "x", NPCOL, " is not possible with ", nprocs, " processes", sep=""))
+  
+  value <- .Call('R_blacs_gridinit', as.integer(NPROW), as.integer(NPCOL), as.integer(SYSCTXT))
+  nm <- paste(".__blacs_gridinfo_", value$ICTXT, sep="")
+  assign(x=nm, value=value, envir=.pbdBASEEnv)
+  if (!exists(".__blacs_initialized", envir=.pbdBASEEnv))
+    assign(x=".__blacs_initialized", value=TRUE, envir=.pbdBASEEnv)
+  
+  value$ICTXT
+}
 
 
 #' Initialize Process Grid
 #' 
 #' Manages the creation of BLACS context grids.
 #' 
-#' \code{blacs_gridinit()} is for experienced users only.  It is a shallow
-#' wrapper of the BLACS routine \code{BLACS_GRIDINIT}, with the addition of
+#' \code{blacs_init()} is for experienced users only.  It is a shallow
+#' wrapper of the BLACS routine \code{BLACS_INIT}, with the addition of
 #' creating the \code{.__blacs_gridinfo_ICTXT} objects, as described below.
 #' 
 #' The remainder of this section applies only to \code{init.grid()}.
@@ -196,7 +234,7 @@ init.grid <- function(NPROW, NPCOL, ICTXT, quiet = FALSE)
   }
   
   # initialize grid
-  base.blacs_gridinit(ICTXT=ICTXT, NPROW=NPROW, NPCOL=NPCOL, quiet=quiet)
+  base.blacs_init(ICTXT=ICTXT, NPROW=NPROW, NPCOL=NPCOL, quiet=quiet)
   
   
   if (ICTXT==0){
@@ -207,13 +245,24 @@ init.grid <- function(NPROW, NPCOL, ICTXT, quiet = FALSE)
       NPROW <- as.integer(procs$nprow)
       NPCOL <- as.integer(procs$npcol)
     } 
-    base.blacs_gridinit(ICTXT=1L, NPROW=1, NPCOL=NPROW*NPCOL, quiet=TRUE)
-    base.blacs_gridinit(ICTXT=2L, NPROW=NPROW*NPCOL, NPCOL=1, quiet=TRUE)
+    base.blacs_init(ICTXT=1L, NPROW=1, NPCOL=NPROW*NPCOL, quiet=TRUE)
+    base.blacs_init(ICTXT=2L, NPROW=NPROW*NPCOL, NPCOL=1, quiet=TRUE)
   }
   
   invisible(0) # quiet return
 }
 
+#' Context Within a Given Communicator
+#'
+#' Creates a context that will be valid for a given communicator
+#' @param comm Communicator for which you want to set the BLACS context
+#' @return A system handle, i.e. the system context number. System contexts can be used to have ScalaPACK methods run in different communicators.
+#' @seealso base.free_blacs_system_handle, base.blacs_gridinit
+#' @export
+sys2blacs.handle <- function(comm)
+{
+  .Call("R_sys2blacs_handle", comm, PACKAGE="pbdBASE")
+}
 
 
 #' gridexit
@@ -252,15 +301,23 @@ base.gridexit <- function(ICTXT, override=FALSE)
   
   blacs_ <- base.blacs(ICTXT=ICTXT)
   FCTXT <- blacs_$ICTXT
-
+  
   if (blacs_$MYROW != -1 && blacs_$MYCOL != -1)
-    .Fortran("BLACS_GRIDEXIT", ICONTXT=as.integer(FCTXT), PACKAGE="pbdBASE")
+    .Call("R_blacs_gridexit", as.integer(FCTXT), PACKAGE="pbdBASE")
 
   rm(list = paste(".__blacs_gridinfo_", ICTXT, sep=""), envir=.pbdBASEEnv)
 
   return( invisible(0) )
 }
 
+#' Free Blacs System Handle
+#' @param SHANDLE A system handle. Obtained via a call to `sys2blacs.handle`
+#' @export
+base.free_blacs_system_handle <- function(SHANDLE)
+{
+  .Call("R_free_blacs_system_handle", as.integer(SHANDLE), PACKAGE = "pbdBASE")
+  return( invisible(0) )
+}
 
 #' @rdname gridexit
 #' @export
