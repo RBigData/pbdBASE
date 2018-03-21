@@ -71,7 +71,8 @@ base.blacs_init <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
   value <- .Call(R_blacs_init, as.integer(NPROW), as.integer(NPCOL), as.integer(ICTXT))
   
   assign(x=nm, value=value, envir=.pbdBASEEnv)
-  
+  set.comm.from.ICTXT(value$ICTXT, .pbd_env$SPMD.CT$comm)
+
   if (ICTXT==0 && !quiet)
     pbdMPI::comm.cat(sprintf("%s", paste("Using ", NPROW, "x", NPCOL, " for the default grid size\n\n", sep="")), quiet=TRUE)
   else if (ICTXT > 0 && !quiet)
@@ -120,6 +121,7 @@ base.blacs_gridinit <- function(SYSCTXT,
   
   value <- .Call('R_blacs_gridinit', as.integer(NPROW), as.integer(NPCOL), as.integer(SYSCTXT))
   nm <- paste(".__blacs_gridinfo_", value$ICTXT, sep="")
+  set.comm.from.ICTXT(value$ICTXT, comm)
   assign(x=nm, value=value, envir=.pbdBASEEnv)
   if (!exists(".__blacs_initialized", envir=.pbdBASEEnv))
     assign(x=".__blacs_initialized", value=TRUE, envir=.pbdBASEEnv)
@@ -127,6 +129,32 @@ base.blacs_gridinit <- function(SYSCTXT,
   value$ICTXT
 }
 
+set.comm.from.ICTXT <- function(ICTXT,
+                                comm)
+{
+    if(!exists("comm.ctxt.map", envir = .pbdBASEEnv))
+        .pbdBASEEnv$comm.ctxt.map <- list()
+    .pbdBASEEnv$comm.ctxt.map[[ICTXT + 1L]] <- comm
+}
+
+#' Getting Communicator From BLACS Context
+#'
+#' Blacs context are associated with a certain communicator. It can be useful to retrieve this communicator to manipulate the matrix accordingly.
+#' @param ICTXT a BLACS context
+#' @export
+get.comm.from.ICTXT <- function(ICTXT)
+{
+  if(!exists("comm.ctxt.map", envir = .pbdBASEEnv))
+  {
+    pbdMPI::comm.warning("No context seem to have been setup")
+    return(NULL)
+  }
+  
+  comm <- .pbdBASEEnv$comm.ctxt.map[[ICTXT + 1L]]
+  if(is.null(comm))
+    pbdMPI::comm.warning(sprintf("Context: %i is not set", ICTXT))
+  comm
+}
 
 #' Initialize Process Grid
 #' 

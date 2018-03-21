@@ -180,7 +180,8 @@
       END IF
       
       ! Have to move to a common grid for the reduction
-      DESCX(2) = 0
+      ! EDIT: Not sure to understand why it's needed, maybe could be made an option
+      ! DESCX(2) = 0
       
       IF (RDEST.EQ.-1) THEN
         CALL DALLREDUCE(GBLX, DESCX, 'S', 'All')

@@ -4,7 +4,7 @@
 \alias{base.rpdgeqpf}
 \title{rpdgeqpf}
 \usage{
-base.rpdgeqpf(tol, m, n, x, descx)
+base.rpdgeqpf(tol, m, n, x, descx, comm)
 }
 \arguments{
 \item{tol}{Numerical tolerance for the QR.}
