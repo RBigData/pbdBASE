@@ -139,13 +139,15 @@ static const R_CallMethodDef CallEntries[] = {
   {"l2g_coords", (DL_FUNC) &l2g_coords, 4},
   {NULL, NULL, 0}
 };
+
 extern void set_BLACS_APTS_in_R();
 extern void get_BLACS_APTS_from_R();
 static const R_CMethodDef CEntries[] = {
-  {"set_BLACS_APTS_in_R", (DL_FUNC) &set_BLACS_APTS_in_R, 0},
-  {"get_BLACS_APTS_from_R", (DL_FUNC) &get_BLACS_APTS_from_R, 0},
-  {NULL, NULL, 0}
+  {"set_BLACS_APTS_in_R", (DL_FUNC) &set_BLACS_APTS_in_R, 0, NULL},
+  {"get_BLACS_APTS_from_R", (DL_FUNC) &get_BLACS_APTS_from_R, 0, NULL},
+  {NULL, NULL, 0, NULL}
 };
+
 void R_init_pbdBASE(DllInfo *dll)
 {
   R_registerRoutines(dll, CEntries, CallEntries, NULL, NULL);
