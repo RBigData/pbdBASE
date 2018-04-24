@@ -177,24 +177,21 @@ numroc2 <- function(N, NB, IPROC, NPROCS)
 #' @keywords BLACS
 #' 
 #' @examples
-#' tf <- tempfile(pattern = "demo", fileext = ".r")
-#' cat("
-#' # Save code in a file 'demo.r' and run with 2 processors by
-#' # > mpiexec -np 2 Rscript demo.r
+#' spmd.code = "
+#'   suppressMessages(library(pbdBASE))
+#'   init.grid()
 #' 
-#' library(pbdBASE, quiet = TRUE)
-#' init.grid()
+#'   blacs_ <- blacs(ICTXT = 0)
 #' 
-#' blacs_ <- blacs(ICTXT = 0)
+#'   # get the ICTXT = 0 BLACS coordsinates for process 0
+#'   myCoords <- base.pcoord(ICTXT = 0, PNUM = 0)
 #' 
-#' # get the ICTXT = 0 BLACS coordsinates for process 0
-#' myCoords <- base.pcoord(ICTXT = 0, PNUM = 0)
+#'   comm.print(myCoords)
 #' 
-#' comm.print(myCoords)
+#'   finalize()
+#' "
 #' 
-#' finalize()
-#' ", file = tf)
-#' # system(paste0("mpiexec -np 2 Rscript ", tf))    # No interaction.
+#' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 #' 
 #' @name pcoords
 #' @rdname pcoords
@@ -254,4 +251,3 @@ g2lcoord <- function(dim, bldim, gi, gj, gridinfo)
   .Call(R_g2lcoord, as.integer(dim), as.integer(bldim), 
         as.integer(gi), as.integer(gj), gridinfo)
 }
-
