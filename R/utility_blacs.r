@@ -20,7 +20,7 @@ base.valid_context <- function(ICTXT, ..., override=FALSE)
     pbdMPI::comm.stop("Negative BLACS context is not allowed")
   else if (as.integer(ICTXT)!=ICTXT) 
     pbdMPI::comm.stop("Non-integer BLACS contexts are not permitted")
-  else if (!exists(paste(".__blacs_gridinfo_", ICTXT, sep=""))){
+  else if (!exists(paste0(".__blacs_gridinfo_", ICTXT), envir=.pbdBASEEnv)){
     pbdMPI::comm.warning(paste("Context", ICTXT, "does not exist"))
     return( invisible(1) )
   } 
