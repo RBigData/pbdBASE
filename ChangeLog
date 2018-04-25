@@ -7,6 +7,7 @@ Release 0.5-0:
   * Fixed base.matexp() bug.
   * Fixed some compiler warnings.
   * Cleaned up some internal issues.
+  * Initial support for BLACS contexts with multiple MPI communicators.
 
 Release 0.4-6:
   * Fix indexing problem in pdsweep()
