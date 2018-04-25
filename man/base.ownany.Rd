@@ -29,20 +29,17 @@ below for more clarity.
 The return for each function is local.
 }
 \examples{
-tf <- tempfile(pattern = "demo", fileext = ".r")
-cat("
-# Save code in a file 'demo.r' and run with 2 processors by
-# > mpiexec -np 2 Rscript demo.r
+spmd.code = "
+  suppressMessages(library(pbdBASE))
+  init.grid()
 
-library(pbdBASE, quiet = TRUE)
-init.grid()
+  iown <- ownany(dim=c(4, 4), bldim=c(2, 2), CTXT=0)
+  comm.print(iown, all.rank=T)
 
-iown <- ownany(dim=c(4, 4), bldim=c(2, 2), CTXT=0)
-comm.print(iown, all.rank=T)
+  finalize()
+"
 
-finalize()
-", file = tf)
-# system(paste0("mpiexec -np 2 Rscript ", tf))    # No interaction.
+pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 
 }
 \keyword{BLACS}

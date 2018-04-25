@@ -224,17 +224,14 @@ get.comm.from.ICTXT <- function(ICTXT)
 #' @keywords BLACS
 #' 
 #' @examples
-#' tf <- tempfile(pattern = "demo", fileext = ".r")
-#' cat("
-#' # Save code in a file 'demo.r' and run with 2 processors by
-#' # > mpiexec -np 2 Rscript demo.r
+#' spmd.code = "
+#'   suppressMessages(library(pbdBASE))
+#'   init.grid()
 #' 
-#' library(pbdBASE, quiet = TRUE)
-#' init.grid()
+#'   finalize()
+#' "
 #' 
-#' finalize()
-#' ", file = tf)
-#' # system(paste0("mpiexec -np 2 Rscript ", tf))    # No interaction.
+#' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 #' 
 #' @name InitGrid
 #' @rdname init.grid
@@ -377,19 +374,16 @@ gridexit <- base.gridexit
 #' @keywords BLACS
 #' 
 #' @examples
-#' tf <- tempfile(pattern = "demo", fileext = ".r")
-#' cat("
-#' # Save code in a file 'demo.r' and run with 2 processors by
-#' # > mpiexec -np 2 Rscript demo.r
+#' spmd.code = "
+#'   suppressMessages(library(pbdBASE))
+#'   init.grid()
 #' 
-#' library(pbdBASE, quiet = TRUE)
-#' init.grid()
+#'   blacsexit()
 #' 
-#' blacsexit()
+#'   # finalize()  # This should be off since blacexit().
+#' "
 #' 
-#' # finalize()  # This should be off since blacexit().
-#' ", file = tf)
-#' # system(paste0("mpiexec -np 2 Rscript ", tf))    # No interaction.
+#' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 #' 
 #' @name blacsexit
 #' @rdname blacsexit

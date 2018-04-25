@@ -32,19 +32,16 @@ This function is automatically invoked if BLACS communicators are running
 and \code{finalize()} is called.
 }
 \examples{
-tf <- tempfile(pattern = "demo", fileext = ".r")
-cat("
-# Save code in a file 'demo.r' and run with 2 processors by
-# > mpiexec -np 2 Rscript demo.r
+spmd.code = "
+  suppressMessages(library(pbdBASE))
+  init.grid()
 
-library(pbdBASE, quiet = TRUE)
-init.grid()
+  blacsexit()
 
-blacsexit()
+  # finalize()  # This should be off since blacexit().
+"
 
-# finalize()  # This should be off since blacexit().
-", file = tf)
-# system(paste0("mpiexec -np 2 Rscript ", tf))    # No interaction.
+pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 
 }
 \keyword{BLACS}
