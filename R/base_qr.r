@@ -12,9 +12,11 @@
 #' Matrix.
 #' @param descx
 #' ScaLAPACK descriptor array.
+#' @param comm
+#' An MPI (not BLACS) communicator.
 #' 
 #' @export
-base.rpdgeqpf <- function(tol, m, n, x, descx, comm)
+base.rpdgeqpf <- function(tol, m, n, x, descx, comm = .pbd_env$SPMD.CT$comm)
 {
   if (!is.double(x))
     storage.mode(x) <- "double"

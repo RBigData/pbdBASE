@@ -5,7 +5,7 @@
 \title{Creating Grid From A System Context}
 \usage{
 base.blacs_gridinit(SYSCTXT, NPROW, NPCOL, nprocs = pbdMPI::comm.size(comm),
-  comm = .pbd_env$SPMD.CT$comm, ...)
+  comm = .pbd_env$SPMD.CT$comm)
 }
 \arguments{
 \item{SYSCTXT}{System context obtained from a call to `sys2blacs_handle`}
@@ -16,7 +16,7 @@ base.blacs_gridinit(SYSCTXT, NPROW, NPCOL, nprocs = pbdMPI::comm.size(comm),
 
 \item{nprocs}{Number of processors in the communicator}
 
-\item{comm}{communicator}
+\item{comm}{An MPI (not BLACS) communicator.}
 }
 \value{
 A blacs context number

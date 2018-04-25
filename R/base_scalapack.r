@@ -97,6 +97,8 @@ base.rpdgesv <- function(n, nrhs, a, desca, b, descb)
 #' Ignored
 #' @param inplace
 #' Should the computation be done in-place or not.  For REALLY advanced users only.
+#' @param comm
+#' An MPI (not BLACS) communicator.
 #' 
 #' @export
 base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt, ..., inplace=FALSE, comm = .pbd_env$SPMD.CT$comm)

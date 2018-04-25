@@ -91,19 +91,21 @@ blacs_init <- base.blacs_init
 #' Creating Grid From A System Context
 #'
 #' Creates a grid from a System Context obtained from a call to `sys2blacs_handle`.
-#' @param NPROW Number of rows in the process grid
-#' @param NPCOL Number of columns in the process grid
-#' @param SYSCTXT System context obtained from a call to `sys2blacs_handle`
-#' @param nprocs Number of processors in the communicator
-#' @param comm communicator
+#' @param NPROW
+#' Number of rows in the process grid
+#' @param NPCOL
+#' Number of columns in the process grid
+#' @param SYSCTXT
+#' System context obtained from a call to `sys2blacs_handle`
+#' @param nprocs
+#' Number of processors in the communicator
+#' @param comm
+#' An MPI (not BLACS) communicator.
+#' 
 #' @return A blacs context number
+#' 
 #' @export
-base.blacs_gridinit <- function(SYSCTXT,
-                                NPROW,
-                                NPCOL,
-                                nprocs = pbdMPI::comm.size(comm),
-                                comm = .pbd_env$SPMD.CT$comm,
-                                ...)
+base.blacs_gridinit <- function(SYSCTXT, NPROW, NPCOL, nprocs = pbdMPI::comm.size(comm), comm = .pbd_env$SPMD.CT$comm)
 {
    if (missing(NPROW) && missing(NPCOL)){
     procs <- base.procgrid(nprocs=nprocs)
@@ -129,8 +131,7 @@ base.blacs_gridinit <- function(SYSCTXT,
   value$ICTXT
 }
 
-set.comm.from.ICTXT <- function(ICTXT,
-                                comm)
+set.comm.from.ICTXT <- function(ICTXT, comm)
 {
     if(!exists("comm.ctxt.map", envir = .pbdBASEEnv))
         .pbdBASEEnv$comm.ctxt.map <- list()
