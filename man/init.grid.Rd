@@ -25,8 +25,8 @@ are created in the \code{.pbdBASEEnv} environment.  See Details section.
 Manages the creation of BLACS context grids.
 }
 \details{
-\code{blacs_gridinit()} is for experienced users only.  It is a shallow
-wrapper of the BLACS routine \code{BLACS_GRIDINIT}, with the addition of
+\code{blacs_init()} is for experienced users only.  It is a shallow
+wrapper of the BLACS routine \code{BLACS_INIT}, with the addition of
 creating the \code{.__blacs_gridinfo_ICTXT} objects, as described below.
 
 The remainder of this section applies only to \code{init.grid()}.

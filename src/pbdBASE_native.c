@@ -52,6 +52,10 @@ extern SEXP R_RROWCPY(SEXP X, SEXP LDIM, SEXP DESCX, SEXP XROW, SEXP Y, SEXP DES
 extern SEXP R_RROWCPY2(SEXP X, SEXP LDIM, SEXP DESCX, SEXP XROW, SEXP LXROWS, SEXP Y, SEXP DESCY, SEXP YROW, SEXP LYROWS);
 extern SEXP R_blacs_exit(SEXP CONT);
 extern SEXP R_blacs_init(SEXP NPROW_in, SEXP NPCOL_in, SEXP ICTXT_in);
+extern SEXP R_blacs_gridinit(SEXP NPROW_in, SEXP NCOL_in, SEXP SHANDLE);
+extern SEXP R_free_blacs_system_handle(SEXP SHANDLE);
+extern SEXP R_blacs_gridexit(SEXP CONT);
+extern SEXP R_sys2blacs_handle(SEXP COMM);
 extern SEXP R_descinit(SEXP DIM, SEXP BLDIM, SEXP ICTXT, SEXP LLD);
 extern SEXP R_dgamn2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST);
 extern SEXP R_dgamx2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST);
@@ -70,6 +74,7 @@ extern SEXP R_p_matpow_by_squaring(SEXP A, SEXP desca, SEXP b);
 extern SEXP R_redist(SEXP desc, SEXP A);
 extern SEXP g2l_coords(SEXP ind, SEXP bldim, SEXP procs, SEXP src);
 extern SEXP l2g_coords(SEXP ind, SEXP bldim, SEXP procs, SEXP myproc);
+
 
 static const R_CallMethodDef CallEntries[] = {
   {"COMM_PRINT", (DL_FUNC) &COMM_PRINT, 1},
@@ -119,6 +124,10 @@ static const R_CallMethodDef CallEntries[] = {
   {"R_RROWCPY2", (DL_FUNC) &R_RROWCPY2, 9},
   {"R_blacs_exit", (DL_FUNC) &R_blacs_exit, 1},
   {"R_blacs_init", (DL_FUNC) &R_blacs_init, 3},
+  {"R_blacs_gridinit", (DL_FUNC) &R_blacs_gridinit, 3},
+  {"R_blacs_gridexit", (DL_FUNC) &R_blacs_gridexit, 1},
+  {"R_free_blacs_system_handle", (DL_FUNC) &R_free_blacs_system_handle, 1},
+  {"R_sys2blacs_handle", (DL_FUNC) &R_sys2blacs_handle, 1},
   {"R_descinit", (DL_FUNC) &R_descinit, 4},
   {"R_dgamn2d1", (DL_FUNC) &R_dgamn2d1, 8},
   {"R_dgamx2d1", (DL_FUNC) &R_dgamx2d1, 8},

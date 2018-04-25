@@ -14,22 +14,21 @@
 #' ScaLAPACK descriptor array.
 #' 
 #' @export
-base.rpdgeqpf <- function(tol, m, n, x, descx)
+base.rpdgeqpf <- function(tol, m, n, x, descx, comm)
 {
   if (!is.double(x))
     storage.mode(x) <- "double"
-  
+
   ret <- .Call(R_PDGEQPF, as.double(tol), as.integer(m), as.integer(n), x, as.integer(descx))
-  
-  if (pbdMPI::comm.rank()!=0)
+  if (pbdMPI::comm.rank(comm)!=0)
     rank <- 0L
   else
     rank <- ret$rank
     
-  rank <- pbdMPI::allreduce(rank)
+  ret$rank <- pbdMPI::allreduce(rank, comm=comm)
   
   if (ret$INFO!=0)
-    pbdMPI::comm.warning(paste("ScaLAPACK returned INFO=", ret$INFO, "; returned solution is likely invalid", sep=""))
+    pbdMPI::comm.warning(paste("ScaLAPACK returned INFO=", ret$INFO, "; returned solution is likely invalid", sep=""), comm=comm)
   
   return( ret )
 }
