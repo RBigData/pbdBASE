@@ -63,6 +63,7 @@ Makeconf:
 utils/quicksort_utils.o: utils/swaps.o
 utils/sorts.o: utils/quicksort_utils.o utils/swaps.o
 utils/subset.o: utils/subset_special.o utils/subset_utils.o
+utils/subset_special.o: utils/sorts.o
 
 $(SHLIB): $(OBJECTS)
 
