@@ -14,8 +14,8 @@ Depends:
     methods
 Imports:
     utils,
-    pbdMPI (>= 0.3-5),
-    pbdSLAP(>= 0.2-1)
+    pbdMPI (>= 0.3-6),
+    pbdSLAP(>= 0.2-4)
 SystemRequirements: OpenMPI (>= 1.5.4) on Solaris, Linux, Mac, and FreeBSD.
     MS-MPI (Microsoft HPC Pack 2012) or MPICH2 (>= 1.4.1p1) on Windows.
 LazyLoad: yes
