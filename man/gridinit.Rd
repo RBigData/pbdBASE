@@ -4,11 +4,14 @@
 \alias{gridinit}
 \alias{base.blacs_init}
 \alias{blacs_init}
+\alias{blacs_gridinit}
 \title{blacs_init}
 \usage{
 base.blacs_init(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
 
 blacs_init(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
+
+blacs_gridinit(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
 }
 \arguments{
 \item{ICTXT}{BLACS context.}
