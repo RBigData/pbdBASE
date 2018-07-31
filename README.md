@@ -27,9 +27,6 @@ install.package("pbdBASE")
 The development version is maintained on GitHub, and can easily be installed by any of the packages that offer installations from GitHub:
 
 ```r
-### Pick your preference
-devtools::install_github("RBigData/pbdBASE")
-ghit::install_github("RBigData/pbdBASE")
 remotes::install_github("RBigData/pbdBASE")
 ```
 
