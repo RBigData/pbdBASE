@@ -88,6 +88,12 @@ base.blacs_init <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
 #' @export
 blacs_init <- base.blacs_init
 
+#' @rdname gridinit
+#' @export
+blacs_gridinit <- base.blacs_init
+
+
+
 #' Creating Grid From A System Context
 #'
 #' Creates a grid from a System Context obtained from a call to `sys2blacs_handle`.
