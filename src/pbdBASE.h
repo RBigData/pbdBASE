@@ -3,6 +3,7 @@
 
 
 #include <RNACI.h>
+#include <mpi.h>
 
 #include "base/linalg/linalg.h"
 #include "base/stats/stats.h"

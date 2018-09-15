@@ -11,9 +11,12 @@
 #' The candidate divisor.
 #' 
 #' @examples
-#' library(pbdBASE, quiet = TRUE)
-#' base.nbd(100, 10) # 10 divides 100, so 10 is returned
-#' base.nbd(100, 11) # 11 does not, so the "next best" divisor, 20, is returned
+#' spmd.code = "
+#'   pbdBASE::base.nbd(100, 10) # 10 divides 100, so 10 is returned
+#'   pbdBASE::base.nbd(100, 11) # 11 does not, so the 'next best' divisor, 20, is returned
+#' "
+#' 
+#' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 1L)
 #' 
 #' @export
 base.nbd <- function(n, d)
@@ -35,4 +38,3 @@ isint <- function(x, epsilon=1e-8)
   else
     return( FALSE )
 }
-

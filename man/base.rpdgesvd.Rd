@@ -5,7 +5,7 @@
 \title{rpdgesvd}
 \usage{
 base.rpdgesvd(jobu, jobvt, m, n, a, desca, descu, descvt, ...,
-  inplace = FALSE)
+  inplace = FALSE, comm = .pbd_env$SPMD.CT$comm)
 }
 \arguments{
 \item{jobu, jobvt}{Control for u/vt return.}
@@ -19,6 +19,8 @@ base.rpdgesvd(jobu, jobvt, m, n, a, desca, descu, descvt, ...,
 \item{...}{Ignored}
 
 \item{inplace}{Should the computation be done in-place or not.  For REALLY advanced users only.}
+
+\item{comm}{An MPI (not BLACS) communicator.}
 }
 \description{
 SVD.

@@ -33,19 +33,17 @@ The function effectively serves as a shorthand for
 \code{eval(parse(text=paste(".__blacs_gridinfo_", ICTXT, sep="")))}
 }
 \examples{
-# Save code in a file 'demo.r' and run with 2 processors by
-# > mpiexec -np 2 Rscript demo.r
+spmd.code = "
+  suppressMessages(library(pbdBASE))
+  init.grid()
 
-spmd.code <- "
-library(pbdBASE, quiet = TRUE)
-init.grid()
+  mygrid <- blacs(0)
 
-mygrid <- blacs(0)
+  pbdMPI::comm.print(mygrid)
 
-pbdMPI::comm.print(mygrid)
-
-finalize()
+  finalize()
 "
+ 
 pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 
 }

@@ -1,9 +1,9 @@
 #' descinit
-#' 
+#'
 #' Creates ScaLAPACK descriptor array.
-#' 
+#'
 #' For advanced users only.
-#' 
+#'
 #' @param dim
 #' Global dim.
 #' @param bldim
@@ -12,7 +12,7 @@
 #' Local dim.
 #' @param ICTXT
 #' BLACS context.
-#' 
+#'
 #' @export
 base.descinit <- function(dim, bldim, ldim, ICTXT=0)
 {
@@ -42,11 +42,11 @@ base.descinit <- function(dim, bldim, ldim, ICTXT=0)
 
 
 #' numroc
-#' 
+#'
 #' NUMber of Rows Or Columns
-#' 
+#'
 #' For advanced users only.
-#' 
+#'
 #' @param dim
 #' Global dim.
 #' @param bldim
@@ -55,7 +55,7 @@ base.descinit <- function(dim, bldim, ldim, ICTXT=0)
 #' BLACS context.
 #' @param fixme
 #' Should ldims be "rounded" to 0 or not.
-#' 
+#'
 #' @export
 base.numroc <- function(dim, bldim, ICTXT=0, fixme=TRUE)
 {
@@ -105,9 +105,9 @@ NUMROC <- function(N, NB, IPROC, NPROCS)
 
 
 #' Determining Local Ownership of a Distributed Matrix
-#' 
+#'
 #' For advanced users only.
-#' 
+#'
 #' A simple wrapper of numroc. The return is the answer to
 #' the question 'do I own any of the global matrix?'.  Passing a distributed
 #' matrix is allowed, but often it is convenient to determine that information
@@ -116,33 +116,31 @@ NUMROC <- function(N, NB, IPROC, NPROCS)
 #' \code{bldim=} (and \code{CTXT=} as necessary, since it defaults to 0) while
 #' leaving \code{x} missing will produce the desired result. See the examples
 #' below for more clarity.
-#' 
+#'
 #' The return for each function is local.
-#' 
-#' @param dim 
+#'
+#' @param dim
 #' global dimension
-#' @param bldim 
+#' @param bldim
 #' blocking dimension
-#' @param ICTXT 
+#' @param ICTXT
 #' BLACS context
-#' 
+#'
 #' @keywords BLACS Distributing Data
-#' 
+#'
 #' @examples
-#' # Save code in a file "demo.r" and run with 2 processors by
-#' # > mpiexec -np 2 Rscript demo.r
-#' 
-#' spmd.code <- "
-#' library(pbdBASE, quiet = TRUE)
-#' init.grid()
-#' 
-#' iown <- ownany(dim=c(4, 4), bldim=c(2, 2), CTXT=0)
-#' comm.print(iown, all.rank=T)
-#' 
-#' finalize()
+#' spmd.code = "
+#'   suppressMessages(library(pbdBASE))
+#'   init.grid()
+#'
+#'   iown <- ownany(dim=c(4, 4), bldim=c(2, 2), CTXT=0)
+#'   comm.print(iown, all.rank=T)
+#'
+#'   finalize()
 #' "
+#'
 #' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
-#' 
+#'
 #' @export
 base.ownany <- function(dim, bldim, ICTXT=0)
 {
@@ -165,25 +163,25 @@ base.ownany <- function(dim, bldim, ICTXT=0)
 
 
 #' rpdlaprnt
-#' 
+#'
 #' Matrix printer.
-#' 
+#'
 #' For advanced users only.
-#' 
+#'
 #' @param m,n
 #' Number rows/cols.
 #' @param a
 #' Matrix.
 #' @param desca
 #' ScaLAPACK descriptor array.
-#' 
+#'
 #' @export
 base.rpdlaprnt <- function(m, n, a, desca)
 {
   if (!is.double(a))
     storage.mode(a) <- "double"
   
-  .Call(R_PDLAPRNT, 
+  .Call(R_PDLAPRNT,
         as.integer(m), as.integer(n),
         a, as.integer(desca),
         as.character(deparse(substitute(a))),
@@ -196,14 +194,14 @@ base.rpdlaprnt <- function(m, n, a, desca)
 
 
 #' maxdim
-#' 
+#'
 #' Compute maximum dimension across all nodes
-#' 
+#'
 #' For advanced users only.
-#' 
+#'
 #' @param dim
 #' Global dim.
-#' 
+#'
 #' @export
 base.maxdim <- function(dim)
 {
@@ -217,16 +215,16 @@ base.maxdim <- function(dim)
 
 
 #' maxdim
-#' 
+#'
 #' Compute dimensions on process MYROW=MYCOL=0
-#' 
+#'
 #' For advanced users only.
-#' 
+#'
 #' @param dim
 #' Global dim.
 #' @param ICTXT
 #' BLACS context.
-#' 
+#'
 #' @export
 base.dim0 <- function(dim, ICTXT=0)
 {
@@ -253,22 +251,24 @@ base.dim0 <- function(dim, ICTXT=0)
 
 
 #' g2l_coord
-#' 
+#'
 #' Global to local coords.
-#' 
+#'
 #' For advanced users only.
-#' 
+#'
 #' @param ind
 #' Matrix indices.
 #' @param bldim
 #' Blocking dimension.
 #' @param ICTXT
 #' BLACS context.
-#' 
+#' @param dim
+#' Ignored; will be removed in a future version.
+#'
 #' @name g2l_coord
 #' @rdname g2l_coord
 #' @export
-base.g2l_coord <- function(ind, bldim, ICTXT=0)
+base.g2l_coord <- function(ind, bldim, ICTXT=0, dim=NULL)
 {
   blacs_ <- base.blacs(ICTXT=ICTXT)
   procs <- c(blacs_$NPROW, blacs_$NPCOL)
@@ -298,22 +298,24 @@ g2l_coord <- base.g2l_coord
 
 
 #' l2g_coord
-#' 
+#'
 #' Local to global coords.
-#' 
+#'
 #' For advanced users only.
-#' 
+#'
 #' @param ind
 #' Matrix indices.
 #' @param bldim
 #' Blocking dimension.
 #' @param ICTXT
 #' BLACS context.
-#' 
+#' @param dim
+#' Ignored; will be removed in a future version.
+#'
 #' @name l2g_coord
 #' @rdname l2g_coord
 #' @export
-base.l2g_coord <- function(ind, bldim, ICTXT=0)
+base.l2g_coord <- function(ind, bldim, ICTXT=0, dim=NULL)
 {
   blacs_ <- base.blacs(ICTXT=ICTXT)
   procs <- c(blacs_$NPROW, blacs_$NPCOL)

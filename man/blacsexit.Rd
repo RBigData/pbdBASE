@@ -32,15 +32,15 @@ This function is automatically invoked if BLACS communicators are running
 and \code{finalize()} is called.
 }
 \examples{
-# Save code in a file "demo.r" and run with 2 processors by
-# > mpiexec -np 2 Rscript demo.r
+spmd.code = "
+  suppressMessages(library(pbdBASE))
+  init.grid()
 
-spmd.code <- "
-library(pbdBASE, quiet = TRUE)
-init.grid()
+  blacsexit()
 
-blacsexit()
+  # finalize()  # This should be off since blacexit().
 "
+
 pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 
 }
