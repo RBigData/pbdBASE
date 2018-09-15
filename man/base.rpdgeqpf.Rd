@@ -4,7 +4,7 @@
 \alias{base.rpdgeqpf}
 \title{rpdgeqpf}
 \usage{
-base.rpdgeqpf(tol, m, n, x, descx)
+base.rpdgeqpf(tol, m, n, x, descx, comm = .pbd_env$SPMD.CT$comm)
 }
 \arguments{
 \item{tol}{Numerical tolerance for the QR.}
@@ -14,6 +14,8 @@ base.rpdgeqpf(tol, m, n, x, descx)
 \item{x}{Matrix.}
 
 \item{descx}{ScaLAPACK descriptor array.}
+
+\item{comm}{An MPI (not BLACS) communicator.}
 }
 \description{
 QR.

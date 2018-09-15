@@ -20,7 +20,7 @@ base.valid_context <- function(ICTXT, ..., override=FALSE)
     pbdMPI::comm.stop("Negative BLACS context is not allowed")
   else if (as.integer(ICTXT)!=ICTXT) 
     pbdMPI::comm.stop("Non-integer BLACS contexts are not permitted")
-  else if (!exists(paste(".__blacs_gridinfo_", ICTXT, sep=""))){
+  else if (!exists(paste0(".__blacs_gridinfo_", ICTXT), envir=.pbdBASEEnv)){
     pbdMPI::comm.warning(paste("Context", ICTXT, "does not exist"))
     return( invisible(1) )
   } 
@@ -101,19 +101,17 @@ minctxt <- base.minctxt
 #' @keywords BLACS
 #' 
 #' @examples
-#' # Save code in a file 'demo.r' and run with 2 processors by
-#' # > mpiexec -np 2 Rscript demo.r
+#' spmd.code = "
+#'   suppressMessages(library(pbdBASE))
+#'   init.grid()
 #' 
-#' spmd.code <- "
-#' library(pbdBASE, quiet = TRUE)
-#' init.grid()
+#'   mygrid <- blacs(0)
 #' 
-#' mygrid <- blacs(0)
+#'   pbdMPI::comm.print(mygrid)
 #' 
-#' pbdMPI::comm.print(mygrid)
-#' 
-#' finalize()
+#'   finalize()
 #' "
+#'  
 #' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 #' 
 #' @name gridinfo
@@ -136,4 +134,3 @@ base.blacs <- function(ICTXT=0)
 #' @rdname gridinfo
 #' @export
 blacs <- base.blacs
-

@@ -21,7 +21,7 @@ SEXP R_PDGEQPF(SEXP TOL, SEXP M, SEXP N, SEXP A, SEXP DESCA)
   
   newRvec(INFO, 1, "int", true);
   newRmat(A_OUT, nrows(A), ncols(A), "dbl");
-  newRvec(TAU, ltau, "dbl");
+  newRvec(TAU, ltau, "dbl", true);
   newRvec(IPIV, ncols(A), "int");
   newRvec(RANK, 1, "int");
   

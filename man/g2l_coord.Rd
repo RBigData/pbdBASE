@@ -6,9 +6,9 @@
 \alias{g2l_coord}
 \title{g2l_coord}
 \usage{
-base.g2l_coord(ind, bldim, ICTXT = 0)
+base.g2l_coord(ind, bldim, ICTXT = 0, dim = NULL)
 
-g2l_coord(ind, bldim, ICTXT = 0)
+g2l_coord(ind, bldim, ICTXT = 0, dim = NULL)
 }
 \arguments{
 \item{ind}{Matrix indices.}
@@ -16,6 +16,8 @@ g2l_coord(ind, bldim, ICTXT = 0)
 \item{bldim}{Blocking dimension.}
 
 \item{ICTXT}{BLACS context.}
+
+\item{dim}{Ignored; will be removed in a future version.}
 }
 \description{
 Global to local coords.

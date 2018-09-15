@@ -72,7 +72,7 @@ static inline void l2gpair(const int i, const int j, int* restrict gi, int* rest
         { \
           l2gpair(i, j, &gi, &gj, descx, blacs); \
           pos = ind(gj + k*(gi-1), lvec) - 1; \
-          x[i + m*j] = x[i + m*j] OP vec[pos]; \
+          x[i-1 + m*(j-1)] = x[i-1 + m*(j-1)] OP vec[pos]; \
         } \
       } \
     } \

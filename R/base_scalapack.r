@@ -97,9 +97,11 @@ base.rpdgesv <- function(n, nrhs, a, desca, b, descb)
 #' Ignored
 #' @param inplace
 #' Should the computation be done in-place or not.  For REALLY advanced users only.
+#' @param comm
+#' An MPI (not BLACS) communicator.
 #' 
 #' @export
-base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt, ..., inplace=FALSE)
+base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt, ..., inplace=FALSE, comm = .pbd_env$SPMD.CT$comm)
 {
     size <- min(m, n)
     
@@ -107,9 +109,9 @@ base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt, ..., inpla
     uldim <- base.numroc(descu[3:4], descu[5:6], ICTXT=descu[2])
     vtldim <- base.numroc(descvt[3:4], descvt[5:6], ICTXT=descvt[2])
     
-    mxa <- pbdMPI::allreduce(max(aldim), op='max')
-    mxu <- pbdMPI::allreduce(max(uldim), op='max')
-    mxvt <- pbdMPI::allreduce(max(vtldim), op='max')
+    mxa <- pbdMPI::allreduce(max(aldim), op='max', comm=comm)
+    mxu <- pbdMPI::allreduce(max(uldim), op='max', comm=comm)
+    mxvt <- pbdMPI::allreduce(max(vtldim), op='max', comm=comm)
     
     if (all(aldim==1))
         desca[9L] <- mxa
@@ -119,15 +121,15 @@ base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt, ..., inpla
         descvt[9L] <- mxvt
     
     if (desca[3L]>1){
-        if (pbdMPI::allreduce(desca[9L], op='max')==1)
+        if (pbdMPI::allreduce(desca[9L], op='max', comm=comm)==1)
             desca[9L] <- mxa
     }
     if (descu[3L]>1){
-        if (pbdMPI::allreduce(descu[9L], op='max')==1)
+        if (pbdMPI::allreduce(descu[9L], op='max', comm=comm)==1)
             desca[9L] <- mxu
     }
     if (descvt[3L]>1){
-        if (pbdMPI::allreduce(descvt[9L], op='max')==1)
+        if (pbdMPI::allreduce(descvt[9L], op='max', comm=comm)==1)
             desca[9L] <- mxvt
     }
     
@@ -149,7 +151,7 @@ base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt, ..., inpla
                         as.character(jobu), as.character(jobvt), inplace)
     
     if (out$info!=0)
-        pbdMPI::comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""))
+        pbdMPI::comm.warning(paste("ScaLAPACK returned INFO=", out$info, "; returned solution is likely invalid", sep=""), comm=comm)
     
     ret <- list( d=out$d, u=out$u, vt=out$vt )
     

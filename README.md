@@ -1,8 +1,9 @@
 # pbdBASE 
 
 * **Version:** 0.5-0
-* **License:** [![License](http://img.shields.io/badge/license-MPL%202-orange.svg?style=flat)](https://www.mozilla.org/MPL/2.0/)
-* **Author:** See section below.
+* **License:** [License](https://www.mozilla.org/MPL/2.0/)
+* **Project home**: https://github.com/RBigData/pbdBASE
+* **Bug reports**: https://github.com/RBigData/pbdBASE/issues
 
 
 pbdBASE is a set of bindings to and extensions for the distributed linear algebra libraries BLACS, PBLAS, and ScaLAPACK.  The package is very low-level, and unless you are very familiar with these libraries (or even if you are...), you are instead recommended to see the pbdDMAT and pbdDEMO packages.
@@ -26,25 +27,7 @@ install.package("pbdBASE")
 The development version is maintained on GitHub, and can easily be installed by any of the packages that offer installations from GitHub:
 
 ```r
-### Pick your preference
-devtools::install_github("RBigData/pbdBASE")
-ghit::install_github("RBigData/pbdBASE")
 remotes::install_github("RBigData/pbdBASE")
 ```
 
 See the vignette for installation troubleshooting.
-
-
-
-## Authors
-
-pbdBASE is authored and maintained by the pbdR core team:
-
-* Drew Schmidt
-* Wei-Chen Chen
-* George Ostrouchov
-* Pragneshkumar Patel
-
-With additional contributions from:
-
-* Ewan Higgs
