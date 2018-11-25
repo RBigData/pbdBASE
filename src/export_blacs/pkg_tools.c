@@ -2,7 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/* WCC: These functions are to export and access pointers in R.
+/* WCC: These functions are to export and access pointers inside R.
+ *      Note that R may be launched by other APIs, so the pointers may be
+ *      controlled by the API or redirected to what was initialized by the API.
+ *
+ * Test by
+ * SHELL> Rscript -e "library(pbdBASE);init.grid();set.blacs.apts();get.blacs.apts()"
+ *
+ * One may skip "init.grid()" if R was launched by other APIs (e.g. subgroup of
+ * communicators)
  *
  * Wei-Chen Chen, Mar 2013.
  * Modified June 2015, Higgs and Schmidt.
