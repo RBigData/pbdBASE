@@ -38,7 +38,7 @@ void set_BLACS_APTS_in_R(){
 	int myrank;
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	if(myrank == 0){
-		REprintf("  %s (v): %d %d %d %d %d.\n", __FILE__, BI_MaxNCtxt,
+		REprintf("s %s int (v): %d %d %d %d %d.\n", __FILE__, BI_MaxNCtxt,
 			BI_MaxNSysCtxt, BI_Iam, BI_Np, BI_AuxBuff);
 /* Not a good idea to print NULL pointers.
 		REprintf("  %s (v): %d %d %d %d.\n", __FILE__, *BI_ReadyB,
@@ -46,13 +46,19 @@ void set_BLACS_APTS_in_R(){
 		REprintf("  %s (v): %d %d.\n", __FILE__, *BI_SysContxts,
 			*BI_Stats);
 */
-		REprintf("  %s (v): %d %d %d.\n", __FILE__, BI_AuxBuff.Len,
+		REprintf("s %s int (v): %d %d %d.\n", __FILE__, BI_AuxBuff.Len,
 			BI_AuxBuff.nAops, BI_AuxBuff.N);
-		REprintf("  %s (a): %x %x %x %x %x.\n", __FILE__, &BI_MaxNCtxt,
+		REprintf("s  %s pt (a): %x %x %x %x %x.\n", __FILE__, &BI_MaxNCtxt,
 			&BI_MaxNSysCtxt, &BI_Iam, &BI_Np, &BI_AuxBuff);
-		REprintf("  %s (a): %x %x %x %x.\n", __FILE__, BI_ReadyB,
-			BI_ActiveQ, *BI_MyContxts, BI_COMM_WORLD);
-		REprintf("  %s (a): %x %x.\n", __FILE__, BI_SysContxts,
+		REprintf("s  %s pt (a): %x %x %x.\n", __FILE__, BI_ReadyB,
+			BI_ActiveQ, BI_COMM_WORLD);
+		if(BI_MaxNCtxt > 0){
+			REprintf("s  %s dpt (a): %x %x %x.\n", __FILE__, BI_MyContxts,
+				*BI_MyContxts, **BI_MyContxts);
+			REprintf("s  %s dpt (a): %x.\n", __FILE__, 
+				BLACS_APTS.BI_MyContxts);
+		}
+		REprintf("s  %s pt (a): %x %x.\n", __FILE__, BI_SysContxts,
 			BI_Stats);
 	}
 	#endif
@@ -101,15 +107,21 @@ void get_BLACS_APTS_from_R(){
 	int myrank;
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	if(myrank == 0){
-		REprintf("  %s (v): %d %d %d %d %d.\n", __FILE__, BI_MaxNCtxt,
+		REprintf("g  %s int (v): %d %d %d %d %d.\n", __FILE__, BI_MaxNCtxt,
 			BI_MaxNSysCtxt, BI_Iam, BI_Np, BI_AuxBuff);
-		REprintf("  %s (v): %d %d %d.\n", __FILE__, BI_AuxBuff.Len,
+		REprintf("g  %s int (v): %d %d %d.\n", __FILE__, BI_AuxBuff.Len,
 			BI_AuxBuff.nAops, BI_AuxBuff.N);
-		REprintf("  %s (a): %x %x %x %x %x.\n", __FILE__, &BI_MaxNCtxt,
+		REprintf("g  %s pt (a): %x %x %x %x %x.\n", __FILE__, &BI_MaxNCtxt,
 			&BI_MaxNSysCtxt, &BI_Iam, &BI_Np, &BI_AuxBuff);
-		REprintf("  %s (a): %x %x %x %x.\n", __FILE__, BI_ReadyB,
-			BI_ActiveQ, *BI_MyContxts, BI_COMM_WORLD);
-		REprintf("  %s (a): %x %x.\n", __FILE__, BI_SysContxts,
+		REprintf("g  %s pt (a): %x %x %x.\n", __FILE__, BI_ReadyB,
+			BI_ActiveQ, BI_COMM_WORLD);
+		if(BI_MaxNCtxt > 0){
+			REprintf("g  %s dpt (a): %x %x %x.\n", __FILE__, BI_MyContxts,
+				*BI_MyContxts, **BI_MyContxts);
+			REprintf("g  %s dpt (a): %x.\n", __FILE__, 
+				BLACS_APTS.BI_MyContxts);
+		}
+		REprintf("g  %s dpt (a): %x %x.\n", __FILE__, BI_SysContxts,
 			BI_Stats);
 	}
 	#endif
