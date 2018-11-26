@@ -24,7 +24,7 @@
 #define BLACS_APTS_R_NAME	".__BLACS_APTS__"
 
 /* For debugging. */
-#define BLACS_APTS_DEBUG	0
+#define BLACS_APTS_DEBUG	1
 
 /* Declared in "BI_GlobalVars.c", or similar main c functions. */
 extern int BI_MaxNCtxt, BI_MaxNSysCtxt, BI_Iam, BI_Np;
