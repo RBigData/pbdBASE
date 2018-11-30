@@ -9,6 +9,7 @@ Release 0.5-0:
   * Cleaned up some internal issues.
   * Initial support for BLACS contexts with multiple MPI communicators.
   * Fixed Windows build issue (Jeroen Ooms).
+  * Fix OMP flags issue.
 
 Release 0.4-6:
   * Fix indexing problem in pdsweep()
