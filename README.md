@@ -1,6 +1,6 @@
 # pbdBASE 
 
-* **Version:** 0.5-0
+* **Version:** 0.5-1
 * **License:** [License](https://www.mozilla.org/MPL/2.0/)
 * **Project home**: https://github.com/RBigData/pbdBASE
 * **Bug reports**: https://github.com/RBigData/pbdBASE/issues
