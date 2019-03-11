@@ -9,15 +9,16 @@ Description: An interface to and extensions for the 'PBLAS' and 'ScaLAPACK'
     higher level way of managing distributed matrices, see the 'pbdDMAT'
     package.
 License: Mozilla Public License 2.0
-Depends:
+Depends: 
     R (>= 3.0.0),
     methods
 Imports:
     utils,
-    pbdMPI (>= 0.3-6),
+    pbdMPI (>= 0.3-8),
     pbdSLAP(>= 0.2-4)
-SystemRequirements: OpenMPI (>= 1.5.4) on Solaris, Linux, Mac, and FreeBSD.
-    MS-MPI (Microsoft HPC Pack 2012) or MPICH2 (>= 1.4.1p1) on Windows.
+SystemRequirements: OpenMPI (>= 1.5.4) on Solaris, Linux, Mac, and
+        FreeBSD. MS-MPI (Microsoft HPC Pack 2012) or MPICH2 (>=
+        1.4.1p1) on Windows.
 LazyLoad: yes
 LazyData: yes
 ByteCompile: yes
@@ -25,7 +26,7 @@ NeedsCompilation: yes
 URL: https://pbdr.org/
 BugReports: http://group.pbdr.org/
 MailingList: Please send questions and comments regarding pbdR to
-    RBigData@gmail.com
+        RBigData@gmail.com
 Authors@R: c(person("Drew", "Schmidt", role=c("aut", "cre"), email="wrathematics@gmail.com"),
     person("Wei-Chen", "Chen", role="aut"),
     person("Sebastien", "Lamy de la Chapelle", role="aut"),

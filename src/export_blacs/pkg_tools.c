@@ -2,7 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/* WCC: These functions are to export and access pointers in R.
+/* WCC: These functions are to export and access pointers inside R.
+ *      Note that R may be launched by other APIs, so the pointers may be
+ *      controlled by the API or redirected to what was initialized by the API.
+ *
+ * Test by
+ * SHELL> Rscript -e "library(pbdBASE);init.grid();set.blacs.apts();get.blacs.apts()"
+ *
+ * One may skip "init.grid()" if R was launched by other APIs (e.g. subgroup of
+ * communicators)
  *
  * Wei-Chen Chen, Mar 2013.
  * Modified June 2015, Higgs and Schmidt.
@@ -38,7 +46,7 @@ void set_BLACS_APTS_in_R(){
 	int myrank;
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	if(myrank == 0){
-		REprintf("  %s (v): %d %d %d %d %d.\n", __FILE__, BI_MaxNCtxt,
+		REprintf("s %s int (v): %d %d %d %d %d.\n", __FILE__, BI_MaxNCtxt,
 			BI_MaxNSysCtxt, BI_Iam, BI_Np, BI_AuxBuff);
 /* Not a good idea to print NULL pointers.
 		REprintf("  %s (v): %d %d %d %d.\n", __FILE__, *BI_ReadyB,
@@ -46,13 +54,19 @@ void set_BLACS_APTS_in_R(){
 		REprintf("  %s (v): %d %d.\n", __FILE__, *BI_SysContxts,
 			*BI_Stats);
 */
-		REprintf("  %s (v): %d %d %d.\n", __FILE__, BI_AuxBuff.Len,
+		REprintf("s %s int (v): %d %d %d.\n", __FILE__, BI_AuxBuff.Len,
 			BI_AuxBuff.nAops, BI_AuxBuff.N);
-		REprintf("  %s (a): %x %x %x %x %x.\n", __FILE__, &BI_MaxNCtxt,
+		REprintf("s  %s pt (a): %x %x %x %x %x.\n", __FILE__, &BI_MaxNCtxt,
 			&BI_MaxNSysCtxt, &BI_Iam, &BI_Np, &BI_AuxBuff);
-		REprintf("  %s (a): %x %x %x %x.\n", __FILE__, BI_ReadyB,
-			BI_ActiveQ, *BI_MyContxts, BI_COMM_WORLD);
-		REprintf("  %s (a): %x %x.\n", __FILE__, BI_SysContxts,
+		REprintf("s  %s pt (a): %x %x %x.\n", __FILE__, BI_ReadyB,
+			BI_ActiveQ, BI_COMM_WORLD);
+		if(BI_MaxNCtxt > 0){
+			REprintf("s  %s dpt (a): %x %x %x.\n", __FILE__, BI_MyContxts,
+				*BI_MyContxts, **BI_MyContxts);
+			REprintf("s  %s dpt (a): %x.\n", __FILE__, 
+				BLACS_APTS.BI_MyContxts);
+		}
+		REprintf("s  %s pt (a): %x %x.\n", __FILE__, BI_SysContxts,
 			BI_Stats);
 	}
 	#endif
@@ -101,15 +115,21 @@ void get_BLACS_APTS_from_R(){
 	int myrank;
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 	if(myrank == 0){
-		REprintf("  %s (v): %d %d %d %d %d.\n", __FILE__, BI_MaxNCtxt,
+		REprintf("g  %s int (v): %d %d %d %d %d.\n", __FILE__, BI_MaxNCtxt,
 			BI_MaxNSysCtxt, BI_Iam, BI_Np, BI_AuxBuff);
-		REprintf("  %s (v): %d %d %d.\n", __FILE__, BI_AuxBuff.Len,
+		REprintf("g  %s int (v): %d %d %d.\n", __FILE__, BI_AuxBuff.Len,
 			BI_AuxBuff.nAops, BI_AuxBuff.N);
-		REprintf("  %s (a): %x %x %x %x %x.\n", __FILE__, &BI_MaxNCtxt,
+		REprintf("g  %s pt (a): %x %x %x %x %x.\n", __FILE__, &BI_MaxNCtxt,
 			&BI_MaxNSysCtxt, &BI_Iam, &BI_Np, &BI_AuxBuff);
-		REprintf("  %s (a): %x %x %x %x.\n", __FILE__, BI_ReadyB,
-			BI_ActiveQ, *BI_MyContxts, BI_COMM_WORLD);
-		REprintf("  %s (a): %x %x.\n", __FILE__, BI_SysContxts,
+		REprintf("g  %s pt (a): %x %x %x.\n", __FILE__, BI_ReadyB,
+			BI_ActiveQ, BI_COMM_WORLD);
+		if(BI_MaxNCtxt > 0){
+			REprintf("g  %s dpt (a): %x %x %x.\n", __FILE__, BI_MyContxts,
+				*BI_MyContxts, **BI_MyContxts);
+			REprintf("g  %s dpt (a): %x.\n", __FILE__, 
+				BLACS_APTS.BI_MyContxts);
+		}
+		REprintf("g  %s dpt (a): %x %x.\n", __FILE__, BI_SysContxts,
 			BI_Stats);
 	}
 	#endif
