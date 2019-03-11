@@ -1,7 +1,7 @@
 # pbdBASE 
 
-* **Version:** 0.5-0
-* **License:** [License](https://www.mozilla.org/MPL/2.0/)
+* **Version:** 0.5-1
+* **License:** [MPL 2.0](https://www.mozilla.org/MPL/2.0/)
 * **Project home**: https://github.com/RBigData/pbdBASE
 * **Bug reports**: https://github.com/RBigData/pbdBASE/issues
 
@@ -24,7 +24,7 @@ Assuming you meet the system dependencies, you can install the stable version fr
 install.package("pbdBASE")
 ```
 
-The development version is maintained on GitHub, and can easily be installed by any of the packages that offer installations from GitHub:
+The development version is maintained on GitHub:
 
 ```r
 remotes::install_github("RBigData/pbdBASE")

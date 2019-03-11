@@ -30,6 +30,6 @@
 #' @docType package
 #' @author Drew Schmidt \email{wrathematics AT gmail.com}, Wei-Chen Chen, George
 #' Ostrouchov, and Pragneshkumar Patel.
-#' @references Programming with Big Data in R Website: \url{http://r-pbd.org/}
+#' @references Programming with Big Data in R Website: \url{https://pbdr.org/}
 #' @keywords Package
 NULL
