@@ -13,6 +13,7 @@
 #' @param ICTXT
 #' BLACS context.
 #'
+#' @useDynLib pbdBASE R_descinit
 #' @export
 base.descinit <- function(dim, bldim, ldim, ICTXT=0)
 {
@@ -36,7 +37,7 @@ base.descinit <- function(dim, bldim, ldim, ICTXT=0)
   if (any(base.blacs(ICTXT=ICTXT) == -1))
     desc[2L] <- -1L
   
-  return(desc)
+  desc
 }
 
 
@@ -59,7 +60,6 @@ base.descinit <- function(dim, bldim, ldim, ICTXT=0)
 #' @export
 base.numroc <- function(dim, bldim, ICTXT=0, fixme=TRUE)
 {
-  
   blacs_ <- base.blacs(ICTXT=ICTXT)
   
   MYP <- c(blacs_$MYROW, blacs_$MYCOL)
@@ -89,17 +89,17 @@ base.numroc <- function(dim, bldim, ICTXT=0, fixme=TRUE)
     if (any(ldim<1)) ldim <- c(1L, 1L) # FIXME
   }
 
-  return(ldim)
+  ldim
 }
 
 numroc <- base.numroc
 
 
+#' @useDynLib pbdBASE R_NUMROC
 NUMROC <- function(N, NB, IPROC, NPROCS)
 {
-   ret <- .Call(R_NUMROC, as.integer(N), as.integer(NB), as.integer(IPROC), as.integer(NPROCS))
-  
-  return( ret )
+  ret <- .Call(R_NUMROC, as.integer(N), as.integer(NB), as.integer(IPROC), as.integer(NPROCS))
+  ret
 }
 
 
@@ -175,6 +175,7 @@ base.ownany <- function(dim, bldim, ICTXT=0)
 #' @param desca
 #' ScaLAPACK descriptor array.
 #'
+#' @useDynLib pbdBASE R_PDLAPRNT
 #' @export
 base.rpdlaprnt <- function(m, n, a, desca)
 {
@@ -188,7 +189,7 @@ base.rpdlaprnt <- function(m, n, a, desca)
         6L #WCC: 0 for stderr, 6 for stdout. Both are disabled.
         )
   
-  return( invisible(0) )
+  invisible(0)
 }
 
 
@@ -209,7 +210,7 @@ base.maxdim <- function(dim)
   mdim[1] <- pbdMPI::allreduce(dim[1], op='max')
   mdim[2] <- pbdMPI::allreduce(dim[2], op='max')
   
-  return( mdim )
+  mdim
 }
 
 
@@ -243,9 +244,9 @@ base.dim0 <- function(dim, ICTXT=0)
 #  pbdMPI::barrier()
   
   if (MYROW==0 && MYCOL==0)
-    return( dim )
+    return(dim)
   else
-    return( c(mx01, mx02) )
+    return(c(mx01, mx02))
 }
 
 
@@ -265,6 +266,7 @@ base.dim0 <- function(dim, ICTXT=0)
 #' @param dim
 #' Ignored; will be removed in a future version.
 #'
+#' @useDynLib pbdBASE g2l_coords
 #' @name g2l_coord
 #' @rdname g2l_coord
 #' @export
@@ -288,7 +290,7 @@ base.g2l_coord <- function(ind, bldim, ICTXT=0, dim=NULL)
   # out will be a length 6 vector of NA when that global coord is not
   # relevant to the local storage
   
-  return(out)
+  out
 }
 
 #' @rdname g2l_coord
@@ -312,6 +314,7 @@ g2l_coord <- base.g2l_coord
 #' @param dim
 #' Ignored; will be removed in a future version.
 #'
+#' @useDynLib pbdBASE l2g_coords
 #' @name l2g_coord
 #' @rdname l2g_coord
 #' @export
@@ -322,8 +325,7 @@ base.l2g_coord <- function(ind, bldim, ICTXT=0, dim=NULL)
   myproc <- c(blacs_$MYROW, blacs_$MYCOL)
   
   out <- .Call(l2g_coords, ind=as.integer(ind), bldim=as.integer(bldim), procs=as.integer(procs), src=as.integer(myproc))
-  
-  return(out)
+  out
 }
 
 #' @rdname l2g_coord

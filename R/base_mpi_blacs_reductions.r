@@ -19,6 +19,7 @@
 #' @param CDEST
 #' Col destination.
 #' 
+#' @useDynLib pbdBASE R_igsum2d1
 #' @rdname blacs-sums
 #' @export
 base.igsum2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
@@ -33,9 +34,10 @@ base.igsum2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
                 as.integer(m), as.integer(n), x, as.integer(lda), 
                 as.integer(RDEST), as.integer(CDEST))
   
-  return( out )
+  out
 }
 
+#' @useDynLib pbdBASE R_dgsum2d1
 #' @rdname blacs-sums
 #' @export
 base.dgsum2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
@@ -50,7 +52,7 @@ base.dgsum2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
                 as.integer(m), as.integer(n), x, as.integer(lda), 
                 as.integer(RDEST), as.integer(CDEST))
   
-  return( out )
+  out
 }
 
 
@@ -76,6 +78,7 @@ base.dgsum2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 #' @param CDEST
 #' Col destination.
 #' 
+#' @useDynLib pbdBASE R_igamx2d1
 #' @rdname blacs-max
 #' @export
 base.igamx2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
@@ -90,9 +93,10 @@ base.igamx2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
                 as.integer(m), as.integer(n), x, as.integer(lda), 
                 as.integer(RDEST), as.integer(CDEST))
   
-  return( out )
+  out
 }
 
+#' @useDynLib pbdBASE R_dgamx2d1
 #' @rdname blacs-min
 #' @export
 base.dgamx2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
@@ -107,7 +111,7 @@ base.dgamx2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
                 as.integer(m), as.integer(n), x, as.integer(lda), 
                 as.integer(RDEST), as.integer(CDEST))
   
-  return( out )
+  out
 }
 
 
@@ -133,6 +137,7 @@ base.dgamx2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 #' @param CDEST
 #' Col destination.
 #' 
+#' @useDynLib pbdBASE R_igamn2d1
 #' @rdname blacs-min
 #' @export
 base.igamn2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
@@ -147,9 +152,10 @@ base.igamn2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
                 as.integer(m), as.integer(n), x, as.integer(lda), 
                 as.integer(RDEST), as.integer(CDEST))
   
-  return( out )
+  out
 }
 
+#' @useDynLib pbdBASE R_dgamn2d1
 #' @rdname blacs-min
 #' @export
 base.dgamn2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
@@ -164,7 +170,7 @@ base.dgamn2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
                 as.integer(m), as.integer(n), x, as.integer(lda), 
                 as.integer(RDEST), as.integer(CDEST))
   
-  return( out )
+  out
 }
 
 
@@ -189,6 +195,7 @@ base.dgamn2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 #' @param CDEST
 #' Col destination.
 #' 
+#' @useDynLib pbdBASE R_dgesd2d1
 #' @rdname blacs-p2p
 #' @export
 base.dgesd2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
@@ -202,9 +209,10 @@ base.dgesd2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
   out <- .Call(R_dgesd2d1, as.integer(ICTXT), as.integer(m), as.integer(n), 
                 x, as.integer(lda), as.integer(RDEST), as.integer(CDEST))
   
-  return( out )
+  out
 }
 
+#' @useDynLib pbdBASE R_dgerv2d1
 #' @rdname blacs-p2p
 #' @export
 base.dgerv2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
@@ -218,7 +226,5 @@ base.dgerv2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
   out <- .Call(R_dgerv2d1, as.integer(ICTXT), as.integer(m), as.integer(n), 
                 x, as.integer(lda), as.integer(RDEST), as.integer(CDEST))
   
-  return( out )
+  out
 }
-
-

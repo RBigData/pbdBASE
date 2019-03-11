@@ -10,6 +10,7 @@
 #' @param descx
 #' ScaLAPACK descriptor array.
 #' 
+#' @useDynLib pbdBASE R_PDCLVAR
 #' @export
 base.pdclvar <- function(x, descx)
 {
@@ -17,6 +18,5 @@ base.pdclvar <- function(x, descx)
     storage.mode(x) <- "double"
   
   ret <- .Call(R_PDCLVAR, x, as.integer(descx), as.integer(dim(x)[2L]))
-  
-  return( ret )
+  ret
 }

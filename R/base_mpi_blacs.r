@@ -7,6 +7,7 @@
 #' @param nprocs
 #' Number of processors.
 #' 
+#' @useDynLib pbdBASE R_optimal_grid
 #' @export
 base.procgrid <- function(nprocs)
 {
@@ -32,6 +33,7 @@ procgrid <- base.procgrid
 #' @param quiet
 #' Verbose initialization or not.
 #' 
+#' @useDynLib pbdBASE R_blacs_init
 #' @name gridinit
 #' @rdname gridinit
 #' @export
@@ -81,7 +83,7 @@ base.blacs_init <- function(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
   if (!exists(".__blacs_initialized", envir=.pbdBASEEnv))
     assign(x=".__blacs_initialized", value=TRUE, envir=.pbdBASEEnv)
   
-  invisible( 0 )
+  invisible(0)
 }
 
 #' @rdname gridinit
@@ -110,6 +112,7 @@ blacs_gridinit <- base.blacs_init
 #' 
 #' @return A blacs context number
 #' 
+#' @useDynLib pbdBASE R_blacs_gridinit
 #' @export
 base.blacs_gridinit <- function(SYSCTXT, NPROW, NPCOL, nprocs = pbdMPI::comm.size(comm), comm = .pbd_env$SPMD.CT$comm)
 {
@@ -151,15 +154,16 @@ set.comm.from.ICTXT <- function(ICTXT, comm)
 #' @export
 get.comm.from.ICTXT <- function(ICTXT)
 {
-  if(!exists("comm.ctxt.map", envir = .pbdBASEEnv))
+  if (!exists("comm.ctxt.map", envir = .pbdBASEEnv))
   {
     pbdMPI::comm.warning("No context seem to have been setup")
     return(NULL)
   }
   
   comm <- .pbdBASEEnv$comm.ctxt.map[[ICTXT + 1L]]
-  if(is.null(comm))
+  if (is.null(comm))
     pbdMPI::comm.warning(sprintf("Context: %i is not set", ICTXT))
+  
   comm
 }
 
@@ -281,15 +285,17 @@ init.grid <- function(NPROW, NPCOL, ICTXT, quiet = FALSE)
     base.blacs_init(ICTXT=2L, NPROW=NPROW*NPCOL, NPCOL=1, quiet=TRUE)
   }
   
-  invisible(0) # quiet return
+  invisible(0)
 }
 
 #' Context Within a Given Communicator
-#'
+#' 
 #' Creates a context that will be valid for a given communicator
 #' @param comm Communicator for which you want to set the BLACS context
 #' @return A system handle, i.e. the system context number. System contexts can be used to have ScalaPACK methods run in different communicators.
 #' @seealso base.free_blacs_system_handle, base.blacs_gridinit
+#' 
+#' @useDynLib pbdBASE R_sys2blacs_handle
 #' @export
 sys2blacs.handle <- function(comm)
 {
@@ -324,6 +330,7 @@ sys2blacs.handle <- function(comm)
 #' 
 #' @keywords BLACS
 #' 
+#' @useDynLib pbdBASE R_blacs_gridexit
 #' @name gridexit
 #' @rdname gridexit
 #' @export
@@ -339,16 +346,19 @@ base.gridexit <- function(ICTXT, override=FALSE)
 
   rm(list = paste(".__blacs_gridinfo_", ICTXT, sep=""), envir=.pbdBASEEnv)
 
-  return( invisible(0) )
+  invisible(0)
 }
 
 #' Free Blacs System Handle
+#' 
 #' @param SHANDLE A system handle. Obtained via a call to `sys2blacs.handle`
+#' 
+#' @useDynLib pbdBASE R_free_blacs_system_handle
 #' @export
 base.free_blacs_system_handle <- function(SHANDLE)
 {
   .Call("R_free_blacs_system_handle", as.integer(SHANDLE), PACKAGE = "pbdBASE")
-  return( invisible(0) )
+  invisible(0)
 }
 
 #' @rdname gridexit
@@ -392,14 +402,14 @@ gridexit <- base.gridexit
 #' 
 #' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 #' 
+#' @useDynLib pbdBASE R_blacs_exit
 #' @name blacsexit
 #' @rdname blacsexit
 #' @export
 base.blacsexit <- function(CONT=TRUE)
 {
   .Call("R_blacs_exit", as.integer(CONT), PACKAGE="pbdBASE")
-  
-  return( invisible(0) )
+  invisible(0)
 }
 
 #' @rdname blacsexit

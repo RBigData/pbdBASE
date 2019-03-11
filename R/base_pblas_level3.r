@@ -13,6 +13,7 @@
 #' @param desca,descc
 #' ScaLAPACK descriptor array.
 #' 
+#' @useDynLib pbdBASE R_PDTRAN
 #' @export
 base.rpdtran <- function(a, desca, descc)
 {
@@ -29,7 +30,7 @@ base.rpdtran <- function(a, desca, descc)
                 a, as.integer(desca),
                 as.integer(cldim), as.integer(descc))
   
-  return(ret)
+  ret
 }
 
 # ------------------------------------------------
@@ -49,6 +50,7 @@ base.rpdtran <- function(a, desca, descc)
 #' @param descx,descy,descc
 #' ScaLAPACK descriptor array.
 #' 
+#' @useDynLib pbdBASE R_PDGEMM
 #' @export
 base.rpdgemm <- function(transx, transy, x, descx, y, descy, descc)
 {

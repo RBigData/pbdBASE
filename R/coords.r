@@ -23,8 +23,7 @@
 indxg2l <- function(INDXGLOB, NB, IPROC, ISRCPROC, NPROCS)
 {
   indx <- NB*as.integer((INDXGLOB - 1L)/(NB*NPROCS)) + ((INDXGLOB - 1L)%%NB) + 1L
-  
-  return( indx )
+  indx
 }
 
 #' @name coords
@@ -37,7 +36,7 @@ indxl2g <- function(INDXLOC, NB, IPROC, ISRCPROC, NPROCS)
           ((NPROCS+IPROC-ISRCPROC)%%NPROCS)*NB + 
           1L
   
-  return( indx )
+  indx
 }
 
 
@@ -69,7 +68,7 @@ g2lpair <- function(gi, gj, bldim, ICTXT)
   i <- indxg2l(gi, bldim[1L], 0L, 0L, grid$NPROW)
   j <- indxg2l(gj, bldim[2L], 0L, 0L, grid$NPCOL)
   
-  return( c(i, j) )
+  c(i, j)
 }
 
 #' @name coordspair
@@ -82,7 +81,7 @@ l2gpair <- function(i, j, bldim, ICTXT)
   gi <- indxl2g(i, bldim[1L], grid$MYROW, 0L, grid$NPROW)
   gj <- indxl2g(j, bldim[2L], grid$MYCOL, 0L, grid$NPCOL)
   
-  return( c(gi, gj) )
+  c(gi, gj)
 }
 
 
@@ -105,12 +104,10 @@ l2gpair <- function(i, j, bldim, ICTXT)
 #' @export
 base.indxg2p <- function(INDXGLOB, NB, NPROCS)
 {
-    
-    ISRCPROC <- 0L
-    
-    ret <- (ISRCPROC + as.integer((INDXGLOB - 1L) / NB)) %% NPROCS
-    
-    return( ret )
+  ISRCPROC <- 0L
+  
+  ret <- (ISRCPROC + as.integer((INDXGLOB - 1L) / NB)) %% NPROCS
+  ret
 }
 
 
@@ -134,22 +131,22 @@ base.indxg2p <- function(INDXGLOB, NB, NPROCS)
 #' @export
 numroc2 <- function(N, NB, IPROC, NPROCS)
 {
-    ISRCPROC <- 0L
-    
-    MYDIST <- (NPROCS + IPROC - ISRCPROC) %% NPROCS
-    NBLOCKS <- as.integer(N / NB)
-    ldim <- as.integer(NBLOCKS / NPROCS) * NB
-    EXTRABLKS <- NBLOCKS %% NPROCS
-    
-    if (is.na(EXTRABLKS))
-        EXTRABLKS <- 0L
-    
-    if (MYDIST < EXTRABLKS)
-        ldim <- ldim + NB
-    else if (MYDIST == EXTRABLKS)
-        ldim <- ldim + N %% NB
-    
-    return(ldim)
+  ISRCPROC <- 0L
+  
+  MYDIST <- (NPROCS + IPROC - ISRCPROC) %% NPROCS
+  NBLOCKS <- as.integer(N / NB)
+  ldim <- as.integer(NBLOCKS / NPROCS) * NB
+  EXTRABLKS <- NBLOCKS %% NPROCS
+  
+  if (is.na(EXTRABLKS))
+    EXTRABLKS <- 0L
+  
+  if (MYDIST < EXTRABLKS)
+    ldim <- ldim + NB
+  else if (MYDIST == EXTRABLKS)
+    ldim <- ldim + N %% NB
+  
+  ldim
 }
 
 
@@ -202,7 +199,7 @@ base.pnum <- function(ICTXT, PROW, PCOL)
   NPCOL <- blacs_$NPCOL
   
   PNUM <- PROW * NPCOL + PCOL
-  return( PNUM )
+  PNUM
 }
 
 pnum <- base.pnum
@@ -219,7 +216,7 @@ base.pcoord <- function(ICTXT, PNUM)
   PROW <- as.integer(PNUM / nprows)
   PCOL <- PNUM %% nprows
   
-  return( list(PROW=PROW, PCOL=PCOL) )
+  list(PROW=PROW, PCOL=PCOL)
 }
 
 pcoord <- base.pcoord
@@ -245,6 +242,7 @@ pcoord <- base.pcoord
 #' \code{(gi, gj)}, the return is the local index.  Otherwise, \code{NA}
 #' is returned.
 #' 
+#' @useDynLib pbdBASE R_g2lcoord
 #' @export
 g2lcoord <- function(dim, bldim, gi, gj, gridinfo)
 {

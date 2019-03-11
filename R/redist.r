@@ -8,6 +8,7 @@
 #' @param A
 #' Matrix.
 #' 
+#' @useDynLib pbdBASE R_redist
 #' @export
 base.redist <- function(desc, A)
 {
