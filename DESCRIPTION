@@ -10,12 +10,12 @@ Description: An interface to and extensions for the 'PBLAS' and 'ScaLAPACK'
     package.
 License: Mozilla Public License 2.0
 Depends: 
-    R (>= 3.0.0),
+    R (>= 3.5.0),
     methods
 Imports:
     utils,
     pbdMPI (>= 0.3-8),
-    pbdSLAP(>= 0.2-4)
+    pbdSLAP(>= 0.2-5)
 SystemRequirements: OpenMPI (>= 1.5.4) on Solaris, Linux, Mac, and
         FreeBSD. MS-MPI (Microsoft HPC Pack 2012) or MPICH2 (>=
         1.4.1p1) on Windows.
