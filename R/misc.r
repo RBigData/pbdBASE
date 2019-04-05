@@ -18,6 +18,7 @@
 #' 
 #' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 1L)
 #' 
+#' @useDynLib pbdBASE R_nbd
 #' @export
 base.nbd <- function(n, d)
 {

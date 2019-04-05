@@ -1,35 +1,21 @@
-#################################################################
-
-### MPI+SLAP
 SPMD_CPPFLAGS = @SPMD_CPPFLAGS@
 SPMD_LDFLAGS = @SPMD_LDFLAGS@
 
 SLAP_LDFLAGS = @SLAP_LDFLAGS@
 
 
-### Package flags.
 PKG_CPPFLAGS = $(SPMD_CPPFLAGS) -I../inst/RNACI
-PKG_CFLAGS = $(SHLIB_OPENMP_CFLAGS) 
-PKG_FFLAGS = $(SHLIB_OPENMP_FFLAGS) 
-PKG_FCFLAGS = $(SHLIB_OPENMP_FCFLAGS) 
+PKG_LIBS = $(SLAP_LDFLAGS) $(FLIBS) $(SPMD_LDFLAGS)
 
-
-PKG_LIBS = $(SLAP_LDFLAGS) $(FLIBS) $(SPMD_LDFLAGS) \
-					 $(SHLIB_OPENMP_CFLAGS)
-
-
-### Setup R source code and objects.
 
 BASE_OBJS = \
 		base/bprnt.o \
 		base/bprnt_c.o
 
-
 EXPM_OBJS = \
 		base/expm/pade_coefs.o \
 		base/expm/matexp.o \
 		base/expm/p_matexp.o
-
 
 LINALG_OBJS = \
 		base/linalg/norms.o \
@@ -37,7 +23,6 @@ LINALG_OBJS = \
 		base/linalg/pinverse.o \
 		base/linalg/prblas.o \
 		base/linalg/plm.o
-
 
 MISC_OBJS = \
 		coords.o \
@@ -48,7 +33,6 @@ EXPORT_BLACS = @EXPORT_BLACS@
 
 STATS_OBJS = \
 		base/stats/variance.o
-
 
 UTILS = \
 		utils/fpmod.o \
@@ -65,8 +49,6 @@ EXPERIMENTAL = \
 		utils/subset_special.o \
 		utils/subset_utils.o
 
-
-
 UTILS_OBJS = \
 		base/utils/blacs_util.o \
 		base/utils/dmat_redist.o \
@@ -75,7 +57,6 @@ UTILS_OBJS = \
 		base/utils/redist.o \
 		base/utils/scale.o \
 		base/utils/special.o
-
 
 R_OBJS = \
 		base_lm.o \
@@ -96,7 +77,6 @@ R_OBJS = \
 		svd.o \
 		descinit.o \
     pbdBASE_native.o
-
 
 OBJECTS = $(BASE_OBJS) $(EXPM_OBJS) $(LINALG_OBJS) \
 					$(MISC_OBJS) $(EXPORT_BLACS) \

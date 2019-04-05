@@ -11,6 +11,7 @@
 #' @param b
 #' Power.
 #' 
+#' @useDynLib pbdBASE R_p_matpow_by_squaring
 #' @export
 base.p_matpow_by_squaring_wrap <- function(A, desca, b=1)
 {
@@ -21,8 +22,7 @@ base.p_matpow_by_squaring_wrap <- function(A, desca, b=1)
     storage.mode(A) <- "double"
   
   ret <- .Call(R_p_matpow_by_squaring, A, desca, b)
-  
-  return( ret )
+  ret
 }
 
 
@@ -40,6 +40,7 @@ base.p_matpow_by_squaring_wrap <- function(A, desca, b=1)
 #' @param p
 #' Order of the Pade' approximation.
 #' 
+#' @useDynLib pbdBASE R_p_matexp_pade
 #' @export
 base.p_matexp_pade_wrap <- function(A, desca, p=6)
 {
@@ -49,7 +50,5 @@ base.p_matexp_pade_wrap <- function(A, desca, p=6)
     storage.mode(A) <- "double"
   
   ret <- .Call(R_p_matexp_pade, A, desca, as.integer(p))
-  
-  return( ret )
+  ret
 }
-

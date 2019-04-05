@@ -15,6 +15,7 @@
 #' @param comm
 #' An MPI (not BLACS) communicator.
 #' 
+#' @useDynLib pbdBASE R_PDGEQPF
 #' @export
 base.rpdgeqpf <- function(tol, m, n, x, descx, comm = .pbd_env$SPMD.CT$comm)
 {
@@ -54,6 +55,7 @@ base.rpdgeqpf <- function(tol, m, n, x, descx, comm = .pbd_env$SPMD.CT$comm)
 #' @param tau
 #' Elementary reflectors.
 #' 
+#' @useDynLib pbdBASE R_PDORGQR
 #' @export
 base.rpdorgqr <- function(m, n, k, qr, descqr, tau)
 {
@@ -102,6 +104,7 @@ base.rpdorgqr <- function(m, n, k, qr, descqr, tau)
 #' @param descc
 #' ScaLAPACK descriptor array.
 #' 
+#' @useDynLib pbdBASE R_PDORMQR
 #' @export
 base.rpdormqr <- function(side, trans, m, n, k, qr, descqr, tau, c, descc)
 {
@@ -153,6 +156,7 @@ base.rpdormqr <- function(side, trans, m, n, k, qr, descqr, tau, c, descc)
 #' @param descx
 #' ScaLAPACK descriptor array.
 #' 
+#' @useDynLib pbdBASE R_PDGELQF
 #' @export
 base.rpdgelqf <- function(m, n, x, descx)
 {
@@ -186,6 +190,7 @@ base.rpdgelqf <- function(m, n, x, descx)
 #' @param tau
 #' Elementary reflectors.
 #' 
+#' @useDynLib pbdBASE R_PDORGLQ
 #' @export
 base.rpdorglq <- function(m, n, k, lq, desc, tau)
 {
