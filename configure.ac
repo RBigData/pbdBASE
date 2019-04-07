@@ -35,8 +35,8 @@ fi
 
 
 # pbdSLAP
-EXT_LDFLAGS=`${R_SCMD} "source('./R/get_conf.r');get.conf('EXT_LDFLAGS','"${R_ARCH}"','pbdSLAP')"`
-R_SLAP=`${R_SCMD} "source('./R/get_lib.r');get.lib('R_SLAP','"${R_ARCH}"')"`
+EXT_LDFLAGS=`${R_SCMD} "pbdMPI::get.conf('EXT_LDFLAGS','"${R_ARCH}"','pbdSLAP')"`
+R_SLAP=`${R_SCMD} "pbdMPI::get.lib('R_SLAP','"${R_ARCH}"','pbdSLAP')"`
 if test -f "$R_SLAP"; then
   SLAP_LDFLAGS="$R_SLAP \$(LAPACK_LIBS) \$(BLAS_LIBS)"
 else
@@ -45,8 +45,8 @@ fi
 
 
 # pbdMPI
-SPMD_CPPFLAGS=`${R_SCMD} "source('./R/get_conf.r');get.conf('PKG_CPPFLAGS','"${R_ARCH}"')"`
-SPMD_LDFLAGS=`${R_SCMD} "source('./R/get_conf.r');get.conf('PKG_LIBS','"${R_ARCH}"')"`
+SPMD_CPPFLAGS=`${R_SCMD} "pbdMPI::get.conf('PKG_CPPFLAGS','"${R_ARCH}"','pbdMPI')"`
+SPMD_LDFLAGS=`${R_SCMD} "pbdMPI::get.conf('PKG_LIBS','"${R_ARCH}"','pbdMPI')"`
 
 
 # Report

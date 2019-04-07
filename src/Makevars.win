@@ -3,15 +3,15 @@ R_SCMD = ${R_HOME}/bin${R_ARCH_BIN}/Rscript -e
 
 ### Get ScaLAPACK information from "pbdSLAP".
 SLAP_LDFLAGS = $(shell ${R_SCMD} \
-  "source('../R/get_lib.r');get.lib('R_SLAP','"${R_ARCH}"')")
+  "library(pbdMPI);get.lib('R_SLAP','"${R_ARCH}"','pbdSLAP')")
 
 ### Get MPI information from "pbdMPI". Note that Windows uses different FLAGS.
 MPI_ROOT = $(shell ${R_SCMD} \
-  "source('../R/get_conf.r');get.conf('MPI_ROOT','"${R_ARCH}"')")
+  "library(pbdMPI);get.conf('MPI_ROOT','"${R_ARCH}"','pbdMPI')")
 MPI_INCLUDE = $(shell ${R_SCMD} \
-  "source('../R/get_conf.r');get.conf('MPI_INCLUDE','"${R_ARCH}"')")
+  "library(pbdMPI);get.conf('MPI_INCLUDE','"${R_ARCH}"','pbdMPI')")
 MPI_LIB = $(shell ${R_SCMD} \
-  "source('../R/get_conf.r');get.conf('MPI_LIB','"${R_ARCH}"')")
+  "library(pbdMPI);get.conf('MPI_LIB','"${R_ARCH}"','pbdMPI')")
 
 ### Setup R package flags and substitute by configure for ${MPI_...}.
 PKG_CPPFLAGS = -I"$(MPI_INCLUDE)"  -I../inst/RNACI
