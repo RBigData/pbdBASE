@@ -7,19 +7,6 @@
 #include "pbdBASE.h"
 
 
-SEXP R_NUMROC(SEXP N, SEXP NB, SEXP IPROC, SEXP NPROCS)
-{
-  R_INIT;
-  SEXP NUM;
-  newRvec(NUM, 1, "int");
-  
-  numrocwrap_(INTP(N), INTP(NB), INTP(IPROC), INTP(NPROCS), INTP(NUM));
-  
-  R_END;
-  return NUM;
-}
-
-
 // -------------------------------------------------------- 
 // Linear equations 
 // -------------------------------------------------------- 

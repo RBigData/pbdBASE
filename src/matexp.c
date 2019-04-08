@@ -8,6 +8,31 @@
 #include "base/expm/matexp.h"
 
 
+SEXP R_matexp(SEXP A, SEXP p, SEXP t_)
+{
+  R_INIT;
+  const int n = nrows(A);
+  int i;
+  double *A_cp;
+  SEXP R;
+  const double t = DBL(t_);
+  
+  newRmat(R, n, n, "dbl");
+  
+  A_cp = (double *) R_alloc(n*n, sizeof(A_cp));
+  
+  for (i=0; i<n*n; i++)
+    A_cp[i] = t * REAL(A)[i];
+  
+  
+  matexp(n, INT(p), A_cp, REAL(R));
+  
+  R_END;
+  return R;
+}
+
+
+
 SEXP R_p_matpow_by_squaring(SEXP A, SEXP desca, SEXP b)
 {
   R_INIT;
@@ -16,7 +41,6 @@ SEXP R_p_matpow_by_squaring(SEXP A, SEXP desca, SEXP b)
   
   SEXP P;
   newRmat(P, nrows(A), ncols(A), "dbl");
-  
   
   // Why did I make a copy ... ? // Oh now I remember
   //FIXME check returns...
@@ -33,7 +57,6 @@ SEXP R_p_matpow_by_squaring(SEXP A, SEXP desca, SEXP b)
 
 
 
-
 SEXP R_p_matexp_pade(SEXP A, SEXP desca, SEXP p)
 {
   R_INIT;
@@ -44,15 +67,12 @@ SEXP R_p_matexp_pade(SEXP A, SEXP desca, SEXP p)
   m = nrows(A);
   n = ncols(A);
   
-  
   // Allocate N and D
   newRmat(N, m, n, "dbl");
   newRmat(D, m, n, "dbl");
   
-  
   // Compute N and D
   p_matexp_pade(DBLP(A), INTP(desca), INT(p, 0), DBLP(N), DBLP(D));
-  
   
   // Wrangle the return
   make_list_names(RET_NAMES, 2, "N", "D");

@@ -2,9 +2,40 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// Copyright 2013-2014, Schmidt and Chen
+// Copyright 2015, Schmidt
 
 #include "pbdBASE.h"
+
+
+SEXP R_descinit(SEXP DIM, SEXP BLDIM, SEXP ICTXT, SEXP LLD)
+{
+  R_INIT;
+  int row_col_src = 0;
+  int info = 0;
+  SEXP desc;
+  newRvec(desc, 9, "int");
+  
+  descinit_(INTP(desc), INTP(DIM), INTP(DIM)+1, INTP(BLDIM), INTP(BLDIM)+1, 
+    &row_col_src, &row_col_src, INTP(ICTXT), INTP(LLD), &info);
+  
+  R_END;
+  return desc;
+}
+
+
+
+SEXP R_NUMROC(SEXP N, SEXP NB, SEXP IPROC, SEXP NPROCS)
+{
+  R_INIT;
+  SEXP NUM;
+  newRvec(NUM, 1, "int");
+  
+  numrocwrap_(INTP(N), INTP(NB), INTP(IPROC), INTP(NPROCS), INTP(NUM));
+  
+  R_END;
+  return NUM;
+}
+
 
 
 static void l2g_coord(int* ret, int i, int j, int* bldim, int* procs, int* myproc)
