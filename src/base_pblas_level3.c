@@ -4,6 +4,9 @@
 
 // Copyright 2013, Schmidt and Chen
 
+#include <RNACI.h>
+
+#include "pblas.h"
 #include "pbdBASE.h"
 
 
@@ -52,4 +55,3 @@ SEXP R_PDGEMM(SEXP TRANSA, SEXP TRANSB, SEXP M, SEXP N, SEXP K,
   R_END;
   return C;
 }
-

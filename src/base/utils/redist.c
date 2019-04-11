@@ -4,7 +4,7 @@
 
 // Copyright 2016, Schmidt
 
-#include "../../scalapack.h"
+#include "../../blacs.h"
 
 void dmat_ldimget(int *desc, int* nrows, int* ncols)
 {

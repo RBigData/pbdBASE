@@ -4,6 +4,7 @@
 
 // Copyright 2013-2016 Schmidt
 
+#include <RNACI.h>
 #include "pbdBASE.h"
 #include "base/expm/matexp.h"
 

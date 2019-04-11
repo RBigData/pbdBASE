@@ -4,6 +4,9 @@
 
 // Copyright 2013, Schmidt
 
+#include <string.h>
+
+#include "base/linalg/linalg.h"
 #include "pbdBASE.h"
 
 
@@ -124,4 +127,3 @@ SEXP R_PDMVSUM(SEXP X, SEXP LDIM, SEXP DESCX, SEXP Y, SEXP DESCY)
   UNPROTECT(1);
   return CPX;
 }
-

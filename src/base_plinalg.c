@@ -4,6 +4,9 @@
 
 // Copyright 2013, Schmidt
 
+#include <RNACI.h>
+
+#include "base/linalg/linalg.h"
 #include "pbdBASE.h"
 
 
@@ -51,4 +54,3 @@ SEXP R_PDCHTRI(SEXP UPLO, SEXP A, SEXP ALDIM, SEXP DESCA, SEXP CLDIM, SEXP DESCC
   UNPROTECT(1);
   return(C);
 }
-

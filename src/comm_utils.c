@@ -4,59 +4,27 @@
 
 // Copyright 2014, 2016 Schmidt
 
+#include <mpi.h>
+
 #include "pbdBASE.h"
 
 
-SEXP COMM_STOP(char *msg)
+void comm_stop(char *msg)
 {
-  SEXP mpiPackage, fun_install, expr;
-  SEXP Rmsg;
-  SEXP ret;
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   
-  PROTECT(Rmsg = allocVector(STRSXP, 1));
-  SET_STRING_ELT(Rmsg, 0, mkChar(msg));
-  
-  PROTECT(mpiPackage = evalfun_stringarg("getNamespace", "pbdMPI"));
-  PROTECT(fun_install = install("comm.stop"));
-  PROTECT(expr = lang2(fun_install, Rmsg));
-  ret = eval(expr, mpiPackage);
-  
-  UNPROTECT(4);
-  return ret;
+  if (rank == 0)
+    error(msg);
 }
 
 
 
-SEXP COMM_WARNING(char *msg)
+void comm_warning(char *msg)
 {
-  SEXP mpiPackage, fun_install, expr;
-  SEXP Rmsg;
-  SEXP ret;
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   
-  PROTECT(Rmsg = allocVector(STRSXP, 1));
-  SET_STRING_ELT(Rmsg, 0, mkChar(msg));
-  
-  PROTECT(mpiPackage = evalfun_stringarg("getNamespace", "pbdMPI"));
-  PROTECT(fun_install = install("comm.warning"));
-  PROTECT(expr = lang2(fun_install, Rmsg));
-  ret = eval(expr, mpiPackage);
-  
-  UNPROTECT(4);
-  return ret;
-}
-
-
-
-SEXP COMM_PRINT(SEXP x)
-{
-  SEXP mpiPackage, fun_install, expr;
-  SEXP ret;
-  
-  PROTECT(mpiPackage = evalfun_stringarg("getNamespace", "pbdMPI"));
-  PROTECT(fun_install = install("comm.print"));
-  PROTECT(expr = lang2(fun_install, x));
-  ret = eval(expr, mpiPackage);
-  
-  UNPROTECT(3);
-  return ret;
+  if (rank == 0)
+    warning(msg);
 }

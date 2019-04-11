@@ -4,7 +4,11 @@
 
 // Copyright 2013, Schmidt
 
+#include <RNACI.h>
+
+#include "blacs.h"
 #include "pbdBASE.h"
+#include "scalapack.h"
 
 
 SEXP R_PDLAPRNT(SEXP M, SEXP N, SEXP A, SEXP DESCA, SEXP CMATNM, SEXP NOUT)

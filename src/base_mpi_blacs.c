@@ -4,7 +4,11 @@
 
 // Copyright 2012-2015, Schmidt
 
+#include <RNACI.h>
+
+#include "base/utils/utils.h"
 #include "pbdBASE.h"
+
 
 // From pbdMPI pkg_global.h and pkg_tools.c
 #define MPI_APTS_R_NAME		".__MPI_APTS__"

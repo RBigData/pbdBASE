@@ -4,7 +4,10 @@
 
 // Copyright 2013, Schmidt
 
+#include <RNACI.h>
+
 #include "pbdBASE.h"
+#include "blacs.h"
 
 
 /* Reductions */
@@ -161,5 +164,3 @@ SEXP R_dgerv2d1(SEXP ICTXT, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP C
   UNPROTECT(1);
   return(OUT);
 }
-
-

@@ -4,7 +4,11 @@
 
 // Copyright 2015, Schmidt
 
+#include <RNACI.h>
+
+#include "base/utils/utils.h"
 #include "pbdBASE.h"
+#include "scalapack.h"
 
 
 SEXP R_descinit(SEXP DIM, SEXP BLDIM, SEXP ICTXT, SEXP LLD)

@@ -4,7 +4,12 @@
 
 // Copyright 2013-2015, Schmidt and Chen
 
+#include <RNACI.h>
+
+#include "base/linalg/linalg.h"
+#include "base/utils/utils.h"
 #include "pbdBASE.h"
+#include "scalapack.h"
 
 
 // -------------------------------------------------------- 

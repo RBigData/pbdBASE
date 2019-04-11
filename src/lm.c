@@ -4,7 +4,11 @@
 
 // Copyright 2013, Schmidt
 
+#include <RNACI.h>
+
+#include "base/linalg/linalg.h"
 #include "pbdBASE.h"
+#include "scalapack.h"
 
 
 /* For computing LLS solution, either over or    under-determined. */

@@ -30,8 +30,11 @@
 //   * If needed, U = Q * U_R
 // For m<n we can use LQ, but this is not yet complete.
 
-#include "pbdBASE.h"
+#include <RNACI.h>
 #include <stdint.h>
+
+#include "pbdBASE.h"
+#include "scalapack.h"
 
 
 typedef int32_t len_t;

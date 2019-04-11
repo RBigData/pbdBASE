@@ -5,9 +5,6 @@
 #include <R_ext/Rdynload.h>
 #include <stdlib.h>
 
-extern SEXP COMM_PRINT(SEXP x);
-extern SEXP COMM_STOP(char *msg);
-extern SEXP COMM_WARNING(char *msg);
 extern SEXP R_DALLREDUCE(SEXP X, SEXP LDIM, SEXP DESCX, SEXP OP, SEXP SCOPE);
 extern SEXP R_DHILBMK(SEXP N);
 extern SEXP R_MKGBLMAT(SEXP SUBX, SEXP DESCX, SEXP RDEST, SEXP CDEST);
@@ -77,9 +74,6 @@ extern SEXP l2g_coords(SEXP ind, SEXP bldim, SEXP procs, SEXP myproc);
 
 
 static const R_CallMethodDef CallEntries[] = {
-  {"COMM_PRINT", (DL_FUNC) &COMM_PRINT, 1},
-  {"COMM_STOP", (DL_FUNC) &COMM_STOP, 0},
-  {"COMM_WARNING", (DL_FUNC) &COMM_WARNING, 0},
   {"R_DALLREDUCE", (DL_FUNC) &R_DALLREDUCE, 5},
   {"R_DHILBMK", (DL_FUNC) &R_DHILBMK, 1},
   {"R_MKGBLMAT", (DL_FUNC) &R_MKGBLMAT, 4},
