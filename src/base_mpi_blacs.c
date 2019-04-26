@@ -4,6 +4,7 @@
 
 // Copyright 2012-2015, Schmidt
 
+#include <mpi.h>
 #include <RNACI.h>
 
 #include "base/utils/utils.h"

@@ -2,7 +2,6 @@
 #define __PBDBASE_PACKAGE__
 
 
-#include <mpi.h>
 #include <Rinternals.h>
 
 #define CHARPT(x,i)	((char*)CHAR(STRING_ELT(x,i)))
