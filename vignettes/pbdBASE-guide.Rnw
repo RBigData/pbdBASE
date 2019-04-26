@@ -9,7 +9,7 @@
 
 \mytitle{Guide to the\\ \thispackage Package}
 \mysubtitle{ScaLAPACK Wrappers and Helpers}
-\myversion{0.5-0}
+\myversion{0.5-1}
 \myauthor{
 \centering
 Drew Schmidt \\
