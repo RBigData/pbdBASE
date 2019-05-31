@@ -4,9 +4,13 @@
 
 // Copyright 2014, 2016 Schmidt
 
-#include <mpi.h>
+#include <stdint.h>
+#if (defined(__MINGW32__) || defined(__MINGW64__))
+  #include <_mingw.h>
+#endif
 
-#include "pbdBASE.h"
+#include <mpi.h>
+#include <Rinternals.h>
 
 
 void comm_stop(char *msg)

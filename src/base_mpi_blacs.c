@@ -3,6 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // Copyright 2012-2015, Schmidt
+#if (defined(__MINGW32__) || defined(__MINGW64__))
+  #include <_mingw.h>
+#endif
 
 #include <mpi.h>
 #include <RNACI.h>
