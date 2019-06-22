@@ -2,7 +2,7 @@
 % Please edit documentation in R/base_scalapack.r
 \name{base.det}
 \alias{base.det}
-\title{rdet}
+\title{det}
 \usage{
 base.det(a, desca)
 }

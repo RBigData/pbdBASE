@@ -452,7 +452,7 @@ base.rpdgecon <- function(norm, m, n, a, desca)
 
 
 
-#' rdet
+#' det
 #' 
 #' Determinant.
 #' 
