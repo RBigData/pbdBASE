@@ -437,8 +437,17 @@ static inline int det(double *const restrict a, const int *const restrict desca,
   
   if (info != 0)
   {
-    free(ipiv);
-    return -1.0;
+    if (info > 0)
+    {
+      *sign = 1;
+      *modulus = R_NegInf;
+      return 0;
+    }
+    else
+    {
+      free(ipiv);
+      return info;
+    }
   }
   
   
