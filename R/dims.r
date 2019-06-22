@@ -25,7 +25,7 @@ base.descinit <- function(dim, bldim, ldim, ICTXT=0)
 ###  desc[6L] <- max(1, bldim[2L])     # NB_A
 ###  desc[7L] <- 0L                    # RSRC_A
 ###  desc[8L] <- 0L                    # CSRC_A
-####  desc[9L] <- max(1L, ldim[1L])     # LLD_A
+###  desc[9L] <- max(1L, ldim[1L])     # LLD_A
 ###  desc[9L] <- max(ldim[1L], max(1L, NUMROC(dim[1L], bldim[1L], grid$MYROW, grid$NPROW)))
   grid <- base.blacs(ICTXT=ICTXT)
   lld <- NUMROC(dim[1L], bldim[1L], grid$MYROW, grid$NPROW)
@@ -95,6 +95,7 @@ base.numroc <- function(dim, bldim, ICTXT=0, fixme=TRUE)
 numroc <- base.numroc
 
 
+
 #' @useDynLib pbdBASE R_NUMROC
 NUMROC <- function(N, NB, IPROC, NPROCS)
 {
@@ -158,38 +159,6 @@ base.ownany <- function(dim, bldim, ICTXT=0)
     return(FALSE)
   else
     return(TRUE)
-}
-
-
-
-#' rpdlaprnt
-#'
-#' Matrix printer.
-#'
-#' For advanced users only.
-#'
-#' @param m,n
-#' Number rows/cols.
-#' @param a
-#' Matrix.
-#' @param desca
-#' ScaLAPACK descriptor array.
-#'
-#' @useDynLib pbdBASE R_PDLAPRNT
-#' @export
-base.rpdlaprnt <- function(m, n, a, desca)
-{
-  if (!is.double(a))
-    storage.mode(a) <- "double"
-  
-  .Call(R_PDLAPRNT,
-        as.integer(m), as.integer(n),
-        a, as.integer(desca),
-        as.character(deparse(substitute(a))),
-        6L #WCC: 0 for stderr, 6 for stdout. Both are disabled.
-        )
-  
-  invisible(0)
 }
 
 

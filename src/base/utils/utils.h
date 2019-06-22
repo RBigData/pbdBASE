@@ -17,8 +17,8 @@ void mkgblmat_(double *gbls, double *subx, int *descx, int *rdest, int *cdest);
 
 // indices.f90
 void numrocwrap_(int *n, int *nb, int *iproc, int *nprocs, int *num);
-void pdims_(int *desc, int *ldm, int *blacs);
-void l2gpair_(int *i, int *j, int *gi, int *gj, int *desc, int *blacs);
+void pdims_(const int *const restrict desc, int *const restrict ldm, int *const restrict blacs);
+void l2gpair_(const int *const restrict i, const int *const restrict j, int *const restrict gi, int *const restrict gj, const int *const restrict desc, const int *const restrict blacs);
 void g2lpair_(int *i, int *j, int *gi, int *gj, int *desc, int *blacs);
 
 

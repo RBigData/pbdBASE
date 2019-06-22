@@ -4,6 +4,9 @@
 
 // Copyright 2016, Schmidt
 
+#include <RNACI.h>
+
+#include "blacs.h"
 #include "pbdBASE.h"
 
 

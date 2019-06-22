@@ -4,6 +4,7 @@
 
 // Copyright 2015, Schmidt
 
+#include <RNACI.h>
 #include "pbdBASE.h"
 
 
@@ -96,4 +97,3 @@ SEXP R_g2lcoord(SEXP dim, SEXP bldim, SEXP gi, SEXP gj, SEXP gridinfo)
   R_END;
   return ret;
 }
-

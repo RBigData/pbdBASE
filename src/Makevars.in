@@ -59,24 +59,22 @@ UTILS_OBJS = \
 		base/utils/special.o
 
 R_OBJS = \
-		base_lm.o \
-		base_matexp.o \
 		base_mpi_blacs.o \
 		base_mpi_blacs_reductions.o \
 		base_pblas_level3.o \
 		base_plinalg.o \
-		base_p_matexp.o \
 		base_prblas.o \
 		base_putil.o \
-		base_qr.o \
 		base_scalapack.o \
-		base_scalapack_utility.o \
 		base_variance.o \
+		dims.o \
+		lm.o \
+		matexp.o \
+		pbdBASE_native.o \
+		qr.o \
 		redist.o \
-		other.o \
 		svd.o \
-		descinit.o \
-    pbdBASE_native.o
+		utility.o
 
 OBJECTS = $(BASE_OBJS) $(EXPM_OBJS) $(LINALG_OBJS) \
 					$(MISC_OBJS) $(EXPORT_BLACS) \

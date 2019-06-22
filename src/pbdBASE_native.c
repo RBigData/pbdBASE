@@ -5,9 +5,6 @@
 #include <R_ext/Rdynload.h>
 #include <stdlib.h>
 
-extern SEXP COMM_PRINT(SEXP x);
-extern SEXP COMM_STOP(char *msg);
-extern SEXP COMM_WARNING(char *msg);
 extern SEXP R_DALLREDUCE(SEXP X, SEXP LDIM, SEXP DESCX, SEXP OP, SEXP SCOPE);
 extern SEXP R_DHILBMK(SEXP N);
 extern SEXP R_MKGBLMAT(SEXP SUBX, SEXP DESCX, SEXP RDEST, SEXP CDEST);
@@ -51,17 +48,17 @@ extern SEXP R_RL2INSERT(SEXP X, SEXP LDIM, SEXP DESCX, SEXP VEC, SEXP LVEC, SEXP
 extern SEXP R_RROWCPY(SEXP X, SEXP LDIM, SEXP DESCX, SEXP XROW, SEXP Y, SEXP DESCY, SEXP YROW, SEXP LROWS);
 extern SEXP R_RROWCPY2(SEXP X, SEXP LDIM, SEXP DESCX, SEXP XROW, SEXP LXROWS, SEXP Y, SEXP DESCY, SEXP YROW, SEXP LYROWS);
 extern SEXP R_blacs_exit(SEXP CONT);
-extern SEXP R_blacs_init(SEXP NPROW_in, SEXP NPCOL_in, SEXP ICTXT_in);
-extern SEXP R_blacs_gridinit(SEXP NPROW_in, SEXP NCOL_in, SEXP SHANDLE);
-extern SEXP R_free_blacs_system_handle(SEXP SHANDLE);
 extern SEXP R_blacs_gridexit(SEXP CONT);
-extern SEXP R_sys2blacs_handle(SEXP COMM);
+extern SEXP R_blacs_gridinit(SEXP NPROW_in, SEXP NPCOL_in, SEXP SHANDLE);
+extern SEXP R_blacs_init(SEXP NPROW_in, SEXP NPCOL_in, SEXP ICTXT_in);
 extern SEXP R_descinit(SEXP DIM, SEXP BLDIM, SEXP ICTXT, SEXP LLD);
+extern SEXP R_det(SEXP A, SEXP DESCA);
 extern SEXP R_dgamn2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST);
 extern SEXP R_dgamx2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST);
 extern SEXP R_dgerv2d1(SEXP ICTXT, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST);
 extern SEXP R_dgesd2d1(SEXP ICTXT, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST);
 extern SEXP R_dgsum2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST);
+extern SEXP R_free_blacs_system_handle(SEXP SHANDLE);
 extern SEXP R_g2lcoord(SEXP dim, SEXP bldim, SEXP gi, SEXP gj, SEXP gridinfo);
 extern SEXP R_igamn2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST);
 extern SEXP R_igamx2d1(SEXP ICTXT, SEXP SCOPE, SEXP M, SEXP N, SEXP A, SEXP LDA, SEXP RDEST, SEXP CDEST);
@@ -72,14 +69,11 @@ extern SEXP R_optimal_grid(SEXP NPROCS);
 extern SEXP R_p_matexp_pade(SEXP A, SEXP desca, SEXP p);
 extern SEXP R_p_matpow_by_squaring(SEXP A, SEXP desca, SEXP b);
 extern SEXP R_redist(SEXP desc, SEXP A);
+extern SEXP R_sys2blacs_handle(SEXP COMM);
 extern SEXP g2l_coords(SEXP ind, SEXP bldim, SEXP procs, SEXP src);
 extern SEXP l2g_coords(SEXP ind, SEXP bldim, SEXP procs, SEXP myproc);
 
-
 static const R_CallMethodDef CallEntries[] = {
-  {"COMM_PRINT", (DL_FUNC) &COMM_PRINT, 1},
-  {"COMM_STOP", (DL_FUNC) &COMM_STOP, 0},
-  {"COMM_WARNING", (DL_FUNC) &COMM_WARNING, 0},
   {"R_DALLREDUCE", (DL_FUNC) &R_DALLREDUCE, 5},
   {"R_DHILBMK", (DL_FUNC) &R_DHILBMK, 1},
   {"R_MKGBLMAT", (DL_FUNC) &R_MKGBLMAT, 4},
@@ -123,17 +117,17 @@ static const R_CallMethodDef CallEntries[] = {
   {"R_RROWCPY", (DL_FUNC) &R_RROWCPY, 8},
   {"R_RROWCPY2", (DL_FUNC) &R_RROWCPY2, 9},
   {"R_blacs_exit", (DL_FUNC) &R_blacs_exit, 1},
-  {"R_blacs_init", (DL_FUNC) &R_blacs_init, 3},
-  {"R_blacs_gridinit", (DL_FUNC) &R_blacs_gridinit, 3},
   {"R_blacs_gridexit", (DL_FUNC) &R_blacs_gridexit, 1},
-  {"R_free_blacs_system_handle", (DL_FUNC) &R_free_blacs_system_handle, 1},
-  {"R_sys2blacs_handle", (DL_FUNC) &R_sys2blacs_handle, 1},
+  {"R_blacs_gridinit", (DL_FUNC) &R_blacs_gridinit, 3},
+  {"R_blacs_init", (DL_FUNC) &R_blacs_init, 3},
   {"R_descinit", (DL_FUNC) &R_descinit, 4},
+  {"R_det", (DL_FUNC) &R_det, 2},
   {"R_dgamn2d1", (DL_FUNC) &R_dgamn2d1, 8},
   {"R_dgamx2d1", (DL_FUNC) &R_dgamx2d1, 8},
   {"R_dgerv2d1", (DL_FUNC) &R_dgerv2d1, 7},
   {"R_dgesd2d1", (DL_FUNC) &R_dgesd2d1, 7},
   {"R_dgsum2d1", (DL_FUNC) &R_dgsum2d1, 8},
+  {"R_free_blacs_system_handle", (DL_FUNC) &R_free_blacs_system_handle, 1},
   {"R_g2lcoord", (DL_FUNC) &R_g2lcoord, 5},
   {"R_igamn2d1", (DL_FUNC) &R_igamn2d1, 8},
   {"R_igamx2d1", (DL_FUNC) &R_igamx2d1, 8},
@@ -144,6 +138,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"R_p_matexp_pade", (DL_FUNC) &R_p_matexp_pade, 3},
   {"R_p_matpow_by_squaring", (DL_FUNC) &R_p_matpow_by_squaring, 3},
   {"R_redist", (DL_FUNC) &R_redist, 2},
+  {"R_sys2blacs_handle", (DL_FUNC) &R_sys2blacs_handle, 1},
   {"g2l_coords", (DL_FUNC) &g2l_coords, 4},
   {"l2g_coords", (DL_FUNC) &l2g_coords, 4},
   {NULL, NULL, 0}

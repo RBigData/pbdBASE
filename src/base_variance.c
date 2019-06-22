@@ -4,7 +4,10 @@
 
 // Copyright 2013, Schmidt
 
+#include <RNACI.h>
+
 #include "pbdBASE.h"
+#include "base/stats/stats.h"
 
 
 SEXP R_PDCLVAR(SEXP X, SEXP DESCX, SEXP LSD)

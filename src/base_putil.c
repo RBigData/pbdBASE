@@ -4,6 +4,10 @@
 
 // Copyright 2013, 2016 Schmidt
 
+#include <string.h>
+
+#include "base/linalg/linalg.h"
+#include "base/utils/utils.h"
 #include "pbdBASE.h"
 
 
@@ -36,7 +40,8 @@ SEXP R_MKGBLMAT(SEXP SUBX, SEXP DESCX, SEXP RDEST, SEXP CDEST)
 
 SEXP R_DALLREDUCE(SEXP X, SEXP LDIM, SEXP DESCX, SEXP OP, SEXP SCOPE)
 {
-  const int m = INTEGER(DESCX)[2], n = INTEGER(DESCX)[3];
+  const int m = INTEGER(DESCX)[2];
+  const int n = INTEGER(DESCX)[3];
   
   SEXP CPX;
   PROTECT(CPX = allocMatrix(REALSXP, INTEGER(LDIM)[0], INTEGER(LDIM)[1]));
@@ -53,7 +58,8 @@ SEXP R_DALLREDUCE(SEXP X, SEXP LDIM, SEXP DESCX, SEXP OP, SEXP SCOPE)
 
 SEXP R_PTRI2ZERO(SEXP UPLO, SEXP DIAG, SEXP X, SEXP LDIM, SEXP DESCX)
 {
-  const int m = INTEGER(LDIM)[0], n = INTEGER(LDIM)[1];
+  const int m = INTEGER(LDIM)[0];
+  const int n = INTEGER(LDIM)[1];
   
   SEXP CPX;
   PROTECT(CPX = allocMatrix(REALSXP, m, n));
@@ -70,7 +76,8 @@ SEXP R_PTRI2ZERO(SEXP UPLO, SEXP DIAG, SEXP X, SEXP LDIM, SEXP DESCX)
 
 SEXP R_PDSWEEP(SEXP X, SEXP LDIM, SEXP DESCX, SEXP VEC, SEXP LVEC, SEXP MARGIN, SEXP FUN)
 {
-  const int m = INTEGER(LDIM)[0], n = INTEGER(LDIM)[1];
+  const int m = INTEGER(LDIM)[0];
+  const int n = INTEGER(LDIM)[1];
   int IJ = 1;
   
   SEXP CPX;
@@ -78,7 +85,7 @@ SEXP R_PDSWEEP(SEXP X, SEXP LDIM, SEXP DESCX, SEXP VEC, SEXP LVEC, SEXP MARGIN, 
   
   memcpy(REAL(CPX), REAL(X), m*n*sizeof(double));
   
-  pdsweep(REAL(CPX), IJ, IJ, INTEGER(DESCX), REAL(VEC), INT(LVEC), INT(MARGIN), CHARPT(FUN, 0)[0]);
+  pdsweep(REAL(CPX), IJ, IJ, INTEGER(DESCX), REAL(VEC), INTEGER(LVEC)[0], INTEGER(MARGIN)[0], CHARPT(FUN, 0)[0]);
   
   UNPROTECT(1);
   return CPX;
@@ -105,7 +112,8 @@ SEXP R_PDGDGTK(SEXP X, SEXP LDIM, SEXP DESCX, SEXP LDIAG, SEXP RDEST, SEXP CDEST
 
 SEXP R_PDDIAGMK(SEXP LDIM, SEXP DESCX, SEXP DIAG, SEXP LDIAG)
 {
-  const int m = INTEGER(LDIM)[0], n = INTEGER(LDIM)[1];
+  const int m = INTEGER(LDIM)[0];
+  const int n = INTEGER(LDIM)[1];
   int IJ = 1;
   
   SEXP X;
@@ -149,7 +157,8 @@ SEXP R_PDHILBMK(SEXP LDIM, SEXP DESCX)
 
 SEXP R_PDMKCPN1(SEXP LDIM, SEXP DESCX, SEXP COEF)
 {
-  const int m = INTEGER(LDIM)[0], n = INTEGER(LDIM)[1];
+  const int m = INTEGER(LDIM)[0];
+  const int n = INTEGER(LDIM)[1];
   
   SEXP X;
   PROTECT(X = allocMatrix(REALSXP, m, n));

@@ -452,42 +452,29 @@ base.rpdgecon <- function(norm, m, n, a, desca)
 
 
 
-# ------------------------------------------------
-# Utility
-# ------------------------------------------------
-
-#' rpdgemr2d
+#' rdet
 #' 
-#' General 2d block cyclic redistribution function.
+#' Determinant.
 #' 
 #' For advanced users only.
 #' 
-#' @param x
+#' @param a
 #' Matrix.
-#' @param descx,descy
+#' @param desca
 #' ScaLAPACK descriptor array.
 #' 
-#' @useDynLib pbdBASE R_PDGEMR2D
+#' @useDynLib pbdBASE R_det
 #' @export
-base.rpdgemr2d <- function(x, descx, descy)
+base.det = function(a, desca)
 {
-  ldimy <- base.numroc(dim=descy[3L:4L], bldim=descy[5L:6L], ICTXT=descy[2L])
-  ldimy <- as.integer(ldimy)
-  descx <- as.integer(descx)
-  descy <- as.integer(descy)
-  m <- descx[3L]
-  n <- descx[4L]
+  if (!is.double(a))
+    storage.mode(a) = "double"
   
-  # context 0 is always passed since pxgemr2d 
-  # requires the grids to have at least 1 processor in common
-  ### TODO integrate PIGEMR2D
-  if (!is.double(x))
-    storage.mode(x) <- "double"
+  ret = .Call(R_det, a, as.integer(desca))
   
-  ret <- .Call(R_PDGEMR2D, m, n, x, descx, ldimy, descy, 0L)
+  if (ret$info!=0)
+    pbdMPI::comm.warning(paste("ScaLAPACK returned INFO=", ret$info, "; returned solution is likely invalid", sep=""))
   
-  if (!base.ownany(dim=c(m, n), bldim=descy[5L:6L], ICTXT=descy[2L]))
-    ret <- matrix(0.0, 1L, 1L)
-  
+  ret$info = NULL
   ret
 }
