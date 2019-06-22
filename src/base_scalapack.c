@@ -8,6 +8,7 @@
 
 #include "base/linalg/linalg.h"
 #include "base/utils/utils.h"
+#include "blacs.h"
 #include "pbdBASE.h"
 #include "scalapack.h"
 
@@ -412,6 +413,101 @@ SEXP R_PDTRCON(SEXP TYPE, SEXP UPLO, SEXP DIAG, SEXP N, SEXP A, SEXP DESCA)
   
   free(work);
   free(iwork);
+  
+  R_END;
+  return RET;
+}
+
+
+
+static inline int det(double *const restrict a, const int *const restrict desca, double *const restrict modulus, int *const restrict sign)
+{
+  int ldm[2];
+  int blacs[5];
+  pdims_(desca, ldm, blacs);
+  int m = ldm[0];
+  
+  int lipiv = ldm[0] + desca[4];
+  
+  
+  // factor A = LU
+  int info = 0;
+  int IJ = 1;
+  int *ipiv = malloc(lipiv * sizeof(*ipiv));
+  pdgetrf_(desca+2, desca+3, a, &IJ, &IJ, desca, ipiv, &info);
+  free(a);
+  
+  if (info != 0)
+  {
+    free(ipiv);
+    return -1.0;
+  }
+  
+  
+  // get determinant
+  double mod = 0.0;
+  int sgn = 1;
+  
+  for (int j=0; j<ldm[1]; j++)
+  {
+    for (int i=0; i<m; i++)
+    {
+      int gi, gj;
+      l2gpair_(&i, &j, &gi, &gj, desca, blacs);
+      if (ipiv[i] != (gi + 1))
+        sgn = -sgn;
+      
+      if (gi == gj)
+      {
+        double d = a[i + m*j];
+        if (d < 0)
+        {
+          mod += log(-d);
+          sgn *= -1;
+        }
+        else
+          mod += log(d);
+      }
+    }
+  }
+  
+  int ictxt = desca[1];
+  char scope = 'A';
+  char top = ' ';
+  
+  Cdgsum2d(ictxt, &scope, &top, 1, 1, &mod, 1, -1, -1);
+  
+  sgn = sgn < 0 ? 1 : 0;
+  Cigsum2d(ictxt, &scope, &top, 1, 1, &sgn, 1, -1, -1);
+  sgn = (sgn % 2 == 0) ? 1 : -1;
+  
+  *modulus = mod;
+  *sign = sgn;
+  
+  
+  // cleanup and return
+  free(ipiv);
+  return info;
+}
+
+SEXP R_det(SEXP A, SEXP DESCA)
+{
+  R_INIT;
+  SEXP RET, RET_NAMES, INFO, MOD, SGN;
+  
+  newRvec(MOD, 1, "double");
+  newRvec(SGN, 1, "int");
+  newRvec(INFO, 1, "int");
+  
+  double *a = malloc(nrows(A)*ncols(A) * sizeof(*a));
+  memcpy(a, DBLP(A), nrows(A)*ncols(A) * sizeof(*a));
+  
+  INT(INFO) = det(a, INTP(DESCA), DBLP(MOD), INTP(SGN));
+  
+  free(a);
+  
+  make_list_names(RET_NAMES, 3, "modulus", "sign", "info");
+  make_list(RET, RET_NAMES, 3, MOD, SGN, INFO);
   
   R_END;
   return RET;

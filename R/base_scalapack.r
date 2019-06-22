@@ -449,3 +449,32 @@ base.rpdgecon <- function(norm, m, n, a, desca)
   
   ret[1]
 }
+
+
+
+#' rdet
+#' 
+#' Determinant.
+#' 
+#' For advanced users only.
+#' 
+#' @param a
+#' Matrix.
+#' @param desca
+#' ScaLAPACK descriptor array.
+#' 
+#' @useDynLib pbdBASE R_det
+#' @export
+base.det = function(a, desca)
+{
+  if (!is.double(a))
+    storage.mode(a) = "double"
+  
+  ret = .Call(R_det, a, as.integer(desca))
+  
+  if (ret$info!=0)
+    pbdMPI::comm.warning(paste("ScaLAPACK returned INFO=", ret$info, "; returned solution is likely invalid", sep=""))
+  
+  ret$info = NULL
+  ret
+}

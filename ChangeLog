@@ -2,6 +2,7 @@ Release 0.5-1:
   * Fixed build issue with x64 windows.
   * Update to latest pbdMPI/pbdSLAP flags/linking.
   * Large internal re-organization.
+  * Added base.det().
 
 Release 0.5-0:
   * Generalize pdgemm() wrapper.
