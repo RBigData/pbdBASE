@@ -1,12 +1,13 @@
 function fpmod(a, b) &
 result(ret)
+  ! use, intrinsic :: ieee_arithmetic
   double precision, intent(in) :: a, b
   double precision :: ret
   double precision, parameter :: zero = 0.0d0
   
   
   if (b == 0) then
-    ret = nan
+    ret = nan !ieee_value(1.0d0, ieee_quiet_nan)
   else if (b > 0) then
     if (a >= 0) then
       ret = dmod(a, b)
@@ -25,4 +26,3 @@ result(ret)
   
   return
 end function
-

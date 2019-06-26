@@ -50,14 +50,13 @@ subroutine pdclvar(x, descx, var)
   double precision    x(descx(9), *), var(*)
   ! local
   integer             m, n, i, j, ldm(2), blacs(5), allocerr, nn
-  double precision    scl, denom
+  double precision    denom
   double precision, allocatable :: mn(:), work(:,:)
   ! parameter
   double precision    zero
   parameter ( zero = 0.0d0 )
   !external
   external            pdims, pdclmn, igamx2d, dgsum2d
-  double precision    pdvar
   
   
   ! get local and proc grid info
@@ -99,5 +98,3 @@ subroutine pdclvar(x, descx, var)
   
   return
 end subroutine
-
-
