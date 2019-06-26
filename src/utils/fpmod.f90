@@ -6,7 +6,7 @@ result(ret)
   double precision, parameter :: zero = 0.0d0
   
   
-  if (b == 0) then
+  if (abs(b) < 1.0d-8) then
     ret = nan !ieee_value(1.0d0, ieee_quiet_nan)
   else if (b > 0) then
     if (a >= 0) then
@@ -15,7 +15,7 @@ result(ret)
       ret = b - dmod(-a, b)
     end if
   else
-    if (a == 0) then
+    if (abs(a) < 1.0d-8) then
       ret = zero
     else if (a > 0) then
       ret = b + dmod(a, -b)

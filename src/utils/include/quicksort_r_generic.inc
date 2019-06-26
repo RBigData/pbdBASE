@@ -11,9 +11,9 @@ if (l < r) then
   pvt = quicksort_median_of_3(tmp)
   
   ! partition x by pvt
-  if (tmp(1) == pvt) then
+  if (abs(tmp(1) - pvt) < 1.0d-8) then
     ind = l 
-  else if (tmp(2) == pvt) then
+  else if (abs(tmp(2) - pvt) < 1.0d-8) then
     ind = (l+r)/2
   else
     ind = r
@@ -22,4 +22,3 @@ if (l < r) then
   call swap(x, ind, r)
   
   call quicksort_partition(x, l, r, ind, itmp)
-

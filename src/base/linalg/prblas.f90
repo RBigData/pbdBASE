@@ -168,7 +168,7 @@ subroutine rl2blas(x, descx, vec, lvec, fun)
         do i = 1, m
           call l2gpair(i, j, gi, gj, descx, blacs)
           pos = ind(gi + k*(gj-1), lvec)
-          if (x(i, j) .eq. vec(pos)) then
+          if (abs(x(i, j) - vec(pos)) < 1.0d-8) then
             x(i, j) = one
           else
             x(i, j) = zero
