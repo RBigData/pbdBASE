@@ -22,9 +22,9 @@ subroutine matnorm(value, norm, m, n, a, ia, ja, desca)
   integer             indxg2p, numroc
   
   
-  if (norm .eq. "M" .or. norm .eq. "F") then
-    lwork = 0
-  else 
+  lwork = 0
+  
+  if (norm .ne. "M" .and. norm .ne. "F") then
     call blacs_gridinfo(desca(2), nprow, npcol, myprow, mypcol)
     
     if (norm .eq. "O" .or. norm .eq. "1") then
@@ -61,7 +61,7 @@ subroutine condnum(norm, m, n, a, ia, ja, desca, rcond, info)
   implicit none
   ! in/out
   character           norm
-  integer             m, n, ldim1, ia, ja, desca( 9 ), info
+  integer             m, n, ia, ja, desca( 9 ), info
   double precision    rcond, a( * )
   ! local
   integer             lwork, liwork, lipiv

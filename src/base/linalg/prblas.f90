@@ -211,9 +211,6 @@ subroutine rl2insert(x, descx, vec, lvec, indi, lindi, indj, lindj)
   ! local
   integer :: k, m, n, pos, i, j, ti, tj, gi, gj
   integer :: ldm(2), blacs(5)
-  ! parameter
-  double precision :: zero, one
-  parameter ( zero = 0.0d0, one = 1.0d0 )
   ! external
   external            pdims, g2lpair
   ! function

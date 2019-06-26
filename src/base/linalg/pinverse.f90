@@ -11,9 +11,9 @@ subroutine pdchtri(uplo, x, ix, jx, descx, c, ic, jc, descc, info)
   ! in/out
   integer             ix, jx, descx(9), ic, jc, descc(9), info
   double precision    x(*), c(*)
-  character*1         uplo
+  character(len=1)    uplo
   ! local
-  character*1         loup
+  character(len=1)    loup
   ! parameter
   double precision    one
   parameter ( one = 1.0d0 )
@@ -109,5 +109,3 @@ subroutine pdinv(x, ix, jx, descx, inv, info)
   
   return
 end subroutine
-
-

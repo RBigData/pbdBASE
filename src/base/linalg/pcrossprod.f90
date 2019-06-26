@@ -12,10 +12,10 @@ subroutine pdcrossprod(uplo, trans, alpha, x, ix, jx, descx, c, ic, jc, descc)
   ! in/out
   integer             ix, jx, descx(9), ic, jc, descc(9)
   double precision    x(*), c(*), alpha
-  character*1         uplo, trans
+  character(len=1)    uplo, trans
   ! local
   integer             ldx, ldc
-  character*1         nst
+  character(len=1)    nst
   ! external
   external            pdsyrk, pdmksym
   
@@ -38,4 +38,3 @@ subroutine pdcrossprod(uplo, trans, alpha, x, ix, jx, descx, c, ic, jc, descc)
   
   return
 end subroutine
-
