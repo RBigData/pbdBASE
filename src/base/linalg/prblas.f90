@@ -17,14 +17,13 @@
     ! "+", "-", "*", "/"
 
 
-subroutine rl2blas(x, ix, jx, descx, vec, lvec, fun)
+subroutine rl2blas(x, descx, vec, lvec, fun)
   implicit none
   ! in/out
-  integer :: ix, jx, descx(9), lvec, fun
+  integer :: descx(9), lvec, fun
   double precision :: x(descx(9), *), vec(lvec)
   ! local
   integer :: k, m, n, pos, i, j, gi, gj, ldm(2), blacs(5)
-  integer :: l
   ! parameter
   double precision, parameter :: zero = 0.0d0, one = 1.0d0
   ! external
@@ -202,10 +201,10 @@ end function
   ! ix/jx = 
   ! descx = descriptor array for x
   ! lvec = length of vec
-subroutine rl2insert(x, ix, jx, descx, vec, lvec, indi, lindi, indj, lindj)
+subroutine rl2insert(x, descx, vec, lvec, indi, lindi, indj, lindj)
   implicit none
   ! in/out
-  integer :: ix, jx, lvec, lindi, lindj
+  integer :: lvec, lindi, lindj
   integer :: indi(lindi), indj(lindj)
   integer :: descx(9)
   double precision :: x(descx(9), *), vec(lvec)
@@ -220,7 +219,6 @@ subroutine rl2insert(x, ix, jx, descx, vec, lvec, indi, lindi, indj, lindj)
   ! function
   logical :: checkproc
   integer :: ind
-  double precision :: fpmod
   
   
   ! get local and proc grid info
@@ -262,7 +260,7 @@ subroutine rcolcpy(x, descx, xcols, y, descy, ycols, lcols)
   double precision :: x(descx(9), *), y(descy(9), *)
   ! local
   logical :: ihave, ineed
-  integer :: i, j, gi, gj, mx, nx, my, ny, gm, gn
+  integer :: i, gi, mx, nx, my, ny, gm, gn
   integer :: rbl, cbl
   integer :: ldm(2), blacs(5)
   integer :: lxcol, lycol, xcol, ycol, col
@@ -382,7 +380,7 @@ subroutine rrowcpy(x, descx, xrows, y, descy, yrows, lrows)
   double precision :: x(descx(9), *), y(descy(9), *)
   ! local
   logical :: ihave, ineed
-  integer :: i, j, gi, gj, mx, nx, my, ny, gm, gn
+  integer :: j, gj, mx, nx, my, ny, gm, gn
   integer :: rbl, cbl
   integer :: ldm(2), blacs(5)
   integer :: lxrow, lyrow, xrow, yrow, row
@@ -506,11 +504,10 @@ subroutine pdmvsum(x, descx, y, descy)
   double precision :: x(descx(9), *), y(descy(9))
   ! local
   integer :: ldm(2), blacs(5)
-  integer :: i, j, gi, gj, ii, jj, pos
+  integer :: i, j
   integer :: gm, gn, rbl, cbl
   integer :: my, ny, mx, nx
   integer :: lvec
-  double precision :: tmp
   
   
   ! get local and proc grid info
@@ -551,4 +548,3 @@ subroutine pdmvsum(x, descx, y, descy)
   
   return
 end subroutine
-
