@@ -5,7 +5,6 @@
 #include <R_ext/Rdynload.h>
 #include <stdlib.h>
 
-extern SEXP R_DALLREDUCE(SEXP X, SEXP LDIM, SEXP DESCX, SEXP OP, SEXP SCOPE);
 extern SEXP R_DHILBMK(SEXP N);
 extern SEXP R_MKGBLMAT(SEXP SUBX, SEXP DESCX, SEXP RDEST, SEXP CDEST);
 extern SEXP R_MKSUBMAT(SEXP GBLX, SEXP LDIM, SEXP DESCX);
@@ -74,7 +73,6 @@ extern SEXP g2l_coords(SEXP ind, SEXP bldim, SEXP procs, SEXP src);
 extern SEXP l2g_coords(SEXP ind, SEXP bldim, SEXP procs, SEXP myproc);
 
 static const R_CallMethodDef CallEntries[] = {
-  {"R_DALLREDUCE", (DL_FUNC) &R_DALLREDUCE, 5},
   {"R_DHILBMK", (DL_FUNC) &R_DHILBMK, 1},
   {"R_MKGBLMAT", (DL_FUNC) &R_MKGBLMAT, 4},
   {"R_MKSUBMAT", (DL_FUNC) &R_MKSUBMAT, 3},

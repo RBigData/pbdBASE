@@ -44,36 +44,6 @@ base.mkgblmat <- function(x, descx, rsrc, csrc)
 
 
 
-#' dallreduce
-#' 
-#' Allreduce
-#' 
-#' For advanced users only.
-#' 
-#' @param x
-#' Matrix.
-#' @param descx
-#' ScaLAPACK descriptor array.
-#' @param op
-#' Operation.
-#' @param scope
-#' Rows, columns, or both.
-#' 
-#' @useDynLib pbdBASE R_DALLREDUCE
-#' @export
-base.dallreduce <- function(x, descx, op='sum', scope='All')
-{
-  if (!is.double(x))
-    storage.mode(x) <- "double"
-  
-  ret <- .Call(R_DALLREDUCE, 
-        x, as.integer(dim(x)), as.integer(descx), as.character(op), as.character(scope))
-  
-  ret
-}
-
-
-
 #' tri2zero
 #' 
 #' Zero Triangle

@@ -5,8 +5,6 @@
 // blacs_util.f90
 void optimalgrid_(int *nprocs, int *nrows, int *ncols);
 void dallreduce_(double *x, int *descx, char *op, char *scope);
-void dreduce_(double *x, int *descx, char *op, int *rdest, int *cdest, char *scope);
-void iallreduce_(int *x, int *descx, char *op, char *scope);
 void ireduce_(int *x, int *descx, char *op, int *rdest, int *cdest, char *scope);
 
 
