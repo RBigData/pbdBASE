@@ -17,8 +17,14 @@ SEXP R_PDLAPRNT(SEXP M, SEXP N, SEXP A, SEXP DESCA, SEXP CMATNM, SEXP NOUT)
   int IJ = 1;
   int SRC = 0;
   
+  char *cmatnm = CHARPT(CMATNM, 0);
+  int lcmatnm = strlen(cmatnm);
+  
+  if(lcmatnm > 255)
+    error("invalid name length in pdlaprnt");
+  
   bprnt_(INTEGER(M), INTEGER(N), REAL(A), &IJ, &IJ,
-         INTEGER(DESCA), &SRC, &SRC, CHARPT(CMATNM, 0),
+         INTEGER(DESCA), &SRC, &SRC, cmatnm,
          INTEGER(NOUT), work);
   
   return RNULL;
