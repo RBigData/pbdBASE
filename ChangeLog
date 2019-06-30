@@ -5,6 +5,7 @@ Release 0.5-1:
   * Added base.det().
   * Fixed some minor Fortran issues.
   * Deprecated dallreduce() R bindings.
+  * Better string portability with pdlaprnt().
 
 Release 0.5-0:
   * Generalize pdgemm() wrapper.
