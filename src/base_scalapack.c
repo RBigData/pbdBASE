@@ -429,18 +429,25 @@ static inline int det(double *const restrict a, const int *const restrict desca,
   
   int lipiv = ldm[0] + desca[4];
   
-  
   // factor A = LU
   int info = 0;
   int IJ = 1;
   int *ipiv = malloc(lipiv * sizeof(*ipiv));
   pdgetrf_(desca+2, desca+3, a, &IJ, &IJ, desca, ipiv, &info);
-  free(a);
   
   if (info != 0)
   {
-    free(ipiv);
-    return -1.0;
+    if (info > 0)
+    {
+      *sign = 1;
+      *modulus = R_NegInf;
+      return 0;
+    }
+    else
+    {
+      free(ipiv);
+      return info;
+    }
   }
   
   
@@ -453,7 +460,9 @@ static inline int det(double *const restrict a, const int *const restrict desca,
     for (int i=0; i<m; i++)
     {
       int gi, gj;
-      l2gpair_(&i, &j, &gi, &gj, desca, blacs);
+      int i1 = i+1;
+      int j1 = j+1;
+      l2gpair_(&i1, &j1, &gi, &gj, desca, blacs);
       if (ipiv[i] != (gi + 1))
         sgn = -sgn;
       
@@ -471,6 +480,8 @@ static inline int det(double *const restrict a, const int *const restrict desca,
     }
   }
   
+  free(ipiv);
+  
   int ictxt = desca[1];
   char scope = 'A';
   char top = ' ';
@@ -485,8 +496,6 @@ static inline int det(double *const restrict a, const int *const restrict desca,
   *sign = sgn;
   
   
-  // cleanup and return
-  free(ipiv);
   return info;
 }
 

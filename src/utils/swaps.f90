@@ -75,9 +75,10 @@ module swaps
   
   subroutine dcswap(x, i, j)
     implicit none
-    double complex, intent(inout) :: x(*)
+    integer, parameter :: kind_dp = selected_real_kind(15, 307)
+    complex(kind_dp), intent(inout) :: x(*)
     integer, intent(in) :: i, j
-    double complex :: tmp
+    complex(kind_dp) :: tmp
     
     include 'include/swap_generic.inc'
     
@@ -85,4 +86,3 @@ module swaps
   end subroutine
   
 end module
-

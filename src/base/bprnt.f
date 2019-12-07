@@ -22,7 +22,7 @@
 *     ..
 *     .. Array Arguments ..
 *WCC  CHARACTER*(*)      CMATNM
-      CHARACTER*255      CMATNM
+      CHARACTER*(*)      CMATNM
       INTEGER            DESCA( * )
       DOUBLE PRECISION   A( * ), WORK( * )
 *     ..
@@ -148,7 +148,7 @@
       EXTERNAL           BLACS_BARRIER, BLACS_GRIDINFO, INFOG2L,
      $                   DGERV2D, DGESD2D
 *WCC:add
-      EXTERNAL           BPRNT_C
+      EXTERNAL           BPRNTC
 *     ..
 *     .. External Functions ..
       INTEGER            ICEIL
@@ -184,7 +184,7 @@
                DO 10 K = 0, IB-1
 *WCC              WRITE( NOUT, FMT = 9999 )
 *WCC $                   CMATNM, IA+K, JA+H, A( II+K+(JJ+H-1)*LDA )
-                  CALL BPRNT_C(CMATNM, IA+K, JA+H,
+                  CALL BPRNTC(CMATNM, IA+K, JA+H,
      $                           A( II+K+(JJ+H-1)*LDA ))
    10          CONTINUE
             END IF
@@ -198,7 +198,7 @@
                DO 20 K = 1, IB
 *WCC              WRITE( NOUT, FMT = 9999 )
 *WCC $                   CMATNM, IA+K-1, JA+H, WORK( K )
-                  CALL BPRNT_C(CMATNM, IA+K-1, JA+H, WORK( K ))
+                  CALL BPRNTC(CMATNM, IA+K-1, JA+H, WORK( K ))
    20          CONTINUE
             END IF
          END IF
@@ -216,7 +216,7 @@
                   DO 30 K = 0, IB-1
 *WCC                 WRITE( NOUT, FMT = 9999 )
 *WCC $                      CMATNM, I+K, JA+H, A( II+K+(JJ+H-1)*LDA )
-                     CALL BPRNT_C(CMATNM, I+K, JA+H,
+                     CALL BPRNTC(CMATNM, I+K, JA+H,
      $                              A( II+K+(JJ+H-1)*LDA ))
    30             CONTINUE
                END IF
@@ -230,7 +230,7 @@
                   DO 40 K = 1, IB
 *WCC                 WRITE( NOUT, FMT = 9999 )
 *WCC $                      CMATNM, I+K-1, JA+H, WORK( K )
-                     CALL BPRNT_C(CMATNM, I+K-1, JA+H, WORK( K ))
+                     CALL BPRNTC(CMATNM, I+K-1, JA+H, WORK( K ))
    40             CONTINUE
                END IF
             END IF
@@ -261,7 +261,7 @@
                   DO 70 K = 0, IB-1
 *WCC                 WRITE( NOUT, FMT = 9999 )
 *WCC $                      CMATNM, IA+K, J+H, A( II+K+(JJ+H-1)*LDA )
-                     CALL BPRNT_C(CMATNM, IA+K, J+H,
+                     CALL BPRNTC(CMATNM, IA+K, J+H,
      $                              A( II+K+(JJ+H-1)*LDA ))
    70             CONTINUE
                END IF
@@ -275,7 +275,7 @@
                   DO 80 K = 1, IB
 *WCC                 WRITE( NOUT, FMT = 9999 )
 *WCC $                      CMATNM, IA+K-1, J+H, WORK( K )
-                     CALL BPRNT_C(CMATNM, IA+K-1, J+H, WORK( K ))
+                     CALL BPRNTC(CMATNM, IA+K-1, J+H, WORK( K ))
    80             CONTINUE
                END IF
             END IF
@@ -293,7 +293,7 @@
                      DO 90 K = 0, IB-1
 *WCC                    WRITE( NOUT, FMT = 9999 )
 *WCC $                         CMATNM, I+K, J+H, A( II+K+(JJ+H-1)*LDA )
-                        CALL BPRNT_C(CMATNM, I+K, J+H,
+                        CALL BPRNTC(CMATNM, I+K, J+H,
      $                                 A( II+K+(JJ+H-1)*LDA ))
    90                CONTINUE
                   END IF
@@ -307,7 +307,7 @@
                      DO 100 K = 1, IB
 *WCC                    WRITE( NOUT, FMT = 9999 )
 *WCC $                         CMATNM, I+K-1, J+H, WORK( K )
-                        CALL BPRNT_C(CMATNM, I+K-1, J+H, WORK( K ))
+                        CALL BPRNTC(CMATNM, I+K-1, J+H, WORK( K ))
   100                CONTINUE
                   END IF
                END IF

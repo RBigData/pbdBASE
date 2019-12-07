@@ -84,7 +84,24 @@ module sorts
     integer :: pvt
     integer :: tmp(3)
     
-    include 'include/quicksort_r_generic.inc'
+    if (l < r) then
+      ! choose median of l, r, and (l+r)/2 as pivot
+      tmp = (/ l, (l+r)/2, r /)
+      pvt = quicksort_median_of_3(tmp)
+      
+      ! partition x by pvt
+      if (tmp(1) == pvt) then
+        ind = l 
+      else if (tmp(2) == pvt) then
+        ind = (l+r)/2
+      else
+        ind = r
+      end if
+      
+      call swap(x, ind, r)
+      
+      call quicksort_partition(x, l, r, ind, itmp)
+      
       if (r-l <= 10) then
         call iinsertionsort(x(l), r-l+1)
       else
@@ -179,4 +196,3 @@ module sorts
   end subroutine
   
 end module
-

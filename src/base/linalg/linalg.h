@@ -33,10 +33,9 @@ void rpdgels_(double *tol, char *trans, int *m, int *n, int *nrhs,
 
 
 // prblas.f90
-void rl2blas_(double *x, int *ix, int *jx, int *descx, double *vec,
-  int *lvec, int *fun);
-void rl2insert_(double *x, int *ix, int *jx, int *descx, double *vec,
-  int *lvec, int *indi, int *lindi, int *indj, int *lindj);
+void rl2blas_(double *x, int *descx, double *vec, int *lvec, int *fun);
+void rl2insert_(double *x, int *descx, double *vec, int *lvec, int *indi,
+  int *lindi, int *indj, int *lindj);
 void rcolcpy_(double *x, int *descx, int *xcols, double *y, int *descy,
   int *ycols, int *lcols);
 void rcolcpy2_(double *x, int *descx, int *xcols, int *lxcols, double *y,
