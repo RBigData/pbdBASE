@@ -16,6 +16,13 @@ rm -rf ./src/*.a
 rm -rf ./src/*.rc
 rm -rf ./src/*.rds
 rm -rf ./src/*.mod
+rm -rf ./src/base/*.o
+rm -rf ./src/base/expm/*.o
+rm -rf ./src/base/linalg/*.o
+rm -rf ./src/base/stats/*.o
+rm -rf ./src/base/utils/*.o
+rm -rf ./src/export_blacs/*.o
+rm -rf ./src/utils/*.o
 
 find ./ -type f -name '*.o' -delete
 find ./ -type f -name '*.mod' -delete

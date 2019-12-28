@@ -13,8 +13,11 @@ MPI_INCLUDE = $(shell ${R_SCMD} \
 MPI_LIB = $(shell ${R_SCMD} \
   "library(pbdMPI);get.conf('MPI_LIB','"${R_ARCH}"','pbdMPI')")
 
+### For gfortran
+GFORTRAN_FLAGS = -DUSE_FC_LEN_T
+
 ### Setup R package flags and substitute by configure for ${MPI_...}.
-PKG_CPPFLAGS = -I"$(MPI_INCLUDE)"  -I../inst/RNACI
+PKG_CPPFLAGS = -I"$(MPI_INCLUDE)"  -I../inst/RNACI $(GFORTRAN_FLAGS)
 PKG_LIBS = "$(SLAP_LDFLAGS)" $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) "$(MPI_LIB)" $(RNACI_LDFLAGS)
 
 ### Setup R source code and objects.
@@ -70,5 +73,5 @@ clean:
 	        base/linalg/*.o \
 	        base/stats/*.o \
 	        base/utils/*.o \
-        export_blacs/*.o \
+	        export_blacs/*.o \
 	        utils/*.o

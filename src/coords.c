@@ -4,8 +4,10 @@
 
 // Copyright 2015, Schmidt
 
-#include <RNACI.h>
+
+// R.h and Rinternals.h needs to be included after Rconfig.h
 #include "pbdBASE.h"
+#include <RNACI.h>
 
 
 // C translation of indxg2l

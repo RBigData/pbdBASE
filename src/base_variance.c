@@ -4,10 +4,11 @@
 
 // Copyright 2013, Schmidt
 
-#include <RNACI.h>
-
-#include "pbdBASE.h"
 #include "base/stats/stats.h"
+
+// R.h and Rinternals.h needs to be included after Rconfig.h
+#include "pbdBASE.h"
+#include <RNACI.h>
 
 
 SEXP R_PDCLVAR(SEXP X, SEXP DESCX, SEXP LSD)

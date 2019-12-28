@@ -4,10 +4,12 @@
 
 // Copyright 2013, Schmidt
 
-#include <RNACI.h>
 
 #include "base/linalg/linalg.h"
+
+// R.h and Rinternals.h needs to be included after Rconfig.h
 #include "pbdBASE.h"
+#include <RNACI.h>
 
 
 SEXP R_PDCROSSPROD(SEXP UPLO, SEXP TRANS, SEXP A, SEXP DESCA, SEXP CLDIM, SEXP DESCC)
@@ -19,9 +21,16 @@ SEXP R_PDCROSSPROD(SEXP UPLO, SEXP TRANS, SEXP A, SEXP DESCA, SEXP CLDIM, SEXP D
   SEXP C;
   newRmat(C, INT(CLDIM, 0), INT(CLDIM, 1), "dbl");
   
+#ifdef FC_LEN_T
+  pdcrossprod_(STR(UPLO, 0), STR(TRANS, 0), &alpha, 
+    DBLP(A), &IJ, &IJ, INTP(DESCA), 
+    DBLP(C), &IJ, &IJ, INTP(DESCC),
+    (FC_LEN_T) strlen(STR(UPLO, 0)), (FC_LEN_T) strlen(STR(TRANS, 0)));
+#else
   pdcrossprod_(STR(UPLO, 0), STR(TRANS, 0), &alpha, 
     DBLP(A), &IJ, &IJ, INTP(DESCA), 
     DBLP(C), &IJ, &IJ, INTP(DESCC));
+#endif
   
   R_END;
   return C;
@@ -41,9 +50,16 @@ SEXP R_PDCHTRI(SEXP UPLO, SEXP A, SEXP ALDIM, SEXP DESCA, SEXP CLDIM, SEXP DESCC
   A_cp = (double *) R_alloc(m*n, sizeof(double));
   memcpy(A_cp, REAL(A), m*n*sizeof(double));
   
+#ifdef FC_LEN_T
+  pdchtri_(CHARPT(UPLO, 0), A_cp, &IJ, &IJ, INTEGER(DESCA), 
+    REAL(C), &IJ, &IJ,
+    INTEGER(DESCC), &info,
+    (FC_LEN_T) strlen(CHARPT(UPLO, 0)));
+#else
   pdchtri_(CHARPT(UPLO, 0), A_cp, &IJ, &IJ, INTEGER(DESCA), 
     REAL(C), &IJ, &IJ,
     INTEGER(DESCC), &info);
+#endif
   
   if (info != 0)
   {

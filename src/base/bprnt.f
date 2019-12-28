@@ -21,7 +21,6 @@
       INTEGER            IA, ICPRNT, IRPRNT, JA, M, N, NOUT
 *     ..
 *     .. Array Arguments ..
-*WCC  CHARACTER*(*)      CMATNM
       CHARACTER*(*)      CMATNM
       INTEGER            DESCA( * )
       DOUBLE PRECISION   A( * ), WORK( * )

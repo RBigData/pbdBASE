@@ -8,6 +8,8 @@
 
 #include "base/linalg/linalg.h"
 #include "base/utils/utils.h"
+
+// R.h and Rinternals.h needs to be included after Rconfig.h
 #include "pbdBASE.h"
 
 
@@ -47,8 +49,12 @@ SEXP R_DALLREDUCE(SEXP X, SEXP LDIM, SEXP DESCX, SEXP OP, SEXP SCOPE)
   PROTECT(CPX = allocMatrix(REALSXP, INTEGER(LDIM)[0], INTEGER(LDIM)[1]));
   
   memcpy(REAL(CPX), REAL(X), m*n*sizeof(double));
-  
+
+#ifdef FC_LEN_T
+  dallreduce_(REAL(CPX), INTEGER(DESCX), CHARPT(OP, 0), CHARPT(SCOPE, 0), (FC_LEN_T) strlen(CHARPT(OP, 0)), (FC_LEN_T) strlen(CHARPT(SCOPE, 0)));
+#else
   dallreduce_(REAL(CPX), INTEGER(DESCX), CHARPT(OP, 0), CHARPT(SCOPE, 0));
+#endif
   
   UNPROTECT(1);
   return CPX;
@@ -66,7 +72,11 @@ SEXP R_PTRI2ZERO(SEXP UPLO, SEXP DIAG, SEXP X, SEXP LDIM, SEXP DESCX)
   
   memcpy(REAL(CPX), REAL(X), m*n*sizeof(double));
   
+#ifdef FC_LEN_T
+  ptri2zero_(CHARPT(UPLO, 0), CHARPT(DIAG, 0), REAL(CPX), INTEGER(DESCX), (FC_LEN_T) strlen(CHARPT(UPLO, 0)), (FC_LEN_T) strlen(CHARPT(DIAG, 0)));
+#else
   ptri2zero_(CHARPT(UPLO, 0), CHARPT(DIAG, 0), REAL(CPX), INTEGER(DESCX));
+#endif
   
   UNPROTECT(1);
   return CPX;

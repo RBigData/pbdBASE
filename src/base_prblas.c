@@ -5,8 +5,9 @@
 // Copyright 2013, Schmidt
 
 #include <string.h>
-
 #include "base/linalg/linalg.h"
+
+// R.h and Rinternals.h needs to be included after Rconfig.h
 #include "pbdBASE.h"
 
 
