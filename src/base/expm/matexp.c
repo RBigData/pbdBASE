@@ -32,7 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h>
-#include <string.h>
 
 #include "matexp.h"
 

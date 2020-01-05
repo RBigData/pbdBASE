@@ -6,6 +6,7 @@
 #ifdef USE_FC_LEN_T
   #include <stddef.h>
   #include <Rconfig.h>    // this defines FC_LEN_T
+  #include <string.h>
 #endif
 
 
