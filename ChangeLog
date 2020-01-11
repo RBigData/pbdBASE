@@ -6,7 +6,7 @@ Release 0.5-1:
   * Fixed some minor Fortran issues.
   * Deprecated dallreduce() R bindings.
   * Better string portability with pdlaprnt().
-  * Add FC_LEN_T and USE_FC_LEN_T for C/Fortran char* length via siz_t.
+  * Add FC_LEN_T and USE_FC_LEN_T for C/Fortran char* length via size_t.
 
 Release 0.5-0:
   * Generalize pdgemm() wrapper.
