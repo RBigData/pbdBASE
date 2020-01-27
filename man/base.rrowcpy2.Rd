@@ -14,5 +14,5 @@ base.rrowcpy2(x, descx, y, descy, xrow, yrow)
 \item{xrow, yrow}{Rows.}
 }
 \description{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

@@ -6,7 +6,7 @@
 #' 
 #' Matrix inversion.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param n
 #' Problem size.
@@ -38,7 +38,7 @@ base.rpdgetri <- function(n, a, desca)
 #' 
 #' Solving a (square) system of equations.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param n
 #' Problem size.
@@ -85,7 +85,7 @@ base.rpdgesv <- function(n, nrhs, a, desca, b, descb)
 #' 
 #' SVD.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param jobu,jobvt
 #' Control for u/vt return.
@@ -166,7 +166,7 @@ base.rpdgesvd <- function(jobu, jobvt, m, n, a, desca, descu, descvt, ..., inpla
 #' 
 #' Symmetric eigenvalue decomposition.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param jobz
 #' Control for if vectors/values/both are returned.
@@ -214,7 +214,7 @@ base.rpdsyevr <- function(jobz, uplo, n, a, desca, descz)
 #' 
 #' Cholesky factorization.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param uplo
 #' Triangle where the information is stored (in the symmetric matrix).
@@ -249,7 +249,7 @@ base.rpdpotrf <- function(uplo, n, a, desca)
 #' 
 #' Genearlized eigenvalue problem.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param jobz
 #' Control for if vectors/values/both are returned.
@@ -293,7 +293,7 @@ base.rpdsyevx <- function(jobz, range, n, a, desca, vl, vu, il, iu, abstol=1e-8,
 #' 
 #' LU factorization.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param a
 #'  Matrix.
@@ -338,7 +338,7 @@ base.rpdgetrf <- function(a, desca)
 #' 
 #' Matrix norms.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param norm
 #' Type of norm.
@@ -374,7 +374,7 @@ base.rpdlange <- function(norm, m, n, a, desca)
 #' 
 #' Inverse condition number of a triangular matrix.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param norm
 #' Type of norm.
@@ -419,7 +419,7 @@ base.rpdtrcon <- function(norm, uplo, diag, n, a, desca)
 #' 
 #' Inverse condition number of a general matrix.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param norm
 #' Type of norm.
@@ -456,7 +456,7 @@ base.rpdgecon <- function(norm, m, n, a, desca)
 #' 
 #' Determinant.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param a
 #' Matrix.

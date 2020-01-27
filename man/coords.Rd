@@ -3,7 +3,6 @@
 \name{coords}
 \alias{coords}
 \alias{indxg2l}
-\alias{coords}
 \alias{indxl2g}
 \title{Local to Global/Global to Local Indexing}
 \usage{
@@ -24,9 +23,12 @@ indxl2g(INDXLOC, NB, IPROC, ISRCPROC, NPROCS)
 
 \item{INDXLOC}{Local index.}
 }
+\value{
+The local index.
+}
 \description{
 Get the local index given global information.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

@@ -22,9 +22,12 @@ blacs_gridinit(ICTXT, NPROW, NPCOL, ..., quiet = FALSE)
 
 \item{quiet}{Verbose initialization or not.}
 }
+\value{
+None
+}
 \description{
 BLACS grid initialization.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

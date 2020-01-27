@@ -28,5 +28,5 @@ base.dgerv2d(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 Sent value across a process grid.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

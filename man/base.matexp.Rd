@@ -13,9 +13,12 @@ base.matexp(A, p = 6, t = 1)
 
 \item{t}{Scaling factor.}
 }
+\value{
+exp(A)
+}
 \description{
 Serial matrix exponentiation.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

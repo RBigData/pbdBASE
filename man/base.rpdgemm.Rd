@@ -17,5 +17,5 @@ base.rpdgemm(transx, transy, x, descx, y, descy, descc)
 Matrix-Matrix Multiply.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

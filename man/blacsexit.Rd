@@ -3,7 +3,6 @@
 \name{blacsexit}
 \alias{blacsexit}
 \alias{base.blacsexit}
-\alias{blacsexit}
 \title{BLACS Exit}
 \usage{
 base.blacsexit(CONT = TRUE)
@@ -32,15 +31,20 @@ This function is automatically invoked if BLACS communicators are running
 and \code{finalize()} is called.
 }
 \examples{
-spmd.code = "
+spmd.code <- "
+  suppressMessages(library(pbdMPI))
   suppressMessages(library(pbdBASE))
   init.grid()
 
-  blacsexit()
+  ### Do something with BLACS here.
 
-  # finalize()  # This should be off since blacexit().
+  ### Don't use this unless you know what to do after this.
+  # blacsexit()
+
+  ### Then, do others without BLACS here.
+
+  finalize()  # This should be off since blacexit().
 "
-
 pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 
 }

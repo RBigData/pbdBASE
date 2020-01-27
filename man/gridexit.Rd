@@ -3,7 +3,6 @@
 \name{gridexit}
 \alias{gridexit}
 \alias{base.gridexit}
-\alias{gridexit}
 \title{gridexit}
 \usage{
 base.gridexit(ICTXT, override = FALSE)
@@ -25,7 +24,7 @@ requested \code{ICTXT} does not exist.
 Frees a BLACS context.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 
 The function frees the requested BLACS context. It is a trivial wrapper for
 the BLACS routine \code{BLACS_GRIDEXIT}. Also removes the object

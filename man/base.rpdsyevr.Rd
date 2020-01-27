@@ -21,5 +21,5 @@ base.rpdsyevr(jobz, uplo, n, a, desca, descz)
 Symmetric eigenvalue decomposition.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

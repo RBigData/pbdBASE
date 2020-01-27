@@ -2,10 +2,30 @@
 #' 
 #' "Optimal" process grid when nprow and npcol are empty
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param nprocs
 #' Number of processors.
+#' @return A list contains nprow and npcol.
+#' 
+#' @examples
+#' spmd.code <- "
+#'   suppressMessages(library(pbdMPI))
+#'   suppressMessages(library(pbdBASE))
+#'   init.grid()
+#'
+#'   opt <- base.procgrid(4)
+#'   comm.print(opt)
+#'
+#'   opt <- base.procgrid(6)
+#'   comm.print(opt)
+#'
+#'   opt <- base.procgrid(8)
+#'   comm.print(opt)
+#'
+#'   finalize()
+#' "
+#' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 1L)
 #' 
 #' @useDynLib pbdBASE R_optimal_grid
 #' @export
@@ -22,7 +42,7 @@ procgrid <- base.procgrid
 #' 
 #' BLACS grid initialization.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param ICTXT
 #' BLACS context.
@@ -32,6 +52,7 @@ procgrid <- base.procgrid
 #' Additional arguments.
 #' @param quiet
 #' Verbose initialization or not.
+#' @return None
 #' 
 #' @useDynLib pbdBASE R_blacs_init
 #' @name gridinit
@@ -151,6 +172,7 @@ set.comm.from.ICTXT <- function(ICTXT, comm)
 #'
 #' Blacs context are associated with a certain communicator. It can be useful to retrieve this communicator to manipulate the matrix accordingly.
 #' @param ICTXT a BLACS context
+#' @return A communicator
 #' @export
 get.comm.from.ICTXT <- function(ICTXT)
 {
@@ -235,13 +257,16 @@ get.comm.from.ICTXT <- function(ICTXT)
 #' @keywords BLACS
 #' 
 #' @examples
-#' spmd.code = "
+#' spmd.code <- "
+#'   suppressMessages(library(pbdMPI))
 #'   suppressMessages(library(pbdBASE))
 #'   init.grid()
-#' 
+#'
+#'   ### Do something here. For example, below.
+#'   comm.print(ls(.pbdBASEEnv))
+#'
 #'   finalize()
 #' "
-#' 
 #' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 #' 
 #' @name InitGrid
@@ -307,7 +332,7 @@ sys2blacs.handle <- function(comm)
 #' 
 #' Frees a BLACS context.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' The function frees the requested BLACS context. It is a trivial wrapper for
 #' the BLACS routine \code{BLACS_GRIDEXIT}. Also removes the object
@@ -352,6 +377,7 @@ base.gridexit <- function(ICTXT, override=FALSE)
 #' Free Blacs System Handle
 #' 
 #' @param SHANDLE A system handle. Obtained via a call to `sys2blacs.handle`
+#' @return None
 #' 
 #' @useDynLib pbdBASE R_free_blacs_system_handle
 #' @export
@@ -391,15 +417,20 @@ gridexit <- base.gridexit
 #' @keywords BLACS
 #' 
 #' @examples
-#' spmd.code = "
+#' spmd.code <- "
+#'   suppressMessages(library(pbdMPI))
 #'   suppressMessages(library(pbdBASE))
 #'   init.grid()
-#' 
-#'   blacsexit()
-#' 
-#'   # finalize()  # This should be off since blacexit().
+#'
+#'   ### Do something with BLACS here.
+#'
+#'   ### Don't use this unless you know what to do after this.
+#'   # blacsexit()
+#'
+#'   ### Then, do others without BLACS here.
+#'
+#'   finalize()  # This should be off since blacexit().
 #' "
-#' 
 #' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 #' 
 #' @useDynLib pbdBASE R_blacs_exit
@@ -425,6 +456,7 @@ blacsexit <- base.blacsexit
 #' 
 #' @param mpi.finalize
 #' If MPI should be shut down.
+#' @return None
 #' 
 #' @name finalizer
 #' @rdname finalizer
