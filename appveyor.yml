@@ -44,9 +44,17 @@ environment:
     R_ARCH: x64
 
 build_script:
-  - cd pbdBASE
-  - travis-tool.sh install_deps
-  - cd ..
+  - Rscript -e "install.packages(c('float','rlecuyer'),repos='https://cran.r-project.org/')"
+  - git clone https://github.com/snoweye/pbdMPI
+  - R CMD INSTALL pbdMPI
+  - git clone https://github.com/snoweye/pbdSLAP
+  - cd pbdSLAP/
+  - git checkout lto
+  - cd ../
+  - R CMD INSTALL pbdSLAP
+  # - cd pbdBASE
+  # - travis-tool.sh install_deps
+  # - cd ..
   - R CMD build --no-build-vignettes --no-manual --no-resave-data pbdBASE
   - R CMD INSTALL pbdBASE*.tar.gz
   - R CMD check pbdBASE*.tar.gz --as-cran --no-manual --no-vignettes --no-clean

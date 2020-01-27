@@ -13,11 +13,18 @@ before_install:
   - sudo apt-get install -y -q libopenmpi-dev openmpi-bin
   - LD_PRELOAD=/usr/lib/openmpi/lib/libmpi.so
   - Rscript -e "install.packages(c('float','rlecuyer'),repos='https://cran.r-project.org/')"
-  - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
-  - chmod 755 ./travis-tool.sh
-  - ./travis-tool.sh bootstrap
-  - ./travis-tool.sh install_github snoweye/pbdMPI
-  - ./travis-tool.sh install_github snoweye/pbdSLAP/tree/lto
+  # - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
+  # - chmod 755 ./travis-tool.sh
+  # - ./travis-tool.sh bootstrap
+  # - ./travis-tool.sh install_github snoweye/pbdMPI
+  # - ./travis-tool.sh install_github snoweye/pbdSLAP/tree/lto
+  - git clone https://github.com/snoweye/pbdMPI
+  - R CMD INSTALL pbdMPI
+  - git clone https://github.com/snoweye/pbdSLAP
+  - cd pbdSLAP/
+  - git checkout lto
+  - cd ../
+  - R CMD INSTALL pbdSLAP
   - R CMD build --no-resave-data --no-manual --no-build-vignettes pbdBASE
 
 # r_packages:
