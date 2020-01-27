@@ -34,11 +34,12 @@ install:
   # - ./travis-tool.sh install_deps
   # - Rscript -e "install.packages(c('float','rlecuyer','pbdMPI','pbdSLAP'),repos='https://cran.r-project.org/')"
   - R CMD check ./pbdBASE_*.tar.gz --as-cran
+  - cat ./pbdBASE.Rcheck/00install.out
   - cat ./pbdBASE.Rcheck/pbdBASE-Ex.Rout
   - cat ./pbdBASE.Rcheck/pbdBASE-Ex.timings
 
 script:
-  - R CMD INSTALL ./pbdBASE_*.tar.gz
+  # - R CMD INSTALL ./pbdBASE_*.tar.gz
 
 sudo: required
 dist: trusty
