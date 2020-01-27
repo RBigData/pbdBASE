@@ -1,2 +1,4 @@
 redocument
 reconf
+^\.travis\.yml$
+appveyor.yml
