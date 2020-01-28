@@ -26,8 +26,7 @@ before_install:
   - cd ../
   - R CMD INSTALL pbdSLAP
   - R CMD build --no-resave-data --no-manual --no-build-vignettes pbdBASE
-  - R CMD check ./pbdBASE_*.tar.gz --as-cran
-  - cat ./pbdBASE.Rcheck/00install.out
+  - R CMD INSTALL ./pbdBASE_*.tar.gz
 
 # r_packages:
 #   - rlecuyer
@@ -35,7 +34,7 @@ before_install:
 install:
   # - ./travis-tool.sh install_deps
   # - Rscript -e "install.packages(c('float','rlecuyer','pbdMPI','pbdSLAP'),repos='https://cran.r-project.org/')"
-  # - R CMD check ./pbdBASE_*.tar.gz --as-cran
+  - R CMD check ./pbdBASE_*.tar.gz --as-cran
   - cat ./pbdBASE.Rcheck/00install.out
   - cat ./pbdBASE.Rcheck/pbdBASE-Ex.Rout
   - cat ./pbdBASE.Rcheck/pbdBASE-Ex.timings
