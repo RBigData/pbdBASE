@@ -19,5 +19,5 @@ base.pdchtri(uplo, x, descx, descc)
 Inverse of cholesky.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

@@ -17,9 +17,12 @@ base.rpdgeqpf(tol, m, n, x, descx, comm = .pbd_env$SPMD.CT$comm)
 
 \item{comm}{An MPI (not BLACS) communicator.}
 }
+\value{
+A list contains QR results.
+}
 \description{
 QR.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

@@ -31,7 +31,12 @@ static inline void p_matprod(double *a, int *desca, double *b, int *descb, doubl
   k = desca[3];
   
   
+#ifdef FC_LEN_T
+  pdgemm_(&trans, &trans, &m, &n, &k, &one, a, &ij, &ij, desca, b, &ij, &ij, descb, &zero, c, &ij, &ij, descc,
+    (FC_LEN_T) strlen(&trans), (FC_LEN_T) strlen(&trans));
+#else
   pdgemm_(&trans, &trans, &m, &n, &k, &one, a, &ij, &ij, desca, b, &ij, &ij, descb, &zero, c, &ij, &ij, descc);
+#endif
 }
 
 
@@ -42,7 +47,12 @@ static inline void p_matcopy(double *a, int *desca, double *b, int *descb)
   int n = desca[2];
   int ij = 1;
   
+#ifdef FC_LEN_T
+  pdlacpy_(&uplo, &n, &n, a, &ij, &ij, desca, b, &ij, &ij, descb,
+    (FC_LEN_T) strlen(&uplo));
+#else
   pdlacpy_(&uplo, &n, &n, a, &ij, &ij, desca, b, &ij, &ij, descb);
+#endif
 }
 
 

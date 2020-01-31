@@ -23,5 +23,5 @@ base.rpdtrcon(norm, uplo, diag, n, a, desca)
 Inverse condition number of a triangular matrix.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

@@ -30,11 +30,12 @@
 //   * If needed, U = Q * U_R
 // For m<n we can use LQ, but this is not yet complete.
 
-#include <RNACI.h>
 #include <stdint.h>
-
-#include "pbdBASE.h"
 #include "scalapack.h"
+
+// R.h and Rinternals.h needs to be included after Rconfig.h
+#include "pbdBASE.h"
+#include <RNACI.h>
 
 
 typedef int32_t len_t;
@@ -89,20 +90,36 @@ static inline int svd_noqr(const char *jobu, const char *jobvt, ddmatrix_t *A, d
   int lwork = -1;
   double *work;
   
+#ifdef FC_LEN_T
+  pdgesvd_(jobu, jobvt, &A->nrows, &A->ncols, A->data->data, &(int){1}, &(int){1}, A->desc,
+    svd->d->data, svd->u->data->data, &(int){1}, &(int){1}, svd->u->desc,
+    svd->vt->data->data, &(int){1}, &(int){1}, svd->vt->desc,
+    &tmp, &lwork, &svd->info,
+    (FC_LEN_T) strlen(jobu), (FC_LEN_T) strlen(jobvt));
+#else
   pdgesvd_(jobu, jobvt, &A->nrows, &A->ncols, A->data->data, &(int){1}, &(int){1}, A->desc,
     svd->d->data, svd->u->data->data, &(int){1}, &(int){1}, svd->u->desc,
     svd->vt->data->data, &(int){1}, &(int){1}, svd->vt->desc,
     &tmp, &lwork, &svd->info);
+#endif
   
   lwork = (int) tmp;
   work = malloc(lwork * sizeof(*work));
   if (work == NULL)
     return -1;
   
+#ifdef FC_LEN_T
+  pdgesvd_(jobu, jobvt, &A->nrows, &A->ncols, A->data->data, &(int){1}, &(int){1}, A->desc,
+    svd->d->data, svd->u->data->data, &(int){1}, &(int){1}, svd->u->desc,
+    svd->vt->data->data, &(int){1}, &(int){1}, svd->vt->desc,
+    work, &lwork, &svd->info,
+    (FC_LEN_T) strlen(jobu), (FC_LEN_T) strlen(jobvt));
+#else
   pdgesvd_(jobu, jobvt, &A->nrows, &A->ncols, A->data->data, &(int){1}, &(int){1}, A->desc,
     svd->d->data, svd->u->data->data, &(int){1}, &(int){1}, svd->u->desc,
     svd->vt->data->data, &(int){1}, &(int){1}, svd->vt->desc,
     work, &lwork, &svd->info);
+#endif
   
   free(work);
   

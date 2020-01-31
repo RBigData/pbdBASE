@@ -20,5 +20,27 @@ base.mkgblmat(x, descx, rsrc, csrc)
 (Un)Distribute matrix.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
+}
+\examples{
+spmd.code <- "
+  suppressMessages(library(pbdMPI))
+  suppressMessages(library(pbdBASE))
+  init.grid()
+
+  ### Set data matrix and desc.
+  x <- matrix(as.double(1:30), nrow = 6, ncol = 5)
+  dim <- dim(x)
+  bldim <- c(3L, 3L)
+  ldim <- base.numroc(dim = dim, bldim = bldim)
+  descx <- base.descinit(dim = dim, bldim = bldim, ldim = ldim)
+
+  ### Redistribute from rank 0.
+  dx <- base.mksubmat(x, descx)
+  comm.print(dx, all.rank = TRUE)
+
+  finalize()
+"
+pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
+
 }

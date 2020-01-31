@@ -19,9 +19,55 @@ base.ddiagmk(diag, descx)
 
 \item{diag}{Diagonal.}
 }
+\value{
+diagonal elements of matrix or a diagonal matrix
+}
 \description{
 Grab diagonal or create distributed diagonal matrix.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
+}
+\examples{
+spmd.code <- "
+  suppressMessages(library(pbdMPI))
+  suppressMessages(library(pbdBASE))
+  init.grid()
+
+  ### Set data matrix and desc.
+  x <- matrix(as.double(1:25), nrow = 5, ncol = 5)
+  dim <- dim(x)
+  bldim <- c(3L, 3L)
+  ldim <- base.numroc(dim = dim, bldim = bldim)
+  descx <- base.descinit(dim = dim, bldim = bldim, ldim = ldim)
+
+  ### Get diagonal
+  diag.x <- base.ddiagtk(x, descx)
+  comm.print(diag.x)
+
+  finalize()
+"
+pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
+
+spmd.code <- "
+  suppressMessages(library(pbdMPI))
+  suppressMessages(library(pbdBASE))
+  init.grid()
+
+  ### Set data matrix and desc.
+  x <- matrix(as.double(1:25), nrow = 5, ncol = 5)
+  dim <- dim(x)
+  bldim <- c(3L, 3L)
+  ldim <- base.numroc(dim = dim, bldim = bldim)
+  descx <- base.descinit(dim = dim, bldim = bldim, ldim = ldim)
+
+  ### Set diagonal
+  diag.x <- base.ddiagtk(x, descx)
+  new.x <- base.ddiagmk(diag.x, descx)
+  comm.print(new.x, all.rank = TRUE)
+
+  finalize()
+"
+pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
+
 }

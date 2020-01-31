@@ -13,9 +13,12 @@ base.p_matexp_pade_wrap(A, desca, p = 6)
 
 \item{p}{Order of the Pade' approximation.}
 }
+\value{
+Results of Pade' expansion.
+}
 \description{
 Pade' expansion.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

@@ -9,9 +9,12 @@ base.maxdim(dim)
 \arguments{
 \item{dim}{Global dim.}
 }
+\value{
+Maximum dimension.
+}
 \description{
 Compute maximum dimension across all nodes
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

@@ -13,8 +13,11 @@ base.ownany(dim, bldim, ICTXT = 0)
 
 \item{ICTXT}{BLACS context}
 }
+\value{
+TRUE or FALSE
+}
 \description{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }
 \details{
 A simple wrapper of numroc. The return is the answer to
@@ -29,16 +32,16 @@ below for more clarity.
 The return for each function is local.
 }
 \examples{
-spmd.code = "
+spmd.code <- "
+  suppressMessages(library(pbdMPI))
   suppressMessages(library(pbdBASE))
   init.grid()
 
-  iown <- ownany(dim=c(4, 4), bldim=c(2, 2), CTXT=0)
-  comm.print(iown, all.rank=T)
+  iown <- base.ownany(dim=c(4, 4), bldim=c(4, 4), ICTXT=0)
+  comm.print(iown, all.rank = TRUE)
 
   finalize()
 "
-
 pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 
 }

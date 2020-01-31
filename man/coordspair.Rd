@@ -3,7 +3,6 @@
 \name{coordspair}
 \alias{coordspair}
 \alias{g2lpair}
-\alias{coordspair}
 \alias{l2gpair}
 \title{Global to Local/Local to Global Pair Indexing}
 \usage{
@@ -20,9 +19,12 @@ l2gpair(i, j, bldim, ICTXT)
 
 \item{i, j}{Local indices.}
 }
+\value{
+The local index-pair.
+}
 \description{
 Get the local index-pair given global information.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

@@ -15,5 +15,5 @@ base.pdmkcpn1(coef, descx)
 Create Companion Matrix
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

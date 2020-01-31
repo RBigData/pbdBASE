@@ -19,5 +19,5 @@ base.rpdgesv(n, nrhs, a, desca, b, descb)
 Solving a (square) system of equations.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

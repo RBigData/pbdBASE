@@ -4,11 +4,13 @@
 
 // Copyright 2013, Schmidt
 
-#include <RNACI.h>
 
 #include "base/linalg/linalg.h"
-#include "pbdBASE.h"
 #include "scalapack.h"
+
+// R.h and Rinternals.h needs to be included after Rconfig.h
+#include "pbdBASE.h"
+#include <RNACI.h>
 
 
 /* For computing LLS solution, either over or    under-determined. */
@@ -74,6 +76,16 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
   
   
   /* workspace query */
+#ifdef FC_LEN_T
+  rpdgels_(REAL(TOL), &trans,
+    INTP(M), &NN, INTP(NRHS),
+    &tmp, &IJ, &IJ, DESCA_CP,
+    &tmp, &IJ, &IJ, INTP(DESCB),
+    &tmp, &tmp, &tmp,
+    &tmp, &work, &lwork,
+    &IJ, &IJ, INTP(INFO),
+    (FC_LEN_T) strlen(&trans));
+#else
   rpdgels_(REAL(TOL), &trans,
     INTP(M), &NN, INTP(NRHS),
     &tmp, &IJ, &IJ, DESCA_CP,
@@ -81,6 +93,7 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
     &tmp, &tmp, &tmp,
     &tmp, &work, &lwork,
     &IJ, &IJ, INTP(INFO));
+#endif
   
   
   /* allocate work vector */
@@ -91,6 +104,16 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
   
   
   /*    and compute LLS solution */
+#ifdef FC_LEN_T
+  rpdgels_(REAL(TOL), &trans,
+    INTP(M), &NN, INTP(NRHS),
+    REAL(A_OUT), &IJ, &IJ, DESCA_CP,
+    REAL(B_OUT), &IJ, &IJ, INTP(DESCB),
+    REAL(EFF), REAL(FT), REAL(RSD),
+    REAL(TAU), p_work, &lwork,
+    INTP(IPIV), INTP(RANK), INTP(INFO),
+    (FC_LEN_T) strlen(&trans));
+#else
   rpdgels_(REAL(TOL), &trans,
     INTP(M), &NN, INTP(NRHS),
     REAL(A_OUT), &IJ, &IJ, DESCA_CP,
@@ -98,6 +121,7 @@ SEXP R_PDGELS(SEXP TOL, SEXP M, SEXP N, SEXP NRHS,
     REAL(EFF), REAL(FT), REAL(RSD),
     REAL(TAU), p_work, &lwork,
     INTP(IPIV), INTP(RANK), INTP(INFO));
+#endif
   
   
   // Manage return

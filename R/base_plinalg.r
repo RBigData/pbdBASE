@@ -2,7 +2,7 @@
 #' 
 #' Crossproduct.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param uplo
 #' Triangle whose values to use.
@@ -40,7 +40,7 @@ base.crossprod <- function(uplo, trans, x, descx, descc)
 #' 
 #' Inverse of cholesky.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param uplo
 #' Triangle whose values to use.

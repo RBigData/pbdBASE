@@ -13,5 +13,5 @@ base.pdhilbmk(descx)
 Create Hilbert matrix.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

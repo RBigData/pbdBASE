@@ -2,12 +2,33 @@
 #' 
 #' (Un)Distribute matrix.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param x
 #' Matrix.
 #' @param descx
 #' ScaLAPACK descriptor array.
+#' 
+#' @examples
+#' spmd.code <- "
+#'   suppressMessages(library(pbdMPI))
+#'   suppressMessages(library(pbdBASE))
+#'   init.grid()
+#'
+#'   ### Set data matrix and desc.
+#'   x <- matrix(as.double(1:30), nrow = 6, ncol = 5)
+#'   dim <- dim(x)
+#'   bldim <- c(3L, 3L)
+#'   ldim <- base.numroc(dim = dim, bldim = bldim)
+#'   descx <- base.descinit(dim = dim, bldim = bldim, ldim = ldim)
+#'
+#'   ### Redistribute from rank 0.
+#'   dx <- base.mksubmat(x, descx)
+#'   comm.print(dx, all.rank = TRUE)
+#'
+#'   finalize()
+#' "
+#' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 #' 
 #' @useDynLib pbdBASE R_MKSUBMAT
 #' @rdname lclgblmat
@@ -48,7 +69,7 @@ base.mkgblmat <- function(x, descx, rsrc, csrc)
 #' 
 #' Zero Triangle
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param x
 #' Matrix.
@@ -81,7 +102,7 @@ base.tri2zero <- function(x, descx, uplo='L', diag='N')
 #' 
 #' Matrix-Vector Sweep
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param x
 #' Matrix.
@@ -116,7 +137,7 @@ base.pdsweep <- function(x, descx, vec, MARGIN, FUN)
 #' 
 #' Grab diagonal or create distributed diagonal matrix.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param x
 #' Matrix.
@@ -124,7 +145,29 @@ base.pdsweep <- function(x, descx, vec, MARGIN, FUN)
 #' ScaLAPACK descriptor array.
 #' @param proc.dest
 #' Who owns the result.
+#' @return diagonal elements of matrix or a diagonal matrix
 #' 
+#' @examples
+#' spmd.code <- "
+#'   suppressMessages(library(pbdMPI))
+#'   suppressMessages(library(pbdBASE))
+#'   init.grid()
+#'
+#'   ### Set data matrix and desc.
+#'   x <- matrix(as.double(1:25), nrow = 5, ncol = 5)
+#'   dim <- dim(x)
+#'   bldim <- c(3L, 3L)
+#'   ldim <- base.numroc(dim = dim, bldim = bldim)
+#'   descx <- base.descinit(dim = dim, bldim = bldim, ldim = ldim)
+#'
+#'   ### Get diagonal
+#'   diag.x <- base.ddiagtk(x, descx)
+#'   comm.print(diag.x)
+#'
+#'   finalize()
+#' "
+#' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
+#'
 #' @useDynLib pbdBASE R_PDGDGTK
 #' @name diag
 #' @rdname diag
@@ -156,6 +199,28 @@ base.ddiagtk <- function(x, descx, proc.dest='all')
 #' @param diag
 #' Diagonal.
 #' 
+#' @examples
+#' spmd.code <- "
+#'   suppressMessages(library(pbdMPI))
+#'   suppressMessages(library(pbdBASE))
+#'   init.grid()
+#'
+#'   ### Set data matrix and desc.
+#'   x <- matrix(as.double(1:25), nrow = 5, ncol = 5)
+#'   dim <- dim(x)
+#'   bldim <- c(3L, 3L)
+#'   ldim <- base.numroc(dim = dim, bldim = bldim)
+#'   descx <- base.descinit(dim = dim, bldim = bldim, ldim = ldim)
+#'
+#'   ### Set diagonal
+#'   diag.x <- base.ddiagtk(x, descx)
+#'   new.x <- base.ddiagmk(diag.x, descx)
+#'   comm.print(new.x, all.rank = TRUE)
+#'
+#'   finalize()
+#' "
+#' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
+#'
 #' @useDynLib pbdBASE R_PDDIAGMK
 #' @rdname diag
 #' @export
@@ -178,7 +243,7 @@ base.ddiagmk <- function(diag, descx)
 #' 
 #' Create Hilbert matrix.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param n
 #' Size.
@@ -199,7 +264,7 @@ base.dhilbmk <- function(n)
 #' 
 #' Create Hilbert matrix.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param descx
 #' ScaLAPACK descriptor matrix.
@@ -221,7 +286,7 @@ base.pdhilbmk <- function(descx)
 #' 
 #' Create Companion Matrix
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param coef
 #' Coefficients vector.

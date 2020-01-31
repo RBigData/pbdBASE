@@ -4,11 +4,13 @@
 
 // Copyright 2013, 2017, Schmidt
 
-#include <RNACI.h>
 
 #include "base/linalg/linalg.h"
-#include "pbdBASE.h"
 #include "scalapack.h"
+
+// R.h and Rinternals.h needs to be included after Rconfig.h
+#include "pbdBASE.h"
+#include <RNACI.h>
 
 
 /* Computing QR */
@@ -99,24 +101,44 @@ SEXP R_PDORMQR(SEXP SIDE, SEXP TRANS, SEXP M, SEXP N, SEXP K,
   }
   
   /* workspace query */
+#ifdef FC_LEN_T
+  pdormqr_(STR(SIDE, 0), STR(TRANS, 0),
+      INTEGER(M), INTEGER(N), INTEGER(K),
+      &tmp, &IJ, &IJ, INTEGER(DESCA),
+      &tmp,
+      &tmp, &IJ, &IJ, INTEGER(DESCB),
+      &work, &lwork, INTEGER(INFO),
+      (FC_LEN_T) strlen(STR(SIDE, 0)), (FC_LEN_T) strlen(STR(TRANS, 0)));
+#else
   pdormqr_(STR(SIDE, 0), STR(TRANS, 0),
       INTEGER(M), INTEGER(N), INTEGER(K),
       &tmp, &IJ, &IJ, INTEGER(DESCA),
       &tmp,
       &tmp, &IJ, &IJ, INTEGER(DESCB),
       &work, &lwork, INTEGER(INFO));
+#endif
   
   /* allocate work vector and compute Q*y or Q^T*y */
   lwork = (int) work;
   lwork = nonzero(lwork);
   p_work = (double *) R_alloc(lwork, sizeof(double));
   
+#ifdef FC_LEN_T
+  pdormqr_(STR(SIDE, 0), STR(TRANS, 0),
+      INTEGER(M), INTEGER(N), INTEGER(K),
+      A_CPY, &IJ, &IJ, INTEGER(DESCA),
+      REAL(TAU),
+      REAL(B_OUT), &IJ, &IJ, INTEGER(DESCB),
+      p_work, &lwork, INTEGER(INFO),
+      (FC_LEN_T) strlen(STR(SIDE, 0)), (FC_LEN_T) strlen(STR(TRANS, 0)));
+#else
   pdormqr_(STR(SIDE, 0), STR(TRANS, 0),
       INTEGER(M), INTEGER(N), INTEGER(K),
       A_CPY, &IJ, &IJ, INTEGER(DESCA),
       REAL(TAU),
       REAL(B_OUT), &IJ, &IJ, INTEGER(DESCB),
       p_work, &lwork, INTEGER(INFO));
+#endif
   
   /* Return. */
   make_list_names(RET_NAMES, 2, "INFO", "B");
