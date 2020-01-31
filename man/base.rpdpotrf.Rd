@@ -19,5 +19,5 @@ base.rpdpotrf(uplo, n, a, desca)
 Cholesky factorization.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

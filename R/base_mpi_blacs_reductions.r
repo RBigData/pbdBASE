@@ -2,7 +2,7 @@
 #' 
 #' Sum across a process grid.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param ICTXT
 #' BLACS ICTXT.
@@ -61,7 +61,7 @@ base.dgsum2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 #' 
 #' Max value across a process grid.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param ICTXT
 #' BLACS ICTXT.
@@ -120,7 +120,7 @@ base.dgamx2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 #' 
 #' Min value across a process grid.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param ICTXT
 #' BLACS ICTXT.
@@ -178,7 +178,7 @@ base.dgamn2d <- function(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 #' 
 #' Sent value across a process grid.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param ICTXT
 #' BLACS ICTXT.

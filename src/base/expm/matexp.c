@@ -46,7 +46,12 @@ static void matprod(int n, double *a, double *b, double *c)
   char trans = 'N';
   double one = 1.0, zero = 0.0;
   
+#ifdef FC_LEN_T
+  dgemm_(&trans, &trans, &n, &n, &n, &one, a, &n, b, &n, &zero, c, &n,
+    (FC_LEN_T) strlen(&trans), (FC_LEN_T) strlen(&trans));
+#else
   dgemm_(&trans, &trans, &n, &n, &n, &one, a, &n, b, &n, &zero, c, &n);
+#endif
 }
 
 
@@ -56,7 +61,12 @@ static inline void matcopy(int n, double *A, double *B)
 {
   char uplo = 'A';
   
+#ifdef FC_LEN_T
+  dlacpy_(&uplo, &n, &n, A, &n, B, &n,
+    (FC_LEN_T) strlen(&uplo));
+#else
   dlacpy_(&uplo, &n, &n, A, &n, B, &n);
+#endif
 }
 
 

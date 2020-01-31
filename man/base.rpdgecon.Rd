@@ -19,5 +19,5 @@ base.rpdgecon(norm, m, n, a, desca)
 Inverse condition number of a general matrix.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

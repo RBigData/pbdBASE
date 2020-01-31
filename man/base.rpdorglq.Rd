@@ -17,9 +17,12 @@ base.rpdorglq(m, n, k, lq, desc, tau)
 
 \item{tau}{Elementary reflectors.}
 }
+\value{
+Q matrix of the QR decomposition.
+}
 \description{
 Recover Q.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

@@ -15,10 +15,13 @@ numroc2(N, NB, IPROC, NPROCS)
 
 \item{NPROCS}{Total number of processors over which matrix is distributed.}
 }
+\value{
+The local dimension.
+}
 \description{
 A better version of NUMROC (NUMber Rows Or Columns).  Returns the local
 dimension given global matrix + distribution parameters.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

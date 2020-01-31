@@ -8,10 +8,11 @@
 #endif
 
 #include <mpi.h>
-#include <RNACI.h>
-
 #include "base/utils/utils.h"
+
+// R.h and Rinternals.h needs to be included after Rconfig.h
 #include "pbdBASE.h"
+#include <RNACI.h>
 
 
 // From pbdMPI pkg_global.h and pkg_tools.c

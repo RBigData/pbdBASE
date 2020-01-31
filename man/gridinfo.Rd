@@ -33,17 +33,16 @@ The function effectively serves as a shorthand for
 \code{eval(parse(text=paste(".__blacs_gridinfo_", ICTXT, sep="")))}
 }
 \examples{
-spmd.code = "
+spmd.code <- "
+  suppressMessages(library(pbdMPI))
   suppressMessages(library(pbdBASE))
   init.grid()
 
   mygrid <- blacs(0)
-
-  pbdMPI::comm.print(mygrid)
+  comm.print(mygrid, all.rank = TRUE)
 
   finalize()
 "
- 
 pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 
 }

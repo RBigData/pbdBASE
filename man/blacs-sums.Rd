@@ -28,5 +28,5 @@ base.dgsum2d(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 Sum across a process grid.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

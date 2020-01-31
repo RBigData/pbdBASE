@@ -2,7 +2,7 @@
 #' 
 #' Linear model fitter via rank-revealing QR (with pivoting).
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param tol 
 #' Numerical tolerance for the QR.

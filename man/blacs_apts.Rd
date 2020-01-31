@@ -3,7 +3,6 @@
 \name{blacs_apts}
 \alias{blacs_apts}
 \alias{set.blacs.apts}
-\alias{blacs_apts}
 \alias{get.blacs.apts}
 \title{Functions to set and get BLACS_APTS}
 \usage{

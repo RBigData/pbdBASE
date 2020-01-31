@@ -1,6 +1,6 @@
 #' Level 2 R-like BLAS
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param x
 #' Matrix.
@@ -31,7 +31,7 @@ base.rl2blas <- function(x, descx, vec, FUN)
 
 #' R-like Matrix-Vector Insertion
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param x
 #' Matrix.
@@ -74,7 +74,7 @@ base.rl2insert <- function(x, descx, vec, i, j)
 
 #' R Column Copy
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param x,y
 #' Matrix.
@@ -102,7 +102,7 @@ base.rcolcpy <- function(x, descx, y, descy, xcol, ycol)
 
 #' R Column Copy-2
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param x,y
 #' Matrix.
@@ -130,7 +130,7 @@ base.rcolcpy2 <- function(x, descx, y, descy, xcol, ycol)
 
 #' R Row Copy
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param x,y
 #' Matrix.
@@ -158,7 +158,7 @@ base.rrowcpy <- function(x, descx, y, descy, xrow, yrow)
 
 #' R Row Copy-2
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param x,y
 #' Matrix.
@@ -186,7 +186,7 @@ base.rrowcpy2 <- function(x, descx, y, descy, xrow, yrow)
 
 #' R-like Matrix-Vector Sum
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param x
 #' Matrix.

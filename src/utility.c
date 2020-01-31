@@ -4,11 +4,12 @@
 
 // Copyright 2013, Schmidt
 
-#include <RNACI.h>
-
 #include "blacs.h"
-#include "pbdBASE.h"
 #include "scalapack.h"
+
+// R.h and Rinternals.h needs to be included after Rconfig.h
+#include "pbdBASE.h"
+#include <RNACI.h>
 
 
 SEXP R_PDLAPRNT(SEXP M, SEXP N, SEXP A, SEXP DESCA, SEXP CMATNM, SEXP NOUT)
@@ -23,9 +24,16 @@ SEXP R_PDLAPRNT(SEXP M, SEXP N, SEXP A, SEXP DESCA, SEXP CMATNM, SEXP NOUT)
   if(lcmatnm > 255)
     error("invalid name length in pdlaprnt");
   
+#ifdef FC_LEN_T
+  bprnt_(INTEGER(M), INTEGER(N), REAL(A), &IJ, &IJ,
+         INTEGER(DESCA), &SRC, &SRC, cmatnm,
+         INTEGER(NOUT), work,
+         (FC_LEN_T) strlen(cmatnm));
+#else
   bprnt_(INTEGER(M), INTEGER(N), REAL(A), &IJ, &IJ,
          INTEGER(DESCA), &SRC, &SRC, cmatnm,
          INTEGER(NOUT), work);
+#endif
   
   return RNULL;
 }

@@ -15,9 +15,30 @@ base.descinit(dim, bldim, ldim, ICTXT = 0)
 
 \item{ICTXT}{BLACS context.}
 }
+\value{
+A descriptor array.
+}
 \description{
 Creates ScaLAPACK descriptor array.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
+}
+\examples{
+spmd.code <- "
+  suppressMessages(library(pbdMPI))
+  suppressMessages(library(pbdBASE))
+  init.grid()
+
+  ### Set desc.
+  dim <- c(6L, 5L)
+  bldim <- c(3L, 3L)
+  ldim <- base.numroc(dim = dim, bldim = bldim)
+  descx <- base.descinit(dim = dim, bldim = bldim, ldim = ldim)
+  comm.print(descx)
+
+  finalize()
+"
+pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
+
 }

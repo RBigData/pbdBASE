@@ -2,7 +2,7 @@
 #'
 #' Creates ScaLAPACK descriptor array.
 #'
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #'
 #' @param dim
 #' Global dim.
@@ -12,6 +12,24 @@
 #' Local dim.
 #' @param ICTXT
 #' BLACS context.
+#' @return A descriptor array.
+#'
+#' @examples
+#' spmd.code <- "
+#'   suppressMessages(library(pbdMPI))
+#'   suppressMessages(library(pbdBASE))
+#'   init.grid()
+#'
+#'   ### Set desc.
+#'   dim <- c(6L, 5L)
+#'   bldim <- c(3L, 3L)
+#'   ldim <- base.numroc(dim = dim, bldim = bldim)
+#'   descx <- base.descinit(dim = dim, bldim = bldim, ldim = ldim)
+#'   comm.print(descx)
+#'
+#'   finalize()
+#' "
+#' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 #'
 #' @useDynLib pbdBASE R_descinit
 #' @export
@@ -46,7 +64,7 @@ base.descinit <- function(dim, bldim, ldim, ICTXT=0)
 #'
 #' NUMber of Rows Or Columns
 #'
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #'
 #' @param dim
 #' Global dim.
@@ -56,6 +74,23 @@ base.descinit <- function(dim, bldim, ldim, ICTXT=0)
 #' BLACS context.
 #' @param fixme
 #' Should ldims be "rounded" to 0 or not.
+#' @return A vector of local dim.
+#'
+#' @examples
+#' spmd.code <- "
+#'   suppressMessages(library(pbdMPI))
+#'   suppressMessages(library(pbdBASE))
+#'   init.grid()
+#'
+#'   ### Set desc.
+#'   dim <- c(6L, 5L)
+#'   bldim <- c(3L, 3L)
+#'   ldim <- base.numroc(dim = dim, bldim = bldim)
+#'   comm.print(ldim)
+#'
+#'   finalize()
+#' "
+#' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 #'
 #' @export
 base.numroc <- function(dim, bldim, ICTXT=0, fixme=TRUE)
@@ -107,7 +142,7 @@ NUMROC <- function(N, NB, IPROC, NPROCS)
 
 #' Determining Local Ownership of a Distributed Matrix
 #'
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #'
 #' A simple wrapper of numroc. The return is the answer to
 #' the question 'do I own any of the global matrix?'.  Passing a distributed
@@ -126,20 +161,21 @@ NUMROC <- function(N, NB, IPROC, NPROCS)
 #' blocking dimension
 #' @param ICTXT
 #' BLACS context
+#' @return TRUE or FALSE
 #'
 #' @keywords BLACS Distributing Data
 #'
 #' @examples
-#' spmd.code = "
+#' spmd.code <- "
+#'   suppressMessages(library(pbdMPI))
 #'   suppressMessages(library(pbdBASE))
 #'   init.grid()
 #'
-#'   iown <- ownany(dim=c(4, 4), bldim=c(2, 2), CTXT=0)
-#'   comm.print(iown, all.rank=T)
+#'   iown <- base.ownany(dim=c(4, 4), bldim=c(4, 4), ICTXT=0)
+#'   comm.print(iown, all.rank = TRUE)
 #'
 #'   finalize()
 #' "
-#'
 #' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 #'
 #' @export
@@ -167,10 +203,11 @@ base.ownany <- function(dim, bldim, ICTXT=0)
 #'
 #' Compute maximum dimension across all nodes
 #'
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #'
 #' @param dim
 #' Global dim.
+#' @return Maximum dimension.
 #'
 #' @export
 base.maxdim <- function(dim)
@@ -188,12 +225,13 @@ base.maxdim <- function(dim)
 #'
 #' Compute dimensions on process MYROW=MYCOL=0
 #'
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #'
 #' @param dim
 #' Global dim.
 #' @param ICTXT
 #' BLACS context.
+#' @return Dimension on MYROW=MYCOL=0
 #'
 #' @export
 base.dim0 <- function(dim, ICTXT=0)
@@ -224,7 +262,7 @@ base.dim0 <- function(dim, ICTXT=0)
 #'
 #' Global to local coords.
 #'
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #'
 #' @param ind
 #' Matrix indices.
@@ -234,6 +272,7 @@ base.dim0 <- function(dim, ICTXT=0)
 #' BLACS context.
 #' @param dim
 #' Ignored; will be removed in a future version.
+#' @return Local coords.
 #'
 #' @useDynLib pbdBASE g2l_coords
 #' @name g2l_coord
@@ -272,7 +311,7 @@ g2l_coord <- base.g2l_coord
 #'
 #' Local to global coords.
 #'
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #'
 #' @param ind
 #' Matrix indices.
@@ -282,6 +321,7 @@ g2l_coord <- base.g2l_coord
 #' BLACS context.
 #' @param dim
 #' Ignored; will be removed in a future version.
+#' @return Global coords.
 #'
 #' @useDynLib pbdBASE l2g_coords
 #' @name l2g_coord

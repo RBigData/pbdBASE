@@ -4,8 +4,19 @@
 \alias{base.rpdsyevx}
 \title{rpdsyevx}
 \usage{
-base.rpdsyevx(jobz, range, n, a, desca, vl, vu, il, iu, abstol = 1e-08,
-  orfac = 0.001)
+base.rpdsyevx(
+  jobz,
+  range,
+  n,
+  a,
+  desca,
+  vl,
+  vu,
+  il,
+  iu,
+  abstol = 1e-08,
+  orfac = 0.001
+)
 }
 \arguments{
 \item{jobz}{Control for if vectors/values/both are returned.}
@@ -30,5 +41,5 @@ base.rpdsyevx(jobz, range, n, a, desca, vl, vu, il, iu, abstol = 1e-08,
 Genearlized eigenvalue problem.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

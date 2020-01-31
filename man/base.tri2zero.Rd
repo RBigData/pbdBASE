@@ -19,5 +19,5 @@ base.tri2zero(x, descx, uplo = "L", diag = "N")
 Zero Triangle
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

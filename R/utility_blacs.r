@@ -34,7 +34,7 @@ valid_context <- base.valid_context
 #' 
 #' Finds the smallest integers for creating a new BLACS context.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' Returns the smallest integer which could become a new BLACS context value.
 #' 
@@ -101,17 +101,16 @@ minctxt <- base.minctxt
 #' @keywords BLACS
 #' 
 #' @examples
-#' spmd.code = "
+#' spmd.code <- "
+#'   suppressMessages(library(pbdMPI))
 #'   suppressMessages(library(pbdBASE))
 #'   init.grid()
 #' 
 #'   mygrid <- blacs(0)
-#' 
-#'   pbdMPI::comm.print(mygrid)
+#'   comm.print(mygrid, all.rank = TRUE)
 #' 
 #'   finalize()
 #' "
-#'  
 #' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 #' 
 #' @name gridinfo

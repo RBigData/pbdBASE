@@ -4,10 +4,11 @@
 
 // Copyright 2013-2016 Schmidt
 
-#include <RNACI.h>
-#include "pbdBASE.h"
 #include "base/expm/matexp.h"
 
+// R.h and Rinternals.h needs to be included after Rconfig.h
+#include "pbdBASE.h"
+#include <RNACI.h>
 
 SEXP R_matexp(SEXP A, SEXP p, SEXP t_)
 {

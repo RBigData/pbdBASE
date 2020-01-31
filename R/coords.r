@@ -2,7 +2,7 @@
 #' 
 #' Get the local index given global information.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param INDXGLOB
 #' Global index.
@@ -16,6 +16,7 @@
 #' The coordinate of the process that possesses the first row/column of the distributed matrix.  That's always 0 pbdDMAT.
 #' @param NPROCS
 #' Total number of processors over which matrix is distributed.
+#' @return The local index.
 #' 
 #' @name coords
 #' @rdname coords
@@ -45,7 +46,7 @@ indxl2g <- function(INDXLOC, NB, IPROC, ISRCPROC, NPROCS)
 #' 
 #' Get the local index-pair given global information.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param gi,gj
 #' Global indices.
@@ -55,6 +56,7 @@ indxl2g <- function(INDXLOC, NB, IPROC, ISRCPROC, NPROCS)
 #' Blocking dimension
 #' @param ICTXT
 #' BLACS context.
+#' @return The local index-pair.
 #' 
 #' @name coordspair
 #' @rdname coordspair
@@ -92,7 +94,7 @@ l2gpair <- function(i, j, bldim, ICTXT)
 #' distributed matrix specified by a global index INDXGLOB.  
 #' Simplified reimplementation of the ScaLAPACK aux INDXG2P function.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param INDXGLOB
 #' Global index.
@@ -100,6 +102,7 @@ l2gpair <- function(i, j, bldim, ICTXT)
 #' Block size.
 #' @param NPROCS
 #' Total number of processors over which matrix is distributed.
+#' @return The process coordinate.
 #' 
 #' @export
 base.indxg2p <- function(INDXGLOB, NB, NPROCS)
@@ -117,7 +120,7 @@ base.indxg2p <- function(INDXGLOB, NB, NPROCS)
 #' A better version of NUMROC (NUMber Rows Or Columns).  Returns the local
 #' dimension given global matrix + distribution parameters.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param N
 #' Global number of rows/cols.
@@ -127,6 +130,7 @@ base.indxg2p <- function(INDXGLOB, NB, NPROCS)
 #' Coordinate of the process whose local info is to be determined.
 #' @param NPROCS
 #' Total number of processors over which matrix is distributed.
+#' @return The local dimension.
 #' 
 #' @export
 numroc2 <- function(N, NB, IPROC, NPROCS)
@@ -174,21 +178,26 @@ numroc2 <- function(N, NB, IPROC, NPROCS)
 #' @keywords BLACS
 #' 
 #' @examples
-#' spmd.code = "
+#' spmd.code <- "
+#'   suppressMessages(library(pbdMPI))
 #'   suppressMessages(library(pbdBASE))
 #'   init.grid()
 #' 
-#'   blacs_ <- blacs(ICTXT = 0)
+#'   ### get the ICTXT = 0 BLACS coordsinates for process 3
+#'   myCoords <- base.pcoord(ICTXT = 0, PNUM = 3)
+#'   comm.print(myCoords)
 #' 
-#'   # get the ICTXT = 0 BLACS coordsinates for process 0
-#'   myCoords <- base.pcoord(ICTXT = 0, PNUM = 0)
-#' 
+#'   ### get the ICTXT = 1 BLACS coordsinates for process 3
+#'   myCoords <- base.pcoord(ICTXT = 1, PNUM = 3)
+#'   comm.print(myCoords)
+#'
+#'   ### get the ICTXT = 2 BLACS coordsinates for process 3
+#'   myCoords <- base.pcoord(ICTXT = 2, PNUM = 3)
 #'   comm.print(myCoords)
 #' 
 #'   finalize()
 #' "
-#' 
-#' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
+#' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 4L)
 #' 
 #' @name pcoords
 #' @rdname pcoords
