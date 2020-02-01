@@ -1,3 +1,6 @@
+Release 0.5-2:
+  * Import "utils" to NAMESPACE.
+
 Release 0.5-1:
   * Fixed build issue with x64 windows.
   * Update to latest pbdMPI/pbdSLAP flags/linking.
