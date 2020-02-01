@@ -1,8 +1,8 @@
 language: r
 
 r:
-  - devel
-  # - release
+  # - devel
+  - release
 
 os:
   - linux
