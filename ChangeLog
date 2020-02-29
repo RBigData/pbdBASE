@@ -1,3 +1,8 @@
+Release 0.5-3:
+  * Fix codes warned by "-Wargument-mismatch" because gcc10 gives warning/error
+    with "-fallow-argument-mismatch" or not. The files include norms.f90
+    and pinverse.f90 under "src/base/linalg/".
+
 Release 0.5-2:
   * Import "utils" to NAMESPACE.
 

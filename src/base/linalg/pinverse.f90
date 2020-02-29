@@ -52,7 +52,10 @@ subroutine pdinvip(x, ix, jx, descx, info)
   double precision    x(*)
   ! local
   integer             n, lwork, liwork, allocerr
-  double precision    tmp
+  !WCC
+  integer             liwork_a(1)
+  !WCC double precision    tmp
+  double precision    tmp(1)
   integer, allocatable :: ipiv(:), iwork(:)
   double precision, allocatable :: work(:)
   ! external
@@ -73,10 +76,14 @@ subroutine pdinvip(x, ix, jx, descx, info)
   lwork = -1
   liwork = -1
   
-  call pdgetri(n, x, ix, jx, descx, ipiv, tmp, lwork, liwork, liwork, info)
+  !WCC call pdgetri(n, x, ix, jx, descx, ipiv, tmp, lwork, liwork, liwork, info)
+  liwork_a(1) = liwork
+  call pdgetri(n, x, ix, jx, descx, ipiv, tmp, lwork, liwork_a, liwork, info)
+  liwork = liwork_a(1)
   if (info.ne.0) return
   
-  lwork = int(tmp)
+  !WCC lwork = int(tmp)
+  lwork = int(tmp(1))
   allocate(work(lwork), stat=allocerr)
   if (allocerr.ne.0) return! "out of memory"
   
