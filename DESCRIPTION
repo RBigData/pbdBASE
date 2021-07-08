@@ -16,7 +16,6 @@ SystemRequirements: OpenMPI (>= 1.5.4) on Solaris, Linux, Mac, and
         FreeBSD. MS-MPI (Microsoft HPC Pack 2012) or MPICH2 (>=
         1.4.1p1) on Windows.
 LazyLoad: yes
-LazyData: yes
 ByteCompile: yes
 NeedsCompilation: yes
 URL: https://pbdr.org/
@@ -30,4 +29,4 @@ Authors@R: c(person("Drew", "Schmidt", role="aut", email="wrathematics@gmail.com
     person("Pragneshkumar", "Patel", role="aut"),
     person("Ewan", "Higgs", role="ctb"))
 Maintainer: Wei-Chen Chen <wccsnow@gmail.com>
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1
