@@ -2,7 +2,7 @@
 #'
 #' Matrix printer.
 #'
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #'
 #' @param m,n
 #' Number rows/cols.
@@ -34,7 +34,7 @@ base.rpdlaprnt <- function(m, n, a, desca)
 #' 
 #' General 2d block cyclic redistribution function.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param x
 #' Matrix.
@@ -79,13 +79,19 @@ base.rpdgemr2d <- function(x, descx, descy)
 #' The divident (number divided into).
 #' @param d
 #' The candidate divisor.
+#' @return The "next best divisor" interger
 #' 
 #' @examples
-#' spmd.code = "
-#'   pbdBASE::base.nbd(100, 10) # 10 divides 100, so 10 is returned
-#'   pbdBASE::base.nbd(100, 11) # 11 does not, so the 'next best' divisor, 20, is returned
+#' spmd.code <- "
+#'   suppressMessages(library(pbdMPI))
+#'   suppressMessages(library(pbdBASE))
+#'   init.grid()
+#'
+#'   base.nbd(100, 10) # 10 divides 100, so 10 is returned
+#'   base.nbd(100, 11) # 11 does not, so the 'next best' divisor, 20, is returned
+#'
+#'   finalize()
 #' "
-#' 
 #' pbdMPI::execmpi(spmd.code = spmd.code, nranks = 1L)
 #' 
 #' @useDynLib pbdBASE R_nbd

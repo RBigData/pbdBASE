@@ -13,6 +13,9 @@ finalize(mpi.finalize = .pbd_env$SPMD.CT$mpi.finalize)
 \arguments{
 \item{mpi.finalize}{If MPI should be shut down.}
 }
+\value{
+None
+}
 \description{
 A replacement for \code{pbdMPI::finalize()} that automatically
 shuts BLACS communicators down.

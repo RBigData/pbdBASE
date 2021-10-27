@@ -2,7 +2,7 @@
 #' 
 #' QR.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param tol 
 #' Numerical tolerance for the QR.
@@ -14,6 +14,7 @@
 #' ScaLAPACK descriptor array.
 #' @param comm
 #' An MPI (not BLACS) communicator.
+#' @return A list contains QR results.
 #' 
 #' @useDynLib pbdBASE R_PDGEQPF
 #' @export
@@ -42,7 +43,7 @@ base.rpdgeqpf <- function(tol, m, n, x, descx, comm = .pbd_env$SPMD.CT$comm)
 #' 
 #' Recover Q.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param m,n
 #' Problem size.
@@ -54,6 +55,7 @@ base.rpdgeqpf <- function(tol, m, n, x, descx, comm = .pbd_env$SPMD.CT$comm)
 #' ScaLAPACK descriptor array.
 #' @param tau
 #' Elementary reflectors.
+#' @return Q matrix of the QR decomposition.
 #' 
 #' @useDynLib pbdBASE R_PDORGQR
 #' @export
@@ -83,7 +85,7 @@ base.rpdorgqr <- function(m, n, k, qr, descqr, tau)
 #' 
 #' op(Q) * y.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param side
 #' 'L' or 'R', for left or righth application of Q matrix.
@@ -147,7 +149,7 @@ base.rpdormqr <- function(side, trans, m, n, k, qr, descqr, tau, c, descc)
 #' 
 #' LQ.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param m,n
 #' Problem size.
@@ -177,7 +179,7 @@ base.rpdgelqf <- function(m, n, x, descx)
 #' 
 #' Recover Q.
 #' 
-#' For advanced users only.
+#' For advanced users only. See pbdDMAT for high-level functions.
 #' 
 #' @param m,n
 #' Problem size.
@@ -189,6 +191,7 @@ base.rpdgelqf <- function(m, n, x, descx)
 #' ScaLAPACK descriptor array.
 #' @param tau
 #' Elementary reflectors.
+#' @return Q matrix of the QR decomposition.
 #' 
 #' @useDynLib pbdBASE R_PDORGLQ
 #' @export

@@ -11,6 +11,9 @@ base.nbd(n, d)
 
 \item{d}{The candidate divisor.}
 }
+\value{
+The "next best divisor" interger
+}
 \description{
 Given integers n and d, with n>d, this function finds the "next
 best divisor" of n which is greater than or equal to d.
@@ -19,11 +22,16 @@ best divisor" of n which is greater than or equal to d.
 Suprisingly useful for thinking about processor grid shapes.
 }
 \examples{
-spmd.code = "
-  pbdBASE::base.nbd(100, 10) # 10 divides 100, so 10 is returned
-  pbdBASE::base.nbd(100, 11) # 11 does not, so the 'next best' divisor, 20, is returned
-"
+spmd.code <- "
+  suppressMessages(library(pbdMPI))
+  suppressMessages(library(pbdBASE))
+  init.grid()
 
+  base.nbd(100, 10) # 10 divides 100, so 10 is returned
+  base.nbd(100, 11) # 11 does not, so the 'next best' divisor, 20, is returned
+
+  finalize()
+"
 pbdMPI::execmpi(spmd.code = spmd.code, nranks = 1L)
 
 }

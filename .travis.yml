@@ -1,0 +1,51 @@
+language: r
+
+r:
+  # - devel
+  - release
+
+os:
+  - linux
+
+before_install:
+  - cd ../
+  - sudo apt-get update -q
+  - sudo apt-get install -y -q libopenmpi-dev openmpi-bin
+  - LD_PRELOAD=/usr/lib/openmpi/lib/libmpi.so
+  - Rscript -e "install.packages(c('float','rlecuyer'),repos='https://cran.r-project.org/')"
+  # - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
+  # - chmod 755 ./travis-tool.sh
+  # - ./travis-tool.sh bootstrap
+  # - ./travis-tool.sh install_github snoweye/pbdMPI
+  # - ./travis-tool.sh install_github snoweye/pbdSLAP/tree/lto
+  - git clone https://github.com/snoweye/pbdMPI
+  - R CMD INSTALL pbdMPI
+  - git clone https://github.com/snoweye/pbdSLAP
+  - cd pbdSLAP/
+  - git checkout lto
+  - cd ../
+  - R CMD INSTALL pbdSLAP
+  - R CMD build --no-resave-data --no-manual --no-build-vignettes pbdBASE
+  # - R CMD INSTALL ./pbdBASE_*.tar.gz
+
+# r_packages:
+#   - rlecuyer
+
+install:
+  # - ./travis-tool.sh install_deps
+  # - Rscript -e "install.packages(c('float','rlecuyer','pbdMPI','pbdSLAP'),repos='https://cran.r-project.org/')"
+  - R CMD check ./pbdBASE_*.tar.gz --as-cran
+  # - cat ./pbdBASE.Rcheck/00install.out
+  - cat ./pbdBASE.Rcheck/pbdBASE-Ex.Rout
+  - cat ./pbdBASE.Rcheck/pbdBASE-Ex.timings
+
+script:
+  - R CMD INSTALL ./pbdBASE_*.tar.gz
+
+sudo: required
+dist: trusty
+
+notifications:
+  email:
+    on_success: never
+    on_failure: never

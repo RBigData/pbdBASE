@@ -14,5 +14,5 @@ base.pdmvsum(x, descx, y, descy)
 \item{y}{Vector.}
 }
 \description{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

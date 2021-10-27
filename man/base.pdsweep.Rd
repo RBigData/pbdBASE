@@ -21,5 +21,5 @@ base.pdsweep(x, descx, vec, MARGIN, FUN)
 Matrix-Vector Sweep
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

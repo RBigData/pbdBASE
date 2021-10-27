@@ -17,5 +17,5 @@ base.rpdgetri(n, a, desca)
 Matrix inversion.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

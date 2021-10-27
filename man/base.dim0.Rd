@@ -11,9 +11,12 @@ base.dim0(dim, ICTXT = 0)
 
 \item{ICTXT}{BLACS context.}
 }
+\value{
+Dimension on MYROW=MYCOL=0
+}
 \description{
 Compute dimensions on process MYROW=MYCOL=0
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

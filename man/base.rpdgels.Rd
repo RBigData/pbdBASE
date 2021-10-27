@@ -25,5 +25,5 @@ base.rpdgels(tol, m, n, nrhs, a, desca, b, descb)
 Linear model fitter via rank-revealing QR (with pivoting).
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

@@ -29,5 +29,5 @@ base.rpdormqr(side, trans, m, n, k, qr, descqr, tau, c, descc)
 op(Q) * y.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

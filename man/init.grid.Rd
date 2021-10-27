@@ -73,13 +73,16 @@ environment, namely \code{.__blacs_initialized}. Its existence is to alert
 memory leaks.
 }
 \examples{
-spmd.code = "
+spmd.code <- "
+  suppressMessages(library(pbdMPI))
   suppressMessages(library(pbdBASE))
   init.grid()
 
+  ### Do something here. For example, below.
+  comm.print(ls(.pbdBASEEnv))
+
   finalize()
 "
-
 pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
 
 }

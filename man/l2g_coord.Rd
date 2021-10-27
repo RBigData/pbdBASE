@@ -3,7 +3,6 @@
 \name{l2g_coord}
 \alias{l2g_coord}
 \alias{base.l2g_coord}
-\alias{l2g_coord}
 \title{l2g_coord}
 \usage{
 base.l2g_coord(ind, bldim, ICTXT = 0, dim = NULL)
@@ -19,9 +18,12 @@ l2g_coord(ind, bldim, ICTXT = 0, dim = NULL)
 
 \item{dim}{Ignored; will be removed in a future version.}
 }
+\value{
+Global coords.
+}
 \description{
 Local to global coords.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

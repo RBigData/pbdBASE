@@ -65,7 +65,10 @@ subroutine condnum(norm, m, n, a, ia, ja, desca, rcond, info)
   double precision    rcond, a( * )
   ! local
   integer             lwork, liwork, lipiv
-  double precision    anorm, tmp
+  !WCC
+  integer             liwork_a(1)
+  !WCC double precision    anorm, tmp
+  double precision    anorm, tmp(1)
   ! dynamic
   double precision, allocatable :: work(:)
   integer, allocatable :: iwork(:), ipiv(:)
@@ -88,9 +91,12 @@ subroutine condnum(norm, m, n, a, ia, ja, desca, rcond, info)
   end if
   
   ! step 3:  call pdgecon
-  call pdgecon(norm, n, a, ia, ja, desca, anorm, rcond, tmp, -1, liwork, -1, info)
+  !WCC call pdgecon(norm, n, a, ia, ja, desca, anorm, rcond, tmp, -1, liwork, -1, info)
+  call pdgecon(norm, n, a, ia, ja, desca, anorm, rcond, tmp, -1, liwork_a, -1, info)
+  liwork = liwork_a(1)
   
-  lwork = int(tmp)
+  !WCC lwork = int(tmp)
+  lwork = int(tmp(1))
   
   allocate(work(lwork))
   allocate(iwork(liwork))

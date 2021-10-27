@@ -13,9 +13,12 @@ base.p_matpow_by_squaring_wrap(A, desca, b = 1)
 
 \item{b}{Power.}
 }
+\value{
+A powered matrix.
+}
 \description{
 Matrix power by squaring.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

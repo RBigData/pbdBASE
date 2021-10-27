@@ -1,3 +1,11 @@
+Release 0.5-3:
+  * Fix codes warned by "-Wargument-mismatch" because gcc10 gives warning/error
+    with "-fallow-argument-mismatch" or not. The files include norms.f90
+    and pinverse.f90 under "src/base/linalg/".
+
+Release 0.5-2:
+  * Import "utils" to NAMESPACE.
+
 Release 0.5-1:
   * Fixed build issue with x64 windows.
   * Update to latest pbdMPI/pbdSLAP flags/linking.
@@ -7,6 +15,7 @@ Release 0.5-1:
   * Deprecated dallreduce() R bindings.
   * Better string portability with pdlaprnt().
   * Add FC_LEN_T and USE_FC_LEN_T for C/Fortran char* length via size_t.
+  * Add examples and return values.
 
 Release 0.5-0:
   * Generalize pdgemm() wrapper.

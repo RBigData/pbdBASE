@@ -16,5 +16,5 @@ base.rl2blas(x, descx, vec, FUN)
 \item{FUN}{Function.}
 }
 \description{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

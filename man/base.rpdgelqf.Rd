@@ -17,5 +17,5 @@ base.rpdgelqf(m, n, x, descx)
 LQ.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

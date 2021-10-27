@@ -13,11 +13,14 @@ base.indxg2p(INDXGLOB, NB, NPROCS)
 
 \item{NPROCS}{Total number of processors over which matrix is distributed.}
 }
+\value{
+The process coordinate.
+}
 \description{
 Computes the process coordinate which contains the entry of a
 distributed matrix specified by a global index INDXGLOB.  
 Simplified reimplementation of the ScaLAPACK aux INDXG2P function.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

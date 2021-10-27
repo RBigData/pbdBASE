@@ -31,5 +31,5 @@ base.dgamn2d(ICTXT, SCOPE, m, n, x, lda, RDEST, CDEST)
 Min value across a process grid.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

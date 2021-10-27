@@ -4,8 +4,19 @@
 \alias{base.rpdgesvd}
 \title{rpdgesvd}
 \usage{
-base.rpdgesvd(jobu, jobvt, m, n, a, desca, descu, descvt, ...,
-  inplace = FALSE, comm = .pbd_env$SPMD.CT$comm)
+base.rpdgesvd(
+  jobu,
+  jobvt,
+  m,
+  n,
+  a,
+  desca,
+  descu,
+  descvt,
+  ...,
+  inplace = FALSE,
+  comm = .pbd_env$SPMD.CT$comm
+)
 }
 \arguments{
 \item{jobu, jobvt}{Control for u/vt return.}
@@ -26,5 +37,5 @@ base.rpdgesvd(jobu, jobvt, m, n, a, desca, descu, descvt, ...,
 SVD.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

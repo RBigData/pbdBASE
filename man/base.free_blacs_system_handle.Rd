@@ -9,6 +9,9 @@ base.free_blacs_system_handle(SHANDLE)
 \arguments{
 \item{SHANDLE}{A system handle. Obtained via a call to `sys2blacs.handle`}
 }
+\value{
+None
+}
 \description{
 Free Blacs System Handle
 }

@@ -14,5 +14,5 @@ base.rcolcpy2(x, descx, y, descy, xcol, ycol)
 \item{xcol, ycol}{Columns.}
 }
 \description{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

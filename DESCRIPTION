@@ -2,7 +2,7 @@ Package: pbdBASE
 Type: Package
 Title: Programming with Big Data -- Base Wrappers for Distributed
         Matrices
-Version: 0.5-1
+Version: 0.5-3
 Description: An interface to and extensions for the 'PBLAS' and 'ScaLAPACK'
     numerical libraries.  This enables R to utilize distributed linear algebra
     for codes written in the 'SPMD' fashion.  This interface is deliberately
@@ -10,13 +10,14 @@ Description: An interface to and extensions for the 'PBLAS' and 'ScaLAPACK'
     higher level way of managing distributed matrices, see the 'pbdDMAT'
     package.
 License: Mozilla Public License 2.0
+<<<<<<< HEAD
 Depends:
     R (>= 3.6.0),
     methods
 Imports:
     utils,
-    pbdMPI (>= 0.3-9),
-    pbdSLAP (>= 0.2-8)
+    pbdMPI (>= 0.4-3),
+    pbdSLAP (>= 0.2-9)
 SystemRequirements: OpenMPI (>= 1.5.4) on Solaris, Linux, Mac, and
         FreeBSD. MS-MPI (Microsoft HPC Pack 2012) or MPICH2 (>=
         1.4.1p1) on Windows.
@@ -33,4 +34,4 @@ Authors@R: c(person("Drew", "Schmidt", role="aut", email="wrathematics@gmail.com
     person("Pragneshkumar", "Patel", role="aut"),
     person("Ewan", "Higgs", role="ctb"))
 Maintainer: Wei-Chen Chen <wccsnow@gmail.com>
-RoxygenNote: 6.0.1
+RoxygenNote: 7.1.1

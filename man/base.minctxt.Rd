@@ -16,7 +16,7 @@ Returns the minimum value.
 Finds the smallest integers for creating a new BLACS context.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 
 Returns the smallest integer which could become a new BLACS context value.
 

@@ -16,5 +16,5 @@ base.rl2insert(x, descx, vec, i, j)
 \item{i, j}{Indices.}
 }
 \description{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

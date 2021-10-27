@@ -21,5 +21,5 @@ base.crossprod(uplo, trans, x, descx, descc)
 Crossproduct.
 }
 \details{
-For advanced users only.
+For advanced users only. See pbdDMAT for high-level functions.
 }

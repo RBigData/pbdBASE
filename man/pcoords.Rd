@@ -31,21 +31,26 @@ process number associated with the BLACS process grid location
 \code{c(MYPROW, MYPCOL)}, while the latter does the reverse.
 }
 \examples{
-spmd.code = "
+spmd.code <- "
+  suppressMessages(library(pbdMPI))
   suppressMessages(library(pbdBASE))
   init.grid()
 
-  blacs_ <- blacs(ICTXT = 0)
+  ### get the ICTXT = 0 BLACS coordsinates for process 3
+  myCoords <- base.pcoord(ICTXT = 0, PNUM = 3)
+  comm.print(myCoords)
 
-  # get the ICTXT = 0 BLACS coordsinates for process 0
-  myCoords <- base.pcoord(ICTXT = 0, PNUM = 0)
+  ### get the ICTXT = 1 BLACS coordsinates for process 3
+  myCoords <- base.pcoord(ICTXT = 1, PNUM = 3)
+  comm.print(myCoords)
 
+  ### get the ICTXT = 2 BLACS coordsinates for process 3
+  myCoords <- base.pcoord(ICTXT = 2, PNUM = 3)
   comm.print(myCoords)
 
   finalize()
 "
-
-pbdMPI::execmpi(spmd.code = spmd.code, nranks = 2L)
+pbdMPI::execmpi(spmd.code = spmd.code, nranks = 4L)
 
 }
 \keyword{BLACS}

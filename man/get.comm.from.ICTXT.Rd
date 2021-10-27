@@ -9,6 +9,9 @@ get.comm.from.ICTXT(ICTXT)
 \arguments{
 \item{ICTXT}{a BLACS context}
 }
+\value{
+A communicator
+}
 \description{
 Blacs context are associated with a certain communicator. It can be useful to retrieve this communicator to manipulate the matrix accordingly.
 }
