@@ -1,6 +1,6 @@
 ## autoconf configure.ac && autoreconf -if
 AC_PREREQ([2.69])
-AC_INIT([pbdBASE], [0.3-0])
+AC_INIT([pbdBASE],[0.3-0])
 AC_CONFIG_SRCDIR([src/base_scalapack.c])
 
 AC_PROG_CC_C99
@@ -18,10 +18,8 @@ R_SCMD="${R_HOME}/bin/Rscript -e"
 
 ### Ability to disable src/export_blacs/ --- needed for Intel mpi
 AC_ARG_ENABLE(blacsexport,
-  AC_HELP_STRING(
-    [--enable-blacsexport],
-    [Enable BLACS export, default yes. Disable for Intel MPI.]
-  ),
+  AS_HELP_STRING([--enable-blacsexport],[Enable BLACS export, default yes. Disable for Intel MPI.
+  ]),
   [ENABLE_BLACSEXPORT="no"],
   [ENABLE_BLACSEXPORT="yes"]
 )
@@ -70,4 +68,5 @@ AC_SUBST(SPMD_CPPFLAGS)
 AC_SUBST(SPMD_LDFLAGS)
 AC_SUBST(EXPORT_BLACS)
 
-AC_OUTPUT(src/Makevars)
+AC_CONFIG_FILES([src/Makevars])
+AC_OUTPUT
